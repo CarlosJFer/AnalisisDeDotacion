@@ -73,7 +73,7 @@ const LoginPage = () => {
           alt="Logo Análisis de dotación municipal" 
           style={{
             width: '140px',
-            height: '140px',
+            height: '141px',
             objectFit: 'contain',
             borderRadius: '20px',
             boxShadow: '0 8px 32px rgba(43,51,66,0.25)',
