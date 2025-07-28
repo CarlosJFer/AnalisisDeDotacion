@@ -438,7 +438,7 @@ const TestPage = () => {
 // Componente para manejar el layout condicional
 const AppLayout = () => {
   const location = useLocation();
-  const isLoginPage = location.pathname === '/login';
+  const isLoginPage = location.pathname.startsWith('/login');
 
   return (
     <>

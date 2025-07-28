@@ -17,13 +17,7 @@ const SecretariaRow = memo(({
   getNombrePadre,
   isDarkMode 
 }) => {
-  const handleEdit = useCallback(() => {
-    // Usar requestAnimationFrame para evitar bloqueo
-    requestAnimationFrame(() => {
-      onEdit(secretaria);
-    });
-  }, [onEdit, secretaria]);
-  
+  const handleEdit = useCallback(() => onEdit(secretaria), [onEdit, secretaria]);
   const handleDelete = useCallback(() => onDelete(secretaria._id), [onDelete, secretaria._id]);
 
   return (
@@ -119,7 +113,7 @@ const SecretariaRow = memo(({
   );
 });
 
-const SecretariaAdminPage = () => {
+const SecretariaAdminPageUltraOptimized = () => {
   const { isDarkMode } = useTheme();
   
   // Estados principales
@@ -202,8 +196,9 @@ const SecretariaAdminPage = () => {
   }, []);
 
   useEffect(() => {
-    fetchSecretarias();
+    const cleanup = fetchSecretarias();
     fetchAllDeps();
+    return cleanup;
   }, [fetchSecretarias, fetchAllDeps]);
 
   // Función para calcular nivel (memoizada)
@@ -461,131 +456,6 @@ const SecretariaAdminPage = () => {
         </Card>
       )}
 
-      {/* Formulario de edición */}
-      {editingSec && (
-        <Card 
-          sx={{ 
-            mb: 4,
-            background: isDarkMode
-              ? 'rgba(255, 152, 0, 0.1)'
-              : 'rgba(255, 152, 0, 0.05)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 152, 0, 0.3)',
-            borderRadius: 3,
-          }}
-        >
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-              <Avatar sx={{ 
-                width: 32, 
-                height: 32, 
-                background: 'linear-gradient(135deg, #ff9800, #f57c00)',
-              }}>
-                <EditIcon sx={{ fontSize: 18 }} />
-              </Avatar>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Editar dependencia: {editingSec.nombre}
-              </Typography>
-            </Box>
-            
-            <Box component="form" onSubmit={handleEditSec} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
-              <OptimizedTextField
-                name="nombre"
-                label="Nombre"
-                value={editingSec.nombre}
-                onChange={(name, value) => setEditingSec({ ...editingSec, nombre: value })}
-                required
-                sx={{ minWidth: 200 }}
-              />
-              <OptimizedTextField
-                name="codigo"
-                label="ID"
-                value={editingSec.codigo}
-                onChange={(name, value) => setEditingSec({ ...editingSec, codigo: value })}
-                required
-                sx={{ minWidth: 200 }}
-              />
-              <OptimizedTextField
-                name="funcion"
-                label="¿Qué función cumple?"
-                value={editingSec.funcion || ''}
-                onChange={(name, value) => setEditingSec({ ...editingSec, funcion: value })}
-                multiline
-                maxRows={2}
-                sx={{ minWidth: 300 }}
-              />
-              <FormControl size="small" sx={{ minWidth: 250 }}>
-                <InputLabel>Pertenece a:</InputLabel>
-                <Select
-                  value={editingSec.idPadre || ''}
-                  label="Pertenece a:"
-                  onChange={(e) => setEditingSec({ ...editingSec, idPadre: e.target.value })}
-                >
-                  <MenuItem value="">(Raíz / Secretaría principal)</MenuItem>
-                  {allDeps.filter(dep => dep._id !== editingSec._id).map(dep => (
-                    <MenuItem key={dep._id} value={dep._id}>{dep.nombre} ({dep.codigo})</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <OptimizedTextField
-                name="orden"
-                label="Posición"
-                type="number"
-                value={editingSec.orden || ''}
-                onChange={(name, value) => setEditingSec({ ...editingSec, orden: value })}
-                sx={{ minWidth: 120 }}
-              />
-              <OptimizedCheckbox
-                name="activo"
-                label="Activo"
-                checked={editingSec.activo !== false}
-                onChange={(name, value) => setEditingSec({ ...editingSec, activo: value })}
-              />
-              <Button 
-                type="submit" 
-                variant="contained" 
-                disabled={savingEdit}
-                startIcon={savingEdit ? <CircularProgress size={16} color="inherit" /> : <EditIcon />}
-                sx={{
-                  background: 'linear-gradient(45deg, #ff9800, #f57c00)',
-                  color: 'white',
-                  fontWeight: 600,
-                  px: 3,
-                  py: 1.5,
-                  borderRadius: 2,
-                  minWidth: 120,
-                  mr: 1,
-                  '&:hover': {
-                    background: 'linear-gradient(45deg, #f57c00, #ef6c00)',
-                    transform: 'translateY(-1px)',
-                  },
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                {savingEdit ? 'Guardando...' : 'Guardar'}
-              </Button>
-              <Button 
-                type="button" 
-                variant="outlined" 
-                onClick={() => setEditingSec(null)}
-                sx={{
-                  color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                  '&:hover': {
-                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.05)',
-                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
-                  },
-                  transition: 'all 0.15s ease',
-                }}
-              >
-                Cancelar
-              </Button>
-            </Box>
-            {editError && <Alert severity="error" sx={{ mt: 2 }}>{editError}</Alert>}
-          </CardContent>
-        </Card>
-      )}
-
       {/* Tabla optimizada */}
       <Card 
         sx={{ 
@@ -664,4 +534,4 @@ const SecretariaAdminPage = () => {
   );
 };
 
-export default memo(SecretariaAdminPage);
+export default memo(SecretariaAdminPageUltraOptimized);

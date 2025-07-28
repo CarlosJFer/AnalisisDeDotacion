@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { HelmetProvider } from 'react-helmet-async';
@@ -41,6 +41,47 @@ const queryClient = new QueryClient({
   },
 });
 
+// Componente para manejar el layout condicional
+const AppLayout = () => {
+  const location = useLocation();
+  const isLoginPage = location.pathname.startsWith('/login');
+
+  return (
+    <div className="app">
+      {!isLoginPage && <Navbar />}
+      <main className="main-content">
+        <Suspense fallback={<div style={{textAlign:'center',marginTop:40}}>Cargando...</div>}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            {/* Rutas Protegidas para Usuarios */}
+            <Route element={<ProtectedRoute />}> 
+              <Route path="/dashboard/:secretariaId" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/comparacion" element={<ComparisonPage />} />
+              <Route path="/change-password" element={<ChangePasswordPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/organigrama" element={<OrganigramaPage />} />
+            </Route>
+            {/* Rutas Protegidas solo para Admins */}
+            <Route element={<ProtectedRoute adminOnly={true} />}>
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/admin/users" element={<UserAdminPage />} />
+              <Route path="/admin/secretarias" element={<SecretariaAdminPage />} />
+              <Route path="/admin/upload" element={<UploadPage />} />
+              <Route path="/admin/audit" element={<AuditPage />} />
+              <Route path="/admin/organigrama" element={<OrganigramaPage />} />
+              <Route path="/admin/variables" element={<GestionVariablesPage />} />
+            </Route>
+            {/* Redirección por defecto: ahora a /organigrama */}
+            <Route path="/" element={<Navigate to="/organigrama" />} />
+            <Route path="*" element={<Navigate to="/organigrama" />} />
+          </Routes>
+        </Suspense>
+      </main>
+    </div>
+  );
+};
+
 function App() {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
@@ -51,38 +92,7 @@ function App() {
               <AuthProvider>
                 <NotificationProvider>
                   <DashboardProvider>
-                    <div className="app">
-                      <Navbar />
-                      <main className="main-content">
-                        <Suspense fallback={<div style={{textAlign:'center',marginTop:40}}>Cargando...</div>}>
-                          <Routes>
-                            <Route path="/login" element={<LoginPage />} />
-                            {/* Rutas Protegidas para Usuarios */}
-                            <Route element={<ProtectedRoute />}> 
-                              <Route path="/dashboard/:secretariaId" element={<DashboardPage />} />
-                              <Route path="/dashboard" element={<DashboardPage />} />
-                              <Route path="/comparacion" element={<ComparisonPage />} />
-                              <Route path="/change-password" element={<ChangePasswordPage />} />
-                              <Route path="/settings" element={<SettingsPage />} />
-                              <Route path="/organigrama" element={<OrganigramaPage />} />
-                            </Route>
-                            {/* Rutas Protegidas solo para Admins */}
-                            <Route element={<ProtectedRoute adminOnly={true} />}>
-                              <Route path="/admin" element={<AdminPage />} />
-                              <Route path="/admin/users" element={<UserAdminPage />} />
-                              <Route path="/admin/secretarias" element={<SecretariaAdminPage />} />
-                              <Route path="/admin/upload" element={<UploadPage />} />
-                              <Route path="/admin/audit" element={<AuditPage />} />
-                              <Route path="/admin/organigrama" element={<OrganigramaPage />} />
-                              <Route path="/admin/variables" element={<GestionVariablesPage />} />
-                            </Route>
-                            {/* Redirección por defecto: ahora a /organigrama */}
-                            <Route path="/" element={<Navigate to="/organigrama" />} />
-                            <Route path="*" element={<Navigate to="/organigrama" />} />
-                          </Routes>
-                        </Suspense>
-                      </main>
-                    </div>
+                    <AppLayout />
                   </DashboardProvider>
                 </NotificationProvider>
               </AuthProvider>

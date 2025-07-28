@@ -134,7 +134,7 @@ const UserRow = memo(({
   );
 });
 
-const UserAdminPage = () => {
+const UserAdminPageOptimized = () => {
   const { isDarkMode } = useTheme();
   
   // Estados principales
@@ -206,7 +206,7 @@ const UserAdminPage = () => {
     setError('');
     
     try {
-      const { data } = await apiClient.get('/auth/users', {
+      const { data } = await apiClient.get('/users', {
         signal: controller.signal
       });
       setUsers(data);
@@ -225,7 +225,8 @@ const UserAdminPage = () => {
   }, [showSnackbar]);
 
   useEffect(() => {
-    fetchUsers();
+    const cleanup = fetchUsers();
+    return cleanup;
   }, [fetchUsers]);
 
   // Handler optimizado para crear usuario
@@ -244,7 +245,7 @@ const UserAdminPage = () => {
     setCreating(true);
     
     try {
-      await apiClient.post('/auth/users', newUser);
+      await apiClient.post('/users', newUser);
       resetNewUser();
       await fetchUsers();
       showSnackbar('Usuario creado correctamente', 'success');
@@ -271,7 +272,7 @@ const UserAdminPage = () => {
     setEditing(true);
     
     try {
-      await apiClient.put(`/auth/users/${editingUser._id}`, editUser);
+      await apiClient.put(`/users/${editingUser._id}`, editUser);
       setEditingUser(null);
       resetEditUser();
       await fetchUsers();
@@ -303,7 +304,7 @@ const UserAdminPage = () => {
     setChangingPass(true);
     
     try {
-      await apiClient.put(`/auth/users/${changingPassword._id}/change-password`, {
+      await apiClient.put(`/users/${changingPassword._id}/password`, {
         newPassword: passwordForm.newPassword
       });
       setChangingPassword(null);
@@ -322,7 +323,7 @@ const UserAdminPage = () => {
     if (!window.confirm('¿Seguro que deseas eliminar este usuario?')) return;
     
     try {
-      await apiClient.delete(`/auth/users/${id}`);
+      await apiClient.delete(`/users/${id}`);
       await fetchUsers();
       showSnackbar('Usuario eliminado', 'success');
     } catch (err) {
@@ -543,4 +544,4 @@ const UserAdminPage = () => {
   );
 };
 
-export default memo(UserAdminPage);
+export default memo(UserAdminPageOptimized);

@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import OrganigramaTreeView from "../components/OrganigramaTreeView.jsx";
-import { Box, Typography, CircularProgress, Alert, TextField, Button } from "@mui/material";
+import { Box, Typography, CircularProgress, Alert, TextField, Button, Avatar, Card, CardContent } from "@mui/material";
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import SearchIcon from '@mui/icons-material/Search';
+import ClearIcon from '@mui/icons-material/Clear';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from "../services/api";
 
 // Construye un mapa de nodos por _id y asigna hijos correctamente
@@ -52,6 +58,7 @@ const OrganigramaPage = () => {
   const [variableValues, setVariableValues] = useState([]);
   const treeViewRef = useRef();
   const [autoExpanded, setAutoExpanded] = useState([]);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -152,24 +159,145 @@ const OrganigramaPage = () => {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Organigrama de Dependencias
-      </Typography>
-      <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-        <TextField
-          label="Buscar dependencia o función"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          size="small"
-          variant="outlined"
-        />
-        <Button onClick={() => setSearch("")} variant="outlined" disabled={!search}>
-          Limpiar
-        </Button>
-        <Button onClick={handleExpandAll} variant="outlined">Expandir todo</Button>
-        <Button onClick={handleCollapseAll} variant="outlined">Contraer todo</Button>
+    <Box 
+      sx={{ 
+        p: 4,
+        background: isDarkMode
+          ? 'linear-gradient(135deg, rgba(45, 55, 72, 0.3) 0%, rgba(26, 32, 44, 0.3) 100%)'
+          : 'linear-gradient(135deg, rgba(240, 249, 240, 0.3) 0%, rgba(227, 242, 253, 0.3) 100%)',
+        borderRadius: 3,
+        minHeight: '80vh',
+      }}
+    >
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
+        <Avatar sx={{ 
+          width: 48, 
+          height: 48, 
+          background: 'linear-gradient(135deg, #4caf50, #388e3c)',
+        }}>
+          <AccountTreeIcon sx={{ fontSize: 24 }} />
+        </Avatar>
+        <Typography 
+          variant="h3" 
+          sx={{
+            fontWeight: 700,
+            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+          }}
+        >
+          Organigrama de Dependencias
+        </Typography>
       </Box>
+
+      <Card 
+        sx={{ 
+          mb: 3,
+          background: isDarkMode
+            ? 'rgba(45, 55, 72, 0.8)'
+            : 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(20px)',
+          border: isDarkMode
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : '1px solid rgba(0, 0, 0, 0.1)',
+          borderRadius: 3,
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
+            <TextField
+              label="Buscar dependencia o función"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              size="small"
+              variant="outlined"
+              sx={{ 
+                minWidth: 300,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                }
+              }}
+              InputProps={{
+                startAdornment: (
+                  <SearchIcon sx={{ 
+                    mr: 1, 
+                    color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)' 
+                  }} />
+                ),
+              }}
+            />
+            <Button 
+              onClick={() => setSearch("")} 
+              variant="outlined" 
+              disabled={!search}
+              startIcon={<ClearIcon />}
+              sx={{ 
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(76, 175, 80, 0.5)',
+                fontWeight: 500,
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                '&:hover': {
+                  backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(76, 175, 80, 0.15)',
+                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(76, 175, 80, 0.8)',
+                  color: isDarkMode ? '#ffffff' : '#2e7d32',
+                  transform: 'translateY(-1px)',
+                },
+                '&:disabled': {
+                  color: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              Limpiar
+            </Button>
+            <Button 
+              onClick={handleExpandAll} 
+              variant="outlined"
+              startIcon={<ExpandMoreIcon />}
+              sx={{ 
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(76, 175, 80, 0.5)',
+                fontWeight: 500,
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                '&:hover': {
+                  backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(76, 175, 80, 0.15)',
+                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(76, 175, 80, 0.8)',
+                  color: isDarkMode ? '#ffffff' : '#2e7d32',
+                  transform: 'translateY(-1px)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              Expandir todo
+            </Button>
+            <Button 
+              onClick={handleCollapseAll} 
+              variant="outlined"
+              startIcon={<ChevronRightIcon />}
+              sx={{ 
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(76, 175, 80, 0.5)',
+                fontWeight: 500,
+                px: 3,
+                py: 1,
+                borderRadius: 2,
+                '&:hover': {
+                  backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(76, 175, 80, 0.15)',
+                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(76, 175, 80, 0.8)',
+                  color: isDarkMode ? '#ffffff' : '#2e7d32',
+                  transform: 'translateY(-1px)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              Contraer todo
+            </Button>
+          </Box>
+        </CardContent>
+      </Card>
       {loading && <CircularProgress />}
       {error && <Alert severity="error">{error}</Alert>}
       {!loading && !error && (

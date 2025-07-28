@@ -83,7 +83,7 @@ const EstadoChip = memo(({ estado, variablesCount }) => {
 });
 
 // Función de resaltado ultra-optimizada
-const HighlightText = memo(({ text, term }) => {
+const highlightText = memo(({ text, term }) => {
   if (!term || term.length < 2) return text;
   
   const parts = String(text).split(new RegExp(`(${term})`, 'gi'));
@@ -206,7 +206,7 @@ const TreeNode = memo(({
                   lineHeight: 1.2,
                 }}
               >
-                <HighlightText text={node.nombre} term={searchTerm} />
+                <highlightText text={node.nombre} term={searchTerm} />
               </Typography>
               
               {estado && variables.length > 0 && (
@@ -257,7 +257,7 @@ const TreeNode = memo(({
   );
 });
 
-const OrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm }, ref) => {
+const OptimizedOrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm }, ref) => {
   const { isDarkMode } = useTheme();
   const treeMemo = useMemo(() => tree, [tree]);
   const [expanded, setExpanded] = useState([]);
@@ -314,10 +314,8 @@ const OrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm 
       }, 0);
     },
     collapseAll: () => {
-      // Colapsar inmediatamente sin animaciones
-      requestAnimationFrame(() => {
-        setExpanded([]);
-      });
+      // Colapsar inmediatamente
+      setExpanded([]);
     }
   }), [treeMemo, getAllIds]);
 
@@ -398,4 +396,4 @@ const OrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm 
   );
 });
 
-export default memo(OrganigramaTreeView);
+export default memo(OptimizedOrganigramaTreeView);
