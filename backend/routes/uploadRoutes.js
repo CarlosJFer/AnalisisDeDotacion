@@ -5,7 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { authenticateToken, requireAdmin } = require('../middleware/authMiddleware');
-const { uploadExcel } = require('../controllers/uploadController');
+const { uploadFile } = require('../controllers/uploadController');
 
 // Configuración de multer para subida de archivos
 const storage = multer.diskStorage({
@@ -39,7 +39,7 @@ const upload = multer({
   }
 });
 
-// Subir y procesar archivo Excel
-router.post('/', authenticateToken, requireAdmin, upload.array('archivo'), uploadExcel);
+// Subir y procesar archivos Excel (múltiples)
+router.post('/', authenticateToken, requireAdmin, upload.array('archivos'), uploadFile);
 
 module.exports = router;

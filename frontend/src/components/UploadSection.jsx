@@ -1,5 +1,5 @@
-import React, { useState, useCallback, memo } from 'react';
-import { Box, Typography, Card, CardContent, Button, LinearProgress, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Avatar, Chip, IconButton } from '@mui/material';
+import React, { useState, useCallback, memo, useEffect } from 'react';
+import { Box, Typography, Card, CardContent, Button, LinearProgress, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions, List, ListItem, ListItemText, Avatar, Chip, IconButton, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -7,9 +7,10 @@ import ErrorIcon from '@mui/icons-material/Error';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from '../services/api';
+import templateService from '../services/templateService'; // Importamos el servicio
 
 // Componente de archivo memoizado
-const FileItem = memo(({ file, index, onRemove, uploading, uploadProgress, isDarkMode }) => {
+const FileItem = memo(({ file, index, onRemove, uploading, uploadProgress, isDarkMode, templates, onTemplateChange, selectedTemplate }) => {
   const handleRemove = useCallback(() => onRemove(index), [onRemove, index]);
 
   const formatFileSize = useCallback((bytes) => {
@@ -63,32 +64,49 @@ const FileItem = memo(({ file, index, onRemove, uploading, uploadProgress, isDar
             {file.name}
           </Typography>
         }
-        secondary={
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-            <Chip 
-              label={formatFileSize(file.size)}
-              size="small"
-              sx={{ 
-                height: 20, 
-                fontSize: '0.7rem',
-                background: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-              }}
-            />
-            {uploading && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 1 }}>
-                <LinearProgress 
-                  variant="determinate" 
-                  value={uploadProgress || 0} 
-                  sx={{ width: 80, height: 4 }}
-                />
-                <Typography variant="caption">
-                  {uploadProgress || 0}%
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        }
       />
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, ml: 1 }}>
+        <Chip 
+          label={formatFileSize(file.size)}
+          size="small"
+          sx={{ 
+            height: 20, 
+            fontSize: '0.7rem',
+            background: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+          }}
+        />
+        {uploading && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 1 }}>
+            <LinearProgress 
+              variant="determinate" 
+              value={uploadProgress || 0} 
+              sx={{ width: 80, height: 4 }}
+            />
+            <Typography variant="caption">
+              {uploadProgress || 0}%
+            </Typography>
+          </Box>
+        )}
+      </Box>
+      {!uploading && (
+        <FormControl size="small" sx={{ minWidth: 200, mr: 2 }}>
+          <InputLabel>Plantilla</InputLabel>
+          <Select
+            value={selectedTemplate || ''}
+            label="Plantilla"
+            onChange={(e) => onTemplateChange(index, e.target.value)}
+          >
+            <MenuItem value="">
+              <em>Seleccionar...</em>
+            </MenuItem>
+            {templates.map((template) => (
+              <MenuItem key={template._id} value={template._id}>
+                {template.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
     </ListItem>
   );
 });
@@ -102,14 +120,29 @@ const UploadSection = () => {
   const [success, setSuccess] = useState('');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [templates, setTemplates] = useState([]);
+  const [fileTemplates, setFileTemplates] = useState({}); // { fileIndex: templateId }
 
   // Callbacks optimizados
+
   const handleFileChange = useCallback((e) => {
     const selectedFiles = Array.from(e.target.files);
     setFiles(selectedFiles);
     setError('');
     setSuccess('');
-  }, []);
+    // Si solo hay una plantilla, asignarla automáticamente a todos los archivos
+    setFileTemplates(() => {
+      if (templates.length === 1) {
+        const obj = {};
+        selectedFiles.forEach((_, idx) => {
+          obj[idx] = templates[0]._id;
+        });
+        return obj;
+      } else {
+        return {};
+      }
+    });
+  }, [templates]);
 
   const removeFile = useCallback((indexToRemove) => {
     setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
@@ -127,7 +160,31 @@ const UploadSection = () => {
     setConfirmOpen(false);
   }, []);
 
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        const response = await templateService.getAllTemplates();
+        setTemplates(response.data);
+      } catch (error) {
+        console.error("Error fetching templates:", error);
+        setSnackbar({ open: true, message: 'Error al cargar las plantillas.', severity: 'error' });
+      }
+    };
+    fetchTemplates();
+  }, []);
+
+  const handleTemplateChange = useCallback((fileIndex, templateId) => {
+    setFileTemplates(prev => {
+      const updated = { ...prev };
+      updated[fileIndex] = templateId;
+      return updated;
+    });
+  }, []);
+
   const handleUpload = useCallback(async () => {
+
+    // Log para depuración: mostrar los IDs de plantilla y archivos
+
     setConfirmOpen(false);
     setUploading(true);
     setError('');
@@ -135,8 +192,9 @@ const UploadSection = () => {
     setUploadProgress(0);
 
     const formData = new FormData();
-    files.forEach(file => {
-      formData.append('archivo', file);
+    files.forEach((file, index) => {
+      formData.append('archivos', file);
+      formData.append(`template_${index}`, fileTemplates[index]);
     });
 
     try {
@@ -150,7 +208,10 @@ const UploadSection = () => {
 
       const resultados = response.data.resultados || [];
       const msg = resultados.map(r => {
-        if (r.error) return `❌ ${r.archivo}: ${r.error}`;
+        if (r.error) {
+          let detalle = r.detalle ? `\nDetalle: ${r.detalle}` : '';
+          return `❌ ${r.archivo}: ${r.error}${detalle}`;
+        }
         return `✔️ ${r.archivo} (${r.secretaria || ''}): ${r.totalRegistros} registros procesados.`;
       }).join('\n');
 
@@ -256,33 +317,37 @@ const UploadSection = () => {
           >
             Formatos soportados: .xls, .xlsx
           </Typography>
-          <Button 
-            variant="contained" 
-            component="label"
-            startIcon={<CloudUploadIcon />}
-            sx={{
-              background: 'linear-gradient(45deg, #ff9800, #f57c00)',
-              color: 'white',
-              fontWeight: 600,
-              px: 3,
-              py: 1.5,
-              borderRadius: 2,
-              '&:hover': {
-                background: 'linear-gradient(45deg, #f57c00, #ef6c00)',
-                transform: 'translateY(-1px)', // Reducido movimiento
-              },
-              transition: 'all 0.15s ease', // Transición más rápida
-            }}
-          >
-            Seleccionar Archivos
+          <label htmlFor="file-upload-input">
+            <Button 
+              variant="contained" 
+              component="span"
+              startIcon={<CloudUploadIcon />}
+              sx={{
+                background: 'linear-gradient(45deg, #ff9800, #f57c00)',
+                color: 'white',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
+                borderRadius: 2,
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #f57c00, #ef6c00)',
+                  transform: 'translateY(-1px)',
+                },
+                transition: 'all 0.15s ease',
+              }}
+            >
+              Seleccionar Archivos
+            </Button>
             <input 
+              id="file-upload-input"
+              name="file-upload-input"
               type="file" 
               hidden 
               accept=".xls,.xlsx" 
               multiple 
               onChange={handleFileChange} 
             />
-          </Button>
+          </label>
         </Box>
 
         {/* Lista de archivos optimizada */}
@@ -317,6 +382,9 @@ const UploadSection = () => {
                     uploading={uploading}
                     uploadProgress={uploadProgress}
                     isDarkMode={isDarkMode}
+                    templates={templates}
+                    selectedTemplate={fileTemplates[idx]}
+                    onTemplateChange={handleTemplateChange}
                   />
                 ))}
               </List>
@@ -329,7 +397,10 @@ const UploadSection = () => {
           <Button 
             variant="contained" 
             onClick={handleOpenConfirm} 
-            disabled={files.length === 0 || uploading}
+            disabled={
+              files.length === 0 || uploading ||
+              files.some((_, idx) => !fileTemplates[idx] || fileTemplates[idx] === '' || fileTemplates[idx] === undefined)
+            }
             startIcon={<CloudUploadIcon />}
             sx={{
               background: files.length > 0 && !uploading

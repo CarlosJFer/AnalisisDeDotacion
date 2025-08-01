@@ -6,10 +6,17 @@ const authenticateToken = (req, res, next) => {
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return res.status(401).json({ message: 'Token requerido' });
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
     if (err) return res.status(403).json({ message: 'Token inválido' });
-    req.user = user;
-    next();
+    try {
+      const User = require('../models/User');
+      const user = await User.findById(decoded.userId || decoded._id);
+      if (!user) return res.status(401).json({ message: 'Usuario no encontrado' });
+      req.user = user;
+      next();
+    } catch (e) {
+      return res.status(500).json({ message: 'Error al cargar usuario autenticado' });
+    }
   });
 };
 

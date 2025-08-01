@@ -174,7 +174,7 @@ const Navbar = () => {
           {user && (
             <Button 
               component={Link} 
-              to="/dashboard"
+              to={user.role === 'admin' ? '/dashboard/default' : '/dashboard/default'}
               startIcon={<DashboardIcon />}
               sx={{ 
                 color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
@@ -207,7 +207,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Panel de administración (solo admin) */}
+    {/* Botón Panel de administración (solo admin) */}
           {user && user.role === 'admin' && (
             <Button 
               component={Link} 

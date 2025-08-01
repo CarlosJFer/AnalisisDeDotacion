@@ -3,15 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { Box, Typography, Card, CardContent, CircularProgress, Alert, Grid, Button } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { BarChart3D, SurfaceChart3D, ScatterChart3D, PieChart3D } from '../components/Charts3D.jsx';
-import { SpectacularBarChart3D, CrystalPieChart3D, DataGalaxy3D } from '../components/ChartsThreeJS.jsx';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import View3DIcon from '@mui/icons-material/View3D';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
 const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode }) => (
@@ -760,96 +756,6 @@ const DashboardPage = () => {
                 >
                     Estructura Jerárquica
                 </Button>
-
-                {/* BOTÓN PARA GRÁFICOS 3D PLOTLY */}
-                <Button 
-                    onClick={() => setTabValue(4)}
-                    startIcon={<View3DIcon />}
-                    sx={{ 
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        fontWeight: 600,
-                        px: 3,
-                        py: 1.5,
-                        borderRadius: 3,
-                        textTransform: 'none',
-                        fontSize: '0.9rem',
-                        background: tabValue === 4 
-                            ? 'linear-gradient(135deg, #ff9800, #f57c00)'
-                            : isDarkMode 
-                                ? 'rgba(255, 255, 255, 0.05)' 
-                                : 'rgba(255, 255, 255, 0.7)',
-                        border: isDarkMode
-                            ? '1px solid rgba(255, 255, 255, 0.1)'
-                            : '1px solid rgba(0, 0, 0, 0.08)',
-                        ...(tabValue === 4 && {
-                            color: 'white',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(255, 152, 0, 0.3)'
-                                : '0 6px 20px rgba(255, 152, 0, 0.2)',
-                        }),
-                        '&:hover': {
-                            background: tabValue === 4 
-                                ? 'linear-gradient(135deg, #f57c00, #ef6c00)'
-                                : isDarkMode 
-                                    ? 'rgba(255, 152, 0, 0.2)' 
-                                    : 'rgba(255, 152, 0, 0.15)',
-                            color: tabValue === 4 ? 'white' : isDarkMode ? '#ffb74d' : '#f57c00',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(255, 152, 0, 0.3)'
-                                : '0 6px 20px rgba(255, 152, 0, 0.2)',
-                        },
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    3D Plotly
-                </Button>
-
-                {/* NUEVO BOTÓN PARA GRÁFICOS THREE.JS ESPECTACULARES */}
-                <Button 
-                    onClick={() => setTabValue(5)}
-                    startIcon={<AutoAwesomeIcon />}
-                    sx={{ 
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        fontWeight: 600,
-                        px: 3,
-                        py: 1.5,
-                        borderRadius: 3,
-                        textTransform: 'none',
-                        fontSize: '0.9rem',
-                        background: tabValue === 5 
-                            ? 'linear-gradient(135deg, #e91e63, #ad1457)'
-                            : isDarkMode 
-                                ? 'rgba(255, 255, 255, 0.05)' 
-                                : 'rgba(255, 255, 255, 0.7)',
-                        border: isDarkMode
-                            ? '1px solid rgba(255, 255, 255, 0.1)'
-                            : '1px solid rgba(0, 0, 0, 0.08)',
-                        ...(tabValue === 5 && {
-                            color: 'white',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(233, 30, 99, 0.4)'
-                                : '0 6px 20px rgba(233, 30, 99, 0.3)',
-                        }),
-                        '&:hover': {
-                            background: tabValue === 5 
-                                ? 'linear-gradient(135deg, #ad1457, #880e4f)'
-                                : isDarkMode 
-                                    ? 'rgba(233, 30, 99, 0.2)' 
-                                    : 'rgba(233, 30, 99, 0.15)',
-                            color: tabValue === 5 ? 'white' : isDarkMode ? '#f48fb1' : '#ad1457',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(233, 30, 99, 0.4)'
-                                : '0 6px 20px rgba(233, 30, 99, 0.3)',
-                        },
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    🚀 3D Espectacular
-                </Button>
             </Box>
 
             {/* Tab 0: Resumen General */}
@@ -1072,133 +978,6 @@ const DashboardPage = () => {
                             dataKey="count"
                             nameKey="division"
                             height={600} // Aumentado de 400 a 600 para evitar cortes
-                        />
-                    </Grid>
-                </Grid>
-            )}
-
-            {/* Tab 4: GRÁFICOS 3D PLOTLY */}
-            {tabValue === 4 && (
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            🎯 Visualización 3D - Análisis Avanzado (Plotly.js)
-                        </Typography>
-                        <Alert severity="info" sx={{ mb: 3 }}>
-                            <Typography variant="body2">
-                                <strong>¡Gráficos 3D Interactivos!</strong> Puedes rotar, hacer zoom y explorar los datos desde diferentes ángulos. 
-                                Usa el mouse para interactuar con cada gráfico.
-                            </Typography>
-                        </Alert>
-                    </Grid>
-
-                    {/* Gráficos 3D Plotly */}
-                    <Grid item xs={12} lg={6}>
-                        <BarChart3D 
-                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 8)} 
-                            title="📊 Agentes por Función (3D)" 
-                            isDarkMode={isDarkMode}
-                            xKey="function"
-                            zKey="count"
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <PieChart3D 
-                            data={agentsByEmploymentType} 
-                            title="🥧 Situación de Revista (3D)" 
-                            isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="type"
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} lg={6}>
-                        <BarChart3D 
-                            data={agentsBySecretaria.slice(0, 6)} 
-                            title="🏢 Agentes por Secretaría (3D)" 
-                            isDarkMode={isDarkMode}
-                            xKey="secretaria"
-                            zKey="count"
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <ScatterChart3D 
-                            data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
-                            title="🎯 Edad vs Función (Dispersión 3D)" 
-                            isDarkMode={isDarkMode}
-                            xKey="function"
-                            yKey="avgAge"
-                            zKey="count"
-                            colorKey="count"
-                        />
-                    </Grid>
-
-                    {/* Gráfico 3D de ancho completo */}
-                    <Grid item xs={12}>
-                        <BarChart3D 
-                            data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 8)} 
-                            title="🎪 Agentes por Dirección General (3D - Vista Panorámica)" 
-                            isDarkMode={isDarkMode}
-                            xKey="direccionGeneral"
-                            zKey="count"
-                        />
-                    </Grid>
-                </Grid>
-            )}
-
-            {/* Tab 5: NUEVA PESTAÑA DE GRÁFICOS THREE.JS ESPECTACULARES */}
-            {tabValue === 5 && (
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            🚀 Visualización 3D Espectacular - Three.js
-                        </Typography>
-                        <Alert severity="warning" sx={{ mb: 3 }}>
-                            <Typography variant="body2">
-                                <strong>🎪 ¡GRÁFICOS 3D CINEMATOGRÁFICOS!</strong> Estos gráficos usan Three.js para crear experiencias visuales 
-                                espectaculares con luces, sombras, partículas y animaciones. ¡Arrastra para rotar y explora!
-                            </Typography>
-                        </Alert>
-                    </Grid>
-
-                    {/* Gráficos Three.js Espectaculares */}
-                    <Grid item xs={12} lg={6}>
-                        <SpectacularBarChart3D 
-                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 8)} 
-                            title="Barras Flotantes con Luces y Partículas" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <CrystalPieChart3D 
-                            data={agentsByEmploymentType} 
-                            title="Torta de Cristal Giratoria" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-
-                    {/* Galaxia de datos de ancho completo */}
-                    <Grid item xs={12}>
-                        <DataGalaxy3D 
-                            data={agentsBySecretaria.slice(0, 12)} 
-                            title="Galaxia de Datos - Cada Estrella es una Secretaría" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-
-                    {/* Más gráficos espectaculares */}
-                    <Grid item xs={12} lg={6}>
-                        <SpectacularBarChart3D 
-                            data={agentsByDepartamento.slice(0, 6)} 
-                            title="Departamentos en 3D Cinematográfico" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <CrystalPieChart3D 
-                            data={agentsByDivision.slice(0, 6)} 
-                            title="Divisiones de Cristal Mágico" 
-                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                 </Grid>

@@ -22,6 +22,7 @@ const AuditPage = lazy(() => import('./page/AuditPage.jsx'));
 const SettingsPage = lazy(() => import('./page/SettingsPage.jsx'));
 const OrganigramaPage = lazy(() => import('./page/OrganigramaPage.jsx'));
 const UploadPage = lazy(() => import('./page/UploadPage.jsx'));
+const GestionPlantillasPage = lazy(() => import('./page/GestionPlantillasPage.jsx'));
 import GestionVariablesPage from './page/GestionVariablesPage.jsx';
 
 // Componentes
@@ -55,7 +56,6 @@ const AppLayout = () => {
             <Route path="/login" element={<LoginPage />} />
             {/* Rutas Protegidas para Usuarios */}
             <Route element={<ProtectedRoute />}> 
-              <Route path="/dashboard/:secretariaId" element={<DashboardPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/comparacion" element={<ComparisonPage />} />
               <Route path="/change-password" element={<ChangePasswordPage />} />
@@ -71,6 +71,7 @@ const AppLayout = () => {
               <Route path="/admin/audit" element={<AuditPage />} />
               <Route path="/admin/organigrama" element={<OrganigramaPage />} />
               <Route path="/admin/variables" element={<GestionVariablesPage />} />
+              <Route path="/admin/plantillas" element={<GestionPlantillasPage />} />
             </Route>
             {/* Redirección por defecto: ahora a /organigrama */}
             <Route path="/" element={<Navigate to="/organigrama" />} />

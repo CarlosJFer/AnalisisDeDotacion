@@ -14,6 +14,8 @@ const notificationRoutes = require('./routes/notifications');
 const variableRoutes = require('./routes/variables');
 const variableValueRoutes = require('./routes/variableValues');
 const variableEspecificaRoutes = require('./routes/variableEspecifica');
+const importTemplateRoutes = require('./routes/importTemplates');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
@@ -37,6 +39,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/variables', variableRoutes);
 app.use('/api/variable-values', variableValueRoutes);
 app.use('/api/variables-especificas', variableEspecificaRoutes);
+app.use('/api/templates', importTemplateRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {

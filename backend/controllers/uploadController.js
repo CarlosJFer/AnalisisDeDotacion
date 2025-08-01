@@ -1,163 +1,296 @@
-const XLSX = require('xlsx');
+
+const xlsx = require('xlsx');
+const path = require('path');
 const fs = require('fs');
-const AnalysisData = require('../models/AnalysisData');
 
-// Funciones auxiliares (puedes moverlas aquí o importarlas si prefieres)
-const calcularPorcentaje = (parte, total) => {
-  return total > 0 ? ((parte / total) * 100).toFixed(2) : 0;
-};
-
-const agruparPorCampo = (datos, campo) => {
-  const grupos = {};
-  datos.forEach(registro => {
-    const valor = registro[campo] || 'No especificado';
-    grupos[valor] = (grupos[valor] || 0) + 1;
-  });
-  return grupos;
-};
-
-const calcularRangoEdad = (fechaNacimiento) => {
-  if (!fechaNacimiento) return 'No especificado';
-  const edad = new Date().getFullYear() - new Date(fechaNacimiento).getFullYear();
-  if (edad < 25) return '18-25';
-  if (edad < 35) return '26-35';
-  if (edad < 45) return '36-45';
-  if (edad < 55) return '46-55';
-  if (edad < 65) return '56-65';
-  return '65+';
-};
-
-const calcularAntiguedad = (fechaIngreso) => {
-  if (!fechaIngreso) return 'No especificado';
-  const años = (new Date() - new Date(fechaIngreso)) / (365.25 * 24 * 60 * 60 * 1000);
-  if (años < 5) return '0-5 años';
-  if (años < 10) return '6-10 años';
-  if (años < 15) return '11-15 años';
-  if (años < 20) return '16-20 años';
-  if (años < 25) return '21-25 años';
-  return '25+ años';
-};
-
-const procesarDatosExcel = (datosExcel) => {
-  const totalRegistros = datosExcel.length;
-  const porContratacion = agruparPorCampo(datosExcel, 'TIPO_CONTRATACION');
-  const agentesPorContratacion = Object.entries(porContratacion).map(([tipo, cantidad]) => ({ tipo, cantidad, porcentaje: parseFloat(calcularPorcentaje(cantidad, totalRegistros)) }));
-  const porFuncion = agruparPorCampo(datosExcel, 'FUNCION');
-  const agentesPorFuncion = Object.entries(porFuncion).map(([funcion, cantidad]) => ({ funcion, cantidad, porcentaje: parseFloat(calcularPorcentaje(cantidad, totalRegistros)) }));
-  const porEscalafon = agruparPorCampo(datosExcel, 'ESCALAFON');
-  const agentesPorEscalafon = Object.entries(porEscalafon).map(([escalafon, cantidad]) => ({ escalafon, cantidad, porcentaje: parseFloat(calcularPorcentaje(cantidad, totalRegistros)) }));
-  const edades = {};
-  datosExcel.forEach(registro => { const rango = calcularRangoEdad(registro.FECHA_NACIMIENTO); edades[rango] = (edades[rango] || 0) + 1; });
-  const agentesPorRangoEdad = Object.entries(edades).map(([rango, cantidad]) => ({ rango, cantidad, porcentaje: parseFloat(calcularPorcentaje(cantidad, totalRegistros)) }));
-  const antiguedades = {};
-  datosExcel.forEach(registro => { const rango = calcularAntiguedad(registro.FECHA_INGRESO); antiguedades[rango] = (antiguedades[rango] || 0) + 1; });
-  const agentesPorAntiguedad = Object.entries(antiguedades).map(([rango, cantidad]) => ({ rango, cantidad, porcentaje: parseFloat(calcularPorcentaje(cantidad, totalRegistros)) }));
-  const porGenero = agruparPorCampo(datosExcel, 'GENERO');
-  const agentesPorGenero = Object.entries(porGenero).map(([genero, cantidad]) => ({ genero, cantidad, porcentaje: parseFloat(calcularPorcentaje(cantidad, totalRegistros)) }));
-  const sueldos = datosExcel.map(registro => parseFloat(registro.SUELDO_BASICO) || 0).filter(sueldo => sueldo > 0);
-  const analisisSalarial = {
-    sueldoPromedio: sueldos.length > 0 ? sueldos.reduce((a, b) => a + b, 0) / sueldos.length : 0,
-    sueldoMinimo: sueldos.length > 0 ? Math.min(...sueldos) : 0,
-    sueldoMaximo: sueldos.length > 0 ? Math.max(...sueldos) : 0,
-    masaTotal: sueldos.reduce((a, b) => a + b, 0),
+// Función mejorada para limpiar los datos del Excel:
+// - Comienza desde la fila 4
+// - Elimina filas vacías
+// - Elimina filas que sean encabezados (detecta si contienen palabras clave de encabezado en cualquier columna)
+// - Solo cuenta filas donde al menos una columna relevante tiene datos válidos
+function limpiarDatosExcel(worksheet) {
+  const data = xlsx.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+  const encabezadoKeywords = ['apellido', 'nombre', 'dni', 'cuil', 'cargo', 'legajo', 'dependencia', 'funcion', 'categoria', 'situacion', 'fecha', 'area', 'unidad'];
+  // Tomar solo desde la fila 4 en adelante
+  const datos = data.slice(3);
+  // Tomar la fila de encabezado real (fila 4)
+  const encabezadoReal = datos.length > 0 ? datos[0].map(cell => String(cell).trim().toLowerCase()) : [];
+  // Índices de columnas clave
+  const columnasClave = ['dni', 'apellido', 'nombre'];
+  const indicesClave = encabezadoReal.map((col, idx) => columnasClave.includes(col) ? idx : -1).filter(idx => idx !== -1);
+  // Función para validar si un valor es "basura"
+  const esValorValido = v => {
+    const s = String(v).trim();
+    if (!s || s === '-' || s === '0' || s === 'na' || s.toLowerCase() === 'sin dato' || s.toLowerCase() === 's/d') return false;
+    return true;
   };
-  return {
-    totalAgentes: totalRegistros,
-    agentesPorContratacion,
-    agentesPorFuncion,
-    agentesPorEscalafon,
-    agentesPorRangoEdad,
-    agentesPorAntiguedad,
-    agentesPorGenero,
-    analisisSalarial,
-  };
-};
-
-// Subir y procesar archivo Excel
-const uploadExcel = async (req, res) => {
-  try {
-    if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: 'No se subió ningún archivo' });
-    }
-    let resultadosGlobales = [];
-    let totalSecretariasGlobal = 0;
-    let totalRegistrosGlobal = 0;
-    for (const file of req.files) {
-      const workbook = XLSX.readFile(file.path);
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const datosExcel = XLSX.utils.sheet_to_json(worksheet);
-      if (datosExcel.length === 0) {
-        resultadosGlobales.push({ archivo: file.originalname, error: 'El archivo Excel está vacío' });
-        fs.unlinkSync(file.path);
-        continue;
-      }
-      // Validación avanzada de columnas requeridas
-      const columnasRequeridas = ['SECRETARIA', 'TIPO_CONTRATACION', 'FUNCION', 'ESCALAFON', 'FECHA_NACIMIENTO', 'FECHA_INGRESO', 'GENERO', 'SUELDO_BASICO'];
-      const columnasArchivo = Object.keys(datosExcel[0] || {});
-      const faltantes = columnasRequeridas.filter(col => !columnasArchivo.includes(col));
-      if (faltantes.length > 0) {
-        resultadosGlobales.push({ archivo: file.originalname, error: `El archivo Excel no contiene las siguientes columnas requeridas: ${faltantes.join(', ')}` });
-        fs.unlinkSync(file.path);
-        continue;
-      }
-      const porSecretaria = {};
-      datosExcel.forEach(registro => {
-        const secretaria = registro.SECRETARIA || 'No especificada';
-        if (!porSecretaria[secretaria]) {
-          porSecretaria[secretaria] = [];
-        }
-        porSecretaria[secretaria].push(registro);
-      });
-      for (const [secretariaNombre, datosSecretaria] of Object.entries(porSecretaria)) {
-        const datosAnalisis = procesarDatosExcel(datosSecretaria);
-        const secretariaId = secretariaNombre.toLowerCase().replace(/\s+/g, '-');
-        await AnalysisData.updateMany(
-          { secretariaId, activo: true },
-          { activo: false }
-        );
-        const nuevoAnalisis = new AnalysisData({
-          secretariaId,
-          secretariaNombre,
-          data: datosAnalisis,
-          archivoInfo: {
-            nombreArchivo: file.originalname,
-            fechaCarga: new Date(),
-            totalRegistros: datosSecretaria.length,
-            usuarioId: req.user._id,
-          },
-        });
-        await nuevoAnalisis.save();
-        resultadosGlobales.push({
-          archivo: file.originalname,
-          secretaria: secretariaNombre,
-          totalRegistros: datosSecretaria.length,
-          procesado: true,
-        });
-        totalSecretariasGlobal++;
-        totalRegistrosGlobal += datosSecretaria.length;
-      }
-      fs.unlinkSync(file.path);
-    }
-    res.json({
-      message: 'Archivos procesados',
-      resultados: resultadosGlobales,
-      totalSecretarias: totalSecretariasGlobal,
-      totalRegistros: totalRegistrosGlobal,
+  return datos.filter((row, idx) => {
+    if (!Array.isArray(row)) return false;
+    // Filtrar filas completamente vacías o con solo espacios
+    if (row.every(cell => String(cell).trim() === '')) return false;
+    // Filtrar filas que sean encabezados en cualquier columna
+    const esEncabezado = row.some(cell => {
+      const v = String(cell).toLowerCase().replace(/\s+/g, '');
+      return encabezadoKeywords.some(keyword => v.includes(keyword.replace(/\s+/g, '')));
     });
-  } catch (error) {
-    console.error('Error procesando archivo:', error);
-    if (req.files) {
-      req.files.forEach(file => {
-        if (file && fs.existsSync(file.path)) {
-          fs.unlinkSync(file.path);
-        }
-      });
+    if (esEncabezado) return false;
+    // Filtrar filas que sean duplicados exactos del encabezado real
+    const rowNormalizada = row.map(cell => String(cell).trim().toLowerCase());
+    if (JSON.stringify(rowNormalizada) === JSON.stringify(encabezadoReal)) return false;
+    // Al menos una columna clave debe tener dato válido
+    if (indicesClave.length > 0) {
+      const tieneClaveValida = indicesClave.some(idxClave => esValorValido(row[idxClave]));
+      if (!tieneClaveValida) return false;
     }
-    res.status(500).json({ message: 'Error procesando el archivo' });
-  }
-};
+    // Al menos una columna relevante debe tener datos válidos (no vacío, no null, no undefined, no solo espacios)
+    return row.some(cell => String(cell).trim() !== '' && cell !== null && cell !== undefined);
+  });
+}
 
-module.exports = {
-  uploadExcel
-}; 
+
+// Controlador para subir y limpiar múltiples archivos Excel
+
+async function uploadFile(req, res) {
+  try {
+    const Agent = require('../models/Agent');
+    const AnalysisData = require('../models/AnalysisData');
+    const ImportTemplate = require('../models/ImportTemplate');
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'No se subió ningún archivo.' });
+    }
+    const resultados = [];
+    for (let i = 0; i < req.files.length; i++) {
+      const file = req.files[i];
+      try {
+        // Obtener el ID de plantilla correspondiente a este archivo
+        const templateKey = `template_${i}`;
+        let templateId = req.body[templateKey];
+        
+        // Si no hay templateId específico, usar el templateId general o buscar la primera plantilla disponible
+        if (!templateId || templateId === 'undefined') {
+          templateId = req.body.templateId;
+        }
+        
+        if (!templateId || templateId === 'undefined') {
+          // Buscar la primera plantilla disponible como fallback
+          const firstTemplate = await ImportTemplate.findOne();
+          if (firstTemplate) {
+            templateId = firstTemplate._id;
+            console.log(`Usando plantilla por defecto: ${firstTemplate.name} para archivo ${file.originalname}`);
+          } else {
+            resultados.push({ archivo: file.originalname, error: 'No se especificó plantilla y no hay plantillas disponibles.' });
+            continue;
+          }
+        }
+        
+        const template = await ImportTemplate.findById(templateId);
+        if (!template) {
+          resultados.push({ archivo: file.originalname, error: 'Plantilla no encontrada.' });
+          continue;
+        }
+        const filePath = path.resolve(file.path);
+        const workbook = xlsx.readFile(filePath);
+        // Usar la hoja especificada en la plantilla, o la primera
+        let worksheet;
+        if (template.sheetName && workbook.SheetNames.includes(template.sheetName)) {
+          worksheet = workbook.Sheets[template.sheetName];
+        } else {
+          worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        }
+        // Limpiar datos desde la fila indicada en la plantilla (dataStartRow)
+        const data = xlsx.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+        const datos = data.slice((template.dataStartRow || 2) - 1); // dataStartRow es 2-based
+        if (!datos.length) {
+          try { fs.unlinkSync(filePath); } catch (e) {}
+          resultados.push({ archivo: file.originalname, error: 'No se encontraron datos válidos en el archivo Excel (verifica la fila de inicio en la plantilla).' });
+          continue;
+        }
+        // Primer fila: encabezado real
+        const encabezado = datos[0].map(cell => String(cell).trim());
+        // Mapear los datos según el mapping de la plantilla, solo si la fila es válida
+        const camposClave = ['dni', 'legajo', 'nombre', 'DNI', 'Legajo', 'Nombre', 'Nombre y Apellido'];
+        const agentes = datos.slice(1).map(row => {
+          const obj = {};
+          template.mappings.forEach(mapping => {
+            // Buscar el índice de la columna en el encabezado que corresponde a columnHeader
+            let idx = encabezado.findIndex(h => h.toLowerCase() === mapping.columnHeader.toLowerCase());
+            if (idx === -1) {
+              // Si no se encuentra por nombre, intentar por letra de columna (A, B, C...)
+              const colLetter = mapping.columnHeader.toUpperCase();
+              const colIdx = colLetter.charCodeAt(0) - 65;
+              if (colIdx >= 0 && colIdx < encabezado.length) idx = colIdx;
+            }
+            if (idx !== -1) {
+              let value = row[idx];
+              // Convertir tipo de dato si es necesario
+              if (mapping.dataType === 'Number') value = Number(value);
+              if (mapping.dataType === 'Date') {
+                // Manejar fechas Excel (seriales)
+                if (typeof value === 'number') {
+                  value = xlsx.SSF.parse_date_code(value);
+                  if (value) value = new Date(value.y, value.m - 1, value.d);
+                } else {
+                  const parsed = Date.parse(value);
+                  if (!isNaN(parsed)) value = new Date(parsed);
+                }
+              }
+              obj[mapping.variableName] = value;
+            }
+          });
+          obj.sourceFile = file.originalname;
+          obj.uploadDate = new Date();
+          obj.templateUsed = template._id;
+          // Validar: al menos un campo clave debe tener valor válido
+          const tieneClave = camposClave.some(campo => {
+            const v = obj[campo];
+            if (typeof v === 'string') return v.trim() && v.trim().toLowerCase() !== 'sin dato' && v.trim().toLowerCase() !== 's/d';
+            if (typeof v === 'number') return v > 0;
+            return !!v;
+          });
+          // Validar: la fila no debe ser igual al encabezado
+          const esEncabezado = Object.values(obj).every((v, idx) => {
+            return String(v).trim().toLowerCase() === (encabezado[idx] ? encabezado[idx].toLowerCase() : '');
+          });
+          // Validar: la fila no debe estar completamente vacía
+          const vacia = Object.values(obj).every(v => v === undefined || v === null || String(v).trim() === '' || String(v).toLowerCase() === 'sin dato' || String(v).toLowerCase() === 's/d');
+          if (tieneClave && !esEncabezado && !vacia) {
+            return obj;
+          }
+          return null;
+        }).filter(Boolean);
+        // Eliminar el archivo después de procesar
+        try { fs.unlinkSync(filePath); } catch (e) { /* ignorar error de borrado */ }
+        if (!agentes.length) {
+          resultados.push({ archivo: file.originalname, error: 'No se encontraron registros válidos para importar.' });
+        } else {
+          // Eliminar agentes previos del mismo archivo y plantilla
+          await Agent.deleteMany({ sourceFile: file.originalname, templateUsed: template._id });
+          await Agent.insertMany(agentes);
+
+          // --- Lógica de análisis agregada ---
+          // 1. Total de agentes
+          const totalAgentes = agentes.length;
+
+          // 2. Por género
+          const generoMap = {};
+          agentes.forEach(a => {
+            const genero = (a['genero'] || a['Género'] || a['Genero'] || a['sexo'] || a['Sexo'] || 'No especificado').toString().trim();
+            if (!generoMap[genero]) generoMap[genero] = 0;
+            generoMap[genero]++;
+          });
+          const agentesPorGenero = Object.entries(generoMap).map(([genero, cantidad]) => ({
+            genero,
+            cantidad,
+            porcentaje: Math.round((cantidad / totalAgentes) * 100)
+          }));
+
+          // 3. Por tipo de contratación
+          const contratacionMap = {};
+          agentes.forEach(a => {
+            const tipo = (a['tipoContratacion'] || a['Tipo de Contratación'] || a['Tipo de contratación'] || a['contratacion'] || a['Contratación'] || 'No especificado').toString().trim();
+            if (!contratacionMap[tipo]) contratacionMap[tipo] = 0;
+            contratacionMap[tipo]++;
+          });
+          const agentesPorContratacion = Object.entries(contratacionMap).map(([tipo, cantidad]) => ({
+            tipo,
+            cantidad,
+            porcentaje: Math.round((cantidad / totalAgentes) * 100)
+          }));
+
+          // 4. Por antigüedad (si hay campo fechaIngreso o similar)
+          const antiguedadMap = {};
+          const hoy = new Date();
+          agentes.forEach(a => {
+            let fechaIngreso = a['fechaIngreso'] || a['Fecha de Ingreso'] || a['fechaAlta'] || a['Fecha de alta'];
+            if (fechaIngreso && typeof fechaIngreso === 'string') {
+              fechaIngreso = new Date(fechaIngreso);
+            }
+            let anios = 0;
+            if (fechaIngreso instanceof Date && !isNaN(fechaIngreso)) {
+              anios = hoy.getFullYear() - fechaIngreso.getFullYear();
+            }
+            let rango = 'Sin dato';
+            if (anios < 1) rango = 'Menos de 1 año';
+            else if (anios < 5) rango = '1-4 años';
+            else if (anios < 10) rango = '5-9 años';
+            else if (anios < 20) rango = '10-19 años';
+            else if (anios >= 20) rango = '20 años o más';
+            if (!antiguedadMap[rango]) antiguedadMap[rango] = 0;
+            antiguedadMap[rango]++;
+          });
+          const agentesPorAntiguedad = Object.entries(antiguedadMap).map(([rango, cantidad]) => ({
+            rango,
+            cantidad,
+            porcentaje: Math.round((cantidad / totalAgentes) * 100)
+          }));
+
+          // 5. Masa salarial y sueldo promedio (si hay campo sueldo)
+          let masaSalarial = 0;
+          let sueldoPromedio = 0;
+          let sueldos = agentes.map(a => Number(a['sueldo'] || a['Sueldo'] || a['remuneracion'] || a['Remuneración']) || 0).filter(v => v > 0);
+          if (sueldos.length > 0) {
+            masaSalarial = sueldos.reduce((a, b) => a + b, 0);
+            sueldoPromedio = masaSalarial / sueldos.length;
+          }
+
+          // 6. Guardar en AnalysisData con la estructura que espera el dashboard
+          // DEBUG: Mostrar usuario autenticado y organizationId
+          let analisis = await AnalysisData.findOne({ archivo: file.originalname, templateUsed: template._id });
+          if (!analisis) {
+            analisis = new AnalysisData({
+              secretaria: {
+                id: req.body.secretariaId || 'default',
+                nombre: req.body.secretariaNombre || 'General'
+              },
+              organizationId: req.user && req.user.organizationId ? req.user.organizationId : (req.body.organizationId || null),
+              uploadedBy: req.user?._id || (req.body.uploadedBy || null),
+              archivo: {
+                nombreOriginal: file.originalname,
+                nombreGuardado: file.filename,
+                tamaño: file.size,
+                tipo: file.mimetype,
+                ruta: file.path
+              },
+              resumen: {
+                totalAgentes,
+                masaSalarial,
+                sueldoPromedio: sueldoPromedio || 0
+              },
+              analisis: {
+                contratacion: agentesPorContratacion,
+                genero: agentesPorGenero,
+                antiguedad: agentesPorAntiguedad
+              },
+              auditoria: {
+                creadoPor: req.user?._id || (req.body.uploadedBy || null)
+              },
+              version: 1,
+              esActual: true,
+              isActive: true
+            });
+          } else {
+            analisis.data.totalAgentes = totalAgentes;
+            analisis.data.analisisSalarial = {
+              masaTotal: masaSalarial,
+              sueldoPromedio: sueldoPromedio
+            };
+            analisis.data.agentesPorGenero = agentesPorGenero;
+            analisis.data.agentesPorContratacion = agentesPorContratacion;
+            analisis.data.agentesPorAntiguedad = agentesPorAntiguedad;
+            analisis.analysisDate = new Date();
+            analisis.activo = true;
+          }
+          await analisis.save();
+          resultados.push({ archivo: file.originalname, mensaje: 'Archivo procesado y guardado correctamente', totalRegistros: totalAgentes });
+        }
+      } catch (err) {
+        resultados.push({ archivo: file.originalname, error: 'Error al procesar el archivo Excel', detalle: err.message });
+      }
+    }
+    return res.status(200).json({ resultados });
+  } catch (err) {
+    return res.status(500).json({ error: 'Error general al procesar los archivos', detalle: err.message });
+  }
+}
+
+module.exports = { uploadFile };

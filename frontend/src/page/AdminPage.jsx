@@ -5,6 +5,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import TuneIcon from '@mui/icons-material/Tune';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import { useTheme } from '../context/ThemeContext.jsx';
 
 const AdminPage = () => {
@@ -42,6 +44,22 @@ const AdminPage = () => {
             link: '/admin/variables',
             color: '#9c27b0', // Púrpura
             bgColor: isDarkMode ? 'rgba(156, 39, 176, 0.1)' : 'rgba(156, 39, 176, 0.05)',
+        },
+        {
+            title: 'Gestión de Plantillas',
+            description: 'Administra y edita plantillas de importación de Excel.',
+            icon: DescriptionIcon,
+            link: '/admin/plantillas',
+            color: '#00bcd4', // Cyan
+            bgColor: isDarkMode ? 'rgba(0, 188, 212, 0.1)' : 'rgba(0, 188, 212, 0.05)',
+        },
+        {
+            title: 'Auditoría',
+            description: 'Consulta el historial de acciones y registros de auditoría.',
+            icon: HistoryEduIcon,
+            link: '/admin/auditoria',
+            color: '#ff1744', // Rojo intenso
+            bgColor: isDarkMode ? 'rgba(255, 23, 68, 0.1)' : 'rgba(255, 23, 68, 0.05)',
         },
     ];
 
@@ -86,10 +104,10 @@ const AdminPage = () => {
                 {adminCards.map((card, index) => {
                     const IconComponent = card.icon;
                     return (
-                        <Grid item xs={12} sm={6} md={6} lg={3} key={index}>
+                        <Grid item xs={12} sm={6} md={4} lg={4} key={index}>
                             <Card 
                                 sx={{ 
-                                    minHeight: 280,
+                                    height: 320,
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
@@ -116,41 +134,57 @@ const AdminPage = () => {
                                 to={card.link}
                                 style={{ textDecoration: 'none' }}
                             >
-                                <CardContent sx={{ textAlign: 'center', p: 4 }}>
-                                    <Avatar
-                                        sx={{
-                                            width: 80,
-                                            height: 80,
-                                            mb: 3,
-                                            mx: 'auto',
-                                            background: `linear-gradient(135deg, ${card.color}, ${card.color}dd)`,
-                                            boxShadow: `0 8px 25px ${card.color}40`,
-                                        }}
-                                    >
-                                        <IconComponent sx={{ fontSize: 40, color: 'white' }} />
-                                    </Avatar>
-                                    
-                                    <Typography 
-                                        variant="h6" 
-                                        sx={{
-                                            fontWeight: 600,
-                                            mb: 2,
-                                            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                                        }}
-                                    >
-                                        {card.title}
-                                    </Typography>
-                                    
-                                    <Typography 
-                                        variant="body2" 
-                                        sx={{
-                                            mb: 3,
-                                            color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
-                                            lineHeight: 1.6,
-                                        }}
-                                    >
-                                        {card.description}
-                                    </Typography>
+                                <CardContent sx={{ 
+                                    textAlign: 'center', 
+                                    p: 3,
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    height: '100%',
+                                }}>
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
+                                        <Avatar
+                                            sx={{
+                                                width: 70,
+                                                height: 70,
+                                                mb: 2,
+                                                background: `linear-gradient(135deg, ${card.color}, ${card.color}dd)`,
+                                                boxShadow: `0 8px 25px ${card.color}40`,
+                                            }}
+                                        >
+                                            <IconComponent sx={{ fontSize: 35, color: 'white' }} />
+                                        </Avatar>
+                                        
+                                        <Typography 
+                                            variant="h6" 
+                                            sx={{
+                                                fontWeight: 600,
+                                                mb: 1.5,
+                                                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                                                fontSize: '1.1rem',
+                                                textAlign: 'center',
+                                                lineHeight: 1.3,
+                                            }}
+                                        >
+                                            {card.title}
+                                        </Typography>
+                                        
+                                        <Typography 
+                                            variant="body2" 
+                                            sx={{
+                                                color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
+                                                lineHeight: 1.5,
+                                                textAlign: 'center',
+                                                fontSize: '0.9rem',
+                                                flex: 1,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                            }}
+                                        >
+                                            {card.description}
+                                        </Typography>
+                                    </Box>
                                     
                                     <Button 
                                         variant="contained"
@@ -162,6 +196,7 @@ const AdminPage = () => {
                                             py: 1,
                                             borderRadius: 2,
                                             boxShadow: `0 4px 15px ${card.color}40`,
+                                            mt: 2,
                                             '&:hover': {
                                                 background: `linear-gradient(45deg, ${card.color}dd, ${card.color}bb)`,
                                                 transform: 'translateY(-2px)',
