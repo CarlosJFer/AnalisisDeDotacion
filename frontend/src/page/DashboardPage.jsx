@@ -3,15 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { Box, Typography, Card, CardContent, CircularProgress, Alert, Grid, Button } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
-import { BarChart3D, SurfaceChart3D, ScatterChart3D, PieChart3D } from '../components/Charts3D.jsx';
-import { SpectacularBarChart3D, CrystalPieChart3D, DataGalaxy3D } from '../components/ChartsThreeJS.jsx';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
-import View3DIcon from '@mui/icons-material/View3D';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
 const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode }) => (
@@ -124,13 +119,13 @@ const CustomBarChart = React.memo(({ data, xKey, barKey, title, isDarkMode, heig
                                     borderRadius: '8px',
                                     color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                                 }}
-                                labelFormatter={(label) => `${xKey === 'function' ? 'Función' : xKey === 'range' ? 'Rango de edad' : 'Categoría'}: ${label}`}
+                                labelFormatter={(label) => `${xKey === 'function' ? 'Función' : xKey === 'range' ? 'Rango de edad' : xKey === 'area' ? 'Área' : 'Categoría'}: ${label}`}
                                 formatter={(value, name) => [
                                     barKey === 'avgAge' ? `${Math.round(value)} años` : value, 
                                     barKey === 'avgAge' ? 'Edad promedio' : 'Cantidad de agentes'
                                 ]}
                             />
-                            <Bar dataKey={barKey} fill="#8884d8" radius={[4, 4, 0, 0]} />
+                            <Bar dataKey={barKey} fill="#00C49F" radius={[4, 4, 0, 0]} />
                         </BarChart>
                     </ResponsiveContainer>
                 </Box>
@@ -294,8 +289,8 @@ const CustomDonutChartUnified = React.memo(({ data, title, isDarkMode, dataKey, 
     );
 });
 
-// Componente de gráfico de área personalizado
-const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }) => {
+// Componente de gráfico de área personalizado para análisis por área
+const CustomAreaChartByArea = React.memo(({ data, title, isDarkMode, xKey, yKey }) => {
     const chartData = useMemo(() => data, [data]);
     
     const CustomTooltip = ({ active, payload, label }) => {
@@ -309,10 +304,10 @@ const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }
                     color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        Rango de edad: {label}
+                        Área: {label}
                     </Typography>
                     <Typography variant="body2">
-                        Cantidad de agentes: {payload[0].value}
+                        Edad promedio: {Math.round(payload[0].value)} años
                     </Typography>
                 </Box>
             );
@@ -354,11 +349,11 @@ const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }
                 </Typography>
                 <Box sx={{ height: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                        <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 80 }}>
                             <defs>
-                                <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0.1}/>
+                                <linearGradient id="colorAreaByArea" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#00C49F" stopOpacity={0.8}/>
+                                    <stop offset="95%" stopColor="#00C49F" stopOpacity={0.1}/>
                                 </linearGradient>
                             </defs>
                             <CartesianGrid 
@@ -367,8 +362,15 @@ const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }
                             />
                             <XAxis 
                                 dataKey={xKey}
-                                tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
+                                tick={{ 
+                                    fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
+                                    fontSize: 10
+                                }}
                                 axisLine={{ stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)' }}
+                                angle={-45}
+                                textAnchor="end"
+                                height={80}
+                                interval={0}
                             />
                             <YAxis 
                                 tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
@@ -378,11 +380,11 @@ const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }
                             <Area 
                                 type="monotone" 
                                 dataKey={yKey} 
-                                stroke="#8884d8" 
+                                stroke="#00C49F" 
                                 fillOpacity={1} 
-                                fill="url(#colorArea)" 
+                                fill="url(#colorAreaByArea)" 
                                 strokeWidth={2}
-                                name="Cantidad de agentes"
+                                name="Edad promedio"
                             />
                         </AreaChart>
                     </ResponsiveContainer>
@@ -403,6 +405,7 @@ const DashboardPage = () => {
     const [totalAgents, setTotalAgents] = useState(0);
     const [ageDistribution, setAgeDistribution] = useState(null);
     const [ageByFunction, setAgeByFunction] = useState([]);
+    const [ageByArea, setAgeByArea] = useState([]);
     const [agentsByFunction, setAgentsByFunction] = useState([]);
     const [agentsByEmploymentType, setAgentsByEmploymentType] = useState([]);
     const [agentsByDependency, setAgentsByDependency] = useState([]);
@@ -412,6 +415,21 @@ const DashboardPage = () => {
     const [agentsByDireccion, setAgentsByDireccion] = useState([]);
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
     const [agentsByDivision, setAgentsByDivision] = useState([]);
+    // Estados para Neikes y Beca
+    const [agentsByFunctionNeikeBeca, setAgentsByFunctionNeikeBeca] = useState([]);
+    const [agentsByEmploymentTypeNeikeBeca, setAgentsByEmploymentTypeNeikeBeca] = useState([]);
+    // Estados para análisis de edad de Neikes y Beca
+    const [ageDistributionNeikeBeca, setAgeDistributionNeikeBeca] = useState(null);
+    const [ageByFunctionNeikeBeca, setAgeByFunctionNeikeBeca] = useState([]);
+    const [ageByAreaNeikeBeca, setAgeByAreaNeikeBeca] = useState([]);
+    // Estados adicionales para Neikes y Beca
+    const [agentsBySecretariaNeikeBeca, setAgentsBySecretariaNeikeBeca] = useState([]);
+    const [agentsByDependencyNeikeBeca, setAgentsByDependencyNeikeBeca] = useState([]);
+    const [agentsBySubsecretariaNeikeBeca, setAgentsBySubsecretariaNeikeBeca] = useState([]);
+    const [agentsByDireccionGeneralNeikeBeca, setAgentsByDireccionGeneralNeikeBeca] = useState([]);
+    const [agentsByDireccionNeikeBeca, setAgentsByDireccionNeikeBeca] = useState([]);
+    const [agentsByDepartamentoNeikeBeca, setAgentsByDepartamentoNeikeBeca] = useState([]);
+    const [agentsByDivisionNeikeBeca, setAgentsByDivisionNeikeBeca] = useState([]);
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -435,7 +453,12 @@ const DashboardPage = () => {
     const filterValidData = (data, nameKey) => {
         return data.filter(item => {
             const value = item[nameKey];
-            return value && value.trim() !== '' && value.trim() !== '-' && value.trim() !== 'Sin especificar';
+            // Verificar que el valor existe y es un string antes de usar trim()
+            if (!value || typeof value !== 'string') {
+                return false;
+            }
+            const trimmedValue = value.trim();
+            return trimmedValue !== '' && trimmedValue !== '-' && trimmedValue !== 'Sin especificar';
         });
     };
 
@@ -449,6 +472,7 @@ const DashboardPage = () => {
                     totalResponse,
                     ageDistResponse,
                     ageFunctionResponse,
+                    ageAreaResponse,
                     functionResponse,
                     employmentResponse,
                     dependencyResponse,
@@ -457,11 +481,24 @@ const DashboardPage = () => {
                     direccionGeneralResponse,
                     direccionResponse,
                     departamentoResponse,
-                    divisionResponse
+                    divisionResponse,
+                    byFunctionNeikeBecaResponse,
+                    byEmploymentTypeNeikeBecaResponse,
+                    ageDistNeikeBecaResponse,
+                    ageFunctionNeikeBecaResponse,
+                    ageAreaNeikeBecaResponse,
+                    secretariaNeikeBecaResponse,
+                    dependencyNeikeBecaResponse,
+                    subsecretariaNeikeBecaResponse,
+                    direccionGeneralNeikeBecaResponse,
+                    direccionNeikeBecaResponse,
+                    departamentoNeikeBecaResponse,
+                    divisionNeikeBecaResponse
                 ] = await Promise.all([
                     apiClient.get('/analytics/agents/total'),
                     apiClient.get('/analytics/agents/age-distribution'),
                     apiClient.get('/analytics/agents/age-by-function'),
+                    apiClient.get('/analytics/agents/age-by-secretaria'), // Usamos secretaría como "área"
                     apiClient.get('/analytics/agents/by-function'),
                     apiClient.get('/analytics/agents/by-employment-type'),
                     apiClient.get('/analytics/agents/by-dependency'),
@@ -470,12 +507,25 @@ const DashboardPage = () => {
                     apiClient.get('/analytics/agents/by-direccion-general'),
                     apiClient.get('/analytics/agents/by-direccion'),
                     apiClient.get('/analytics/agents/by-departamento'),
-                    apiClient.get('/analytics/agents/by-division')
+                    apiClient.get('/analytics/agents/by-division'),
+                    apiClient.get('/analytics/agents/by-function-neike-beca'),
+                    apiClient.get('/analytics/agents/by-employment-type-neike-beca'),
+                    apiClient.get('/analytics/agents/age-distribution-neike-beca'),
+                    apiClient.get('/analytics/agents/age-by-function-neike-beca'),
+                    apiClient.get('/analytics/agents/age-by-secretaria-neike-beca'),
+                    apiClient.get('/analytics/agents/by-secretaria-neike-beca'),
+                    apiClient.get('/analytics/agents/by-dependency-neike-beca'),
+                    apiClient.get('/analytics/agents/by-subsecretaria-neike-beca'),
+                    apiClient.get('/analytics/agents/by-direccion-general-neike-beca'),
+                    apiClient.get('/analytics/agents/by-direccion-neike-beca'),
+                    apiClient.get('/analytics/agents/by-departamento-neike-beca'),
+                    apiClient.get('/analytics/agents/by-division-neike-beca')
                 ]);
 
                 setTotalAgents(totalResponse.data.total);
                 setAgeDistribution(ageDistResponse.data);
                 setAgeByFunction(ageFunctionResponse.data);
+                setAgeByArea(ageAreaResponse.data);
                 setAgentsByFunction(functionResponse.data);
                 setAgentsByEmploymentType(employmentResponse.data);
                 setAgentsByDependency(dependencyResponse.data);
@@ -485,6 +535,18 @@ const DashboardPage = () => {
                 setAgentsByDireccion(direccionResponse.data);
                 setAgentsByDepartamento(departamentoResponse.data);
                 setAgentsByDivision(divisionResponse.data);
+                setAgentsByFunctionNeikeBeca(byFunctionNeikeBecaResponse.data);
+                setAgentsByEmploymentTypeNeikeBeca(byEmploymentTypeNeikeBecaResponse.data);
+                setAgeDistributionNeikeBeca(ageDistNeikeBecaResponse.data);
+                setAgeByFunctionNeikeBeca(ageFunctionNeikeBecaResponse.data);
+                setAgeByAreaNeikeBeca(ageAreaNeikeBecaResponse.data);
+                setAgentsBySecretariaNeikeBeca(secretariaNeikeBecaResponse.data);
+                setAgentsByDependencyNeikeBeca(dependencyNeikeBecaResponse.data);
+                setAgentsBySubsecretariaNeikeBeca(subsecretariaNeikeBecaResponse.data);
+                setAgentsByDireccionGeneralNeikeBeca(direccionGeneralNeikeBecaResponse.data);
+                setAgentsByDireccionNeikeBeca(direccionNeikeBecaResponse.data);
+                setAgentsByDepartamentoNeikeBeca(departamentoNeikeBecaResponse.data);
+                setAgentsByDivisionNeikeBeca(divisionNeikeBecaResponse.data);
 
             } catch (err) {
                 setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -576,7 +638,7 @@ const DashboardPage = () => {
                 <Alert severity={cleanMsg.includes('Error') ? 'error' : 'success'} sx={{ mb: 2 }}>{cleanMsg}</Alert>
             )}
 
-            {/* Botones de navegación iguales al navbar */}
+            {/* Botones de navegación - SOLO 3 PESTAÑAS */}
             <Box sx={{ 
                 mb: 4,
                 display: 'flex',
@@ -716,140 +778,6 @@ const DashboardPage = () => {
                 >
                     Distribución Organizacional
                 </Button>
-                
-                <Button 
-                    onClick={() => setTabValue(3)}
-                    startIcon={<AccountTreeIcon />}
-                    sx={{ 
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        fontWeight: 600,
-                        px: 3,
-                        py: 1.5,
-                        borderRadius: 3,
-                        textTransform: 'none',
-                        fontSize: '0.9rem',
-                        background: tabValue === 3 
-                            ? 'linear-gradient(135deg, #2196f3, #1976d2)'
-                            : isDarkMode 
-                                ? 'rgba(255, 255, 255, 0.05)' 
-                                : 'rgba(255, 255, 255, 0.7)',
-                        border: isDarkMode
-                            ? '1px solid rgba(255, 255, 255, 0.1)'
-                            : '1px solid rgba(0, 0, 0, 0.08)',
-                        ...(tabValue === 3 && {
-                            color: 'white',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(33, 150, 243, 0.3)'
-                                : '0 6px 20px rgba(33, 150, 243, 0.2)',
-                        }),
-                        '&:hover': {
-                            background: tabValue === 3 
-                                ? 'linear-gradient(135deg, #1976d2, #1565c0)'
-                                : isDarkMode 
-                                    ? 'rgba(33, 150, 243, 0.2)' 
-                                    : 'rgba(33, 150, 243, 0.15)',
-                            color: tabValue === 3 ? 'white' : isDarkMode ? '#64b5f6' : '#1976d2',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(33, 150, 243, 0.3)'
-                                : '0 6px 20px rgba(33, 150, 243, 0.2)',
-                        },
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    Estructura Jerárquica
-                </Button>
-
-                {/* BOTÓN PARA GRÁFICOS 3D PLOTLY */}
-                <Button 
-                    onClick={() => setTabValue(4)}
-                    startIcon={<View3DIcon />}
-                    sx={{ 
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        fontWeight: 600,
-                        px: 3,
-                        py: 1.5,
-                        borderRadius: 3,
-                        textTransform: 'none',
-                        fontSize: '0.9rem',
-                        background: tabValue === 4 
-                            ? 'linear-gradient(135deg, #ff9800, #f57c00)'
-                            : isDarkMode 
-                                ? 'rgba(255, 255, 255, 0.05)' 
-                                : 'rgba(255, 255, 255, 0.7)',
-                        border: isDarkMode
-                            ? '1px solid rgba(255, 255, 255, 0.1)'
-                            : '1px solid rgba(0, 0, 0, 0.08)',
-                        ...(tabValue === 4 && {
-                            color: 'white',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(255, 152, 0, 0.3)'
-                                : '0 6px 20px rgba(255, 152, 0, 0.2)',
-                        }),
-                        '&:hover': {
-                            background: tabValue === 4 
-                                ? 'linear-gradient(135deg, #f57c00, #ef6c00)'
-                                : isDarkMode 
-                                    ? 'rgba(255, 152, 0, 0.2)' 
-                                    : 'rgba(255, 152, 0, 0.15)',
-                            color: tabValue === 4 ? 'white' : isDarkMode ? '#ffb74d' : '#f57c00',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(255, 152, 0, 0.3)'
-                                : '0 6px 20px rgba(255, 152, 0, 0.2)',
-                        },
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    3D Plotly
-                </Button>
-
-                {/* NUEVO BOTÓN PARA GRÁFICOS THREE.JS ESPECTACULARES */}
-                <Button 
-                    onClick={() => setTabValue(5)}
-                    startIcon={<AutoAwesomeIcon />}
-                    sx={{ 
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        fontWeight: 600,
-                        px: 3,
-                        py: 1.5,
-                        borderRadius: 3,
-                        textTransform: 'none',
-                        fontSize: '0.9rem',
-                        background: tabValue === 5 
-                            ? 'linear-gradient(135deg, #e91e63, #ad1457)'
-                            : isDarkMode 
-                                ? 'rgba(255, 255, 255, 0.05)' 
-                                : 'rgba(255, 255, 255, 0.7)',
-                        border: isDarkMode
-                            ? '1px solid rgba(255, 255, 255, 0.1)'
-                            : '1px solid rgba(0, 0, 0, 0.08)',
-                        ...(tabValue === 5 && {
-                            color: 'white',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(233, 30, 99, 0.4)'
-                                : '0 6px 20px rgba(233, 30, 99, 0.3)',
-                        }),
-                        '&:hover': {
-                            background: tabValue === 5 
-                                ? 'linear-gradient(135deg, #ad1457, #880e4f)'
-                                : isDarkMode 
-                                    ? 'rgba(233, 30, 99, 0.2)' 
-                                    : 'rgba(233, 30, 99, 0.15)',
-                            color: tabValue === 5 ? 'white' : isDarkMode ? '#f48fb1' : '#ad1457',
-                            transform: 'translateY(-2px)',
-                            boxShadow: isDarkMode
-                                ? '0 6px 20px rgba(233, 30, 99, 0.4)'
-                                : '0 6px 20px rgba(233, 30, 99, 0.3)',
-                        },
-                        transition: 'all 0.3s ease',
-                    }}
-                >
-                    🚀 3D Espectacular
-                </Button>
             </Box>
 
             {/* Tab 0: Resumen General */}
@@ -889,7 +817,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChartUnified 
                             data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
-                            title="Distribución de Agentes por Función (Top 10)" 
+                            title="Distribución de Agentes por Función (Top 10) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="function"
@@ -899,11 +827,32 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChartUnified 
                             data={agentsByEmploymentType} 
-                            title="Agentes por Situación de Revista" 
+                            title="Agentes por Situación de Revista - Planta y Contratos" 
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="type"
                             height={500} // Misma altura
+                        />
+                    </Grid>
+                    {/* NUEVOS GRÁFICOS PARA NEIKES Y BECA */}
+                    <Grid item xs={12} lg={6}>
+                        <CustomDonutChartUnified 
+                            data={agentsByFunctionNeikeBeca.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
+                            title="Distribución de Agentes por Función (Top 10) - Neikes y Beca" 
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="function"
+                            height={500}
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <CustomDonutChartUnified 
+                            data={agentsByEmploymentTypeNeikeBeca} 
+                            title="Agentes por Situación de Revista - Neikes y Becas" 
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="type"
+                            height={500}
                         />
                     </Grid>
                 </Grid>
@@ -923,14 +872,14 @@ const DashboardPage = () => {
                         )}
                     </Grid>
                     
-                    {/* Gráfico de rangos de edad principal */}
+                    {/* Gráfico de rangos de edad principal - PLANTA Y CONTRATOS */}
                     <Grid item xs={12}>
                         {ageDistribution ? (
                             <CustomBarChart 
                                 data={ageDistribution.rangeData} 
                                 xKey="range" 
                                 barKey="count" 
-                                title="Distribución por Rangos de Edad" 
+                                title="Distribución por Rangos de Edad - Planta y Contratos" 
                                 isDarkMode={isDarkMode} 
                             />
                         ) : (
@@ -941,31 +890,50 @@ const DashboardPage = () => {
                         )}
                     </Grid>
 
-                    {/* Rangos de edad con área chart */}
-                    <Grid item xs={12} lg={6}>
-                        {ageDistribution ? (
-                            <CustomAreaChartLocal 
-                                data={ageDistribution.rangeData} 
-                                title="Distribución por Rangos de Edad (Visualización de Área)" 
-                                isDarkMode={isDarkMode}
-                                xKey="range"
-                                yKey="count"
+                    {/* Gráfico de rangos de edad - NEIKES Y BECAS */}
+                    <Grid item xs={12}>
+                        {ageDistributionNeikeBeca ? (
+                            <CustomBarChart 
+                                data={ageDistributionNeikeBeca.rangeData} 
+                                xKey="range" 
+                                barKey="count" 
+                                title="Distribución por Rangos de Edad - Neikes y Becas" 
+                                isDarkMode={isDarkMode} 
                             />
                         ) : (
-                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
-                                <CircularProgress size={30} />
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                                <CircularProgress size={40} />
+                                <Typography sx={{ ml: 2 }}>Cargando análisis de edad Neikes y Becas...</Typography>
                             </Box>
                         )}
                     </Grid>
 
-                    {/* Edad promedio por función */}
+                    {/* Edad promedio por área (secretaría) - PLANTA Y CONTRATOS */}
+                    <Grid item xs={12} lg={6}>
+                        {ageByArea.length > 0 ? (
+                            <CustomAreaChartByArea 
+                                data={ageByArea.filter(a => a.secretaria && a.secretaria.trim() !== '' && a.secretaria.trim() !== '-').slice(0, 10)} 
+                                title="Distribución por rangos de edad según el área (Top 10) - Planta y Contratos" 
+                                isDarkMode={isDarkMode}
+                                xKey="secretaria"
+                                yKey="avgAge"
+                            />
+                        ) : (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
+                                <CircularProgress size={30} />
+                                <Typography sx={{ ml: 2 }}>Cargando análisis por área...</Typography>
+                            </Box>
+                        )}
+                    </Grid>
+
+                    {/* Edad promedio por función - PLANTA Y CONTRATOS */}
                     <Grid item xs={12} lg={6}>
                         {ageByFunction.length > 0 ? (
                             <CustomBarChart 
                                 data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
                                 xKey="function" 
                                 barKey="avgAge" 
-                                title="Edad Promedio por Función (Top 10)" 
+                                title="Edad Promedio por Función (Top 10) - Planta y Contratos" 
                                 isDarkMode={isDarkMode} 
                             />
                         ) : (
@@ -974,72 +942,147 @@ const DashboardPage = () => {
                             </Box>
                         )}
                     </Grid>
+
+                    {/* Edad promedio por área (secretaría) - NEIKES Y BECAS */}
+                    <Grid item xs={12} lg={6}>
+                        {ageByAreaNeikeBeca.length > 0 ? (
+                            <CustomAreaChartByArea 
+                                data={ageByAreaNeikeBeca.filter(a => a.secretaria && a.secretaria.trim() !== '' && a.secretaria.trim() !== '-').slice(0, 10)} 
+                                title="Distribución por rangos de edad según el área (Top 10) - Neikes y Becas" 
+                                isDarkMode={isDarkMode}
+                                xKey="secretaria"
+                                yKey="avgAge"
+                            />
+                        ) : (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
+                                <CircularProgress size={30} />
+                                <Typography sx={{ ml: 2 }}>Cargando análisis por área Neikes y Becas...</Typography>
+                            </Box>
+                        )}
+                    </Grid>
+
+                    {/* Edad promedio por función - NEIKES Y BECAS */}
+                    <Grid item xs={12} lg={6}>
+                        {ageByFunctionNeikeBeca.length > 0 ? (
+                            <CustomBarChart 
+                                data={ageByFunctionNeikeBeca.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
+                                xKey="function" 
+                                barKey="avgAge" 
+                                title="Edad Promedio por Función (Top 10) - Neikes y Becas" 
+                                isDarkMode={isDarkMode} 
+                            />
+                        ) : (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
+                                <CircularProgress size={30} />
+                                <Typography sx={{ ml: 2 }}>Cargando análisis por función Neikes y Becas...</Typography>
+                            </Box>
+                        )}
+                    </Grid>
                 </Grid>
             )}
 
-            {/* Tab 2: Distribución Organizacional */}
+            {/* Tab 2: Distribución Organizacional COMPLETA (incluye estructura jerárquica) */}
             {tabValue === 2 && (
                 <Grid container spacing={3}>
+
+                    {/* SECCIÓN 1: DISTRIBUCIÓN PRINCIPAL */}
                     <Grid item xs={12}>
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            Distribución Organizacional
+                        <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+                            📊 Distribución Principal por Secretarias, Subsecretarias y Dependencias - Planta y Contratos
                         </Typography>
                     </Grid>
 
-                    {/* Gráficos de anillo MÁS GRANDES */}
+                    {/* Gráficos de anillo principales */}
                     <Grid item xs={12} md={6}>
                         <CustomDonutChartUnified 
                             data={agentsBySecretaria.slice(0, 8)} 
-                            title="Agentes por Secretaría (Top 8)" 
+                            title="Agentes por Secretaría (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="secretaria"
-                            height={600} // Aumentado de 400 a 600
+                            height={600}
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <CustomDonutChartUnified 
                             data={agentsByDependency.slice(0, 8)} 
-                            title="Agentes por Dependencia (Top 8)" 
+                            title="Agentes por Dependencia (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="dependency"
-                            height={600} // Aumentado de 400 a 600
+                            height={600}
                         />
                     </Grid>
 
-                    {/* Gráfico de subsecretarías AÚN MÁS GRANDE */}
+                    {/* Gráfico de subsecretarías */}
                     <Grid item xs={12}>
                         <CustomBarChart 
                             data={filterValidData(agentsBySubsecretaria, 'subsecretaria').slice(0, 10)} 
                             xKey="subsecretaria" 
                             barKey="count" 
-                            title="Agentes por Subsecretaría (Top 10)" 
+                            title="Agentes por Subsecretaría (Top 10) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
-                            height={600} // Aumentado de 500 a 600
+                            height={600}
                         />
                     </Grid>
-                </Grid>
-            )}
 
-            {/* Tab 3: Estructura Jerárquica */}
-            {tabValue === 3 && (
-                <Grid container spacing={3}>
+                    {/* SECCIÓN 1.2: DISTRIBUCIÓN PRINCIPAL - NEIKES Y BECAS */}
                     <Grid item xs={12}>
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            Estructura Jerárquica Detallada
+                        <Typography variant="h6" sx={{ mb: 2, mt: 4, fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+                            📊 Distribución Principal por Secretarias, Subsecretarias y Dependencias - Neikes y Becas
                         </Typography>
                     </Grid>
 
-                    {/* GRÁFICOS DE COLUMNAS MÁS ANCHOS para direcciones */}
+                    {/* Gráficos de anillo principales - Neikes y Becas */}
+                    <Grid item xs={12} md={6}>
+                        <CustomDonutChartUnified 
+                            data={agentsBySecretariaNeikeBeca ? agentsBySecretariaNeikeBeca.slice(0, 8) : []} 
+                            title="Agentes por Secretaría (Top 8) - Neikes y Becas" 
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="secretaria"
+                            height={600}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomDonutChartUnified 
+                            data={agentsByDependencyNeikeBeca ? agentsByDependencyNeikeBeca.slice(0, 8) : []} 
+                            title="Agentes por Dependencia (Top 8) - Neikes y Becas" 
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="dependency"
+                            height={600}
+                        />
+                    </Grid>
+
+                    {/* Gráfico de subsecretarías - Neikes y Becas */}
+                    <Grid item xs={12}>
+                        <CustomBarChart 
+                            data={agentsBySubsecretariaNeikeBeca ? filterValidData(agentsBySubsecretariaNeikeBeca, 'subsecretaria').slice(0, 10) : []} 
+                            xKey="subsecretaria" 
+                            barKey="count" 
+                            title="Agentes por Subsecretaría (Top 10) - Neikes y Becas" 
+                            isDarkMode={isDarkMode}
+                            height={600}
+                        />
+                    </Grid>
+
+                    {/* SECCIÓN 2: ESTRUCTURA JERÁRQUICA DETALLADA */}
+                    <Grid item xs={12}>
+                        <Typography variant="h6" sx={{ mb: 2, mt: 4, fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+                            📊 Distribución Principal por Dirección Generales y Direcciones - Planta y Contratos
+                        </Typography>
+                    </Grid>
+
+                    {/* Direcciones Generales y Direcciones */}
                     <Grid item xs={12}>
                         <CustomBarChart 
                             data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 10)} 
                             xKey="direccionGeneral" 
                             barKey="count" 
-                            title="Agentes por Dirección General (Top 10)" 
+                            title="Agentes por Dirección General (Top 10) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
-                            height={600} // Mantenido para legibilidad
+                            height={600}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -1047,158 +1090,96 @@ const DashboardPage = () => {
                             data={filterValidData(agentsByDireccion, 'direccion').slice(0, 10)} 
                             xKey="direccion" 
                             barKey="count" 
-                            title="Agentes por Dirección (Top 10)" 
+                            title="Agentes por Dirección (Top 10) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
-                            height={600} // Mantenido para legibilidad
+                            height={600}
                         />
                     </Grid>
 
-                    {/* GRÁFICOS DE ANILLO MÁS LARGOS para departamentos y divisiones */}
+                    {/* SECCIÓN 2.2: ESTRUCTURA JERÁRQUICA DETALLADA - NEIKES Y BECAS */}
+                    <Grid item xs={12}>
+                        <Typography variant="h6" sx={{ mb: 2, mt: 4, fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+                            📊 Distribución Principal por Dirección Generales y Direcciones - Neikes y Becas
+                        </Typography>
+                    </Grid>
+
+                    {/* Direcciones Generales y Direcciones - Neikes y Becas */}
+                    <Grid item xs={12}>
+                        <CustomBarChart 
+                            data={agentsByDireccionGeneralNeikeBeca ? filterValidData(agentsByDireccionGeneralNeikeBeca, 'direccionGeneral').slice(0, 10) : []} 
+                            xKey="direccionGeneral" 
+                            barKey="count" 
+                            title="Agentes por Dirección General (Top 10) - Neikes y Becas" 
+                            isDarkMode={isDarkMode}
+                            height={600}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <CustomBarChart 
+                            data={agentsByDireccionNeikeBeca ? filterValidData(agentsByDireccionNeikeBeca, 'direccion').slice(0, 10) : []} 
+                            xKey="direccion" 
+                            barKey="count" 
+                            title="Agentes por Dirección (Top 10) - Neikes y Becas" 
+                            isDarkMode={isDarkMode}
+                            height={600}
+                        />
+                    </Grid>
+
+                    {/* SECCIÓN 3: NIVELES OPERATIVOS */}
+                    <Grid item xs={12}>
+                        <Typography variant="h6" sx={{ mb: 2, mt: 4, fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+                            📊 Distribución Principal por Departamentos y Divisiones - Planta y Contratos
+                        </Typography>
+                    </Grid>
+
+                    {/* Departamentos y Divisiones */}
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChartUnified 
                             data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)} 
-                            title="Agentes por Departamento (Top 8)" 
+                            title="Agentes por Departamento (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="departamento"
-                            height={600} // Aumentado de 400 a 600 para evitar cortes
+                            height={600}
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChartUnified 
                             data={filterValidData(agentsByDivision, 'division').slice(0, 8)} 
-                            title="Agentes por División (Top 8)" 
+                            title="Agentes por División (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="division"
-                            height={600} // Aumentado de 400 a 600 para evitar cortes
+                            height={600}
                         />
                     </Grid>
-                </Grid>
-            )}
 
-            {/* Tab 4: GRÁFICOS 3D PLOTLY */}
-            {tabValue === 4 && (
-                <Grid container spacing={3}>
+                    {/* SECCIÓN 3.2: NIVELES OPERATIVOS - NEIKES Y BECAS */}
                     <Grid item xs={12}>
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            🎯 Visualización 3D - Análisis Avanzado (Plotly.js)
+                        <Typography variant="h6" sx={{ mb: 2, mt: 4, fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+                            📊 Distribución Principal por Departamentos y Divisiones - Neikes y Becas
                         </Typography>
-                        <Alert severity="info" sx={{ mb: 3 }}>
-                            <Typography variant="body2">
-                                <strong>¡Gráficos 3D Interactivos!</strong> Puedes rotar, hacer zoom y explorar los datos desde diferentes ángulos. 
-                                Usa el mouse para interactuar con cada gráfico.
-                            </Typography>
-                        </Alert>
                     </Grid>
 
-                    {/* Gráficos 3D Plotly */}
+                    {/* Departamentos y Divisiones - Neikes y Becas */}
                     <Grid item xs={12} lg={6}>
-                        <BarChart3D 
-                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 8)} 
-                            title="📊 Agentes por Función (3D)" 
-                            isDarkMode={isDarkMode}
-                            xKey="function"
-                            zKey="count"
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <PieChart3D 
-                            data={agentsByEmploymentType} 
-                            title="🥧 Situación de Revista (3D)" 
+                        <CustomDonutChartUnified 
+                            data={agentsByDepartamentoNeikeBeca ? filterValidData(agentsByDepartamentoNeikeBeca, 'departamento').slice(0, 8) : []} 
+                            title="Agentes por Departamento (Top 8) - Neikes y Becas" 
                             isDarkMode={isDarkMode}
                             dataKey="count"
-                            nameKey="type"
-                        />
-                    </Grid>
-
-                    <Grid item xs={12} lg={6}>
-                        <BarChart3D 
-                            data={agentsBySecretaria.slice(0, 6)} 
-                            title="🏢 Agentes por Secretaría (3D)" 
-                            isDarkMode={isDarkMode}
-                            xKey="secretaria"
-                            zKey="count"
+                            nameKey="departamento"
+                            height={600}
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <ScatterChart3D 
-                            data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
-                            title="🎯 Edad vs Función (Dispersión 3D)" 
+                        <CustomDonutChartUnified 
+                            data={agentsByDivisionNeikeBeca ? filterValidData(agentsByDivisionNeikeBeca, 'division').slice(0, 8) : []} 
+                            title="Agentes por División (Top 8) - Neikes y Becas" 
                             isDarkMode={isDarkMode}
-                            xKey="function"
-                            yKey="avgAge"
-                            zKey="count"
-                            colorKey="count"
-                        />
-                    </Grid>
-
-                    {/* Gráfico 3D de ancho completo */}
-                    <Grid item xs={12}>
-                        <BarChart3D 
-                            data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 8)} 
-                            title="🎪 Agentes por Dirección General (3D - Vista Panorámica)" 
-                            isDarkMode={isDarkMode}
-                            xKey="direccionGeneral"
-                            zKey="count"
-                        />
-                    </Grid>
-                </Grid>
-            )}
-
-            {/* Tab 5: NUEVA PESTAÑA DE GRÁFICOS THREE.JS ESPECTACULARES */}
-            {tabValue === 5 && (
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            🚀 Visualización 3D Espectacular - Three.js
-                        </Typography>
-                        <Alert severity="warning" sx={{ mb: 3 }}>
-                            <Typography variant="body2">
-                                <strong>🎪 ¡GRÁFICOS 3D CINEMATOGRÁFICOS!</strong> Estos gráficos usan Three.js para crear experiencias visuales 
-                                espectaculares con luces, sombras, partículas y animaciones. ¡Arrastra para rotar y explora!
-                            </Typography>
-                        </Alert>
-                    </Grid>
-
-                    {/* Gráficos Three.js Espectaculares */}
-                    <Grid item xs={12} lg={6}>
-                        <SpectacularBarChart3D 
-                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 8)} 
-                            title="Barras Flotantes con Luces y Partículas" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <CrystalPieChart3D 
-                            data={agentsByEmploymentType} 
-                            title="Torta de Cristal Giratoria" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-
-                    {/* Galaxia de datos de ancho completo */}
-                    <Grid item xs={12}>
-                        <DataGalaxy3D 
-                            data={agentsBySecretaria.slice(0, 12)} 
-                            title="Galaxia de Datos - Cada Estrella es una Secretaría" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-
-                    {/* Más gráficos espectaculares */}
-                    <Grid item xs={12} lg={6}>
-                        <SpectacularBarChart3D 
-                            data={agentsByDepartamento.slice(0, 6)} 
-                            title="Departamentos en 3D Cinematográfico" 
-                            isDarkMode={isDarkMode}
-                        />
-                    </Grid>
-                    <Grid item xs={12} lg={6}>
-                        <CrystalPieChart3D 
-                            data={agentsByDivision.slice(0, 6)} 
-                            title="Divisiones de Cristal Mágico" 
-                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="division"
+                            height={600}
                         />
                     </Grid>
                 </Grid>

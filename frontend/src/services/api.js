@@ -10,12 +10,21 @@ const apiClient = axios.create({
 // 2. Usamos un interceptor para añadir el token de autenticación a cada petición.
 apiClient.interceptors.request.use(
   (config) => {
-    // Obtenemos la información del usuario desde localStorage
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-
-    if (userInfo && userInfo.token) {
-      // Si existe el token, lo añadimos a la cabecera 'Authorization'
-      config.headers['Authorization'] = `Bearer ${userInfo.token}`;
+    try {
+      // Obtenemos la información del usuario desde localStorage
+      const userInfo = localStorage.getItem('userInfo');
+      
+      if (userInfo) {
+        const parsedUser = JSON.parse(userInfo);
+        if (parsedUser && parsedUser.token) {
+          // Si existe el token, lo añadimos a la cabecera 'Authorization'
+          config.headers['Authorization'] = `Bearer ${parsedUser.token}`;
+        }
+      }
+    } catch (error) {
+      console.error('Error al obtener datos de usuario desde localStorage:', error);
+      // Limpiar datos corruptos
+      localStorage.removeItem('userInfo');
     }
     return config;
   },

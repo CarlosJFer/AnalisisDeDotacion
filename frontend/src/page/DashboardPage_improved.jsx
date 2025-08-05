@@ -250,7 +250,12 @@ const DashboardPage = () => {
     const filterValidData = (data, nameKey) => {
         return data.filter(item => {
             const value = item[nameKey];
-            return value && value.trim() !== '' && value.trim() !== '-' && value.trim() !== 'Sin especificar';
+            // Verificar que el valor existe y es un string antes de usar trim()
+            if (!value || typeof value !== 'string') {
+                return false;
+            }
+            const trimmedValue = value.trim();
+            return trimmedValue !== '' && trimmedValue !== '-' && trimmedValue !== 'Sin especificar';
         });
     };
 

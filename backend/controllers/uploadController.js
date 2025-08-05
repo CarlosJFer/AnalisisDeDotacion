@@ -2,6 +2,7 @@
 const xlsx = require('xlsx');
 const path = require('path');
 const fs = require('fs');
+const emailService = require('../services/emailService');
 
 // Función mejorada para limpiar los datos del Excel:
 // - Comienza desde la fila 4
@@ -281,6 +282,24 @@ async function uploadFile(req, res) {
             analisis.activo = true;
           }
           await analisis.save();
+          
+          // Enviar notificaciones por email y crear notificaciones en la base de datos
+          try {
+            const dashboardInfo = {
+              action: 'upload',
+              fileName: file.originalname,
+              totalRecords: totalAgentes,
+              secretaria: req.body.secretariaNombre || 'General',
+              uploadedBy: req.user?.username || 'Sistema'
+            };
+            
+            await emailService.notifyDashboardUpdate(dashboardInfo);
+            console.log(`Notificaciones enviadas para archivo: ${file.originalname}`);
+          } catch (notificationError) {
+            console.error('Error enviando notificaciones:', notificationError);
+            // No fallar el upload por errores de notificación
+          }
+          
           resultados.push({ archivo: file.originalname, mensaje: 'Archivo procesado y guardado correctamente', totalRegistros: totalAgentes });
         }
       } catch (err) {

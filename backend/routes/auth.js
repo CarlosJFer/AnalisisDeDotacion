@@ -137,6 +137,154 @@ router.put('/change-password', authenticateToken, async (req, res) => {
   }
 });
 
+// @desc    Actualizar nombre de usuario
+// @route   PUT /api/auth/update-username
+// @access  Private
+router.put('/update-username', authenticateToken, async (req, res) => {
+  try {
+    const { newUsername } = req.body;
+
+    if (!newUsername || newUsername.trim().length < 3) {
+      return res.status(400).json({ message: 'El nombre de usuario debe tener al menos 3 caracteres' });
+    }
+
+    // Verificar si el nombre de usuario ya existe
+    const existingUser = await User.findOne({ username: newUsername.trim() });
+    if (existingUser && existingUser._id.toString() !== req.user._id.toString()) {
+      return res.status(400).json({ message: 'El nombre de usuario ya está en uso' });
+    }
+
+    const user = await User.findById(req.user._id);
+    user.username = newUsername.trim();
+    await user.save();
+
+    res.json({ 
+      message: 'Nombre de usuario actualizado exitosamente',
+      username: user.username
+    });
+
+  } catch (error) {
+    console.error('Error actualizando nombre de usuario:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+});
+
+// @desc    Actualizar email
+// @route   PUT /api/auth/update-email
+// @access  Private
+router.put('/update-email', authenticateToken, async (req, res) => {
+  try {
+    const { newEmail } = req.body;
+
+    if (!newEmail || !newEmail.trim()) {
+      return res.status(400).json({ message: 'Ingrese un email válido' });
+    }
+
+    const trimmedEmail = newEmail.trim().toLowerCase();
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      return res.status(400).json({ message: 'Formato de email inválido' });
+    }
+
+    // Verificar si el email ya existe en otro usuario
+    const existingUser = await User.findOne({ 
+      email: trimmedEmail,
+      _id: { $ne: req.user._id } // Excluir el usuario actual
+    });
+    
+    if (existingUser) {
+      return res.status(400).json({ message: 'El email ya está en uso por otro usuario' });
+    }
+
+    // Verificar si el usuario actual ya tiene ese email
+    const currentUser = await User.findById(req.user._id);
+    if (currentUser.email === trimmedEmail) {
+      return res.status(400).json({ message: 'El email ingresado es el mismo que ya tienes configurado' });
+    }
+
+    // Actualizar el email
+    currentUser.email = trimmedEmail;
+    await currentUser.save();
+
+    console.log('Email actualizado en backend:', {
+      userId: currentUser._id,
+      oldEmail: req.user.email,
+      newEmail: currentUser.email
+    });
+
+    res.json({ 
+      message: 'Email actualizado exitosamente',
+      email: currentUser.email
+    });
+
+  } catch (error) {
+    console.error('Error actualizando email:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+});
+
+// @desc    Actualizar preferencias de notificaciones
+// @route   PUT /api/auth/update-notifications
+// @access  Private
+router.put('/update-notifications', authenticateToken, async (req, res) => {
+  try {
+    const { notificationsEnabled } = req.body;
+
+    if (typeof notificationsEnabled !== 'boolean') {
+      return res.status(400).json({ message: 'El valor de notificaciones debe ser un booleano' });
+    }
+
+    const user = await User.findById(req.user._id);
+    const oldNotifications = user.notificationsEnabled;
+    user.notificationsEnabled = notificationsEnabled;
+    await user.save();
+
+    console.log('Notificaciones actualizadas en backend:', {
+      userId: user._id,
+      oldNotifications: oldNotifications,
+      newNotifications: user.notificationsEnabled
+    });
+
+    res.json({ 
+      message: 'Preferencias de notificaciones actualizadas exitosamente',
+      notificationsEnabled: user.notificationsEnabled
+    });
+
+  } catch (error) {
+    console.error('Error actualizando notificaciones:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+});
+
+// @desc    Eliminar email
+// @route   DELETE /api/auth/delete-email
+// @access  Private
+router.delete('/delete-email', authenticateToken, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const oldEmail = user.email;
+    user.email = undefined; // Usar undefined en lugar de string vacío
+    await user.save();
+
+    console.log('Email eliminado en backend:', {
+      userId: user._id,
+      oldEmail: oldEmail,
+      newEmail: user.email
+    });
+
+    res.json({ 
+      message: 'Email eliminado exitosamente',
+      email: ''
+    });
+
+  } catch (error) {
+    console.error('Error eliminando email:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+});
+
 // --- Script para crear el primer usuario admin ---
 const createAdminUser = async () => {
   try {

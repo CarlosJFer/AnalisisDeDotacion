@@ -1,6 +1,7 @@
 const AnalysisData = require('../models/AnalysisData');
 const Agent = require('../models/Agent'); // Importamos el modelo Agent
 const PDFDocument = require('pdfkit');
+const emailService = require('../services/emailService');
 
 // Obtener lista de secretarías disponibles
 const getSecretarias = async (req, res) => {
@@ -455,6 +456,80 @@ const getAgeByFunction = async (req, res) => {
   }
 };
 
+// @desc    Get age distribution by secretaria
+// @route   GET /api/analytics/agents/age-by-secretaria
+// @access  Private/Admin
+const getAgeBySecretaria = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de edad por secretaría...');
+    
+    // Método simple sin agregación para evitar problemas de fechas
+    const agents = await Agent.find({ 
+      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
+      'Secretaria': { $exists: true, $ne: null, $ne: '' }
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes con fecha de nacimiento y secretaría`);
+
+    const currentDate = new Date();
+    const secretariaAgeData = {};
+
+    agents.forEach(agent => {
+      try {
+        let birthDate = agent['Fecha de nacimiento'];
+        
+        // Convertir a Date si es string
+        if (typeof birthDate === 'string') {
+          birthDate = new Date(birthDate);
+        }
+        
+        // Validar que sea una fecha válida
+        if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+          return; // Saltar este agente
+        }
+        
+        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        // Validar edad razonable
+        if (age < 0 || age > 120) {
+          return; // Saltar este agente
+        }
+        
+        const secretaria = agent['Secretaria'] || 'Sin especificar';
+        
+        if (!secretariaAgeData[secretaria]) {
+          secretariaAgeData[secretaria] = { ages: [], count: 0 };
+        }
+        
+        secretariaAgeData[secretaria].ages.push(age);
+        secretariaAgeData[secretaria].count++;
+      } catch (agentError) {
+        console.log(`Error procesando agente ${agent._id}:`, agentError.message);
+      }
+    });
+
+    // Calcular promedio de edad por secretaría
+    const result = Object.entries(secretariaAgeData).map(([secretaria, data]) => {
+      const avgAge = data.ages.reduce((sum, age) => sum + age, 0) / data.ages.length;
+      return {
+        secretaria: secretaria,
+        count: data.count,
+        avgAge: Math.round(avgAge * 100) / 100,
+        ages: data.ages
+      };
+    }).sort((a, b) => b.count - a.count).slice(0, 15); // Top 15
+
+    console.log(`Análisis completado para ${result.length} secretarías`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de edad por secretaría:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de edad por secretaría',
+      message: err.message 
+    });
+  }
+};
+
 // @desc    Get agents by employment type (planta permanente, etc.)
 // @route   GET /api/analytics/agents/by-employment-type
 // @access  Private/Admin
@@ -695,6 +770,580 @@ const getAgentsByDivision = async (req, res) => {
   }
 };
 
+// @desc    Get agents by function for Neikes y Beca
+// @route   GET /api/analytics/agents/by-function-neike-beca
+// @access  Private/Admin
+const getAgentsByFunctionNeikeBeca = async (req, res) => {
+  try {
+    const agentsByFunction = await Agent.aggregate([
+      { $match: { plantilla: "Rama completa - Neikes y Beca" } },
+      {
+        $group: {
+          _id: '$Funcion',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          function: '$_id',
+          count: 1
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+    res.json(agentsByFunction);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+// @desc    Get agents by employment type for Neikes y Beca
+// @route   GET /api/analytics/agents/by-employment-type-neike-beca
+// @access  Private/Admin
+const getAgentsByEmploymentTypeNeikeBeca = async (req, res) => {
+  try {
+    const agentsByType = await Agent.aggregate([
+      { $match: { plantilla: "Rama completa - Neikes y Beca" } },
+      {
+        $group: {
+          _id: '$Situación de revista',
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          type: { $ifNull: ['$_id', 'Sin especificar'] },
+          count: 1
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+    res.json(agentsByType);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+// @desc    Get age distribution for Neikes y Beca
+// @route   GET /api/analytics/agents/age-distribution-neike-beca
+// @access  Private/Admin
+const getAgeDistributionNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de edad simplificado para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(1000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con fecha de nacimiento`);
+
+    const currentDate = new Date();
+    const ageRanges = {
+      '18-25': 0, '26-35': 0, '36-45': 0, '46-55': 0, '56-65': 0, '65+': 0
+    };
+
+    const scatterData = [];
+
+    agents.forEach(agent => {
+      try {
+        let birthDate = agent['Fecha de nacimiento'];
+        
+        if (typeof birthDate === 'string') {
+          birthDate = new Date(birthDate);
+        }
+        
+        if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+          return;
+        }
+        
+        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        if (age < 0 || age > 120) {
+          return;
+        }
+        
+        const func = agent['Funcion'] || 'Sin especificar';
+        
+        if (age >= 18 && age <= 25) ageRanges['18-25']++;
+        else if (age >= 26 && age <= 35) ageRanges['26-35']++;
+        else if (age >= 36 && age <= 45) ageRanges['36-45']++;
+        else if (age >= 46 && age <= 55) ageRanges['46-55']++;
+        else if (age >= 56 && age <= 65) ageRanges['56-65']++;
+        else if (age > 65) ageRanges['65+']++;
+
+        scatterData.push({
+          age,
+          function: func,
+          id: agent._id
+        });
+      } catch (agentError) {
+        console.log(`Error procesando agente ${agent._id}:`, agentError.message);
+      }
+    });
+
+    const ageRangeData = Object.entries(ageRanges).map(([range, count]) => ({
+      range,
+      count
+    }));
+
+    console.log(`Análisis completado. Procesados: ${scatterData.length} agentes Neikes y Beca válidos`);
+    res.json({
+      scatterData,
+      rangeData: ageRangeData,
+      totalAgents: scatterData.length,
+      note: scatterData.length === 1000 ? 'Mostrando muestra de 1000 agentes para mejor rendimiento' : null
+    });
+  } catch (err) {
+    console.error('Error en análisis de edad Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de edad Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get age distribution by function for Neikes y Beca
+// @route   GET /api/analytics/agents/age-by-function-neike-beca
+// @access  Private/Admin
+const getAgeByFunctionNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de edad por función para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
+      'Funcion': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca`);
+
+    const currentDate = new Date();
+    const functionAgeData = {};
+
+    agents.forEach(agent => {
+      try {
+        let birthDate = agent['Fecha de nacimiento'];
+        
+        if (typeof birthDate === 'string') {
+          birthDate = new Date(birthDate);
+        }
+        
+        if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+          return;
+        }
+        
+        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        if (age < 0 || age > 120) {
+          return;
+        }
+        
+        const func = agent['Funcion'] || 'Sin especificar';
+        
+        if (!functionAgeData[func]) {
+          functionAgeData[func] = { ages: [], count: 0 };
+        }
+        
+        functionAgeData[func].ages.push(age);
+        functionAgeData[func].count++;
+      } catch (agentError) {
+        console.log(`Error procesando agente ${agent._id}:`, agentError.message);
+      }
+    });
+
+    const result = Object.entries(functionAgeData).map(([func, data]) => {
+      const avgAge = data.ages.reduce((sum, age) => sum + age, 0) / data.ages.length;
+      return {
+        function: func,
+        count: data.count,
+        avgAge: Math.round(avgAge * 100) / 100,
+        ages: data.ages
+      };
+    }).sort((a, b) => b.count - a.count).slice(0, 20);
+
+    console.log(`Análisis completado para ${result.length} funciones Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de edad por función Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de edad por función Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get age distribution by secretaria for Neikes y Beca
+// @route   GET /api/analytics/agents/age-by-secretaria-neike-beca
+// @access  Private/Admin
+const getAgeBySecretariaNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de edad por secretaría para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
+      'Secretaria': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con fecha de nacimiento y secretaría`);
+
+    const currentDate = new Date();
+    const secretariaAgeData = {};
+
+    agents.forEach(agent => {
+      try {
+        let birthDate = agent['Fecha de nacimiento'];
+        
+        if (typeof birthDate === 'string') {
+          birthDate = new Date(birthDate);
+        }
+        
+        if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+          return;
+        }
+        
+        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        
+        if (age < 0 || age > 120) {
+          return;
+        }
+        
+        const secretaria = agent['Secretaria'] || 'Sin especificar';
+        
+        if (!secretariaAgeData[secretaria]) {
+          secretariaAgeData[secretaria] = { ages: [], count: 0 };
+        }
+        
+        secretariaAgeData[secretaria].ages.push(age);
+        secretariaAgeData[secretaria].count++;
+      } catch (agentError) {
+        console.log(`Error procesando agente ${agent._id}:`, agentError.message);
+      }
+    });
+
+    const result = Object.entries(secretariaAgeData).map(([secretaria, data]) => {
+      const avgAge = data.ages.reduce((sum, age) => sum + age, 0) / data.ages.length;
+      return {
+        secretaria: secretaria,
+        count: data.count,
+        avgAge: Math.round(avgAge * 100) / 100,
+        ages: data.ages
+      };
+    }).sort((a, b) => b.count - a.count).slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} secretarías Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de edad por secretaría Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de edad por secretaría Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get agents by secretaria for Neikes y Beca
+// @route   GET /api/analytics/agents/by-secretaria-neike-beca
+// @access  Private/Admin
+const getAgentsBySecretariaNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de agentes por secretaría para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Secretaria': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con secretaría`);
+
+    const secretariaCount = {};
+    
+    agents.forEach(agent => {
+      const secretaria = agent['Secretaria'] || 'Sin especificar';
+      secretariaCount[secretaria] = (secretariaCount[secretaria] || 0) + 1;
+    });
+
+    const result = Object.entries(secretariaCount)
+      .map(([secretaria, count]) => ({ secretaria, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} secretarías Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de agentes por secretaría Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de agentes por secretaría Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get agents by dependency for Neikes y Beca
+// @route   GET /api/analytics/agents/by-dependency-neike-beca
+// @access  Private/Admin
+const getAgentsByDependencyNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de agentes por dependencia para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Dependencia': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con dependencia`);
+
+    const dependencyCount = {};
+    
+    agents.forEach(agent => {
+      const dependency = agent['Dependencia'] || 'Sin especificar';
+      dependencyCount[dependency] = (dependencyCount[dependency] || 0) + 1;
+    });
+
+    const result = Object.entries(dependencyCount)
+      .map(([dependency, count]) => ({ dependency, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} dependencias Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de agentes por dependencia Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de agentes por dependencia Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get agents by subsecretaria for Neikes y Beca
+// @route   GET /api/analytics/agents/by-subsecretaria-neike-beca
+// @access  Private/Admin
+const getAgentsBySubsecretariaNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de agentes por subsecretaría para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Subsecretaria': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con subsecretaría`);
+
+    const subsecretariaCount = {};
+    
+    agents.forEach(agent => {
+      const subsecretaria = agent['Subsecretaria'] || 'Sin especificar';
+      subsecretariaCount[subsecretaria] = (subsecretariaCount[subsecretaria] || 0) + 1;
+    });
+
+    const result = Object.entries(subsecretariaCount)
+      .map(([subsecretaria, count]) => ({ subsecretaria, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} subsecretarías Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de agentes por subsecretaría Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de agentes por subsecretaría Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get agents by direccion general for Neikes y Beca
+// @route   GET /api/analytics/agents/by-direccion-general-neike-beca
+// @access  Private/Admin
+const getAgentsByDireccionGeneralNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de agentes por dirección general para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Direccion General': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con dirección general`);
+
+    const direccionGeneralCount = {};
+    
+    agents.forEach(agent => {
+      const direccionGeneral = agent['Direccion General'] || 'Sin especificar';
+      direccionGeneralCount[direccionGeneral] = (direccionGeneralCount[direccionGeneral] || 0) + 1;
+    });
+
+    const result = Object.entries(direccionGeneralCount)
+      .map(([direccionGeneral, count]) => ({ direccionGeneral, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} direcciones generales Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de agentes por dirección general Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de agentes por dirección general Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get agents by direccion for Neikes y Beca
+// @route   GET /api/analytics/agents/by-direccion-neike-beca
+// @access  Private/Admin
+const getAgentsByDireccionNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de agentes por dirección para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Direccion': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con dirección`);
+
+    const direccionCount = {};
+    
+    agents.forEach(agent => {
+      const direccion = agent['Direccion'] || 'Sin especificar';
+      direccionCount[direccion] = (direccionCount[direccion] || 0) + 1;
+    });
+
+    const result = Object.entries(direccionCount)
+      .map(([direccion, count]) => ({ direccion, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} direcciones Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de agentes por dirección Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de agentes por dirección Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get agents by departamento for Neikes y Beca
+// @route   GET /api/analytics/agents/by-departamento-neike-beca
+// @access  Private/Admin
+const getAgentsByDepartamentoNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de agentes por departamento para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Departamento': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con departamento`);
+
+    const departamentoCount = {};
+    
+    agents.forEach(agent => {
+      const departamento = agent['Departamento'] || 'Sin especificar';
+      departamentoCount[departamento] = (departamentoCount[departamento] || 0) + 1;
+    });
+
+    const result = Object.entries(departamentoCount)
+      .map(([departamento, count]) => ({ departamento, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} departamentos Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de agentes por departamento Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de agentes por departamento Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// @desc    Get agents by division for Neikes y Beca
+// @route   GET /api/analytics/agents/by-division-neike-beca
+// @access  Private/Admin
+const getAgentsByDivisionNeikeBeca = async (req, res) => {
+  try {
+    console.log('Iniciando análisis de agentes por división para Neikes y Beca...');
+    
+    const agents = await Agent.find({ 
+      'Division': { $exists: true, $ne: null, $ne: '' },
+      plantilla: "Rama completa - Neikes y Beca"
+    }).limit(2000);
+    
+    console.log(`Encontrados ${agents.length} agentes Neikes y Beca con división`);
+
+    const divisionCount = {};
+    
+    agents.forEach(agent => {
+      const division = agent['Division'] || 'Sin especificar';
+      divisionCount[division] = (divisionCount[division] || 0) + 1;
+    });
+
+    const result = Object.entries(divisionCount)
+      .map(([division, count]) => ({ division, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    console.log(`Análisis completado para ${result.length} divisiones Neikes y Beca`);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de agentes por división Neikes y Beca:', err.message);
+    res.status(500).json({ 
+      error: 'Error en análisis de agentes por división Neikes y Beca',
+      message: err.message 
+    });
+  }
+};
+
+// Función para notificar modificaciones en el dashboard
+const notifyDashboardModification = async (req, res) => {
+  try {
+    const { fileName, totalRecords, secretaria, action } = req.body;
+    
+    if (!fileName) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'El nombre del archivo es requerido' 
+      });
+    }
+
+    const dashboardInfo = {
+      action: action || 'modify',
+      fileName,
+      totalRecords: totalRecords || 0,
+      secretaria: secretaria || 'General',
+      uploadedBy: req.user?.username || 'Sistema'
+    };
+
+    const result = await emailService.notifyDashboardUpdate(dashboardInfo);
+    
+    res.json({
+      success: true,
+      message: 'Notificaciones enviadas correctamente',
+      data: result
+    });
+
+  } catch (error) {
+    console.error('Error enviando notificaciones de modificación:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error enviando notificaciones',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getSecretarias,
   getSecretariaById,
@@ -715,5 +1364,19 @@ module.exports = {
   getAgentsByDireccionGeneral,
   getAgentsByDireccion,
   getAgentsByDepartamento,
-  getAgentsByDivision
+  getAgentsByDivision,
+  getAgeBySecretaria,
+  getAgentsByFunctionNeikeBeca,
+  getAgentsByEmploymentTypeNeikeBeca,
+  getAgeDistributionNeikeBeca,
+  getAgeByFunctionNeikeBeca,
+  getAgeBySecretariaNeikeBeca,
+  getAgentsBySecretariaNeikeBeca,
+  getAgentsByDependencyNeikeBeca,
+  getAgentsBySubsecretariaNeikeBeca,
+  getAgentsByDireccionGeneralNeikeBeca,
+  getAgentsByDireccionNeikeBeca,
+  getAgentsByDepartamentoNeikeBeca,
+  getAgentsByDivisionNeikeBeca,
+  notifyDashboardModification
 };

@@ -11,14 +11,67 @@ export const AuthProvider = ({ children }) => {
 
   // 3. Al cargar, verificamos si hay un usuario en localStorage
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      setUser(JSON.parse(userInfo));
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      if (userInfo) {
+        const parsedUser = JSON.parse(userInfo);
+        // Verificar que el usuario tiene las propiedades necesarias
+        if (parsedUser && typeof parsedUser === 'object' && parsedUser.token) {
+          setUser(parsedUser);
+          console.log('Usuario cargado desde localStorage:', parsedUser);
+        } else {
+          // Si los datos están corruptos, limpiar localStorage
+          localStorage.removeItem('userInfo');
+          console.warn('Datos de usuario corruptos, localStorage limpiado');
+        }
+      } else {
+        console.log('No hay usuario en localStorage');
+      }
+    } catch (error) {
+      console.error('Error al cargar datos de usuario desde localStorage:', error);
+      // Limpiar datos corruptos
+      localStorage.removeItem('userInfo');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
-  // 4. Función de Login (solo maneja estado, no navegación)
+  // 4. Escuchar actualizaciones del usuario
+  useEffect(() => {
+    const handleUserUpdate = (event) => {
+      const updatedUser = event.detail;
+      setUser(updatedUser);
+      // Asegurar que localStorage también se actualice
+      localStorage.setItem('userInfo', JSON.stringify(updatedUser));
+    };
+
+    window.addEventListener('userUpdated', handleUserUpdate);
+    return () => {
+      window.removeEventListener('userUpdated', handleUserUpdate);
+    };
+  }, []);
+
+  // 5. Función para actualizar usuario
+  const updateUser = (updatedUserData) => {
+    if (!user) {
+      console.warn('No hay usuario para actualizar');
+      return null;
+    }
+    
+    const newUserData = { ...user, ...updatedUserData };
+    setUser(newUserData);
+    localStorage.setItem('userInfo', JSON.stringify(newUserData));
+    
+    console.log('Usuario actualizado en AuthContext:', {
+      oldUser: user,
+      newUser: newUserData,
+      updatedFields: updatedUserData
+    });
+    
+    return newUserData;
+  };
+
+  // 5. Función de Login (solo maneja estado, no navegación)
   const login = async (username, password) => {
     try {
       const { data } = await apiClient.post('/auth/login', { username, password });
@@ -41,16 +94,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 5. Función de Logout
+  // 6. Función de Logout
   const logout = () => {
     localStorage.removeItem('userInfo');
     setUser(null);
     // La navegación debe hacerse en el componente, no aquí
   };
 
-  // 6. Proveemos el estado y las funciones a los componentes hijos
+  // 7. Proveemos el estado y las funciones a los componentes hijos
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, updateUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );
