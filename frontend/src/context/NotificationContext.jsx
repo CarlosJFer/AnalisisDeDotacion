@@ -30,27 +30,35 @@ export const NotificationProvider = ({ children }) => {
 
   // Cargar configuraciones de notificaciones
   useEffect(() => {
-    if (user) {
-      const savedSettings = localStorage.getItem(`notification-settings-${user.id}`);
+    if (user && user.token) {
+      const savedSettings = localStorage.getItem(`notification-settings-${user._id}`);
       if (savedSettings) {
         setSettings(JSON.parse(savedSettings));
       }
+      // Solo cargar notificaciones si el usuario está completamente autenticado
       loadNotifications();
     }
   }, [user]);
 
   // Guardar configuraciones automáticamente
   useEffect(() => {
-    if (user) {
-      localStorage.setItem(`notification-settings-${user.id}`, JSON.stringify(settings));
+    if (user && user._id) {
+      localStorage.setItem(`notification-settings-${user._id}`, JSON.stringify(settings));
     }
   }, [settings, user]);
 
   const loadNotifications = async () => {
     try {
       const response = await apiClient.get('/notifications');
-      setNotifications(response.data.notifications || []);
-      setUnreadCount(response.data.unreadCount || 0);
+      // El backend devuelve la estructura: { success: true, data: { notifications, unreadCount } }
+      if (response.data.success && response.data.data) {
+        setNotifications(response.data.data.notifications || []);
+        setUnreadCount(response.data.data.unreadCount || 0);
+      } else {
+        // Fallback para estructura anterior
+        setNotifications(response.data.notifications || []);
+        setUnreadCount(response.data.unreadCount || 0);
+      }
     } catch (error) {
       console.error('Error cargando notificaciones:', error);
     }
@@ -95,6 +103,7 @@ export const NotificationProvider = ({ children }) => {
     });
   }, []);
 
+  // Esta función queda solo para notificaciones manuales (no SSE)
   const addNotification = useCallback((notification) => {
     const newNotification = {
       id: Date.now().toString(),
@@ -102,10 +111,14 @@ export const NotificationProvider = ({ children }) => {
       read: false,
       ...notification,
     };
-
-    setNotifications(prev => [newNotification, ...prev]);
+    setNotifications(prev => {
+      // Evitar duplicados por _id
+      if (newNotification._id && prev.some(n => n._id === newNotification._id)) {
+        return prev;
+      }
+      return [newNotification, ...prev];
+    });
     setUnreadCount(prev => prev + 1);
-
     // Mostrar notificación de escritorio si está habilitada
     if (settings.desktop && 'Notification' in window && Notification.permission === 'granted') {
       new Notification(notification.title || 'Nueva notificación', {
@@ -114,16 +127,15 @@ export const NotificationProvider = ({ children }) => {
         tag: newNotification.id,
       });
     }
-
     return newNotification.id;
   }, [settings.desktop]);
 
   const markAsRead = useCallback(async (notificationId) => {
     try {
-      await apiClient.patch(`/notifications/${notificationId}/read`);
+      await apiClient.put(`/notifications/${notificationId}/read`);
       setNotifications(prev => 
         prev.map(notification => 
-          notification.id === notificationId 
+          (notification._id === notificationId || notification.id === notificationId)
             ? { ...notification, read: true }
             : notification
         )
@@ -136,7 +148,7 @@ export const NotificationProvider = ({ children }) => {
 
   const markAllAsRead = useCallback(async () => {
     try {
-      await apiClient.patch('/notifications/read-all');
+      await apiClient.put('/notifications/read-all');
       setNotifications(prev => 
         prev.map(notification => ({ ...notification, read: true }))
       );
@@ -149,8 +161,8 @@ export const NotificationProvider = ({ children }) => {
   const deleteNotification = useCallback(async (notificationId) => {
     try {
       await apiClient.delete(`/notifications/${notificationId}`);
-      const notification = notifications.find(n => n.id === notificationId);
-      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      const notification = notifications.find(n => n._id === notificationId || n.id === notificationId);
+      setNotifications(prev => prev.filter(n => n._id !== notificationId && n.id !== notificationId));
       if (notification && !notification.read) {
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
@@ -184,15 +196,22 @@ export const NotificationProvider = ({ children }) => {
 
   // Configurar WebSocket para notificaciones en tiempo real
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!user || !settings.push || !token) return;
-    const eventSource = new EventSource(`/api/notifications/stream?token=${token}`);
+    // Solo conectar si el usuario está autenticado y tiene token
+    if (!user || !user.token || !settings.push) return;
     
+    // Usar la URL completa del backend
+    const eventSource = new EventSource(`http://localhost:5001/api/notifications/stream?token=${user.token}`);
+
     eventSource.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        if (data.ping) {
+          // Es un ping para mantener la conexión viva, no hacer nada
+          return;
+        }
         if (data.notifications) {
-          data.notifications.forEach(addNotification);
+          setNotifications(data.notifications);
+          setUnreadCount(data.unreadCount || data.notifications.filter(n => !n.read).length);
         }
       } catch (error) {
         console.error('Error procesando notificación:', error);
@@ -201,7 +220,8 @@ export const NotificationProvider = ({ children }) => {
 
     eventSource.onerror = (error) => {
       console.error('Error en el stream de notificaciones:', error);
-      eventSource.close();
+      showToast('Se perdió la conexión con el servidor de notificaciones. Intentando reconectar...', 'warning');
+      // No cerrar manualmente, dejar que EventSource maneje la reconexión
     };
 
     return () => {

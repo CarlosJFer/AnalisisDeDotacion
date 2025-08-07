@@ -11,29 +11,56 @@ export const AuthProvider = ({ children }) => {
 
   // 3. Al cargar, verificamos si hay un usuario en localStorage
   useEffect(() => {
-    try {
-      const userInfo = localStorage.getItem('userInfo');
-      if (userInfo) {
-        const parsedUser = JSON.parse(userInfo);
-        // Verificar que el usuario tiene las propiedades necesarias
-        if (parsedUser && typeof parsedUser === 'object' && parsedUser.token) {
-          setUser(parsedUser);
-          console.log('Usuario cargado desde localStorage:', parsedUser);
-        } else {
-          // Si los datos están corruptos, limpiar localStorage
-          localStorage.removeItem('userInfo');
-          console.warn('Datos de usuario corruptos, localStorage limpiado');
+    async function initUser() {
+      try {
+        const userInfo = localStorage.getItem('userInfo');
+        if (userInfo) {
+          const parsedUser = JSON.parse(userInfo);
+          // Verificar que el usuario tiene las propiedades necesarias
+          if (parsedUser && typeof parsedUser === 'object' && parsedUser.token) {
+            setUser(parsedUser);
+            console.log('Usuario cargado desde localStorage:', parsedUser);
+            
+            // Intentar sincronizar con el backend en segundo plano
+            try {
+              const response = await apiClient.get('/auth/me');
+              if (response.data && response.data._id) {
+                // Solo actualizar si hay diferencias significativas
+                const backendUser = { ...response.data, token: parsedUser.token };
+                if (JSON.stringify(parsedUser) !== JSON.stringify(backendUser)) {
+                  setUser(backendUser);
+                  localStorage.setItem('userInfo', JSON.stringify(backendUser));
+                  window.dispatchEvent(new CustomEvent('userUpdated', { detail: backendUser }));
+                  console.log('Usuario sincronizado desde backend en AuthContext:', backendUser);
+                }
+              }
+            } catch (error) {
+              // Si falla la sincronización, mantener el usuario de localStorage
+              console.log('No se pudo sincronizar con backend, usando datos locales.');
+            }
+            
+            setLoading(false);
+            return;
+          } else {
+            // Si los datos están corruptos, limpiar localStorage
+            localStorage.removeItem('userInfo');
+            console.warn('Datos de usuario corruptos, localStorage limpiado');
+          }
         }
-      } else {
-        console.log('No hay usuario en localStorage');
+        
+        // Si no hay usuario en localStorage, no hacer peticiones al backend
+        // El usuario debe hacer login explícitamente
+        setUser(null);
+      } catch (error) {
+        console.error('Error al cargar datos de usuario desde localStorage o backend:', error);
+        // Limpiar datos corruptos
+        setUser(null);
+        localStorage.removeItem('userInfo');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error al cargar datos de usuario desde localStorage:', error);
-      // Limpiar datos corruptos
-      localStorage.removeItem('userInfo');
-    } finally {
-      setLoading(false);
     }
+    initUser();
   }, []);
 
   // 4. Escuchar actualizaciones del usuario

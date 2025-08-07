@@ -25,10 +25,17 @@ const loginUser = async (req, res) => {
                 process.env.JWT_SECRET,
                 { expiresIn: '8h' }
             );
+            
+            // Actualizar último login
+            user.lastLogin = new Date();
+            await user.save();
+            
             res.json({
                 _id: user._id,
                 username: user.username,
                 role: user.role,
+                email: user.email || '',
+                notificationsEnabled: user.notificationsEnabled ?? true,
                 token: token,
             });
         } else {

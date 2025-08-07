@@ -145,7 +145,7 @@ const NotificationBell = () => {
 
   const handleNotificationClick = (notification) => {
     if (!notification.read) {
-      handleMarkAsRead(notification.id);
+      handleMarkAsRead(notification._id || notification.id);
     }
     
     // Si la notificación es sobre dashboard, podrías redirigir al dashboard
@@ -160,56 +160,65 @@ const NotificationBell = () => {
         title={unreadCount > 0 ? `${unreadCount} notificaciones nuevas` : 'Sin notificaciones nuevas'}
         arrow
       >
-        <IconButton 
-          onClick={handleClick}
-          sx={{ 
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            background: isDarkMode 
-              ? 'rgba(255, 255, 255, 0.05)' 
-              : 'rgba(255, 255, 255, 0.7)',
-            border: isDarkMode
-              ? '1px solid rgba(255, 255, 255, 0.1)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
-            '&:hover': {
+        <Box sx={{ position: 'relative' }}>
+          <IconButton 
+            onClick={handleClick}
+            sx={{ 
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
               background: isDarkMode 
-                ? 'rgba(255, 152, 0, 0.2)' 
-                : 'rgba(255, 152, 0, 0.15)',
-              color: isDarkMode ? '#ffb74d' : '#f57c00',
-              transform: 'scale(1.1)',
-              boxShadow: isDarkMode
-                ? '0 6px 20px rgba(255, 152, 0, 0.3)'
-                : '0 6px 20px rgba(255, 152, 0, 0.2)',
-            },
-            transition: 'all 0.3s ease',
-          }}
-        >
-          <Badge 
-            badgeContent={unreadCount} 
-            color="error"
-            sx={{
-              '& .MuiBadge-badge': {
-                background: 'linear-gradient(135deg, #f44336, #d32f2f)',
-                color: 'white',
-                fontWeight: 600,
-                fontSize: '0.7rem',
-                animation: unreadCount > 0 ? 'pulse 2s infinite' : 'none',
-                '@keyframes pulse': {
-                  '0%': {
-                    transform: 'scale(1)',
-                  },
-                  '50%': {
-                    transform: 'scale(1.1)',
-                  },
-                  '100%': {
-                    transform: 'scale(1)',
-                  },
-                }
-              }
+                ? 'rgba(255, 255, 255, 0.05)' 
+                : 'rgba(255, 255, 255, 0.7)',
+              border: isDarkMode
+                ? '1px solid rgba(255, 255, 255, 0.1)'
+                : '1px solid rgba(0, 0, 0, 0.08)',
+              width: 40,
+              height: 40,
+              '&:hover': {
+                background: isDarkMode 
+                  ? 'rgba(255, 152, 0, 0.2)' 
+                  : 'rgba(255, 152, 0, 0.15)',
+                color: isDarkMode ? '#ffb74d' : '#f57c00',
+                transform: 'scale(1.1)',
+                boxShadow: isDarkMode
+                  ? '0 6px 20px rgba(255, 152, 0, 0.3)'
+                  : '0 6px 20px rgba(255, 152, 0, 0.2)',
+              },
+              transition: 'all 0.3s ease',
             }}
           >
             {unreadCount > 0 ? <NotificationsActiveIcon /> : <NotificationsIcon />}
-          </Badge>
-        </IconButton>
+          </IconButton>
+          {unreadCount > 0 && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: '2px',
+                right: '2px',
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #f44336, #d32f2f)',
+                border: '2px solid',
+                borderColor: isDarkMode ? 'rgba(45, 55, 72, 1)' : 'rgba(255, 255, 255, 1)',
+                animation: 'pulse 2s infinite',
+                '@keyframes pulse': {
+                  '0%': {
+                    transform: 'scale(1)',
+                    opacity: 1,
+                  },
+                  '50%': {
+                    transform: 'scale(1.2)',
+                    opacity: 0.8,
+                  },
+                  '100%': {
+                    transform: 'scale(1)',
+                    opacity: 1,
+                  },
+                }
+              }}
+            />
+          )}
+        </Box>
       </Tooltip>
       
       <Menu 
@@ -305,7 +314,7 @@ const NotificationBell = () => {
           ) : (
             <List sx={{ p: 0 }}>
               {notifications.slice(0, 10).map((notification, index) => (
-                <React.Fragment key={notification.id}>
+                <React.Fragment key={notification._id || notification.id || index}>
                   <ListItem
                     sx={{
                       cursor: 'pointer',
@@ -319,15 +328,18 @@ const NotificationBell = () => {
                       },
                       py: 2,
                       px: 2,
+                      flexDirection: 'column',
+                      alignItems: 'stretch',
                     }}
                     onClick={() => handleNotificationClick(notification)}
                   >
-                    <ListItemIcon sx={{ minWidth: 40 }}>
-                      {getNotificationIcon(notification.type, notification.data)}
-                    </ListItemIcon>
-                    
-                    <ListItemText
-                      primary={
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
+                      <Box sx={{ mr: 2, mt: 0.5 }}>
+                        {getNotificationIcon(notification.type, notification.data)}
+                      </Box>
+                      
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        {/* Título */}
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                           <Typography 
                             variant="subtitle2" 
@@ -348,100 +360,96 @@ const NotificationBell = () => {
                             }} />
                           )}
                         </Box>
-                      }
-                      secondary={
-                        <Box>
+                        
+                        {/* Mensaje */}
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+                            mb: 1,
+                            lineHeight: 1.4
+                          }}
+                        >
+                          {notification.message}
+                        </Typography>
+                        
+                        {/* Chips de información */}
+                        {notification.data && (notification.data.fileName || notification.data.totalRecords) && (
+                          <Box sx={{ display: 'flex', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
+                            {notification.data.fileName && (
+                              <Chip 
+                                label={`📄 ${notification.data.fileName}`}
+                                size="small"
+                                sx={{ 
+                                  fontSize: '0.65rem',
+                                  height: 20,
+                                  backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                                }}
+                              />
+                            )}
+                            {notification.data.totalRecords && (
+                              <Chip 
+                                label={`📊 ${notification.data.totalRecords} registros`}
+                                size="small"
+                                sx={{ 
+                                  fontSize: '0.65rem',
+                                  height: 20,
+                                  backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
+                                }}
+                              />
+                            )}
+                          </Box>
+                        )}
+                        
+                        {/* Footer con tiempo y acciones */}
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                           <Typography 
-                            variant="body2" 
+                            variant="caption" 
                             sx={{ 
-                              color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-                              mb: 1,
-                              lineHeight: 1.4
+                              color: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)',
+                              fontSize: '0.7rem'
                             }}
                           >
-                            {notification.message}
+                            {formatTimeAgo(notification.createdAt || notification.timestamp)}
                           </Typography>
                           
-                          {notification.data && (notification.data.fileName || notification.data.totalRecords) && (
-                            <Box sx={{ mb: 1 }}>
-                              {notification.data.fileName && (
-                                <Chip 
-                                  label={`📄 ${notification.data.fileName}`}
-                                  size="small"
-                                  sx={{ 
-                                    mr: 1, 
-                                    mb: 0.5,
-                                    fontSize: '0.65rem',
-                                    height: 20,
-                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
-                                  }}
-                                />
-                              )}
-                              {notification.data.totalRecords && (
-                                <Chip 
-                                  label={`📊 ${notification.data.totalRecords} registros`}
-                                  size="small"
-                                  sx={{ 
-                                    mr: 1, 
-                                    mb: 0.5,
-                                    fontSize: '0.65rem',
-                                    height: 20,
-                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)'
-                                  }}
-                                />
-                              )}
-                            </Box>
-                          )}
-                          
-                          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <Typography 
-                              variant="caption" 
-                              sx={{ 
-                                color: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)',
-                                fontSize: '0.7rem'
-                              }}
-                            >
-                              {formatTimeAgo(notification.createdAt || notification.timestamp)}
-                            </Typography>
-                            
-                            <Box sx={{ display: 'flex', gap: 0.5 }}>
-                              {!notification.read && (
-                                <IconButton
-                                  size="small"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleMarkAsRead(notification.id);
-                                  }}
-                                  sx={{ 
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)',
-                                    '&:hover': {
-                                      color: '#4caf50'
-                                    }
-                                  }}
-                                >
-                                  <CheckCircleIcon sx={{ fontSize: 16 }} />
-                                </IconButton>
-                              )}
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            {!notification.read && (
                               <IconButton
                                 size="small"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDeleteNotification(notification.id);
+                                  handleMarkAsRead(notification._id || notification.id);
                                 }}
                                 sx={{ 
                                   color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)',
                                   '&:hover': {
-                                    color: '#f44336'
+                                    color: '#4caf50'
                                   }
                                 }}
                               >
-                                <CloseIcon sx={{ fontSize: 16 }} />
+                                <CheckCircleIcon sx={{ fontSize: 16 }} />
                               </IconButton>
-                            </Box>
+                            )}
+                            <IconButton
+                              size="small"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteNotification(notification._id || notification.id);
+                              }}
+                              sx={{ 
+                                color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)',
+                                '&:hover': {
+                                  color: '#f44336'
+                                }
+                              }}
+                            >
+                              <CloseIcon sx={{ fontSize: 16 }} />
+                            </IconButton>
                           </Box>
                         </Box>
-                      }
-                    />
+                      </Box>
+                    </Box>
                   </ListItem>
                   {index < notifications.length - 1 && (
                     <Divider sx={{ 

@@ -349,56 +349,18 @@ const Navbar = () => {
 
   // Actualizar estados cuando cambie el usuario
   useEffect(() => {
-    console.log('useEffect ejecutado - Usuario actual:', user);
-    
-    if (user) {
-      // Forzar sincronización con el backend al cargar
-      const syncUserData = async () => {
-        try {
-          const userResponse = await apiClient.get('/auth/me');
-          const backendUser = userResponse.data;
-          
-          // Actualizar el contexto con los datos del backend
-          updateUser(backendUser);
-          
-          // Actualizar estados locales
-          const userEmail = backendUser.email || '';
-          const userNotifications = backendUser.notificationsEnabled ?? true;
-          
-          setEmail(userEmail);
-          setNotificationsEnabled(userNotifications);
-          
-          console.log('Usuario sincronizado desde backend:', {
-            email: userEmail,
-            notificationsEnabled: userNotifications,
-            userObject: backendUser
-          });
-        } catch (syncError) {
-          console.error('Error sincronizando usuario desde backend:', syncError);
-          
-          // Fallback a datos locales
-          const userEmail = user.email || '';
-          const userNotifications = user.notificationsEnabled ?? true;
-          
-          setEmail(userEmail);
-          setNotificationsEnabled(userNotifications);
-          
-          console.log('Usuario actualizado en Navbar (fallback):', {
-            email: userEmail,
-            notificationsEnabled: userNotifications,
-            userObject: user
-          });
-        }
-      };
-      
-      syncUserData();
+    if (user && user.token) {
+      // Usar los datos del usuario directamente, sin hacer peticiones adicionales
+      const userEmail = user.email || '';
+      const userNotifications = user.notificationsEnabled ?? true;
+      setEmail(userEmail);
+      setNotificationsEnabled(userNotifications);
     } else {
-      console.log('No hay usuario en el contexto');
-      // Limpiar estados si no hay usuario
       setEmail('');
       setNotificationsEnabled(true);
     }
-  }, [user]);
+  }, [user]); // Ejecutar cuando cambie el usuario
+
 
   useEffect(() => {
     const fetchSecretarias = async () => {

@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const getNotifications = async (req, res) => {
   try {
     const { page = 1, limit = 20, read, type, priority } = req.query;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     // Construir filtros
     const filters = { userId };
@@ -114,7 +114,7 @@ const createNotification = async (req, res) => {
 const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -154,7 +154,7 @@ const markAsRead = async (req, res) => {
 // Marcar todas las notificaciones como leídas
 const markAllAsRead = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const result = await Notification.updateMany(
       { userId, read: false },
@@ -182,7 +182,7 @@ const markAllAsRead = async (req, res) => {
 const deleteNotification = async (req, res) => {
   try {
     const { id } = req.params;
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -220,7 +220,7 @@ const deleteNotification = async (req, res) => {
 // Eliminar todas las notificaciones leídas
 const deleteReadNotifications = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const result = await Notification.deleteMany({
       userId,
@@ -247,7 +247,7 @@ const deleteReadNotifications = async (req, res) => {
 // Obtener estadísticas de notificaciones
 const getNotificationStats = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const stats = await Notification.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(userId) } },

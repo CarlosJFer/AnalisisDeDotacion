@@ -54,20 +54,21 @@ router.get('/stream', sseTokenMiddleware, authenticateToken, async (req, res) =>
   res.flushHeaders();
 
   const userId = req.user.userId || req.user._id;
-  let lastSentIds = new Set();
 
-  // Función para enviar notificaciones no leídas
+  // Función para enviar todas las notificaciones
   const sendNotifications = async () => {
-    const notifications = await Notification.find({ userId, read: false })
-      .sort({ createdAt: -1 })
-      .lean();
-    // Solo enviar las nuevas
-    const newNotifications = notifications.filter(n => !lastSentIds.has(String(n._id)));
-    if (newNotifications.length > 0) {
-      res.write(`data: ${JSON.stringify({ notifications: newNotifications })}\n\n`);
-      newNotifications.forEach(n => lastSentIds.add(String(n._id)));
-    } else {
-      // Mantener la conexión viva
+    try {
+      const notifications = await Notification.find({ userId })
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .lean();
+      
+      const unreadCount = await Notification.countDocuments({ userId, read: false });
+      
+      res.write(`data: ${JSON.stringify({ notifications, unreadCount })}\n\n`);
+    } catch (err) {
+      // Loguear error pero NO cerrar la conexión
+      console.error('Error en sendNotifications SSE:', err);
       res.write(`data: ${JSON.stringify({ ping: true })}\n\n`);
     }
   };
