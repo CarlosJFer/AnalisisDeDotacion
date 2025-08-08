@@ -27,8 +27,6 @@ import MenuItem from '@mui/material/MenuItem';
 import Tooltip from '@mui/material/Tooltip';
 import SettingsIcon from '@mui/icons-material/Settings';
 import EmailIcon from '@mui/icons-material/Email';
-import LockIcon from '@mui/icons-material/Lock';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
@@ -85,16 +83,10 @@ const Navbar = () => {
   const isAdminMenuOpen = Boolean(adminMenuAnchorEl);
   const isProfileOpen = Boolean(profileAnchorEl);
 
-  // Estados para el perfil
+  // Estados para el perfil (solo email)
   const [email, setEmail] = useState(user?.email || '');
   const [showEmailDialog, setShowEmailDialog] = useState(false);
-  const [showPasswordDialog, setShowPasswordDialog] = useState(false);
-  const [showUsernameDialog, setShowUsernameDialog] = useState(false);
   const [newEmail, setNewEmail] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [newUsername, setNewUsername] = useState('');
   const [notificationsEnabled, setNotificationsEnabled] = useState(user?.notificationsEnabled ?? true);
   const [profileError, setProfileError] = useState('');
   const [profileSuccess, setProfileSuccess] = useState('');
@@ -131,25 +123,9 @@ const Navbar = () => {
     setProfileAnchorEl(null);
   };
 
-  const handleDialogClose = (dialogType) => {
-    switch (dialogType) {
-      case 'email':
-        setShowEmailDialog(false);
-        setNewEmail('');
-        break;
-      case 'password':
-        setShowPasswordDialog(false);
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        break;
-      case 'username':
-        setShowUsernameDialog(false);
-        setNewUsername('');
-        break;
-      default:
-        break;
-    }
+  const handleDialogClose = () => {
+    setShowEmailDialog(false);
+    setNewEmail('');
     setProfileError('');
     setProfileSuccess('');
   };
@@ -218,78 +194,6 @@ const Navbar = () => {
       
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Error al eliminar el correo electrónico';
-      setProfileError(errorMessage);
-      showSnackbar(errorMessage, 'error');
-    }
-  };
-
-  const handlePasswordChange = async () => {
-    try {
-      setProfileError('');
-      setProfileSuccess('');
-      
-      if (!currentPassword || !newPassword || !confirmPassword) {
-        setProfileError('Todos los campos son obligatorios');
-        return;
-      }
-
-      if (newPassword !== confirmPassword) {
-        setProfileError('Las contraseñas no coinciden');
-        return;
-      }
-
-      if (newPassword.length < 6) {
-        setProfileError('La contraseña debe tener al menos 6 caracteres');
-        return;
-      }
-
-      await apiClient.put('/auth/change-password', {
-        currentPassword,
-        newPassword
-      });
-      
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setShowPasswordDialog(false);
-      
-      // Mostrar notificación persistente
-      showSnackbar('Contraseña actualizada correctamente');
-      
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al cambiar la contraseña';
-      setProfileError(errorMessage);
-      showSnackbar(errorMessage, 'error');
-    }
-  };
-
-  const handleUsernameChange = async () => {
-    try {
-      setProfileError('');
-      setProfileSuccess('');
-      
-      if (!newUsername.trim()) {
-        setProfileError('El nombre de usuario no puede estar vacío');
-        return;
-      }
-
-      if (newUsername.length < 3) {
-        setProfileError('El nombre de usuario debe tener al menos 3 caracteres');
-        return;
-      }
-
-      const response = await apiClient.put('/auth/update-username', { newUsername: newUsername.trim() });
-      setNewUsername('');
-      setShowUsernameDialog(false);
-      
-      // Actualizar el usuario en el contexto
-      updateUser({ username: response.data.username });
-      
-      // Mostrar notificación persistente
-      showSnackbar('Nombre de usuario actualizado correctamente');
-      
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al actualizar el nombre de usuario';
       setProfileError(errorMessage);
       showSnackbar(errorMessage, 'error');
     }
@@ -683,7 +587,7 @@ const Navbar = () => {
         </Box>
       </Toolbar>
 
-      {/* Menú de Perfil */}
+      {/* Menú de Perfil Simplificado */}
       <Menu
         anchorEl={profileAnchorEl}
         open={isProfileOpen}
@@ -733,7 +637,7 @@ const Navbar = () => {
           </Box>
         </Box>
 
-        {/* Opciones del perfil */}
+        {/* Opciones del perfil simplificadas */}
         <Box sx={{ p: 1 }}>
           {/* Correo electrónico (solo para usuarios) */}
           {user?.role !== 'admin' && (
@@ -759,50 +663,6 @@ const Navbar = () => {
                   {email || 'No configurado'}
                 </Typography>
               </Box>
-            </MenuItem>
-          )}
-
-          {/* Cambiar contraseña (solo para usuarios) */}
-          {user?.role !== 'admin' && (
-            <MenuItem 
-              onClick={() => setShowPasswordDialog(true)}
-              sx={{ 
-                borderRadius: 2,
-                mx: 1,
-                mb: 0.5,
-                '&:hover': {
-                  background: isDarkMode 
-                    ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(0, 0, 0, 0.05)',
-                }
-              }}
-            >
-              <LockIcon sx={{ mr: 2, color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }} />
-              <Typography variant="body2" sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-                Cambiar Contraseña
-              </Typography>
-            </MenuItem>
-          )}
-
-          {/* Cambiar nombre de usuario (solo para usuarios) */}
-          {user?.role !== 'admin' && (
-            <MenuItem 
-              onClick={() => setShowUsernameDialog(true)}
-              sx={{ 
-                borderRadius: 2,
-                mx: 1,
-                mb: 0.5,
-                '&:hover': {
-                  background: isDarkMode 
-                    ? 'rgba(255, 255, 255, 0.1)' 
-                    : 'rgba(0, 0, 0, 0.05)',
-                }
-              }}
-            >
-              <AccountCircleIcon sx={{ mr: 2, color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }} />
-              <Typography variant="body2" sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-                Cambiar Usuario
-              </Typography>
             </MenuItem>
           )}
 
@@ -881,7 +741,7 @@ const Navbar = () => {
       {/* Diálogo para correo electrónico */}
       <Dialog 
         open={showEmailDialog} 
-        onClose={() => handleDialogClose('email')}
+        onClose={handleDialogClose}
         PaperProps={{
           sx: {
             background: isDarkMode
@@ -958,7 +818,7 @@ const Navbar = () => {
             </Button>
           )}
           <Button 
-            onClick={() => handleDialogClose('email')}
+            onClick={handleDialogClose}
             sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
           >
             Cancelar
@@ -974,228 +834,6 @@ const Navbar = () => {
             }}
           >
             {email ? 'Actualizar' : 'Agregar'}
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Diálogo para cambiar contraseña */}
-      <Dialog 
-        open={showPasswordDialog} 
-        onClose={() => handleDialogClose('password')}
-        PaperProps={{
-          sx: {
-            background: isDarkMode
-              ? 'rgba(45, 55, 72, 0.95)'
-              : 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-              ? '1px solid rgba(255, 255, 255, 0.1)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-          }
-        }}
-      >
-        <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          Cambiar Contraseña
-        </DialogTitle>
-        <DialogContent>
-          {profileError && (
-            <EnhancedAlert severity="error">
-              {profileError}
-            </EnhancedAlert>
-          )}
-          {profileSuccess && (
-            <EnhancedAlert severity="success">
-              {profileSuccess}
-            </EnhancedAlert>
-          )}
-          <TextField
-            id="current-password-field"
-            name="currentPassword"
-            autoFocus
-            margin="dense"
-            label="Contraseña Actual"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-          <TextField
-            id="new-password-field"
-            name="newPassword"
-            margin="dense"
-            label="Nueva Contraseña"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-          <TextField
-            id="confirm-password-field"
-            name="confirmPassword"
-            margin="dense"
-            label="Confirmar Nueva Contraseña"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button 
-            onClick={() => handleDialogClose('password')}
-            sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handlePasswordChange}
-            variant="contained"
-            sx={{ 
-              background: isDarkMode ? '#81c784' : '#2e7d32',
-              '&:hover': {
-                background: isDarkMode ? '#66bb6a' : '#1b5e20',
-              },
-            }}
-          >
-            Cambiar Contraseña
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Diálogo para cambiar nombre de usuario */}
-      <Dialog 
-        open={showUsernameDialog} 
-        onClose={() => handleDialogClose('username')}
-        PaperProps={{
-          sx: {
-            background: isDarkMode
-              ? 'rgba(45, 55, 72, 0.95)'
-              : 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-              ? '1px solid rgba(255, 255, 255, 0.1)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-          }
-        }}
-      >
-        <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          Cambiar Nombre de Usuario
-        </DialogTitle>
-        <DialogContent>
-          {profileError && (
-            <EnhancedAlert severity="error">
-              {profileError}
-            </EnhancedAlert>
-          )}
-          {profileSuccess && (
-            <EnhancedAlert severity="success">
-              {profileSuccess}
-            </EnhancedAlert>
-          )}
-          <TextField
-            id="username-field"
-            name="username"
-            autoFocus
-            margin="dense"
-            label="Nuevo Nombre de Usuario"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button 
-            onClick={() => handleDialogClose('username')}
-            sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleUsernameChange}
-            variant="contained"
-            sx={{ 
-              background: isDarkMode ? '#81c784' : '#2e7d32',
-              '&:hover': {
-                background: isDarkMode ? '#66bb6a' : '#1b5e20',
-              },
-            }}
-          >
-            Cambiar Usuario
           </Button>
         </DialogActions>
       </Dialog>

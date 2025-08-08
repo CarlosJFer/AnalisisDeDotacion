@@ -19,7 +19,6 @@ export const AuthProvider = ({ children }) => {
           // Verificar que el usuario tiene las propiedades necesarias
           if (parsedUser && typeof parsedUser === 'object' && parsedUser.token) {
             setUser(parsedUser);
-            console.log('Usuario cargado desde localStorage:', parsedUser);
             
             // Intentar sincronizar con el backend en segundo plano
             try {
@@ -31,12 +30,10 @@ export const AuthProvider = ({ children }) => {
                   setUser(backendUser);
                   localStorage.setItem('userInfo', JSON.stringify(backendUser));
                   window.dispatchEvent(new CustomEvent('userUpdated', { detail: backendUser }));
-                  console.log('Usuario sincronizado desde backend en AuthContext:', backendUser);
                 }
               }
             } catch (error) {
               // Si falla la sincronización, mantener el usuario de localStorage
-              console.log('No se pudo sincronizar con backend, usando datos locales.');
             }
             
             setLoading(false);
@@ -44,7 +41,6 @@ export const AuthProvider = ({ children }) => {
           } else {
             // Si los datos están corruptos, limpiar localStorage
             localStorage.removeItem('userInfo');
-            console.warn('Datos de usuario corruptos, localStorage limpiado');
           }
         }
         
@@ -52,7 +48,6 @@ export const AuthProvider = ({ children }) => {
         // El usuario debe hacer login explícitamente
         setUser(null);
       } catch (error) {
-        console.error('Error al cargar datos de usuario desde localStorage o backend:', error);
         // Limpiar datos corruptos
         setUser(null);
         localStorage.removeItem('userInfo');
@@ -81,19 +76,12 @@ export const AuthProvider = ({ children }) => {
   // 5. Función para actualizar usuario
   const updateUser = (updatedUserData) => {
     if (!user) {
-      console.warn('No hay usuario para actualizar');
       return null;
     }
     
     const newUserData = { ...user, ...updatedUserData };
     setUser(newUserData);
     localStorage.setItem('userInfo', JSON.stringify(newUserData));
-    
-    console.log('Usuario actualizado en AuthContext:', {
-      oldUser: user,
-      newUser: newUserData,
-      updatedFields: updatedUserData
-    });
     
     return newUserData;
   };

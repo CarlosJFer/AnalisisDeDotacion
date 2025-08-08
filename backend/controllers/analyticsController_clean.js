@@ -269,15 +269,12 @@ const getTotalAgents = async (req, res) => {
   }
 };
 
-// ===== FUNCIONES PARA PLANTA Y CONTRATOS =====
-
-// @desc    Get agents grouped by function (Planta y Contratos)
+// @desc    Get agents grouped by function
 // @route   GET /api/analytics/agents/by-function
 // @access  Private/Admin
 const getAgentsByFunction = async (req, res) => {
   try {
     const agentsByFunction = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Funcion',
@@ -302,14 +299,13 @@ const getAgentsByFunction = async (req, res) => {
   }
 };
 
-// @desc    Get age distribution with scatter plot data (Planta y Contratos)
+// @desc    Get age distribution with scatter plot data
 // @route   GET /api/analytics/agents/age-distribution
 // @access  Private/Admin
 const getAgeDistribution = async (req, res) => {
   try {
     const agents = await Agent.find({ 
-      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Planta"
+      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' } 
     }).limit(1000);
 
     const currentDate = new Date();
@@ -376,15 +372,14 @@ const getAgeDistribution = async (req, res) => {
   }
 };
 
-// @desc    Get age distribution by function (Planta y Contratos)
+// @desc    Get age distribution by function
 // @route   GET /api/analytics/agents/age-by-function
 // @access  Private/Admin
 const getAgeByFunction = async (req, res) => {
   try {
     const agents = await Agent.find({ 
       'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
-      'Funcion': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Planta"
+      'Funcion': { $exists: true, $ne: null, $ne: '' }
     }).limit(2000);
 
     const currentDate = new Date();
@@ -441,15 +436,14 @@ const getAgeByFunction = async (req, res) => {
   }
 };
 
-// @desc    Get age distribution by secretaria (Planta y Contratos)
+// @desc    Get age distribution by secretaria
 // @route   GET /api/analytics/agents/age-by-secretaria
 // @access  Private/Admin
 const getAgeBySecretaria = async (req, res) => {
   try {
     const agents = await Agent.find({ 
       'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
-      'Secretaria': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Planta"
+      'Secretaria': { $exists: true, $ne: null, $ne: '' }
     }).limit(2000);
 
     const currentDate = new Date();
@@ -506,13 +500,12 @@ const getAgeBySecretaria = async (req, res) => {
   }
 };
 
-// @desc    Get agents by employment type (planta permanente, etc.) (Planta y Contratos)
+// @desc    Get agents by employment type (planta permanente, etc.)
 // @route   GET /api/analytics/agents/by-employment-type
 // @access  Private/Admin
 const getAgentsByEmploymentType = async (req, res) => {
   try {
     const agentsByType = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Situación de revista',
@@ -537,13 +530,12 @@ const getAgentsByEmploymentType = async (req, res) => {
   }
 };
 
-// @desc    Get agents by dependency (Planta y Contratos)
+// @desc    Get agents by dependency
 // @route   GET /api/analytics/agents/by-dependency
 // @access  Private/Admin
 const getAgentsByDependency = async (req, res) => {
   try {
     const agentsByDependency = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Dependencia donde trabaja',
@@ -568,13 +560,12 @@ const getAgentsByDependency = async (req, res) => {
   }
 };
 
-// @desc    Get agents by secretaria (Planta y Contratos)
+// @desc    Get agents by secretaria
 // @route   GET /api/analytics/agents/by-secretaria
 // @access  Private/Admin
 const getAgentsBySecretaria = async (req, res) => {
   try {
     const agentsBySecretaria = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Secretaria',
@@ -599,13 +590,12 @@ const getAgentsBySecretaria = async (req, res) => {
   }
 };
 
-// @desc    Get agents by subsecretaria (Planta y Contratos)
+// @desc    Get agents by subsecretaria
 // @route   GET /api/analytics/agents/by-subsecretaria
 // @access  Private/Admin
 const getAgentsBySubsecretaria = async (req, res) => {
   try {
     const agentsBySubsecretaria = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Subsecretaria',
@@ -630,13 +620,12 @@ const getAgentsBySubsecretaria = async (req, res) => {
   }
 };
 
-// @desc    Get agents by direccion general (Planta y Contratos)
+// @desc    Get agents by direccion general
 // @route   GET /api/analytics/agents/by-direccion-general
 // @access  Private/Admin
 const getAgentsByDireccionGeneral = async (req, res) => {
   try {
     const agentsByDireccionGeneral = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Dirección general',
@@ -661,13 +650,12 @@ const getAgentsByDireccionGeneral = async (req, res) => {
   }
 };
 
-// @desc    Get agents by direccion (Planta y Contratos)
+// @desc    Get agents by direccion
 // @route   GET /api/analytics/agents/by-direccion
 // @access  Private/Admin
 const getAgentsByDireccion = async (req, res) => {
   try {
     const agentsByDireccion = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Dirección',
@@ -692,13 +680,12 @@ const getAgentsByDireccion = async (req, res) => {
   }
 };
 
-// @desc    Get agents by departamento (Planta y Contratos)
+// @desc    Get agents by departamento
 // @route   GET /api/analytics/agents/by-departamento
 // @access  Private/Admin
 const getAgentsByDepartamento = async (req, res) => {
   try {
     const agentsByDepartamento = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$Departamento',
@@ -723,13 +710,12 @@ const getAgentsByDepartamento = async (req, res) => {
   }
 };
 
-// @desc    Get agents by division (Planta y Contratos)
+// @desc    Get agents by division
 // @route   GET /api/analytics/agents/by-division
 // @access  Private/Admin
 const getAgentsByDivision = async (req, res) => {
   try {
     const agentsByDivision = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
       {
         $group: {
           _id: '$División',
@@ -753,8 +739,6 @@ const getAgentsByDivision = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
-
-// ===== FUNCIONES PARA NEIKES Y BECAS =====
 
 // @desc    Get agents by function for Neikes y Beca
 // @route   GET /api/analytics/agents/by-function-neike-beca

@@ -67,7 +67,7 @@ class EmailService {
       throw new Error('Servicio de email no configurado');
     }
 
-    if (!user.email || !user.preferences?.notifications?.email) {
+    if (!user.email || !user.notificationsEnabled) {
       throw new Error('Usuario sin email o notificaciones deshabilitadas');
     }
 
@@ -225,10 +225,13 @@ class EmailService {
 
   async notifyDashboardUpdate(dashboardInfo) {
     try {
-      // Crear notificaciones en la base de datos para todos los usuarios activos
-      const allActiveUsers = await User.find({ isActive: true });
+      // Crear notificaciones en la base de datos solo para usuarios con notificaciones habilitadas
+      const usersForNotifications = await User.find({ 
+        isActive: true,
+        notificationsEnabled: true 
+      });
       
-      const notificationPromises = allActiveUsers.map(user => {
+      const notificationPromises = usersForNotifications.map(user => {
         const notification = new Notification({
           userId: user._id,
           type: 'info',
@@ -247,7 +250,7 @@ class EmailService {
       });
 
       await Promise.all(notificationPromises);
-      console.log(`📱 Notificaciones creadas para ${allActiveUsers.length} usuarios`);
+      console.log(`📱 Notificaciones creadas para ${usersForNotifications.length} usuarios con notificaciones habilitadas`);
 
       // Intentar enviar emails solo si el servicio está configurado
       let emailResults = [];
@@ -256,11 +259,10 @@ class EmailService {
         const usersWithEmail = await User.find({
           isActive: true,
           email: { $exists: true, $ne: null, $ne: '' },
-          'preferences.notifications.email': true,
-          'preferences.notifications.dataChanges': true
+          notificationsEnabled: true
         });
 
-        console.log(`📧 Enviando emails a ${usersWithEmail.length} usuarios`);
+        console.log(`📧 Enviando emails a ${usersWithEmail.length} usuarios con notificaciones habilitadas`);
         emailResults = await this.sendDashboardUpdateNotification(usersWithEmail, dashboardInfo);
       } else {
         console.log('📧 Emails no enviados - servicio no configurado');
@@ -270,7 +272,7 @@ class EmailService {
       return {
         emailsSent: emailResults.filter(r => r.status === 'fulfilled').length,
         emailsFailed: emailResults.filter(r => r.status === 'rejected').length,
-        notificationsCreated: allActiveUsers.length,
+        notificationsCreated: usersForNotifications.length,
         emailServiceConfigured: !!this.transporter
       };
 
