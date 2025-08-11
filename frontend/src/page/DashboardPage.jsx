@@ -213,10 +213,15 @@ const DashboardPage = () => {
                 pb: 4, // Más padding bottom para las animaciones
                 pt: 1  // Padding top también
             }}>
-                <Tabs 
-                    value={tabValue} 
-                    onChange={handleTabChange} 
-                    sx={{ 
+                <Tabs
+                    value={tabValue}
+                    onChange={handleTabChange}
+                    sx={{
+                        minHeight: 56,
+                        '& .MuiTabs-scroller': {
+                            overflow: 'visible',
+                            minHeight: 56,
+                        },
                         '& .MuiTabs-indicator': {
                             display: 'none',
                         },
