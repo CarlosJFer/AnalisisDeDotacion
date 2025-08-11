@@ -1,8 +1,13 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Box, Typography } from '@mui/material';
+import { useTheme as useAppTheme } from '../context/ThemeContext';
+import chartColors from '../theme/chartColors';
 
-const HistogramWidget = ({ data, xKey, barKey, color = '#2e7d32' }) => {
+const HistogramWidget = ({ data, xKey, barKey, color }) => {
+  const { isDarkMode } = useAppTheme();
+  const colors = chartColors[isDarkMode ? 'dark' : 'light'];
+  const barColor = color || colors.palette[0];
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
       <Box display="flex" alignItems="center" justifyContent="center" height="100%">
@@ -27,18 +32,18 @@ const HistogramWidget = ({ data, xKey, barKey, color = '#2e7d32' }) => {
       return (
         <Box
           sx={{
-            bgcolor: 'background.paper',
+            backgroundColor: colors.tooltipBg,
+            border: colors.tooltipBorder,
             p: 2,
-            border: 1,
-            borderColor: 'divider',
             borderRadius: 1,
             boxShadow: 2,
+            color: colors.tooltipText,
           }}
         >
           <Typography variant="body2" fontWeight="bold">
             {label}
           </Typography>
-          <Typography variant="body2" color={color}>
+          <Typography variant="body2" color={barColor}>
             Frecuencia: {payload[0].value}
           </Typography>
         </Box>
@@ -59,22 +64,24 @@ const HistogramWidget = ({ data, xKey, barKey, color = '#2e7d32' }) => {
             bottom: 5,
           }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis 
+          <CartesianGrid strokeDasharray="3 3" stroke={colors.grid} />
+          <XAxis
             dataKey={xKey}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 12, fill: colors.text }}
             angle={-45}
             textAnchor="end"
             height={80}
+            axisLine={{ stroke: colors.axis }}
           />
-          <YAxis 
-            tick={{ fontSize: 12 }}
-            label={{ value: 'Frecuencia', angle: -90, position: 'insideLeft' }}
+          <YAxis
+            tick={{ fontSize: 12, fill: colors.text }}
+            label={{ value: 'Frecuencia', angle: -90, position: 'insideLeft', fill: colors.text }}
+            axisLine={{ stroke: colors.axis }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar 
-            dataKey={barKey} 
-            fill={color}
+          <Bar
+            dataKey={barKey}
+            fill={barColor}
             radius={[2, 2, 0, 0]}
           />
         </BarChart>

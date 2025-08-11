@@ -1,29 +1,17 @@
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
-import {
-    PieChart,
-    Pie,
-    Cell,
-    ResponsiveContainer,
-    Tooltip,
-    Legend,
-    Sector
-} from 'recharts';
 
-const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey = 'count', nameKey = 'name' }) => {
-    const COLORS = [
-        '#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28CFF', 
-        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
-        '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9'
-    ];
+const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey = 'name' }) => {
+    const { isDarkMode } = useAppTheme();
+    const colors = chartColors[isDarkMode ? 'dark' : 'light'];
 
     const chartData = useMemo(() => {
         if (!data || !Array.isArray(data)) return [];
         return data.map((item, index) => ({
             ...item,
-            color: COLORS[index % COLORS.length]
+            color: colors.palette[index % colors.palette.length]
         }));
-    }, [data]);
+    }, [data, colors.palette]);
 
     const [activeIndex, setActiveIndex] = useState(null);
 
@@ -37,11 +25,11 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey = 'count
             const percentage = total > 0 ? ((data[dataKey] / total) * 100).toFixed(1) : 0;
             return (
                 <Box sx={{
-                    backgroundColor: isDarkMode ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+                    backgroundColor: colors.tooltipBg,
+                    border: colors.tooltipBorder,
                     borderRadius: '8px',
                     p: 2,
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                    color: colors.tooltipText,
                 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {data[nameKey]}
@@ -132,7 +120,7 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey = 'count
                     align="center"
                     sx={{
                         fontWeight: 600,
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                        color: colors.text,
                         mb: 2,
                     }}
                 >
@@ -197,7 +185,6 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey = 'count
                                 ))}
                             </Pie>
                             <Tooltip content={<CustomTooltip />} />
-                            <Legend content={renderLegend} />
                         </PieChart>
                     </ResponsiveContainer>
                 </Box>
