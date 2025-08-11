@@ -1,34 +1,20 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Box, Typography, Card, CardContent, CircularProgress, Alert, Grid, Tabs, Tab, Button } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import StatCard from '../components/StatCard';
+import CustomBarChart from '../components/CustomBarChart';
+import CustomDonutChart from '../components/CustomDonutChart';
+import CustomAreaChart from '../components/CustomAreaChart';
 
 const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode }) => (
-    <Card sx={{ 
-        height: '100%',
-        background: isDarkMode
-            ? 'rgba(45, 55, 72, 0.8)'
-            : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(20px)',
-        border: isDarkMode
-            ? '1px solid rgba(255, 255, 255, 0.1)'
-            : '1px solid rgba(0, 0, 0, 0.08)',
-        borderRadius: 3,
-        transition: 'all 0.3s ease',
-        '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: isDarkMode
-                ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                : '0 12px 40px rgba(0, 0, 0, 0.15)',
-        }
-    }}>
+    <GlassCard isDarkMode={isDarkMode}>
         <CardContent sx={{ p: 3 }}>
             <Typography 
                 color="text.secondary" 
@@ -53,30 +39,13 @@ const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode 
                 {value}
             </Typography>
         </CardContent>
-    </Card>
+    </GlassCard>
 ));
 
 const CustomBarChart = React.memo(({ data, xKey, barKey, title, isDarkMode, height = 300 }) => {
     const chartData = useMemo(() => data, [data]);
     return (
-        <Card sx={{ 
-            height: '100%',
-            background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: isDarkMode
-                    ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                    : '0 12px 40px rgba(0, 0, 0, 0.15)',
-            }
-        }}>
+        <GlassCard isDarkMode={isDarkMode}>
             <CardContent sx={{ p: 3 }}>
                 <Typography 
                     variant="h6" 
@@ -131,7 +100,7 @@ const CustomBarChart = React.memo(({ data, xKey, barKey, title, isDarkMode, heig
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 
@@ -277,7 +246,7 @@ const CustomDonutChartUnified = React.memo(({ data, title, isDarkMode, dataKey, 
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 
@@ -308,24 +277,7 @@ const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }
     };
     
     return (
-        <Card sx={{ 
-            height: '100%',
-            background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: isDarkMode
-                    ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                    : '0 12px 40px rgba(0, 0, 0, 0.15)',
-            }
-        }}>
+        <GlassCard isDarkMode={isDarkMode}>
             <CardContent sx={{ p: 3 }}>
                 <Typography 
                     variant="h6" 
@@ -375,7 +327,7 @@ const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 
@@ -666,7 +618,7 @@ const DashboardPage = () => {
                             isDarkMode={isDarkMode} 
                         />
                     </Grid>
-
+                    
                     {/* Gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
                     <Grid item xs={12} lg={8}>
                         <CustomDonutChartUnified 
@@ -767,7 +719,7 @@ const DashboardPage = () => {
                     </Grid>
 
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsBySecretaria.slice(0, 8)} 
                             title="Agentes por Secretaría (Top 8)" 
                             isDarkMode={isDarkMode}
@@ -776,7 +728,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByDependency.slice(0, 8)} 
                             title="Agentes por Dependencia (Top 8)" 
                             isDarkMode={isDarkMode}
@@ -829,7 +781,7 @@ const DashboardPage = () => {
                     </Grid>
 
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)} 
                             title="Agentes por Departamento (Top 8)" 
                             isDarkMode={isDarkMode}
@@ -838,7 +790,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={filterValidData(agentsByDivision, 'division').slice(0, 8)} 
                             title="Agentes por División (Top 8)" 
                             isDarkMode={isDarkMode}

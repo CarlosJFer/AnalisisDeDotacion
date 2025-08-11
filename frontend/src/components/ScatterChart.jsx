@@ -1,8 +1,13 @@
 import React, { useMemo } from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { CardContent, Typography, Box } from '@mui/material';
+import GlassCard from './GlassCard.jsx';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useTheme as useAppTheme } from '../context/ThemeContext';
+import chartColors from '../theme/chartColors';
 
-const CustomScatterChart = React.memo(({ data, title, isDarkMode, xKey = 'age', yKey = 'function' }) => {
+const CustomScatterChart = React.memo(({ data, title, xKey = 'age', yKey = 'function' }) => {
+    const { isDarkMode } = useAppTheme();
+    const colors = chartColors[isDarkMode ? 'dark' : 'light'];
     const chartData = useMemo(() => {
         if (!data || !Array.isArray(data)) return [];
         
@@ -24,20 +29,20 @@ const CustomScatterChart = React.memo(({ data, title, isDarkMode, xKey = 'age', 
         return Object.entries(groupedData).map(([func, points], index) => ({
             name: func,
             data: points,
-            color: `hsl(${index * 360 / Object.keys(groupedData).length}, 70%, 50%)`
+            color: colors.palette[index % colors.palette.length]
         }));
-    }, [data, xKey, yKey]);
+    }, [data, xKey, yKey, colors.palette]);
 
     const CustomTooltip = ({ active, payload }) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
             return (
                 <Box sx={{
-                    backgroundColor: isDarkMode ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+                    backgroundColor: colors.tooltipBg,
+                    border: colors.tooltipBorder,
                     borderRadius: '8px',
                     p: 2,
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                    color: colors.tooltipText,
                 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         Edad: {data.x} años
@@ -52,7 +57,8 @@ const CustomScatterChart = React.memo(({ data, title, isDarkMode, xKey = 'age', 
     };
 
     return (
-        <Card sx={{ 
+        <GlassCard isDarkMode={isDarkMode}>
+        <Card sx={{
             height: '100%',
             background: isDarkMode
                 ? 'rgba(45, 55, 72, 0.8)'
@@ -77,7 +83,7 @@ const CustomScatterChart = React.memo(({ data, title, isDarkMode, xKey = 'age', 
                     align="center"
                     sx={{
                         fontWeight: 600,
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                        color: colors.text,
                         mb: 2,
                     }}
                 >
@@ -86,36 +92,32 @@ const CustomScatterChart = React.memo(({ data, title, isDarkMode, xKey = 'age', 
                 <Box sx={{ height: 400 }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                            <CartesianGrid 
-                                strokeDasharray="3 3" 
-                                stroke={isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}
+                            <CartesianGrid
+                                strokeDasharray="3 3"
+                                stroke={colors.grid}
                             />
-                            <XAxis 
-                                type="number" 
-                                dataKey="x" 
+                            <XAxis
+                                type="number"
+                                dataKey="x"
                                 name="Edad"
-                                tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
-                                axisLine={{ stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)' }}
+                                tick={{ fill: colors.text }}
+                                axisLine={{ stroke: colors.axis }}
                             />
-                            <YAxis 
-                                type="number" 
-                                dataKey="y" 
+                            <YAxis
+                                type="number"
+                                dataKey="y"
                                 name="Función"
                                 domain={[0, 1]}
                                 tick={false}
-                                axisLine={{ stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)' }}
+                                axisLine={{ stroke: colors.axis }}
                             />
                             <Tooltip content={<CustomTooltip />} />
-                            <Legend 
-                                wrapperStyle={{
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.7)',
-                                }}
-                            />
-                            {chartData.map((series, index) => (
-                                <Scatter 
-                                    key={series.name} 
-                                    name={series.name} 
-                                    data={series.data} 
+                            <Legend wrapperStyle={{ color: colors.text }} />
+                            {chartData.map((series) => (
+                                <Scatter
+                                    key={series.name}
+                                    name={series.name}
+                                    data={series.data}
                                     fill={series.color}
                                 />
                             ))}
@@ -123,7 +125,7 @@ const CustomScatterChart = React.memo(({ data, title, isDarkMode, xKey = 'age', 
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 
