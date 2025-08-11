@@ -227,13 +227,17 @@ const DashboardPage = () => {
                         '& .MuiTab-root': {
                             textTransform: 'none',
                             fontWeight: 600,
-                            fontSize: '0.9rem',
-                            minHeight: 48,
-                            px: 3,
-                            py: 1.5,
+                            fontSize: '1rem',
+                            minHeight: 56,
+                            px: 4,
+                            py: 2,
                             borderRadius: 3,
-                            background: isDarkMode 
-                                ? 'rgba(255, 255, 255, 0.05)' 
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 1,
+                            background: isDarkMode
+                                ? 'rgba(255, 255, 255, 0.05)'
                                 : 'rgba(255, 255, 255, 0.7)',
                             border: isDarkMode
                                 ? '1px solid rgba(255, 255, 255, 0.1)'
@@ -241,8 +245,12 @@ const DashboardPage = () => {
                             color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
                             transition: 'all 0.3s ease',
                             position: 'relative', // Para z-index
+                            '& .MuiTab-iconWrapper': {
+                                fontSize: '1.5rem',
+                                marginBottom: '0 !important',
+                            },
                             '&:hover': {
-                                transform: 'translateY(-4px)', // Más movimiento
+                                transform: 'scale(1.05)', // Animación más fluida
                                 boxShadow: isDarkMode
                                     ? '0 8px 25px rgba(33, 150, 243, 0.4)' // Sombra más grande
                                     : '0 8px 25px rgba(33, 150, 243, 0.3)',
@@ -252,7 +260,7 @@ const DashboardPage = () => {
                                 background: 'linear-gradient(135deg, #2196f3, #1976d2)',
                                 color: 'white',
                                 fontWeight: 600,
-                                transform: 'translateY(-4px)',
+                                transform: 'scale(1.05)',
                                 boxShadow: isDarkMode
                                     ? '0 8px 25px rgba(33, 150, 243, 0.5)'
                                     : '0 8px 25px rgba(33, 150, 243, 0.4)',
