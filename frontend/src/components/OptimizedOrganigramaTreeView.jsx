@@ -83,7 +83,7 @@ const EstadoChip = memo(({ estado, variablesCount }) => {
 });
 
 // Función de resaltado ultra-optimizada
-const highlightText = memo(({ text, term }) => {
+const HighlightText = memo(({ text, term }) => {
   if (!term || term.length < 2) return text;
   
   const parts = String(text).split(new RegExp(`(${term})`, 'gi'));
@@ -206,7 +206,7 @@ const TreeNode = memo(({
                   lineHeight: 1.2,
                 }}
               >
-                <highlightText text={node.nombre} term={searchTerm} />
+                <HighlightText text={node.nombre} term={searchTerm} />
               </Typography>
               
               {estado && variables.length > 0 && (
