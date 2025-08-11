@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Box, Typography, Card, CardContent, CircularProgress, Alert, Grid, Button } from '@mui/material';
+import { Box, Typography, CardContent, CircularProgress, Alert, Grid, Button } from '@mui/material';
+import GlassCard from '../components/GlassCard.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import apiClient from '../services/api';
@@ -10,24 +11,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 
 const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode }) => (
-    <Card sx={{ 
-        height: '100%',
-        background: isDarkMode
-            ? 'rgba(45, 55, 72, 0.8)'
-            : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(20px)',
-        border: isDarkMode
-            ? '1px solid rgba(255, 255, 255, 0.1)'
-            : '1px solid rgba(0, 0, 0, 0.08)',
-        borderRadius: 3,
-        transition: 'all 0.3s ease',
-        '&:hover': {
-            transform: 'translateY(-4px)',
-            boxShadow: isDarkMode
-                ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                : '0 12px 40px rgba(0, 0, 0, 0.15)',
-        }
-    }}>
+    <GlassCard isDarkMode={isDarkMode}>
         <CardContent sx={{ p: 3 }}>
             <Typography 
                 color="text.secondary" 
@@ -52,30 +36,13 @@ const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode 
                 {value}
             </Typography>
         </CardContent>
-    </Card>
+    </GlassCard>
 ));
 
 const CustomBarChart = React.memo(({ data, xKey, barKey, title, isDarkMode, height = 300 }) => {
     const chartData = useMemo(() => data, [data]);
     return (
-        <Card sx={{ 
-            height: '100%',
-            background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: isDarkMode
-                    ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                    : '0 12px 40px rgba(0, 0, 0, 0.15)',
-            }
-        }}>
+        <GlassCard isDarkMode={isDarkMode}>
             <CardContent sx={{ p: 3 }}>
                 <Typography 
                     variant="h6" 
@@ -130,7 +97,7 @@ const CustomBarChart = React.memo(({ data, xKey, barKey, title, isDarkMode, heig
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 
@@ -196,24 +163,7 @@ const CustomDonutChartUnified = React.memo(({ data, title, isDarkMode, dataKey, 
     };
     
     return (
-        <Card sx={{ 
-            height: height, // Altura personalizable
-            background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: isDarkMode
-                    ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                    : '0 12px 40px rgba(0, 0, 0, 0.15)',
-            }
-        }}>
+        <GlassCard isDarkMode={isDarkMode} sx={{ height }}>
             <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Typography 
                     variant="h6" 
@@ -285,7 +235,7 @@ const CustomDonutChartUnified = React.memo(({ data, title, isDarkMode, dataKey, 
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 
@@ -316,24 +266,7 @@ const CustomAreaChartByArea = React.memo(({ data, title, isDarkMode, xKey, yKey 
     };
     
     return (
-        <Card sx={{ 
-            height: '100%',
-            background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: isDarkMode
-                    ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                    : '0 12px 40px rgba(0, 0, 0, 0.15)',
-            }
-        }}>
+        <GlassCard isDarkMode={isDarkMode}>
             <CardContent sx={{ p: 3 }}>
                 <Typography 
                     variant="h6" 
@@ -390,7 +323,7 @@ const CustomAreaChartByArea = React.memo(({ data, title, isDarkMode, xKey, yKey 
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 

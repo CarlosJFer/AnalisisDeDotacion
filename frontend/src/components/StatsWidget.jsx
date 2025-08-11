@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  Box,
-  Grid,
-  Typography,
-  Paper,
-  Avatar,
-  Chip,
-} from '@mui/material';
+import { Box, Grid, Typography, Avatar, Chip } from '@mui/material';
+import GlassCard from './GlassCard.jsx';
 import {
   People as PeopleIcon,
   AttachMoney as MoneyIcon,
@@ -15,14 +9,14 @@ import {
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
-const StatCard = ({ icon, title, value, subtitle, color, trend }) => (
+const StatCard = ({ icon, title, value, subtitle, color, trend, isDarkMode }) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.3 }}
   >
-    <Paper
-      elevation={1}
+    <GlassCard
+      isDarkMode={isDarkMode}
       sx={{
         p: 2,
         height: '100%',
@@ -31,7 +25,9 @@ const StatCard = ({ icon, title, value, subtitle, color, trend }) => (
         alignItems: 'center',
         textAlign: 'center',
         borderRadius: 2,
-        background: `linear-gradient(135deg, ${color}15 0%, transparent 100%)`,
+        background: isDarkMode
+          ? `linear-gradient(135deg, ${color}15 0%, rgba(45,55,72,0.8) 100%)`
+          : `linear-gradient(135deg, ${color}15 0%, rgba(255,255,255,0.9) 100%)`,
         border: `1px solid ${color}20`,
       }}
     >
@@ -64,11 +60,11 @@ const StatCard = ({ icon, title, value, subtitle, color, trend }) => (
           sx={{ mt: 0.5 }}
         />
       )}
-    </Paper>
+    </GlassCard>
   </motion.div>
 );
 
-const StatsWidget = ({ data }) => {
+const StatsWidget = ({ data, isDarkMode }) => {
   if (!data) {
     return (
       <Box display="flex" alignItems="center" justifyContent="center" height="100%">
@@ -132,7 +128,7 @@ const StatsWidget = ({ data }) => {
       <Grid container spacing={2} sx={{ height: '100%' }}>
         {stats.map((stat, index) => (
           <Grid item xs={6} md={3} key={index} sx={{ height: '50%' }}>
-            <StatCard {...stat} />
+            <StatCard {...stat} isDarkMode={isDarkMode} />
           </Grid>
         ))}
       </Grid>

@@ -13,6 +13,7 @@ import {
   FormControlLabel,
   Tooltip,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   MoreVert as MoreVertIcon,
   Settings as SettingsIcon,
@@ -43,6 +44,8 @@ const DashboardGrid = ({ data, secretariaId }) => {
   } = useDashboard();
 
   const { showToast } = useNotifications();
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === 'dark';
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedWidget, setSelectedWidget] = useState(null);
 
@@ -125,7 +128,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
         );
         break;
       case 'stats':
-        content = <StatsWidget data={data?.resumen} />;
+        content = <StatsWidget data={data?.resumen} isDarkMode={isDarkMode} />;
         break;
       case 'histogram':
         content = (
