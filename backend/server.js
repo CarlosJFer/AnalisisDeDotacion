@@ -16,6 +16,8 @@ const variableValueRoutes = require('./routes/variableValues');
 const variableEspecificaRoutes = require('./routes/variableEspecifica');
 const importTemplateRoutes = require('./routes/importTemplates');
 const adminRoutes = require('./routes/adminRoutes');
+const functionRoutes = require('./routes/functions');
+const initFunctions = require('./config/initFunctions');
 
 const app = express();
 
@@ -28,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Conexión a MongoDB Atlas usando la función centralizada
-connectDB();
+connectDB().then(initFunctions);
 
 // Rutas de la API
 app.use('/api/auth', authRoutes);
@@ -41,6 +43,7 @@ app.use('/api/variable-values', variableValueRoutes);
 app.use('/api/variables-especificas', variableEspecificaRoutes);
 app.use('/api/templates', importTemplateRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/functions', functionRoutes);
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {

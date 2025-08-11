@@ -23,6 +23,7 @@ const OrganigramaPage = lazy(() => import('./page/OrganigramaPage.jsx'));
 const UploadPage = lazy(() => import('./page/UploadPage.jsx'));
 const GestionPlantillasPage = lazy(() => import('./page/GestionPlantillasPage.jsx'));
 import GestionVariablesPage from './page/GestionVariablesPage.jsx';
+const FunctionCenterPage = lazy(() => import('./page/FunctionCenterPage.jsx'));
 const DebugComponent = lazy(() => import('./components/DebugComponent.jsx'));
 
 // Componentes
@@ -71,6 +72,7 @@ const AppLayout = () => {
               <Route path="/admin/organigrama" element={<OrganigramaPage />} />
               <Route path="/admin/variables" element={<GestionVariablesPage />} />
               <Route path="/admin/plantillas" element={<GestionPlantillasPage />} />
+              <Route path="/admin/funciones" element={<FunctionCenterPage />} />
             </Route>
             {/* Ruta de depuración temporal */}
             <Route path="/debug" element={<DebugComponent />} />
