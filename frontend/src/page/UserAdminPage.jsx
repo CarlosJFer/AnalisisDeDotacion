@@ -9,6 +9,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PeopleIcon from '@mui/icons-material/People';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { OptimizedTextField, OptimizedSelect, useOptimizedForm } from '../components/OptimizedFormField.jsx';
+import AdminSectionLayout from '../components/AdminSectionLayout.jsx';
 
 // Componente de fila de usuario memoizado
 const UserRow = memo(({ 
@@ -358,38 +359,13 @@ const UserAdminPage = () => {
   }
 
   return (
-    <Box 
-      sx={{ 
-        maxWidth: 1200, 
-        mx: 'auto', 
-        p: 4,
-        background: isDarkMode
-          ? 'linear-gradient(135deg, rgba(45, 55, 72, 0.3) 0%, rgba(26, 32, 44, 0.3) 100%)'
-          : 'linear-gradient(135deg, rgba(240, 249, 240, 0.3) 0%, rgba(227, 242, 253, 0.3) 100%)',
-        borderRadius: 3,
-        minHeight: '80vh',
-      }}
+    <AdminSectionLayout
+      title="Gestión de Usuarios"
+      description="Crea, edita y elimina usuarios del sistema."
+      icon={PeopleIcon}
+      color="#2196f3"
+      maxWidth={1200}
     >
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-        <Avatar sx={{ 
-          width: 48, 
-          height: 48, 
-          background: 'linear-gradient(135deg, #2196f3, #1976d2)',
-        }}>
-          <PeopleIcon sx={{ fontSize: 24 }} />
-        </Avatar>
-        <Typography 
-          variant="h3" 
-          sx={{
-            fontWeight: 700,
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-          }}
-        >
-          Gestión de Usuarios
-        </Typography>
-      </Box>
-
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {/* Formulario de creación optimizado */}
@@ -539,7 +515,7 @@ const UserAdminPage = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </AdminSectionLayout>
   );
 };
 

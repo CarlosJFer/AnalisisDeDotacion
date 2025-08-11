@@ -18,7 +18,6 @@ const UserAdminPage = lazy(() => import('./page/UserAdminPage.jsx'));
 const SecretariaAdminPage = lazy(() => import('./page/SecretariaAdminPage.jsx'));
 const ChangePasswordPage = lazy(() => import('./page/ChangePasswordPage.jsx'));
 const ComparisonPage = lazy(() => import('./page/ComparisonPage.jsx'));
-const AuditPage = lazy(() => import('./page/AuditPage.jsx'));
 const SettingsPage = lazy(() => import('./page/SettingsPage.jsx'));
 const OrganigramaPage = lazy(() => import('./page/OrganigramaPage.jsx'));
 const UploadPage = lazy(() => import('./page/UploadPage.jsx'));
@@ -69,7 +68,6 @@ const AppLayout = () => {
               <Route path="/admin/users" element={<UserAdminPage />} />
               <Route path="/admin/secretarias" element={<SecretariaAdminPage />} />
               <Route path="/admin/upload" element={<UploadPage />} />
-              <Route path="/admin/audit" element={<AuditPage />} />
               <Route path="/admin/organigrama" element={<OrganigramaPage />} />
               <Route path="/admin/variables" element={<GestionVariablesPage />} />
               <Route path="/admin/plantillas" element={<GestionPlantillasPage />} />

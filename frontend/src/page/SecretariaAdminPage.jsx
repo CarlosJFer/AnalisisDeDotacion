@@ -8,6 +8,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { OptimizedTextField, OptimizedCheckbox, useOptimizedForm } from '../components/OptimizedFormField.jsx';
+import AdminSectionLayout from '../components/AdminSectionLayout.jsx';
 
 // Componente de fila memoizado para evitar re-renders
 const SecretariaRow = memo(({ 
@@ -326,38 +327,13 @@ const SecretariaAdminPage = () => {
   }
 
   return (
-    <Box 
-      sx={{ 
-        maxWidth: 1400, 
-        mx: 'auto', 
-        p: 4,
-        background: isDarkMode
-          ? 'linear-gradient(135deg, rgba(45, 55, 72, 0.3) 0%, rgba(26, 32, 44, 0.3) 100%)'
-          : 'linear-gradient(135deg, rgba(240, 249, 240, 0.3) 0%, rgba(227, 242, 253, 0.3) 100%)',
-        borderRadius: 3,
-        minHeight: '80vh',
-      }}
+    <AdminSectionLayout
+      title="Gestión de Secretarias"
+      description="Administra las dependencias jerárquicas del organigrama."
+      icon={AccountTreeIcon}
+      color="#4caf50"
+      maxWidth={1400}
     >
-      {/* Header */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 4 }}>
-        <Avatar sx={{ 
-          width: 48, 
-          height: 48, 
-          background: 'linear-gradient(135deg, #4caf50, #388e3c)',
-        }}>
-          <AccountTreeIcon sx={{ fontSize: 24 }} />
-        </Avatar>
-        <Typography 
-          variant="h3" 
-          sx={{
-            fontWeight: 700,
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-          }}
-        >
-          Gestión de Secretarías
-        </Typography>
-      </Box>
-
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {/* Formulario de creación optimizado */}
@@ -660,7 +636,7 @@ const SecretariaAdminPage = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Box>
+    </AdminSectionLayout>
   );
 };
 

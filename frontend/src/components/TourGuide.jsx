@@ -81,12 +81,6 @@ const TourGuide = ({ isActive, onComplete, tourType = 'dashboard' }) => {
       placement: 'bottom',
     },
     {
-      target: '[data-tour="audit-logs"]',
-      content: 'Revisa el historial completo de actividades, descargas y cambios realizados en el sistema.',
-      title: 'Registros de Auditoría',
-      placement: 'bottom',
-    },
-    {
       target: '[data-tour="system-settings"]',
       content: 'Configura integraciones con servicios externos, notificaciones automáticas y políticas de retención de datos.',
       title: 'Configuración del Sistema',
