@@ -28,8 +28,10 @@ import {
   CircularProgress
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { useTheme } from '../context/ThemeContext.jsx';
 import templateService from '../services/templateService';
+import AdminSectionLayout from '../components/AdminSectionLayout.jsx';
 
 // --- Componente de Modal --- //
 const TemplateModal = ({ isOpen, onClose, onSave, template, isDarkMode }) => {
@@ -293,42 +295,15 @@ const GestionPlantillasPage = () => {
   }
 
   return (
-    <Box 
-      sx={{ 
-        maxWidth: 1200, 
-        mx: 'auto', 
-        p: 4,
-        background: isDarkMode
-          ? 'linear-gradient(135deg, rgba(45, 55, 72, 0.3) 0%, rgba(26, 32, 44, 0.3) 100%)'
-          : 'linear-gradient(135deg, rgba(240, 249, 240, 0.3) 0%, rgba(227, 242, 253, 0.3) 100%)',
-        borderRadius: 3,
-        minHeight: '80vh',
-      }}
+    <AdminSectionLayout
+      title="Gestión de Plantillas"
+      description="Administra las plantillas de importación de Excel"
+      icon={DescriptionIcon}
+      color="#00bcd4"
+      maxWidth={1200}
     >
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-        <Box>
-          <Typography 
-            variant="h3" 
-            sx={{
-              fontWeight: 700,
-              mb: 1,
-              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            }}
-          >
-            Gestión de Plantillas
-          </Typography>
-          <Typography 
-            variant="h6" 
-            sx={{
-              color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
-              fontWeight: 400,
-            }}
-          >
-            Administra las plantillas de importación de Excel
-          </Typography>
-        </Box>
-        <Button 
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 4 }}>
+        <Button
           onClick={() => handleOpenModal()}
           variant="contained"
           startIcon={<AddIcon />}
@@ -475,14 +450,14 @@ const GestionPlantillasPage = () => {
       </Card>
 
       {/* Modal */}
-      <TemplateModal 
-        isOpen={isModalOpen} 
-        onClose={handleCloseModal} 
-        onSave={handleSaveTemplate} 
+      <TemplateModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveTemplate}
         template={selectedTemplate}
         isDarkMode={isDarkMode}
       />
-    </Box>
+    </AdminSectionLayout>
   );
 };
 
