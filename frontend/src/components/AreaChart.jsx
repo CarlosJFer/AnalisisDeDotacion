@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { CardContent, Typography, Box } from '@mui/material';
+import GlassCard from './GlassCard.jsx';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
 import chartColors from '../theme/chartColors';
@@ -37,6 +38,7 @@ const CustomAreaChart = React.memo(({ data, title, xKey = 'range', yKey = 'count
     };
 
     return (
+        <GlassCard isDarkMode={isDarkMode}>
         <Card sx={{
             height: '100%',
             background: isDarkMode
@@ -55,6 +57,7 @@ const CustomAreaChart = React.memo(({ data, title, xKey = 'range', yKey = 'count
                     : '0 12px 40px rgba(0, 0, 0, 0.15)',
             }
         }}>
+
             <CardContent sx={{ p: 3 }}>
                 <Typography 
                     variant="h6" 
@@ -104,7 +107,7 @@ const CustomAreaChart = React.memo(({ data, title, xKey = 'range', yKey = 'count
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 

@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { CardContent, Typography, Box } from '@mui/material';
+import GlassCard from './GlassCard.jsx';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
 import chartColors from '../theme/chartColors';
@@ -56,6 +57,7 @@ const CustomScatterChart = React.memo(({ data, title, xKey = 'age', yKey = 'func
     };
 
     return (
+        <GlassCard isDarkMode={isDarkMode}>
         <Card sx={{
             height: '100%',
             background: isDarkMode
@@ -123,7 +125,7 @@ const CustomScatterChart = React.memo(({ data, title, xKey = 'age', yKey = 'func
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 

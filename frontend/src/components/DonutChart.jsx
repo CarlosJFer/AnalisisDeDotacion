@@ -1,3 +1,7 @@
+import React, { useMemo } from 'react';
+import { CardContent, Typography, Box } from '@mui/material';
+import GlassCard from './GlassCard.jsx';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import React, { useMemo, useState } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 
@@ -68,7 +72,7 @@ const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey =
             </text>
         );
     };
-
+    
     const renderLegend = ({ payload }) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', mt: 2 }}>
             {payload.map((entry, index) => {
@@ -95,6 +99,7 @@ const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey =
     );
 
     return (
+        <GlassCard isDarkMode={isDarkMode}>
         <Card sx={{
             height: '100%',
             background: isDarkMode
@@ -189,7 +194,7 @@ const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey =
                     </ResponsiveContainer>
                 </Box>
             </CardContent>
-        </Card>
+        </GlassCard>
     );
 });
 
