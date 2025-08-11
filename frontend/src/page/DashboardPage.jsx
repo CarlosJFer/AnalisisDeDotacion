@@ -68,8 +68,11 @@ const DashboardPage = () => {
         const fetchAllData = async () => {
             setLoading(true);
             setError('');
-            
+
             try {
+                const funcRes = await apiClient.get('/functions');
+                const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
+
                 const [
                     totalResponse,
                     ageDistResponse,
@@ -84,18 +87,18 @@ const DashboardPage = () => {
                     departamentoResponse,
                     divisionResponse
                 ] = await Promise.all([
-                    apiClient.get('/analytics/agents/total'),
-                    apiClient.get('/analytics/agents/age-distribution'),
-                    apiClient.get('/analytics/agents/age-by-function'),
-                    apiClient.get('/analytics/agents/by-function'),
-                    apiClient.get('/analytics/agents/by-employment-type'),
-                    apiClient.get('/analytics/agents/by-dependency'),
-                    apiClient.get('/analytics/agents/by-secretaria'),
-                    apiClient.get('/analytics/agents/by-subsecretaria'),
-                    apiClient.get('/analytics/agents/by-direccion-general'),
-                    apiClient.get('/analytics/agents/by-direccion'),
-                    apiClient.get('/analytics/agents/by-departamento'),
-                    apiClient.get('/analytics/agents/by-division')
+                    apiClient.get(funcs.totalAgents),
+                    apiClient.get(funcs.ageDistribution),
+                    apiClient.get(funcs.ageByFunction),
+                    apiClient.get(funcs.agentsByFunction),
+                    apiClient.get(funcs.agentsByEmploymentType),
+                    apiClient.get(funcs.agentsByDependency),
+                    apiClient.get(funcs.agentsBySecretaria),
+                    apiClient.get(funcs.agentsBySubsecretaria),
+                    apiClient.get(funcs.agentsByDireccionGeneral),
+                    apiClient.get(funcs.agentsByDireccion),
+                    apiClient.get(funcs.agentsByDepartamento),
+                    apiClient.get(funcs.agentsByDivision)
                 ]);
 
                 setTotalAgents(totalResponse.data.total);

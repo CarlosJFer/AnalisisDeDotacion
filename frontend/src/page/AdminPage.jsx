@@ -5,6 +5,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import TuneIcon from '@mui/icons-material/Tune';
 import DescriptionIcon from '@mui/icons-material/Description';
+import FunctionsIcon from '@mui/icons-material/Functions';
 import { useTheme } from '../context/ThemeContext.jsx';
 import AdminCard from '../components/AdminCard.jsx';
 
@@ -51,6 +52,14 @@ const AdminPage = () => {
             link: '/admin/plantillas',
             color: '#00bcd4', // Cyan
             bgColor: isDarkMode ? 'rgba(0, 188, 212, 0.1)' : 'rgba(0, 188, 212, 0.05)',
+        },
+        {
+            title: 'Centro de Funciones',
+            description: 'Administra las funciones usadas en los gráficos del dashboard.',
+            icon: FunctionsIcon,
+            link: '/admin/funciones',
+            color: '#673ab7',
+            bgColor: isDarkMode ? 'rgba(103, 58, 183, 0.1)' : 'rgba(103, 58, 183, 0.05)',
         },
     ];
 
