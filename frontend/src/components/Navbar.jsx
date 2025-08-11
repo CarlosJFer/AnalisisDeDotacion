@@ -31,46 +31,10 @@ import LockIcon from '@mui/icons-material/Lock';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
-
-// Componente de notificación mejorado
-const EnhancedAlert = ({ severity, children, sx = {} }) => {
-  const { isDarkMode } = useTheme();
-  
-  return (
-    <Alert 
-      severity={severity} 
-      sx={{ 
-        mb: 2,
-        '& .MuiAlert-message': {
-          fontWeight: 600,
-          fontSize: '1rem',
-          lineHeight: 1.4
-        },
-        '& .MuiAlert-icon': {
-          fontSize: '1.4rem'
-        },
-        '&.MuiAlert-standardSuccess': {
-          backgroundColor: isDarkMode ? 'rgba(76, 175, 80, 0.15)' : 'rgba(76, 175, 80, 0.1)',
-          border: `1px solid ${isDarkMode ? 'rgba(76, 175, 80, 0.3)' : 'rgba(76, 175, 80, 0.2)'}`,
-        },
-        '&.MuiAlert-standardError': {
-          backgroundColor: isDarkMode ? 'rgba(244, 67, 54, 0.15)' : 'rgba(244, 67, 54, 0.1)',
-          border: `1px solid ${isDarkMode ? 'rgba(244, 67, 54, 0.3)' : 'rgba(244, 67, 54, 0.2)'}`,
-        },
-        ...sx
-      }}
-    >
-      {children}
-    </Alert>
-  );
-};
+import EnhancedAlert from './EnhancedAlert.jsx';
+import { EmailDialog, PasswordDialog, UsernameDialog } from './ProfileDialogs.jsx';
 
 const Navbar = () => {
   const [secretarias, setSecretarias] = useState([]);
@@ -878,327 +842,44 @@ const Navbar = () => {
         </Alert>
       </Snackbar>
 
-      {/* Diálogo para correo electrónico */}
-      <Dialog 
-        open={showEmailDialog} 
+      <EmailDialog
+        open={showEmailDialog}
         onClose={() => handleDialogClose('email')}
-        PaperProps={{
-          sx: {
-            background: isDarkMode
-              ? 'rgba(45, 55, 72, 0.95)'
-              : 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-              ? '1px solid rgba(255, 255, 255, 0.1)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-          }
-        }}
-      >
-        <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          {email ? 'Editar Correo Electrónico' : 'Agregar Correo Electrónico'}
-        </DialogTitle>
-        <DialogContent>
-          {profileError && (
-            <EnhancedAlert severity="error">
-              {profileError}
-            </EnhancedAlert>
-          )}
-          {profileSuccess && (
-            <EnhancedAlert severity="success">
-              {profileSuccess}
-            </EnhancedAlert>
-          )}
-          <TextField
-            id="email-field"
-            name="email"
-            autoFocus
-            margin="dense"
-            label="Correo Electrónico"
-            type="email"
-            fullWidth
-            variant="outlined"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 2, gap: 1 }}>
-          {email && (
-            <Button 
-              onClick={handleEmailDelete}
-              color="error"
-              variant="outlined"
-              sx={{ 
-                borderColor: isDarkMode ? 'rgba(244, 67, 54, 0.5)' : 'rgba(244, 67, 54, 0.5)',
-                color: isDarkMode ? '#ef5350' : '#d32f2f',
-                '&:hover': {
-                  borderColor: isDarkMode ? '#ef5350' : '#d32f2f',
-                  background: isDarkMode ? 'rgba(244, 67, 54, 0.1)' : 'rgba(244, 67, 54, 0.1)',
-                },
-              }}
-            >
-              Eliminar
-            </Button>
-          )}
-          <Button 
-            onClick={() => handleDialogClose('email')}
-            sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleEmailChange}
-            variant="contained"
-            sx={{ 
-              background: isDarkMode ? '#81c784' : '#2e7d32',
-              '&:hover': {
-                background: isDarkMode ? '#66bb6a' : '#1b5e20',
-              },
-            }}
-          >
-            {email ? 'Actualizar' : 'Agregar'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        isDarkMode={isDarkMode}
+        email={email}
+        newEmail={newEmail}
+        setNewEmail={setNewEmail}
+        profileError={profileError}
+        profileSuccess={profileSuccess}
+        handleEmailChange={handleEmailChange}
+        handleEmailDelete={handleEmailDelete}
+      />
 
-      {/* Diálogo para cambiar contraseña */}
-      <Dialog 
-        open={showPasswordDialog} 
+      <PasswordDialog
+        open={showPasswordDialog}
         onClose={() => handleDialogClose('password')}
-        PaperProps={{
-          sx: {
-            background: isDarkMode
-              ? 'rgba(45, 55, 72, 0.95)'
-              : 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-              ? '1px solid rgba(255, 255, 255, 0.1)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-          }
-        }}
-      >
-        <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          Cambiar Contraseña
-        </DialogTitle>
-        <DialogContent>
-          {profileError && (
-            <EnhancedAlert severity="error">
-              {profileError}
-            </EnhancedAlert>
-          )}
-          {profileSuccess && (
-            <EnhancedAlert severity="success">
-              {profileSuccess}
-            </EnhancedAlert>
-          )}
-          <TextField
-            id="current-password-field"
-            name="currentPassword"
-            autoFocus
-            margin="dense"
-            label="Contraseña Actual"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-          <TextField
-            id="new-password-field"
-            name="newPassword"
-            margin="dense"
-            label="Nueva Contraseña"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-          <TextField
-            id="confirm-password-field"
-            name="confirmPassword"
-            margin="dense"
-            label="Confirmar Nueva Contraseña"
-            type="password"
-            fullWidth
-            variant="outlined"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button 
-            onClick={() => handleDialogClose('password')}
-            sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handlePasswordChange}
-            variant="contained"
-            sx={{ 
-              background: isDarkMode ? '#81c784' : '#2e7d32',
-              '&:hover': {
-                background: isDarkMode ? '#66bb6a' : '#1b5e20',
-              },
-            }}
-          >
-            Cambiar Contraseña
-          </Button>
-        </DialogActions>
-      </Dialog>
+        isDarkMode={isDarkMode}
+        currentPassword={currentPassword}
+        newPassword={newPassword}
+        confirmPassword={confirmPassword}
+        setCurrentPassword={setCurrentPassword}
+        setNewPassword={setNewPassword}
+        setConfirmPassword={setConfirmPassword}
+        profileError={profileError}
+        profileSuccess={profileSuccess}
+        handlePasswordChange={handlePasswordChange}
+      />
 
-      {/* Diálogo para cambiar nombre de usuario */}
-      <Dialog 
-        open={showUsernameDialog} 
+      <UsernameDialog
+        open={showUsernameDialog}
         onClose={() => handleDialogClose('username')}
-        PaperProps={{
-          sx: {
-            background: isDarkMode
-              ? 'rgba(45, 55, 72, 0.95)'
-              : 'rgba(255, 255, 255, 0.95)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-              ? '1px solid rgba(255, 255, 255, 0.1)'
-              : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-          }
-        }}
-      >
-        <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          Cambiar Nombre de Usuario
-        </DialogTitle>
-        <DialogContent>
-          {profileError && (
-            <EnhancedAlert severity="error">
-              {profileError}
-            </EnhancedAlert>
-          )}
-          {profileSuccess && (
-            <EnhancedAlert severity="success">
-              {profileSuccess}
-            </EnhancedAlert>
-          )}
-          <TextField
-            id="username-field"
-            name="username"
-            autoFocus
-            margin="dense"
-            label="Nuevo Nombre de Usuario"
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                '& fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
-                },
-                '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: isDarkMode ? '#81c784' : '#2e7d32',
-                },
-              },
-              '& .MuiInputLabel-root': {
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              },
-            }}
-          />
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button 
-            onClick={() => handleDialogClose('username')}
-            sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleUsernameChange}
-            variant="contained"
-            sx={{ 
-              background: isDarkMode ? '#81c784' : '#2e7d32',
-              '&:hover': {
-                background: isDarkMode ? '#66bb6a' : '#1b5e20',
-              },
-            }}
-          >
-            Cambiar Usuario
-          </Button>
-        </DialogActions>
-      </Dialog>
+        isDarkMode={isDarkMode}
+        newUsername={newUsername}
+        setNewUsername={setNewUsername}
+        profileError={profileError}
+        profileSuccess={profileSuccess}
+        handleUsernameChange={handleUsernameChange}
+      />
     </AppBar>
   );
 };
