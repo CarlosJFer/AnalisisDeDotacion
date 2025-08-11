@@ -16,6 +16,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import HomeIcon from '@mui/icons-material/Home';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
@@ -444,13 +445,13 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Dashboard */}
+          {/* Botón Dashboard General */}
           {user && (
-            <Button 
-              component={Link} 
+            <Button
+              component={Link}
               to="/dashboard"
               startIcon={<DashboardIcon />}
-              sx={{ 
+              sx={{
                 color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                 fontWeight: 600,
                 px: 3,
@@ -458,15 +459,15 @@ const Navbar = () => {
                 borderRadius: 3,
                 textTransform: 'none',
                 fontSize: '0.9rem',
-                background: isDarkMode 
-                  ? 'rgba(255, 255, 255, 0.05)' 
+                background: isDarkMode
+                  ? 'rgba(255, 255, 255, 0.05)'
                   : 'rgba(255, 255, 255, 0.7)',
                 border: isDarkMode
                   ? '1px solid rgba(255, 255, 255, 0.1)'
                   : '1px solid rgba(0, 0, 0, 0.08)',
                 '&:hover': {
-                  background: isDarkMode 
-                    ? 'rgba(33, 150, 243, 0.2)' 
+                  background: isDarkMode
+                    ? 'rgba(33, 150, 243, 0.2)'
                     : 'rgba(33, 150, 243, 0.15)',
                   color: isDarkMode ? '#64b5f6' : '#1976d2',
                   transform: 'translateY(-2px)',
@@ -477,7 +478,44 @@ const Navbar = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Dashboard
+              Dashboard General
+            </Button>
+          )}
+
+          {/* Botón Dashboard Específico */}
+          {user && (
+            <Button
+              component={Link}
+              to="/"
+              startIcon={<DashboardCustomizeIcon />}
+              sx={{
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
+                borderRadius: 3,
+                textTransform: 'none',
+                fontSize: '0.9rem',
+                background: isDarkMode
+                  ? 'rgba(255, 255, 255, 0.05)'
+                  : 'rgba(255, 255, 255, 0.7)',
+                border: isDarkMode
+                  ? '1px solid rgba(255, 255, 255, 0.1)'
+                  : '1px solid rgba(0, 0, 0, 0.08)',
+                '&:hover': {
+                  background: isDarkMode
+                    ? 'rgba(76, 175, 80, 0.2)'
+                    : 'rgba(76, 175, 80, 0.15)',
+                  color: isDarkMode ? '#81c784' : '#388e3c',
+                  transform: 'translateY(-2px)',
+                  boxShadow: isDarkMode
+                    ? '0 6px 20px rgba(76, 175, 80, 0.3)'
+                    : '0 6px 20px rgba(76, 175, 80, 0.2)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              Dashboard Específico
             </Button>
           )}
           
