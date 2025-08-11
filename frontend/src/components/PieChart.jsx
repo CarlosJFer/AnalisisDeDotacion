@@ -1,32 +1,50 @@
 import React from 'react';
+import { Card, CardContent, Typography, Box } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useTheme as useAppTheme } from '../context/ThemeContext';
+import chartColors from '../theme/chartColors';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28CFF', '#FF6699'];
+const CustomPieChart = ({ data, dataKey, nameKey, title }) => {
+  const { isDarkMode } = useAppTheme();
+  const colors = chartColors[isDarkMode ? 'dark' : 'light'];
 
-const CustomPieChart = ({ data, dataKey, nameKey, title }) => (
-  <div style={{ width: '100%', height: 300, margin: '24px 0' }}>
-    <h3 style={{ textAlign: 'center' }}>{title}</h3>
-    <ResponsiveContainer>
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey={dataKey}
-          nameKey={nameKey}
-          cx="50%"
-          cy="50%"
-          outerRadius={100}
-          fill="#8884d8"
-          label
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
-  </div>
-);
+  return (
+    <Card sx={{ width: '100%', height: 300, my: 3 }}>
+      <CardContent sx={{ height: '100%' }}>
+        <Typography variant="h6" align="center" gutterBottom>
+          {title}
+        </Typography>
+        <Box sx={{ width: '100%', height: '100%' }}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey={dataKey}
+                nameKey={nameKey}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={colors.palette[index % colors.palette.length]} />
+                ))}
+              </Pie>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: colors.tooltipBg,
+                  border: colors.tooltipBorder,
+                }}
+                itemStyle={{ color: colors.tooltipText }}
+                labelStyle={{ color: colors.tooltipText }}
+              />
+              <Legend wrapperStyle={{ color: colors.text }} />
+            </PieChart>
+          </ResponsiveContainer>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default CustomPieChart;

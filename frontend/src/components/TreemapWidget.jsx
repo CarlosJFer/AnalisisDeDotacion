@@ -1,8 +1,12 @@
 import React from 'react';
 import { Treemap, ResponsiveContainer, Tooltip } from 'recharts';
 import { Box, Typography } from '@mui/material';
+import { useTheme as useAppTheme } from '../context/ThemeContext';
+import chartColors from '../theme/chartColors';
 
 const TreemapWidget = ({ data }) => {
+  const { isDarkMode } = useAppTheme();
+  const colors = chartColors[isDarkMode ? 'dark' : 'light'];
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
       <Box display="flex" alignItems="center" justifyContent="center" height="100%">
@@ -13,15 +17,9 @@ const TreemapWidget = ({ data }) => {
     );
   }
 
-  // Generar colores dinámicos
-  const colors = [
-    '#1976d2', '#dc004e', '#2e7d32', '#ed6c02', 
-    '#9c27b0', '#00695c', '#5d4037', '#424242'
-  ];
-
   const processedData = data.map((item, index) => ({
     ...item,
-    fill: colors[index % colors.length],
+    fill: colors.palette[index % colors.palette.length],
   }));
 
   const CustomTooltip = ({ active, payload }) => {
@@ -30,13 +28,13 @@ const TreemapWidget = ({ data }) => {
       return (
         <Box
           sx={{
-            bgcolor: 'background.paper',
+            backgroundColor: colors.tooltipBg,
+            border: colors.tooltipBorder,
             p: 2,
-            border: 1,
-            borderColor: 'divider',
             borderRadius: 1,
             boxShadow: 2,
             maxWidth: 200,
+            color: colors.tooltipText,
           }}
         >
           <Typography variant="subtitle2" fontWeight="bold">
@@ -71,7 +69,7 @@ const TreemapWidget = ({ data }) => {
             width={width}
             height={height}
             style={{
-              fill: colors[index % colors.length],
+              fill: colors.palette[index % colors.palette.length],
               stroke: '#fff',
               strokeWidth: 2,
               strokeOpacity: 1,

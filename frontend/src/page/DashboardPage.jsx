@@ -1,14 +1,18 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Box, Typography, CardContent, CircularProgress, Alert, Grid, Button } from '@mui/material';
 import GlassCard from '../components/GlassCard.jsx';
+import { Box, Typography, CircularProgress, Alert, Grid, Button } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import StatCard from '../components/StatCard';
+import CustomBarChart from '../components/CustomBarChart';
+import CustomDonutChart from '../components/CustomDonutChart';
+import CustomAreaChart from '../components/CustomAreaChart';
 
 const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode }) => (
     <GlassCard isDarkMode={isDarkMode}>
@@ -790,7 +794,7 @@ const DashboardPage = () => {
 
                     {/* Gráficos principales - AMBOS CON MISMA ALTURA */}
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
                             title="Distribución de Agentes por Función (Top 10) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
@@ -800,7 +804,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByEmploymentType} 
                             title="Agentes por Situación de Revista - Planta y Contratos" 
                             isDarkMode={isDarkMode}
@@ -811,7 +815,7 @@ const DashboardPage = () => {
                     </Grid>
                     {/* NUEVOS GRÁFICOS PARA NEIKES Y BECA */}
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByFunctionNeikeBeca.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
                             title="Distribución de Agentes por Función (Top 10) - Neikes y Beca" 
                             isDarkMode={isDarkMode}
@@ -821,7 +825,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByEmploymentTypeNeikeBeca} 
                             title="Agentes por Situación de Revista - Neikes y Becas" 
                             isDarkMode={isDarkMode}
@@ -886,7 +890,7 @@ const DashboardPage = () => {
                     {/* Edad promedio por área (secretaría) - PLANTA Y CONTRATOS */}
                     <Grid item xs={12} lg={6}>
                         {ageByArea.length > 0 ? (
-                            <CustomAreaChartByArea 
+                            <CustomAreaChart 
                                 data={ageByArea.filter(a => a.secretaria && a.secretaria.trim() !== '' && a.secretaria.trim() !== '-').slice(0, 10)} 
                                 title="Distribución por rangos de edad según el área (Top 10) - Planta y Contratos" 
                                 isDarkMode={isDarkMode}
@@ -921,7 +925,7 @@ const DashboardPage = () => {
                     {/* Edad promedio por área (secretaría) - NEIKES Y BECAS */}
                     <Grid item xs={12} lg={6}>
                         {ageByAreaNeikeBeca.length > 0 ? (
-                            <CustomAreaChartByArea 
+                            <CustomAreaChart 
                                 data={ageByAreaNeikeBeca.filter(a => a.secretaria && a.secretaria.trim() !== '' && a.secretaria.trim() !== '-').slice(0, 10)} 
                                 title="Distribución por rangos de edad según el área (Top 10) - Neikes y Becas" 
                                 isDarkMode={isDarkMode}
@@ -969,7 +973,7 @@ const DashboardPage = () => {
 
                     {/* Gráficos de anillo principales */}
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsBySecretaria.slice(0, 8)} 
                             title="Agentes por Secretaría (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
@@ -979,7 +983,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByDependency.slice(0, 8)} 
                             title="Agentes por Dependencia (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
@@ -1010,7 +1014,7 @@ const DashboardPage = () => {
 
                     {/* Gráficos de anillo principales - Neikes y Becas */}
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsBySecretariaNeikeBeca ? agentsBySecretariaNeikeBeca.slice(0, 8) : []} 
                             title="Agentes por Secretaría (Top 8) - Neikes y Becas" 
                             isDarkMode={isDarkMode}
@@ -1020,7 +1024,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByDependencyNeikeBeca ? agentsByDependencyNeikeBeca.slice(0, 8) : []} 
                             title="Agentes por Dependencia (Top 8) - Neikes y Becas" 
                             isDarkMode={isDarkMode}
@@ -1109,7 +1113,7 @@ const DashboardPage = () => {
 
                     {/* Departamentos y Divisiones */}
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)} 
                             title="Agentes por Departamento (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
@@ -1119,7 +1123,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={filterValidData(agentsByDivision, 'division').slice(0, 8)} 
                             title="Agentes por División (Top 8) - Planta y Contratos" 
                             isDarkMode={isDarkMode}
@@ -1138,7 +1142,7 @@ const DashboardPage = () => {
 
                     {/* Departamentos y Divisiones - Neikes y Becas */}
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByDepartamentoNeikeBeca ? filterValidData(agentsByDepartamentoNeikeBeca, 'departamento').slice(0, 8) : []} 
                             title="Agentes por Departamento (Top 8) - Neikes y Becas" 
                             isDarkMode={isDarkMode}
@@ -1148,7 +1152,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart 
                             data={agentsByDivisionNeikeBeca ? filterValidData(agentsByDivisionNeikeBeca, 'division').slice(0, 8) : []} 
                             title="Agentes por División (Top 8) - Neikes y Becas" 
                             isDarkMode={isDarkMode}
