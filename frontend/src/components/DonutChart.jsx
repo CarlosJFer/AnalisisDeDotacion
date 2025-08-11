@@ -1,8 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { useTheme as useAppTheme } from '../context/ThemeContext';
-import chartColors from '../theme/chartColors';
 
 const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey = 'name' }) => {
     const { isDarkMode } = useAppTheme();
@@ -15,6 +12,8 @@ const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey =
             color: colors.palette[index % colors.palette.length]
         }));
     }, [data, colors.palette]);
+
+    const [activeIndex, setActiveIndex] = useState(null);
 
     const total = useMemo(() => {
         return chartData.reduce((sum, item) => sum + (item[dataKey] || 0), 0);
@@ -69,6 +68,31 @@ const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey =
             </text>
         );
     };
+
+    const renderLegend = ({ payload }) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', mt: 2 }}>
+            {payload.map((entry, index) => {
+                const value = entry.payload[dataKey];
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                return (
+                    <Box key={`legend-${index}`} sx={{ display: 'flex', alignItems: 'center', mr: 2, mb: 1 }}>
+                        <Box
+                            sx={{
+                                width: 10,
+                                height: 10,
+                                background: `url(#gradient-${index})`,
+                                mr: 1,
+                                borderRadius: '50%'
+                            }}
+                        />
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {`${entry.payload[nameKey]} (${percentage}%)`}
+                        </Typography>
+                    </Box>
+                );
+            })}
+        </Box>
+    );
 
     return (
         <Card sx={{
@@ -130,6 +154,14 @@ const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey =
                 <Box sx={{ height: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
+                            <defs>
+                                {chartData.map((entry, index) => (
+                                    <linearGradient key={`gradient-${index}`} id={`gradient-${index}`} x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor={entry.color} stopOpacity={0.8} />
+                                        <stop offset="100%" stopColor={entry.color} stopOpacity={1} />
+                                    </linearGradient>
+                                ))}
+                            </defs>
                             <Pie
                                 data={chartData}
                                 cx="50%"
@@ -139,19 +171,20 @@ const CustomDonutChart = React.memo(({ data, title, dataKey = 'count', nameKey =
                                 outerRadius={100}
                                 innerRadius={60}
                                 dataKey={dataKey}
+                                isAnimationActive
+                                animationDuration={800}
+                                activeIndex={activeIndex}
+                                activeShape={(props) => (
+                                    <Sector {...props} outerRadius={props.outerRadius + 6} />
+                                )}
+                                onMouseEnter={(_, index) => setActiveIndex(index)}
+                                onMouseLeave={() => setActiveIndex(null)}
                             >
                                 {chartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                    <Cell key={`cell-${index}`} fill={`url(#gradient-${index})`} />
                                 ))}
                             </Pie>
                             <Tooltip content={<CustomTooltip />} />
-                            <Legend
-                                wrapperStyle={{
-                                    color: colors.text,
-                                    fontSize: '12px'
-                                }}
-                                iconSize={8}
-                            />
                         </PieChart>
                     </ResponsiveContainer>
                 </Box>
