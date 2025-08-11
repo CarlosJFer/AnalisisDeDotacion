@@ -113,7 +113,6 @@ background: tabValue === 0
 <Button onClick={() => setTabValue(0)}>Resumen General</Button>
 <Button onClick={() => setTabValue(1)}>Análisis de Edad</Button>
 <Button onClick={() => setTabValue(2)}>Distribución Organizacional</Button>
-<Button onClick={() => setTabValue(3)}>Estructura Jerárquica</Button>
 ```
 
 ### **Estado Visual Dinámico**

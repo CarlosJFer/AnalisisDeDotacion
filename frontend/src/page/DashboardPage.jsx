@@ -6,7 +6,6 @@ import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
-import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
@@ -277,7 +276,6 @@ const DashboardPage = () => {
                     <Tab icon={<DashboardIcon />} iconPosition="start" label="Resumen General" />
                     <Tab icon={<AnalyticsIcon />} iconPosition="start" label="Análisis de Edad" />
                     <Tab icon={<BusinessIcon />} iconPosition="start" label="Distribución Organizacional" />
-                    <Tab icon={<AccountTreeIcon />} iconPosition="start" label="Estructura Jerárquica" />
                 </Tabs>
             </Box>
 
@@ -433,61 +431,56 @@ const DashboardPage = () => {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <CustomBarChart 
-                            data={filterValidData(agentsBySubsecretaria, 'subsecretaria').slice(0, 10)} 
-                            xKey="subsecretaria" 
-                            barKey="count" 
-                            title="Agentes por Subsecretaría (Top 10)" 
+                        <CustomBarChart
+                            data={filterValidData(agentsBySubsecretaria, 'subsecretaria').slice(0, 10)}
+                            xKey="subsecretaria"
+                            barKey="count"
+                            title="Agentes por Subsecretaría (Top 10)"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
                     </Grid>
-                </Grid>
-            )}
 
-            {/* Tab 3: Estructura Jerárquica */}
-            {tabValue === 3 && (
-                <Grid container spacing={3}>
                     <Grid item xs={12}>
-                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                        <Typography variant="h6" sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
                             Estructura Jerárquica Detallada
                         </Typography>
                     </Grid>
 
                     <Grid item xs={12} lg={6}>
-                        <CustomBarChart 
-                            data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 10)} 
-                            xKey="direccionGeneral" 
-                            barKey="count" 
-                            title="Agentes por Dirección General (Top 10)" 
+                        <CustomBarChart
+                            data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 10)}
+                            xKey="direccionGeneral"
+                            barKey="count"
+                            title="Agentes por Dirección General (Top 10)"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomBarChart 
-                            data={filterValidData(agentsByDireccion, 'direccion').slice(0, 10)} 
-                            xKey="direccion" 
-                            barKey="count" 
-                            title="Agentes por Dirección (Top 10)" 
+                        <CustomBarChart
+                            data={filterValidData(agentsByDireccion, 'direccion').slice(0, 10)}
+                            xKey="direccion"
+                            barKey="count"
+                            title="Agentes por Dirección (Top 10)"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
                     </Grid>
 
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChart 
-                            data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)} 
-                            title="Agentes por Departamento (Top 8)" 
+                        <CustomDonutChart
+                            data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)}
+                            title="Agentes por Departamento (Top 8)"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="departamento"
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChart 
-                            data={filterValidData(agentsByDivision, 'division').slice(0, 8)} 
-                            title="Agentes por División (Top 8)" 
+                        <CustomDonutChart
+                            data={filterValidData(agentsByDivision, 'division').slice(0, 8)}
+                            title="Agentes por División (Top 8)"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="division"
@@ -495,6 +488,7 @@ const DashboardPage = () => {
                     </Grid>
                 </Grid>
             )}
+
         </Box>
     );
 };

@@ -165,6 +165,5 @@ if (!templateId || templateId === 'undefined') {
 - ✅ Tab 0: Resumen General
 - ✅ Tab 1: Análisis de Edad (CORREGIDO)
 - ✅ Tab 2: Distribución Organizacional
-- ✅ Tab 3: Estructura Jerárquica
 
 **🎉 Sistema completamente funcional y estable!**
