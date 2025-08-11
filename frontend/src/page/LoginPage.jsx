@@ -1,7 +1,7 @@
 // ARCHIVO: src/pages/LoginPage.jsx - Rediseño Institucional Moderno
 
-import React, { useState, useContext } from 'react';
-import AuthContext from '../context/AuthContext.jsx';
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
 import { TextField, Button, Card, CardContent, Typography, CircularProgress, Alert, Box, IconButton, Tooltip, InputAdornment, Avatar } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
@@ -17,7 +17,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
   const navigate = useNavigate();
   const { isDarkMode, toggleTheme } = useTheme();
 
