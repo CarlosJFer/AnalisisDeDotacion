@@ -194,7 +194,7 @@ const DashboardPage = () => {
                     mb: 1,
                 }}
             >
-                Dashboard de Análisis Municipal
+                Dashboard General de Análisis Municipal
             </Typography>
             <Typography 
                 variant="h6" 
