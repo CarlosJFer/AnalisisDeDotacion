@@ -220,8 +220,6 @@ export const NotificationProvider = ({ children }) => {
 
     eventSource.onerror = (error) => {
       console.error('Error en el stream de notificaciones:', error);
-      showToast('Se perdió la conexión con el servidor de notificaciones. Intentando reconectar...', 'warning');
-      // No cerrar manualmente, dejar que EventSource maneje la reconexión
     };
 
     return () => {
