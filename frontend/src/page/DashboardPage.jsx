@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Box, Typography, CircularProgress, Alert, Grid, Tabs, Tab, Button } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -125,9 +125,44 @@ const DashboardPage = () => {
         fetchAllData();
     }, []);
 
-    const handleTabChange = (event, newValue) => {
-        setTabValue(newValue);
-    };
+    const getTabButtonStyles = (value) => ({
+        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+        fontWeight: 600,
+        px: 3,
+        py: 1.5,
+        borderRadius: 3,
+        textTransform: 'none',
+        fontSize: '0.9rem',
+        background: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
+        border: isDarkMode
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : '1px solid rgba(0, 0, 0, 0.08)',
+        transition: 'all 0.3s ease',
+        ...(tabValue === value && {
+            background: 'linear-gradient(135deg, #2196f3, #1976d2)',
+            color: 'white',
+            transform: 'translateY(-2px)',
+            boxShadow: isDarkMode
+                ? '0 6px 20px rgba(33, 150, 243, 0.3)'
+                : '0 6px 20px rgba(33, 150, 243, 0.2)',
+        }),
+        '&:hover': {
+            background: tabValue === value
+                ? 'linear-gradient(135deg, #1976d2, #1565c0)'
+                : isDarkMode
+                    ? 'rgba(33, 150, 243, 0.2)'
+                    : 'rgba(33, 150, 243, 0.15)',
+            color: tabValue === value
+                ? 'white'
+                : isDarkMode
+                    ? '#64b5f6'
+                    : '#1976d2',
+            transform: 'translateY(-2px)',
+            boxShadow: isDarkMode
+                ? '0 6px 20px rgba(33, 150, 243, 0.3)'
+                : '0 6px 20px rgba(33, 150, 243, 0.2)',
+        },
+    });
 
     if (loading) {
         return (
@@ -171,115 +206,38 @@ const DashboardPage = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            {user?.role === 'admin' && (
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, gap: 2 }}>
-                    <Button
-                        variant="contained"
-                        startIcon={<CleaningServicesIcon />}
-                        onClick={handleLimpiarDashboard}
-                        disabled={cleaning}
-                        sx={{ 
-                            color: 'white',
-                            fontWeight: 600,
-                            px: 3,
-                            py: 1.5,
-                            borderRadius: 3,
-                            textTransform: 'none',
-                            fontSize: '0.9rem',
-                            background: 'linear-gradient(135deg, #f44336, #d32f2f)',
-                            border: 'none',
-                            '&:hover': {
-                                background: 'linear-gradient(135deg, #d32f2f, #b71c1c)',
-                                transform: 'translateY(-2px)',
-                                boxShadow: '0 6px 20px rgba(244, 67, 54, 0.3)',
-                            },
-                            '&:disabled': {
-                                background: 'rgba(244, 67, 54, 0.5)',
-                                color: 'rgba(255, 255, 255, 0.7)',
-                            },
-                            transition: 'all 0.3s ease',
-                        }}
-                    >
-                        {cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}
-                    </Button>
-                </Box>
-            )}
-            {cleanMsg && (
-                <Alert severity={cleanMsg.includes('Error') ? 'error' : 'success'} sx={{ mb: 2 }}>{cleanMsg}</Alert>
-            )}
-
-            {/* Tabs para organizar el contenido - Con overflow visible y más espacio */}
-            <Box sx={{ 
-                mb: 4,
-                overflow: 'visible',
-                pb: 4, // Más padding bottom para las animaciones
-                pt: 1  // Padding top también
-            }}>
-                <Tabs
-                    value={tabValue}
-                    onChange={handleTabChange}
-                    sx={{
-                        minHeight: 56,
-                        '& .MuiTabs-scroller': {
-                            overflow: 'visible',
-                            minHeight: 56,
-                        },
-                        '& .MuiTabs-indicator': {
-                            display: 'none',
-                        },
-                        '& .MuiTabs-flexContainer': {
-                            gap: 2, // Más espacio entre tabs
-                            flexWrap: 'wrap', // Permitir wrap en pantallas pequeñas
-                        },
-                        '& .MuiTab-root': {
-                            textTransform: 'none',
-                            fontWeight: 600,
-                            fontSize: '1rem',
-                            minHeight: 56,
-                            px: 4,
-                            py: 2,
-                            borderRadius: 3,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: 1,
-                            background: isDarkMode
-                                ? 'rgba(255, 255, 255, 0.05)'
-                                : 'rgba(255, 255, 255, 0.7)',
-                            border: isDarkMode
-                                ? '1px solid rgba(255, 255, 255, 0.1)'
-                                : '1px solid rgba(0, 0, 0, 0.08)',
-                            color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
-                            transition: 'all 0.3s ease',
-                            position: 'relative', // Para z-index
-                            '& .MuiTab-iconWrapper': {
-                                fontSize: '1.5rem',
-                                marginBottom: '0 !important',
-                            },
-                            '&:hover': {
-                                transform: 'scale(1.05)', // Animación más fluida
-                                boxShadow: isDarkMode
-                                    ? '0 8px 25px rgba(33, 150, 243, 0.4)' // Sombra más grande
-                                    : '0 8px 25px rgba(33, 150, 243, 0.3)',
-                                zIndex: 10,
-                            },
-                            '&.Mui-selected': {
-                                background: 'linear-gradient(135deg, #2196f3, #1976d2)',
-                                color: 'white',
-                                fontWeight: 600,
-                                transform: 'scale(1.05)',
-                                boxShadow: isDarkMode
-                                    ? '0 8px 25px rgba(33, 150, 243, 0.5)'
-                                    : '0 8px 25px rgba(33, 150, 243, 0.4)',
-                                zIndex: 11,
-                            }
-                        }
-                    }}
+            {/* Navegación por botones */}
+            <Box
+                sx={{
+                    mb: 4,
+                    display: 'flex',
+                    gap: 1,
+                    flexWrap: 'wrap',
+                    justifyContent: 'center',
+                    pt: 2,
+                }}
+            >
+                <Button
+                    onClick={() => setTabValue(0)}
+                    startIcon={<DashboardIcon />}
+                    sx={getTabButtonStyles(0)}
                 >
-                    <Tab icon={<DashboardIcon />} iconPosition="start" label="Resumen General" />
-                    <Tab icon={<AnalyticsIcon />} iconPosition="start" label="Análisis de Edad" />
-                    <Tab icon={<BusinessIcon />} iconPosition="start" label="Distribución Organizacional" />
-                </Tabs>
+                    Resumen General
+                </Button>
+                <Button
+                    onClick={() => setTabValue(1)}
+                    startIcon={<AnalyticsIcon />}
+                    sx={getTabButtonStyles(1)}
+                >
+                    Análisis de Edad
+                </Button>
+                <Button
+                    onClick={() => setTabValue(2)}
+                    startIcon={<BusinessIcon />}
+                    sx={getTabButtonStyles(2)}
+                >
+                    Distribución Organizacional
+                </Button>
             </Box>
 
             {/* Tab 0: Resumen General */}
@@ -490,6 +448,41 @@ const DashboardPage = () => {
                         />
                     </Grid>
                 </Grid>
+            )}
+
+            {user?.role === 'admin' && (
+                <>
+                    <Tooltip title={cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}>
+                        <Fab
+                            onClick={handleLimpiarDashboard}
+                            disabled={cleaning}
+                            sx={{
+                                position: 'fixed',
+                                bottom: 24,
+                                right: 24,
+                                color: 'white',
+                                background: 'linear-gradient(135deg, #f44336, #d32f2f)',
+                                '&:hover': {
+                                    background: 'linear-gradient(135deg, #d32f2f, #b71c1c)',
+                                },
+                            }}
+                        >
+                            {cleaning ? (
+                                <CircularProgress size={24} sx={{ color: 'white' }} />
+                            ) : (
+                                <CleaningServicesIcon />
+                            )}
+                        </Fab>
+                    </Tooltip>
+                    {cleanMsg && (
+                        <Alert
+                            severity={cleanMsg.includes('Error') ? 'error' : 'success'}
+                            sx={{ position: 'fixed', bottom: 90, right: 24, zIndex: 1300 }}
+                        >
+                            {cleanMsg}
+                        </Alert>
+                    )}
+                </>
             )}
 
         </Box>
