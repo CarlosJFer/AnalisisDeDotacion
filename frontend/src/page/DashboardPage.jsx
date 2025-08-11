@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Box, Typography, Card, CardContent, CircularProgress, Alert, Grid, Tabs, Tab, Button } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Grid, Tabs, Tab, Button } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -12,324 +12,6 @@ import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
-
-const StatCard = React.memo(({ title, value, color = 'primary.main', isDarkMode }) => (
-    <GlassCard isDarkMode={isDarkMode}>
-        <CardContent sx={{ p: 3 }}>
-            <Typography 
-                color="text.secondary" 
-                gutterBottom
-                sx={{
-                    fontWeight: 600,
-                    fontSize: '0.9rem',
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-                }}
-            >
-                {title}
-            </Typography>
-            <Typography 
-                variant="h4" 
-                component="div" 
-                sx={{ 
-                    fontWeight: 700,
-                    fontSize: '2rem',
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                }}
-            >
-                {value}
-            </Typography>
-        </CardContent>
-    </GlassCard>
-));
-
-const CustomBarChart = React.memo(({ data, xKey, barKey, title, isDarkMode, height = 300 }) => {
-    const chartData = useMemo(() => data, [data]);
-    return (
-        <GlassCard isDarkMode={isDarkMode}>
-            <CardContent sx={{ p: 3 }}>
-                <Typography 
-                    variant="h6" 
-                    gutterBottom 
-                    align="center"
-                    sx={{
-                        fontWeight: 600,
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        mb: 2,
-                    }}
-                >
-                    {title}
-                </Typography>
-                <Box sx={{ height: height }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={chartData} margin={{ top: 5, right: 20, left: -10, bottom: 80 }}>
-                            <CartesianGrid 
-                                strokeDasharray="3 3" 
-                                stroke={isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}
-                            />
-                            <XAxis 
-                                dataKey={xKey} 
-                                tick={{ 
-                                    fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
-                                    fontSize: xKey === 'range' ? 14 : 10
-                                }}
-                                axisLine={{ stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)' }}
-                                angle={xKey === 'range' ? 0 : -45}
-                                textAnchor={xKey === 'range' ? 'middle' : 'end'}
-                                height={80}
-                                interval={0}
-                            />
-                            <YAxis 
-                                tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
-                                axisLine={{ stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)' }}
-                            />
-                            <Tooltip 
-                                contentStyle={{
-                                    backgroundColor: isDarkMode ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-                                    borderRadius: '8px',
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                                }}
-                                labelFormatter={(label) => `${xKey === 'function' ? 'Función' : xKey === 'range' ? 'Rango de edad' : 'Categoría'}: ${label}`}
-                                formatter={(value, name) => [
-                                    barKey === 'avgAge' ? `${Math.round(value)} años` : value, 
-                                    barKey === 'avgAge' ? 'Edad promedio' : 'Cantidad de agentes'
-                                ]}
-                            />
-                            <Bar dataKey={barKey} fill="#8884d8" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </Box>
-            </CardContent>
-        </GlassCard>
-    );
-});
-
-// Colores para los gráficos de torta
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF7C7C', '#8DD1E1', '#D084D0'];
-
-// Componente de gráfico de anillo personalizado UNIFICADO
-const CustomDonutChartUnified = React.memo(({ data, title, isDarkMode, dataKey, nameKey }) => {
-    const chartData = useMemo(() => data, [data]);
-    
-    const total = useMemo(() => {
-        return chartData.reduce((sum, item) => sum + (item[dataKey] || 0), 0);
-    }, [chartData, dataKey]);
-    
-    const CustomTooltip = ({ active, payload }) => {
-        if (active && payload && payload.length) {
-            const data = payload[0].payload;
-            const percentage = total > 0 ? ((data[dataKey] / total) * 100).toFixed(1) : 0;
-            return (
-                <Box sx={{
-                    backgroundColor: isDarkMode ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '8px',
-                    p: 2,
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        {data[nameKey]}
-                    </Typography>
-                    <Typography variant="body2">
-                        Cantidad de agentes: {data[dataKey]}
-                    </Typography>
-                    <Typography variant="body2">
-                        Porcentaje: {percentage}%
-                    </Typography>
-                </Box>
-            );
-        }
-        return null;
-    };
-    
-    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
-        if (percent < 0.05) return null; // No mostrar etiquetas para segmentos muy pequeños
-        
-        const RADIAN = Math.PI / 180;
-        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-        const x = cx + radius * Math.cos(-midAngle * RADIAN);
-        const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-        return (
-            <text 
-                x={x} 
-                y={y} 
-                fill={isDarkMode ? 'white' : 'black'} 
-                textAnchor={x > cx ? 'start' : 'end'} 
-                dominantBaseline="central"
-                fontSize="12"
-                fontWeight="600"
-            >
-                {`${(percent * 100).toFixed(0)}%`}
-            </text>
-        );
-    };
-    
-    return (
-        <Card sx={{ 
-            height: '100%',
-            background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(20px)',
-            border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.08)',
-            borderRadius: 3,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: isDarkMode
-                    ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-                    : '0 12px 40px rgba(0, 0, 0, 0.15)',
-            }
-        }}>
-            <CardContent sx={{ p: 3 }}>
-                <Typography 
-                    variant="h6" 
-                    gutterBottom 
-                    align="center"
-                    sx={{
-                        fontWeight: 600,
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        mb: 2,
-                    }}
-                >
-                    {title}
-                </Typography>
-                <Box sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
-                    alignItems: 'center',
-                    mb: 2 
-                }}>
-                    <Typography 
-                        variant="h4" 
-                        sx={{ 
-                            fontWeight: 700,
-                            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        }}
-                    >
-                        {total.toLocaleString()}
-                    </Typography>
-                    <Typography 
-                        variant="body2" 
-                        sx={{ 
-                            ml: 1,
-                            color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
-                        }}
-                    >
-                        Total
-                    </Typography>
-                </Box>
-                <Box sx={{ height: 300 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={chartData}
-                                cx="50%"
-                                cy="50%"
-                                labelLine={false}
-                                label={renderCustomizedLabel}
-                                outerRadius={100}
-                                innerRadius={60}
-                                fill="#8884d8"
-                                dataKey={dataKey}
-                                nameKey={nameKey}
-                            >
-                                {chartData.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                ))}
-                            </Pie>
-                            <Tooltip content={<CustomTooltip />} />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </Box>
-            </CardContent>
-        </GlassCard>
-    );
-});
-
-// Componente de gráfico de área personalizado
-const CustomAreaChartLocal = React.memo(({ data, title, isDarkMode, xKey, yKey }) => {
-    const chartData = useMemo(() => data, [data]);
-    
-    const CustomTooltip = ({ active, payload, label }) => {
-        if (active && payload && payload.length) {
-            return (
-                <Box sx={{
-                    backgroundColor: isDarkMode ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '8px',
-                    p: 2,
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                }}>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        Rango de edad: {label}
-                    </Typography>
-                    <Typography variant="body2">
-                        Cantidad de agentes: {payload[0].value}
-                    </Typography>
-                </Box>
-            );
-        }
-        return null;
-    };
-    
-    return (
-        <GlassCard isDarkMode={isDarkMode}>
-            <CardContent sx={{ p: 3 }}>
-                <Typography 
-                    variant="h6" 
-                    gutterBottom 
-                    align="center"
-                    sx={{
-                        fontWeight: 600,
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        mb: 2,
-                    }}
-                >
-                    {title}
-                </Typography>
-                <Box sx={{ height: 300 }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                            <defs>
-                                <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-                                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0.1}/>
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid 
-                                strokeDasharray="3 3" 
-                                stroke={isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'}
-                            />
-                            <XAxis 
-                                dataKey={xKey}
-                                tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
-                                axisLine={{ stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)' }}
-                            />
-                            <YAxis 
-                                tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
-                                axisLine={{ stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)' }}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Area 
-                                type="monotone" 
-                                dataKey={yKey} 
-                                stroke="#8884d8" 
-                                fillOpacity={1} 
-                                fill="url(#colorArea)" 
-                                strokeWidth={2}
-                                name="Cantidad de agentes"
-                            />
-                        </AreaChart>
-                    </ResponsiveContainer>
-                </Box>
-            </CardContent>
-        </GlassCard>
-    );
-});
 
 const DashboardPage = () => {
     const { user } = useAuth();
@@ -621,7 +303,7 @@ const DashboardPage = () => {
                     
                     {/* Gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
                     <Grid item xs={12} lg={8}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart
                             data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
                             title="Distribución de Agentes por Función (Top 10)" 
                             isDarkMode={isDarkMode}
@@ -630,7 +312,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     <Grid item xs={12} lg={4}>
-                        <CustomDonutChartUnified 
+                        <CustomDonutChart
                             data={agentsByEmploymentType} 
                             title="Agentes por Situación de Revista" 
                             isDarkMode={isDarkMode}
@@ -676,7 +358,7 @@ const DashboardPage = () => {
                     {/* Rangos de edad con área chart */}
                     <Grid item xs={12} lg={6}>
                         {ageDistribution ? (
-                            <CustomAreaChartLocal 
+                            <CustomAreaChart
                                 data={ageDistribution.rangeData} 
                                 title="Distribución por Rangos de Edad (Visualización de Área)" 
                                 isDarkMode={isDarkMode}
