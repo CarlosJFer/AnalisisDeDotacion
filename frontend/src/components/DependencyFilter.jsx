@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, Grid, TextField, Button } from '@mui/material';
+import { Card, CardContent, Grid, TextField, Button, Box } from '@mui/material';
 
 const defaultFilters = {
   dependencia: '',
@@ -30,13 +30,13 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
   };
 
   return (
-    <Card sx={{ mb: 3 }}>
+    <Card sx={{ mb: 3, p: 2, boxShadow: 3 }}>
       <CardContent>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
-              required
+              size="small"
               label="Dependencia"
               value={localFilters.dependencia}
               onChange={handleChange('dependencia')}
@@ -45,6 +45,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="Secretaría"
               value={localFilters.secretaria}
               onChange={handleChange('secretaria')}
@@ -53,6 +54,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="Subsecretaría"
               value={localFilters.subsecretaria}
               onChange={handleChange('subsecretaria')}
@@ -61,6 +63,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="Dirección General"
               value={localFilters.direccionGeneral}
               onChange={handleChange('direccionGeneral')}
@@ -69,6 +72,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="Dirección"
               value={localFilters.direccion}
               onChange={handleChange('direccion')}
@@ -77,6 +81,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="Departamento"
               value={localFilters.departamento}
               onChange={handleChange('departamento')}
@@ -85,6 +90,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="División"
               value={localFilters.division}
               onChange={handleChange('division')}
@@ -93,15 +99,18 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           <Grid item xs={12} sm={6} md={3}>
             <TextField
               fullWidth
+              size="small"
               label="Función"
               value={localFilters.funcion}
               onChange={handleChange('funcion')}
             />
           </Grid>
           <Grid item xs={12}>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Filtrar
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button variant="contained" color="primary" onClick={handleSubmit}>
+                Filtrar
+              </Button>
+            </Box>
           </Grid>
         </Grid>
       </CardContent>

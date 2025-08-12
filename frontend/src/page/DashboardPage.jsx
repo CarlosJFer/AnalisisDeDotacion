@@ -77,70 +77,70 @@ const DashboardPage = () => {
         });
     };
 
+    const fetchAllData = async (appliedFilters = filters) => {
+        setLoading(true);
+        setError('');
+
+        try {
+            const funcRes = await apiClient.get('/functions');
+            const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
+
+            const [
+                totalResponse,
+                ageDistResponse,
+                ageFunctionResponse,
+                functionResponse,
+                employmentResponse,
+                dependencyResponse,
+                secretariaResponse,
+                subsecretariaResponse,
+                direccionGeneralResponse,
+                direccionResponse,
+                departamentoResponse,
+                divisionResponse
+            ] = await Promise.all([
+                apiClient.get(funcs.totalAgents, { params: appliedFilters }),
+                apiClient.get(funcs.ageDistribution, { params: appliedFilters }),
+                apiClient.get(funcs.ageByFunction, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByFunction, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByEmploymentType, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDependency, { params: appliedFilters }),
+                apiClient.get(funcs.agentsBySecretaria, { params: appliedFilters }),
+                apiClient.get(funcs.agentsBySubsecretaria, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDireccionGeneral, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDireccion, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDepartamento, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDivision, { params: appliedFilters })
+            ]);
+
+            setTotalAgents(totalResponse.data.total);
+            setAgeDistribution(ageDistResponse.data);
+            setAgeByFunction(ageFunctionResponse.data);
+            setAgentsByFunction(functionResponse.data);
+            setAgentsByEmploymentType(employmentResponse.data);
+            setAgentsByDependency(dependencyResponse.data);
+            setAgentsBySecretaria(secretariaResponse.data);
+            setAgentsBySubsecretaria(subsecretariaResponse.data);
+            setAgentsByDireccionGeneral(direccionGeneralResponse.data);
+            setAgentsByDireccion(direccionResponse.data);
+            setAgentsByDepartamento(departamentoResponse.data);
+            setAgentsByDivision(divisionResponse.data);
+
+        } catch (err) {
+            setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleApplyFilters = (newFilters) => {
         setFilters(newFilters);
-        // En una implementación real se llamarían a los endpoints con estos filtros
+        fetchAllData(newFilters);
     };
 
     useEffect(() => {
-        const fetchAllData = async () => {
-            setLoading(true);
-            setError('');
-
-            try {
-                const funcRes = await apiClient.get('/functions');
-                const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
-
-                const [
-                    totalResponse,
-                    ageDistResponse,
-                    ageFunctionResponse,
-                    functionResponse,
-                    employmentResponse,
-                    dependencyResponse,
-                    secretariaResponse,
-                    subsecretariaResponse,
-                    direccionGeneralResponse,
-                    direccionResponse,
-                    departamentoResponse,
-                    divisionResponse
-                ] = await Promise.all([
-                    apiClient.get(funcs.totalAgents),
-                    apiClient.get(funcs.ageDistribution),
-                    apiClient.get(funcs.ageByFunction),
-                    apiClient.get(funcs.agentsByFunction),
-                    apiClient.get(funcs.agentsByEmploymentType),
-                    apiClient.get(funcs.agentsByDependency),
-                    apiClient.get(funcs.agentsBySecretaria),
-                    apiClient.get(funcs.agentsBySubsecretaria),
-                    apiClient.get(funcs.agentsByDireccionGeneral),
-                    apiClient.get(funcs.agentsByDireccion),
-                    apiClient.get(funcs.agentsByDepartamento),
-                    apiClient.get(funcs.agentsByDivision)
-                ]);
-
-                setTotalAgents(totalResponse.data.total);
-                setAgeDistribution(ageDistResponse.data);
-                setAgeByFunction(ageFunctionResponse.data);
-                setAgentsByFunction(functionResponse.data);
-                setAgentsByEmploymentType(employmentResponse.data);
-                setAgentsByDependency(dependencyResponse.data);
-                setAgentsBySecretaria(secretariaResponse.data);
-                setAgentsBySubsecretaria(subsecretariaResponse.data);
-                setAgentsByDireccionGeneral(direccionGeneralResponse.data);
-                setAgentsByDireccion(direccionResponse.data);
-                setAgentsByDepartamento(departamentoResponse.data);
-                setAgentsByDivision(divisionResponse.data);
-
-            } catch (err) {
-                setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchAllData();
+        fetchAllData(filters);
     }, []);
 
     const getTabButtonStyles = (value) => ({
