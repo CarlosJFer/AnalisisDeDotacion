@@ -122,7 +122,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Dashboard General */}
+          {/* Botón Dashboard */}
           {user && (
             <Button
               component={Link}
@@ -155,11 +155,11 @@ const Navbar = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Dashboard General
+              Dashboard
             </Button>
           )}
 
-          {/* Botón Dashboard Específico */}
+          {/* Botón Funciones */}
           {user && (
             <Button
               component={Link}
@@ -192,7 +192,7 @@ const Navbar = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Dashboard Específico
+              Funciones
             </Button>
           )}
           
