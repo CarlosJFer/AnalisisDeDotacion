@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import OrganigramaTreeView from "../components/OrganigramaTreeView.jsx";
 import { Box, Typography, CircularProgress, Alert, TextField, Button, Avatar, Card, CardContent } from "@mui/material";
+import { useNavigate } from 'react-router-dom';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -59,6 +60,7 @@ const OrganigramaPage = () => {
   const treeViewRef = useRef();
   const [autoExpanded, setAutoExpanded] = useState([]);
   const { isDarkMode } = useTheme();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -304,7 +306,13 @@ const OrganigramaPage = () => {
         filteredTree.length === 0 && search ? (
           <Alert severity="info">No se encontraron resultados para "{search}".</Alert>
         ) : (
-          <OrganigramaTreeView ref={treeViewRef} tree={filteredTree} getVariablesForNode={getVariablesForNode} searchTerm={search} />
+          <OrganigramaTreeView
+            ref={treeViewRef}
+            tree={filteredTree}
+            getVariablesForNode={getVariablesForNode}
+            searchTerm={search}
+            onNodeSelect={(node) => navigate('/dashboard', { state: { dependencia: node.nombre } })}
+          />
         )
       )}
     </Box>

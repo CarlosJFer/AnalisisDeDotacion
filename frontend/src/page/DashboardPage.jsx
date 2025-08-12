@@ -11,13 +11,26 @@ import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
+import DependencyFilter from '../components/DependencyFilter.jsx';
+import { useLocation } from 'react-router-dom';
 
 const DashboardPage = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
+    const location = useLocation();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [tabValue, setTabValue] = useState(0);
+    const [filters, setFilters] = useState({
+        dependencia: location.state?.dependencia || '',
+        secretaria: '',
+        subsecretaria: '',
+        direccionGeneral: '',
+        direccion: '',
+        departamento: '',
+        division: '',
+        funcion: ''
+    });
     
     // Estados para todos los datos
     const [totalAgents, setTotalAgents] = useState(0);
@@ -62,6 +75,11 @@ const DashboardPage = () => {
             const trimmedValue = value.trim();
             return trimmedValue !== '' && trimmedValue !== '-' && trimmedValue !== 'Sin especificar';
         });
+    };
+
+    const handleApplyFilters = (newFilters) => {
+        setFilters(newFilters);
+        // En una implementación real se llamarían a los endpoints con estos filtros
     };
 
     useEffect(() => {
@@ -196,8 +214,8 @@ const DashboardPage = () => {
             >
                 Dashboard General de Análisis Municipal
             </Typography>
-            <Typography 
-                variant="h6" 
+            <Typography
+                variant="h6"
                 sx={{
                     color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
                     mb: 2,
@@ -205,6 +223,8 @@ const DashboardPage = () => {
             >
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
+
+            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
 
             {/* Navegación por botones */}
             <Box
