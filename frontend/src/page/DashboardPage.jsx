@@ -46,6 +46,19 @@ const DashboardPage = () => {
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
     const [agentsByDivision, setAgentsByDivision] = useState([]);
 
+    // Datos para Neikes y Becas
+    const [agentsByFunctionNeikeBeca, setAgentsByFunctionNeikeBeca] = useState([]);
+    const [agentsByEmploymentTypeNeikeBeca, setAgentsByEmploymentTypeNeikeBeca] = useState([]);
+    const [ageDistributionNeikeBeca, setAgeDistributionNeikeBeca] = useState(null);
+    const [ageByFunctionNeikeBeca, setAgeByFunctionNeikeBeca] = useState([]);
+    const [agentsByDependencyNeikeBeca, setAgentsByDependencyNeikeBeca] = useState([]);
+    const [agentsBySecretariaNeikeBeca, setAgentsBySecretariaNeikeBeca] = useState([]);
+    const [agentsBySubsecretariaNeikeBeca, setAgentsBySubsecretariaNeikeBeca] = useState([]);
+    const [agentsByDireccionGeneralNeikeBeca, setAgentsByDireccionGeneralNeikeBeca] = useState([]);
+    const [agentsByDireccionNeikeBeca, setAgentsByDireccionNeikeBeca] = useState([]);
+    const [agentsByDepartamentoNeikeBeca, setAgentsByDepartamentoNeikeBeca] = useState([]);
+    const [agentsByDivisionNeikeBeca, setAgentsByDivisionNeikeBeca] = useState([]);
+
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
     const [cleanMsg, setCleanMsg] = useState('');
@@ -97,7 +110,18 @@ const DashboardPage = () => {
                 direccionGeneralResponse,
                 direccionResponse,
                 departamentoResponse,
-                divisionResponse
+                divisionResponse,
+                functionNeikeBecaResponse,
+                employmentNeikeBecaResponse,
+                ageDistNeikeBecaResponse,
+                ageFunctionNeikeBecaResponse,
+                dependencyNeikeBecaResponse,
+                secretariaNeikeBecaResponse,
+                subsecretariaNeikeBecaResponse,
+                direccionGeneralNeikeBecaResponse,
+                direccionNeikeBecaResponse,
+                departamentoNeikeBecaResponse,
+                divisionNeikeBecaResponse
             ] = await Promise.all([
                 apiClient.get(funcs.totalAgents, { params: appliedFilters }),
                 apiClient.get(funcs.ageDistribution, { params: appliedFilters }),
@@ -110,7 +134,18 @@ const DashboardPage = () => {
                 apiClient.get(funcs.agentsByDireccionGeneral, { params: appliedFilters }),
                 apiClient.get(funcs.agentsByDireccion, { params: appliedFilters }),
                 apiClient.get(funcs.agentsByDepartamento, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDivision, { params: appliedFilters })
+                apiClient.get(funcs.agentsByDivision, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByFunctionNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByEmploymentTypeNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.ageDistributionNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.ageByFunctionNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDependencyNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsBySecretariaNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsBySubsecretariaNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDireccionGeneralNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDireccionNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDepartamentoNeikeBeca, { params: appliedFilters }),
+                apiClient.get(funcs.agentsByDivisionNeikeBeca, { params: appliedFilters })
             ]);
 
             setTotalAgents(totalResponse.data.total);
@@ -125,6 +160,17 @@ const DashboardPage = () => {
             setAgentsByDireccion(direccionResponse.data);
             setAgentsByDepartamento(departamentoResponse.data);
             setAgentsByDivision(divisionResponse.data);
+            setAgentsByFunctionNeikeBeca(functionNeikeBecaResponse.data);
+            setAgentsByEmploymentTypeNeikeBeca(employmentNeikeBecaResponse.data);
+            setAgeDistributionNeikeBeca(ageDistNeikeBecaResponse.data);
+            setAgeByFunctionNeikeBeca(ageFunctionNeikeBecaResponse.data);
+            setAgentsByDependencyNeikeBeca(dependencyNeikeBecaResponse.data);
+            setAgentsBySecretariaNeikeBeca(secretariaNeikeBecaResponse.data);
+            setAgentsBySubsecretariaNeikeBeca(subsecretariaNeikeBecaResponse.data);
+            setAgentsByDireccionGeneralNeikeBeca(direccionGeneralNeikeBecaResponse.data);
+            setAgentsByDireccionNeikeBeca(direccionNeikeBecaResponse.data);
+            setAgentsByDepartamentoNeikeBeca(departamentoNeikeBecaResponse.data);
+            setAgentsByDivisionNeikeBeca(divisionNeikeBecaResponse.data);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -296,8 +342,8 @@ const DashboardPage = () => {
                     {/* Gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
                     <Grid item xs={12} lg={8}>
                         <CustomDonutChart
-                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
-                            title="Distribución de Agentes por Función (Top 10)" 
+                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
+                            title="Distribución de Agentes por Función (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="function"
@@ -305,8 +351,26 @@ const DashboardPage = () => {
                     </Grid>
                     <Grid item xs={12} lg={4}>
                         <CustomDonutChart
-                            data={agentsByEmploymentType} 
-                            title="Agentes por Situación de Revista" 
+                            data={agentsByEmploymentType}
+                            title="Agentes por Situación de Revista - Planta y Contratos"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="type"
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={8}>
+                        <CustomDonutChart
+                            data={agentsByFunctionNeikeBeca.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
+                            title="Distribución de Agentes por Función (Top 10) - Neikes y Beca"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="function"
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={4}>
+                        <CustomDonutChart
+                            data={agentsByEmploymentTypeNeikeBeca}
+                            title="Agentes por Situación de Revista - Neikes y Becas"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="type"
@@ -332,12 +396,28 @@ const DashboardPage = () => {
                     {/* Gráfico de rangos de edad principal */}
                     <Grid item xs={12}>
                         {ageDistribution ? (
-                            <CustomBarChart 
-                                data={ageDistribution.rangeData} 
-                                xKey="range" 
-                                barKey="count" 
-                                title="Distribución por Rangos de Edad" 
-                                isDarkMode={isDarkMode} 
+                            <CustomBarChart
+                                data={ageDistribution.rangeData}
+                                xKey="range"
+                                barKey="count"
+                                title="Distribución por Rangos de Edad - Planta y Contratos"
+                                isDarkMode={isDarkMode}
+                            />
+                        ) : (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                                <CircularProgress size={40} />
+                                <Typography sx={{ ml: 2 }}>Cargando análisis de edad...</Typography>
+                            </Box>
+                        )}
+                    </Grid>
+                    <Grid item xs={12}>
+                        {ageDistributionNeikeBeca ? (
+                            <CustomBarChart
+                                data={ageDistributionNeikeBeca.rangeData}
+                                xKey="range"
+                                barKey="count"
+                                title="Distribución por Rangos de Edad - Neikes y Becas"
+                                isDarkMode={isDarkMode}
                             />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
@@ -351,8 +431,8 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         {ageDistribution ? (
                             <CustomAreaChart
-                                data={ageDistribution.rangeData} 
-                                title="Distribución por Rangos de Edad (Visualización de Área)" 
+                                data={ageDistribution.rangeData}
+                                title="Distribución por Rangos de Edad según el área - Planta y Contratos"
                                 isDarkMode={isDarkMode}
                                 xKey="range"
                                 yKey="count"
@@ -363,16 +443,44 @@ const DashboardPage = () => {
                             </Box>
                         )}
                     </Grid>
-
-                    {/* Edad promedio por función */}
                     <Grid item xs={12} lg={6}>
                         {ageByFunction.length > 0 ? (
-                            <CustomBarChart 
-                                data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)} 
-                                xKey="function" 
-                                barKey="avgAge" 
-                                title="Edad Promedio por Función (Top 10)" 
-                                isDarkMode={isDarkMode} 
+                            <CustomBarChart
+                                data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
+                                xKey="function"
+                                barKey="avgAge"
+                                title="Edad Promedio por Función (Top 10) - Planta y Contratos"
+                                isDarkMode={isDarkMode}
+                            />
+                        ) : (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
+                                <CircularProgress size={30} />
+                            </Box>
+                        )}
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        {ageDistributionNeikeBeca ? (
+                            <CustomAreaChart
+                                data={ageDistributionNeikeBeca.rangeData}
+                                title="Distribución por Rangos de Edad según el área - Neikes y Becas"
+                                isDarkMode={isDarkMode}
+                                xKey="range"
+                                yKey="count"
+                            />
+                        ) : (
+                            <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
+                                <CircularProgress size={30} />
+                            </Box>
+                        )}
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        {ageByFunctionNeikeBeca.length > 0 ? (
+                            <CustomBarChart
+                                data={ageByFunctionNeikeBeca.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
+                                xKey="function"
+                                barKey="avgAge"
+                                title="Edad Promedio por Función (Top 10) - Neikes y Becas"
+                                isDarkMode={isDarkMode}
                             />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
@@ -393,18 +501,36 @@ const DashboardPage = () => {
                     </Grid>
 
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChart 
-                            data={agentsBySecretaria.slice(0, 8)} 
-                            title="Agentes por Secretaría (Top 8)" 
+                        <CustomDonutChart
+                            data={agentsBySecretaria.slice(0, 8)}
+                            title="Agentes por Secretaría (Top 8) - Planta y Contrato"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="secretaria"
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
-                        <CustomDonutChart 
-                            data={agentsByDependency.slice(0, 8)} 
-                            title="Agentes por Dependencia (Top 8)" 
+                        <CustomDonutChart
+                            data={agentsByDependency.slice(0, 8)}
+                            title="Agentes por Dependencia (Top 8) - Planta y Contrato"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="dependency"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomDonutChart
+                            data={agentsBySecretariaNeikeBeca.slice(0, 8)}
+                            title="Agentes por Secretaría (Top 8) - Neikes y Becas"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="secretaria"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomDonutChart
+                            data={agentsByDependencyNeikeBeca.slice(0, 8)}
+                            title="Agentes por Dependencia (Top 8) - Neikes y Becas"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="dependency"
@@ -416,7 +542,17 @@ const DashboardPage = () => {
                             data={filterValidData(agentsBySubsecretaria, 'subsecretaria').slice(0, 10)}
                             xKey="subsecretaria"
                             barKey="count"
-                            title="Agentes por Subsecretaría (Top 10)"
+                            title="Agentes por Subsecretaría (Top 10) - Planta y Contrato"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <CustomBarChart
+                            data={filterValidData(agentsBySubsecretariaNeikeBeca, 'subsecretaria').slice(0, 10)}
+                            xKey="subsecretaria"
+                            barKey="count"
+                            title="Agentes por Subsecretaría (Top 10) - Neikes y Becas"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -433,7 +569,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 10)}
                             xKey="direccionGeneral"
                             barKey="count"
-                            title="Agentes por Dirección General (Top 10)"
+                            title="Agentes por Dirección General (Top 10) - Planta y Contrato"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -443,7 +579,27 @@ const DashboardPage = () => {
                             data={filterValidData(agentsByDireccion, 'direccion').slice(0, 10)}
                             xKey="direccion"
                             barKey="count"
-                            title="Agentes por Dirección (Top 10)"
+                            title="Agentes por Dirección (Top 10) - Planta y Contrato"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <CustomBarChart
+                            data={filterValidData(agentsByDireccionGeneralNeikeBeca, 'direccionGeneral').slice(0, 10)}
+                            xKey="direccionGeneral"
+                            barKey="count"
+                            title="Agentes por Dirección General (Top 10) - Neikes y Becas"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <CustomBarChart
+                            data={filterValidData(agentsByDireccionNeikeBeca, 'direccion').slice(0, 10)}
+                            xKey="direccion"
+                            barKey="count"
+                            title="Agentes por Dirección (Top 10) - Neikes y Becas"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -452,7 +608,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)}
-                            title="Agentes por Departamento (Top 8)"
+                            title="Agentes por Departamento (Top 8) - Planta y Contrato"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="departamento"
@@ -461,7 +617,25 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDivision, 'division').slice(0, 8)}
-                            title="Agentes por División (Top 8)"
+                            title="Agentes por División (Top 8) - Planta y Contrato"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="division"
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <CustomDonutChart
+                            data={filterValidData(agentsByDepartamentoNeikeBeca, 'departamento').slice(0, 8)}
+                            title="Agentes por Departamento (Top 8) - Neikes y Becas"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="departamento"
+                        />
+                    </Grid>
+                    <Grid item xs={12} lg={6}>
+                        <CustomDonutChart
+                            data={filterValidData(agentsByDivisionNeikeBeca, 'division').slice(0, 8)}
+                            title="Agentes por División (Top 8) - Neikes y Becas"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="division"
