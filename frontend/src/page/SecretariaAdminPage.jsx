@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BusinessIcon from '@mui/icons-material/Business';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import SearchIcon from '@mui/icons-material/Search';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { OptimizedTextField, OptimizedCheckbox, useOptimizedForm } from '../components/OptimizedFormField.jsx';
 import AdminSectionLayout from '../components/AdminSectionLayout.jsx';
@@ -136,10 +137,11 @@ const SecretariaAdminPage = () => {
   
   // Estado para dependencias padre
   const [allDeps, setAllDeps] = useState([]);
-  
+
   // Estados de paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(50);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Formulario optimizado para nueva secretaría
   const {
@@ -206,6 +208,10 @@ const SecretariaAdminPage = () => {
     fetchSecretarias();
     fetchAllDeps();
   }, [fetchSecretarias, fetchAllDeps]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
 
   // Función para calcular nivel (memoizada)
   const getNivel = useCallback((idPadre) => {
@@ -300,14 +306,23 @@ const SecretariaAdminPage = () => {
     }
   }, [editingSec, getNivel, fetchSecretarias, fetchAllDeps, showSnackbar]);
 
-  // Datos paginados (memoizados)
+  // Datos filtrados y paginados
+  const filteredSecretarias = useMemo(() => {
+    const term = searchTerm.toLowerCase().trim();
+    if (!term) return secretarias;
+    return secretarias.filter(sec =>
+      sec.nombre.toLowerCase().includes(term) ||
+      (sec.codigo && sec.codigo.toLowerCase().includes(term))
+    );
+  }, [secretarias, searchTerm]);
+
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return secretarias.slice(startIndex, endIndex);
-  }, [secretarias, currentPage, itemsPerPage]);
+    return filteredSecretarias.slice(startIndex, endIndex);
+  }, [filteredSecretarias, currentPage, itemsPerPage]);
 
-  const totalPages = Math.ceil(secretarias.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredSecretarias.length / itemsPerPage);
 
   // Opciones para select de dependencias padre (memoizadas)
   const parentOptions = useMemo(() => [
@@ -562,9 +577,50 @@ const SecretariaAdminPage = () => {
         </Card>
       )}
 
+      {/* Filtro de búsqueda */}
+      <Card
+        sx={{
+          mb: 4,
+          background: isDarkMode
+            ? 'rgba(45, 55, 72, 0.8)'
+            : 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(20px)',
+          border: isDarkMode
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : '1px solid rgba(0, 0, 0, 0.1)',
+          borderRadius: 3,
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+            <Avatar
+              sx={{
+                width: 32,
+                height: 32,
+                background: 'linear-gradient(135deg, #4caf50, #388e3c)',
+              }}
+            >
+              <SearchIcon sx={{ fontSize: 18 }} />
+            </Avatar>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Buscar dependencia
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
+            <OptimizedTextField
+              name="search"
+              label="Buscar por nombre o código"
+              value={searchTerm}
+              onChange={(name, value) => setSearchTerm(value)}
+              sx={{ minWidth: 300 }}
+            />
+          </Box>
+        </CardContent>
+      </Card>
+
       {/* Tabla optimizada */}
-      <Card 
-        sx={{ 
+      <Card
+        sx={{
           background: isDarkMode
             ? 'rgba(45, 55, 72, 0.8)'
             : 'rgba(255, 255, 255, 0.9)',
@@ -622,7 +678,7 @@ const SecretariaAdminPage = () => {
       {/* Información de registros */}
       <Box display="flex" justifyContent="center" mt={2}>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          Mostrando {paginatedData.length} de {secretarias.length} registros
+          Mostrando {paginatedData.length} de {filteredSecretarias.length} registros
         </Typography>
       </Box>
 
