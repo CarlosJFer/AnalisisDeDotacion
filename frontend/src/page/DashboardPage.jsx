@@ -98,6 +98,13 @@ const DashboardPage = () => {
             const funcRes = await apiClient.get('/functions');
             const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
 
+            const safeGet = (endpoint, defaultData) => {
+                if (!endpoint) return Promise.resolve({ data: defaultData });
+                return apiClient
+                    .get(endpoint, { params: appliedFilters })
+                    .catch(() => ({ data: defaultData }));
+            };
+
             const [
                 totalResponse,
                 ageDistResponse,
@@ -123,29 +130,29 @@ const DashboardPage = () => {
                 departamentoNeikeBecaResponse,
                 divisionNeikeBecaResponse
             ] = await Promise.all([
-                apiClient.get(funcs.totalAgents, { params: appliedFilters }),
-                apiClient.get(funcs.ageDistribution, { params: appliedFilters }),
-                apiClient.get(funcs.ageByFunction, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByFunction, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByEmploymentType, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDependency, { params: appliedFilters }),
-                apiClient.get(funcs.agentsBySecretaria, { params: appliedFilters }),
-                apiClient.get(funcs.agentsBySubsecretaria, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDireccionGeneral, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDireccion, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDepartamento, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDivision, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByFunctionNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByEmploymentTypeNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.ageDistributionNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.ageByFunctionNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDependencyNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsBySecretariaNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsBySubsecretariaNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDireccionGeneralNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDireccionNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDepartamentoNeikeBeca, { params: appliedFilters }),
-                apiClient.get(funcs.agentsByDivisionNeikeBeca, { params: appliedFilters })
+                safeGet(funcs.totalAgents, { total: 0 }),
+                safeGet(funcs.ageDistribution, null),
+                safeGet(funcs.ageByFunction, []),
+                safeGet(funcs.agentsByFunction, []),
+                safeGet(funcs.agentsByEmploymentType, []),
+                safeGet(funcs.agentsByDependency, []),
+                safeGet(funcs.agentsBySecretaria, []),
+                safeGet(funcs.agentsBySubsecretaria, []),
+                safeGet(funcs.agentsByDireccionGeneral, []),
+                safeGet(funcs.agentsByDireccion, []),
+                safeGet(funcs.agentsByDepartamento, []),
+                safeGet(funcs.agentsByDivision, []),
+                safeGet(funcs.agentsByFunctionNeikeBeca, []),
+                safeGet(funcs.agentsByEmploymentTypeNeikeBeca, []),
+                safeGet(funcs.ageDistributionNeikeBeca, null),
+                safeGet(funcs.ageByFunctionNeikeBeca, []),
+                safeGet(funcs.agentsByDependencyNeikeBeca, []),
+                safeGet(funcs.agentsBySecretariaNeikeBeca, []),
+                safeGet(funcs.agentsBySubsecretariaNeikeBeca, []),
+                safeGet(funcs.agentsByDireccionGeneralNeikeBeca, []),
+                safeGet(funcs.agentsByDireccionNeikeBeca, []),
+                safeGet(funcs.agentsByDepartamentoNeikeBeca, []),
+                safeGet(funcs.agentsByDivisionNeikeBeca, [])
             ]);
 
             setTotalAgents(totalResponse.data.total);
