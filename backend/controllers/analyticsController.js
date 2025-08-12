@@ -3,6 +3,20 @@ const Agent = require('../models/Agent'); // Importamos el modelo Agent
 const PDFDocument = require('pdfkit');
 const emailService = require('../services/emailService');
 
+// Construye dinámicamente el objeto de filtros para consultas
+const buildMatchStage = (query) => {
+  const match = { plantilla: "Rama completa - Planta" };
+  if (query.dependencia) match['Dependencia donde trabaja'] = query.dependencia;
+  if (query.secretaria) match['Secretaria'] = query.secretaria;
+  if (query.subsecretaria) match['Subsecretaria'] = query.subsecretaria;
+  if (query.direccionGeneral) match['Dirección general'] = query.direccionGeneral;
+  if (query.direccion) match['Dirección'] = query.direccion;
+  if (query.departamento) match['Departamento'] = query.departamento;
+  if (query.division) match['División'] = query.division;
+  if (query.funcion) match['Funcion'] = query.funcion;
+  return match;
+};
+
 // Obtener lista de secretarías disponibles
 const getSecretarias = async (req, res) => {
   try {
@@ -261,7 +275,8 @@ const getSecretariasAnalytics = async (req, res) => {
 // @access  Private/Admin
 const getTotalAgents = async (req, res) => {
   try {
-    const totalAgents = await Agent.countDocuments();
+    const match = buildMatchStage(req.query);
+    const totalAgents = await Agent.countDocuments(match);
     res.json({ total: totalAgents });
   } catch (err) {
     console.error(err.message);
@@ -276,8 +291,9 @@ const getTotalAgents = async (req, res) => {
 // @access  Private/Admin
 const getAgentsByFunction = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsByFunction = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Funcion',
@@ -307,9 +323,10 @@ const getAgentsByFunction = async (req, res) => {
 // @access  Private/Admin
 const getAgeDistribution = async (req, res) => {
   try {
-    const agents = await Agent.find({ 
-      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Planta"
+    const match = buildMatchStage(req.query);
+    const agents = await Agent.find({
+      ...match,
+      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' }
     }).limit(1000);
 
     const currentDate = new Date();
@@ -381,10 +398,11 @@ const getAgeDistribution = async (req, res) => {
 // @access  Private/Admin
 const getAgeByFunction = async (req, res) => {
   try {
-    const agents = await Agent.find({ 
+    const match = buildMatchStage(req.query);
+    const agents = await Agent.find({
+      ...match,
       'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
-      'Funcion': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Planta"
+      'Funcion': { $exists: true, $ne: null, $ne: '' }
     }).limit(2000);
 
     const currentDate = new Date();
@@ -446,10 +464,11 @@ const getAgeByFunction = async (req, res) => {
 // @access  Private/Admin
 const getAgeBySecretaria = async (req, res) => {
   try {
-    const agents = await Agent.find({ 
+    const match = buildMatchStage(req.query);
+    const agents = await Agent.find({
+      ...match,
       'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
-      'Secretaria': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Planta"
+      'Secretaria': { $exists: true, $ne: null, $ne: '' }
     }).limit(2000);
 
     const currentDate = new Date();
@@ -511,8 +530,9 @@ const getAgeBySecretaria = async (req, res) => {
 // @access  Private/Admin
 const getAgentsByEmploymentType = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsByType = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Situación de revista',
@@ -542,8 +562,9 @@ const getAgentsByEmploymentType = async (req, res) => {
 // @access  Private/Admin
 const getAgentsByDependency = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsByDependency = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Dependencia donde trabaja',
@@ -573,8 +594,9 @@ const getAgentsByDependency = async (req, res) => {
 // @access  Private/Admin
 const getAgentsBySecretaria = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsBySecretaria = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Secretaria',
@@ -604,8 +626,9 @@ const getAgentsBySecretaria = async (req, res) => {
 // @access  Private/Admin
 const getAgentsBySubsecretaria = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsBySubsecretaria = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Subsecretaria',
@@ -635,8 +658,9 @@ const getAgentsBySubsecretaria = async (req, res) => {
 // @access  Private/Admin
 const getAgentsByDireccionGeneral = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsByDireccionGeneral = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Dirección general',
@@ -666,8 +690,9 @@ const getAgentsByDireccionGeneral = async (req, res) => {
 // @access  Private/Admin
 const getAgentsByDireccion = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsByDireccion = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Dirección',
@@ -697,8 +722,9 @@ const getAgentsByDireccion = async (req, res) => {
 // @access  Private/Admin
 const getAgentsByDepartamento = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsByDepartamento = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$Departamento',
@@ -728,8 +754,9 @@ const getAgentsByDepartamento = async (req, res) => {
 // @access  Private/Admin
 const getAgentsByDivision = async (req, res) => {
   try {
+    const match = buildMatchStage(req.query);
     const agentsByDivision = await Agent.aggregate([
-      { $match: { plantilla: "Rama completa - Planta" } },
+      { $match: match },
       {
         $group: {
           _id: '$División',
