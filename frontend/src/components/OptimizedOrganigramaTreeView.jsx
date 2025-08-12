@@ -106,14 +106,15 @@ const HighlightText = memo(({ text, term }) => {
 });
 
 // Componente de nodo ultra-optimizado
-const TreeNode = memo(({ 
-  node, 
-  isDarkMode, 
-  getVariablesForNode, 
-  searchTerm, 
+const TreeNode = memo(({
+  node,
+  isDarkMode,
+  getVariablesForNode,
+  searchTerm,
   level = 0,
   expanded,
-  onToggle 
+  onToggle,
+  onNodeSelect
 }) => {
   // Memoización agresiva de variables
   const variables = useMemo(() => 
@@ -176,12 +177,12 @@ const TreeNode = memo(({
         },
       }}
       label={
-        <Box sx={{ 
-          display: 'flex', 
-          alignItems: 'center', 
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
           gap: 1,
           py: 0.25, // Padding vertical reducido
-        }}>
+        }} onClick={(e) => { e.stopPropagation(); onNodeSelect && onNodeSelect(node); }}>
           <Avatar 
             sx={{ 
               width: avatarSize, 
@@ -250,6 +251,7 @@ const TreeNode = memo(({
             level={level + 1}
             expanded={expanded}
             onToggle={onToggle}
+            onNodeSelect={onNodeSelect}
           />
         ))
       }
@@ -257,7 +259,7 @@ const TreeNode = memo(({
   );
 });
 
-const OptimizedOrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm }, ref) => {
+const OptimizedOrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm, onNodeSelect }, ref) => {
   const { isDarkMode } = useTheme();
   const treeMemo = useMemo(() => tree, [tree]);
   const [expanded, setExpanded] = useState([]);
@@ -389,6 +391,7 @@ const OptimizedOrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, se
             searchTerm={searchTerm}
             level={0}
             expanded={expanded}
+            onNodeSelect={onNodeSelect}
           />
         ))}
       </SimpleTreeView>
