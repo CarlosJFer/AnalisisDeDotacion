@@ -17,6 +17,7 @@ const variableEspecificaRoutes = require('./routes/variableEspecifica');
 const importTemplateRoutes = require('./routes/importTemplates');
 const adminRoutes = require('./routes/adminRoutes');
 const functionRoutes = require('./routes/functions');
+const chartConfigRoutes = require('./routes/chartConfigRoutes');
 const initFunctions = require('./config/initFunctions');
 
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/variables-especificas', variableEspecificaRoutes);
 app.use('/api/templates', importTemplateRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/functions', functionRoutes);
+app.use('/api/chart-configs', chartConfigRoutes);
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {

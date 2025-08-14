@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Typography,
   Button,
   Table,
   TableBody,
@@ -15,6 +14,12 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Checkbox,
+  ListItemText,
   CircularProgress,
   Alert
 } from '@mui/material';
@@ -22,33 +27,44 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTheme } from '../context/ThemeContext.jsx';
-import apiClient from '../services/api';
 import AdminSectionLayout from '../components/AdminSectionLayout.jsx';
+import chartConfigService from '../services/chartConfigService.js';
 
 const FunctionCenterPage = () => {
   const { isDarkMode } = useTheme();
-  const [functions, setFunctions] = useState([]);
+  const [configs, setConfigs] = useState([]);
+  const [options, setOptions] = useState({ plantillas: [], groupFields: [], measures: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [dialogOpen, setDialogOpen] = useState(false);
   const [current, setCurrent] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  const loadFunctions = async () => {
-    setLoading(true);
+  const loadConfigs = async () => {
     try {
-      const res = await apiClient.get('/functions');
-      setFunctions(res.data);
+      const res = await chartConfigService.getAllChartConfigs();
+      setConfigs(res.data);
     } catch (err) {
-      setError('Error al cargar funciones');
-    } finally {
-      setLoading(false);
+      setError('Error al cargar configuraciones');
+    }
+  };
+
+  const loadOptions = async () => {
+    try {
+      const res = await chartConfigService.getChartConfigOptions();
+      setOptions(res.data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   useEffect(() => {
-    loadFunctions();
+    const init = async () => {
+      setLoading(true);
+      await Promise.all([loadConfigs(), loadOptions()]);
+      setLoading(false);
+    };
+    init();
   }, []);
 
   const handleClose = () => {
@@ -60,12 +76,12 @@ const FunctionCenterPage = () => {
     setSaving(true);
     try {
       if (current && current._id) {
-        await apiClient.put(`/functions/${current._id}`, current);
+        await chartConfigService.updateChartConfig(current._id, current);
       } else {
-        await apiClient.post('/functions', current);
+        await chartConfigService.createChartConfig(current);
       }
+      await loadConfigs();
       handleClose();
-      loadFunctions();
     } catch (err) {
       console.error(err);
     } finally {
@@ -74,10 +90,10 @@ const FunctionCenterPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('¿Eliminar función?')) return;
+    if (!window.confirm('¿Eliminar configuración?')) return;
     try {
-      await apiClient.delete(`/functions/${id}`);
-      loadFunctions();
+      await chartConfigService.deleteChartConfig(id);
+      loadConfigs();
     } catch (err) {
       console.error(err);
     }
@@ -85,30 +101,76 @@ const FunctionCenterPage = () => {
 
   const renderDialog = () => (
     <Dialog open={dialogOpen} onClose={handleClose} fullWidth maxWidth="sm">
-      <DialogTitle>{current && current._id ? 'Editar Función' : 'Nueva Función'}</DialogTitle>
-      <DialogContent>
+      <DialogTitle>{current && current._id ? 'Editar Configuración' : 'Nueva Configuración'}</DialogTitle>
+      <DialogContent dividers>
         <TextField
           margin="dense"
           label="Nombre"
           fullWidth
-          value={current?.name || ''}
-          onChange={(e) => setCurrent({ ...current, name: e.target.value })}
+          value={current?.nombre || ''}
+          onChange={(e) => setCurrent({ ...current, nombre: e.target.value })}
         />
         <TextField
           margin="dense"
-          label="Endpoint"
+          label="Título"
           fullWidth
-          value={current?.endpoint || ''}
-          onChange={(e) => setCurrent({ ...current, endpoint: e.target.value })}
+          value={current?.titulo || ''}
+          onChange={(e) => setCurrent({ ...current, titulo: e.target.value })}
         />
         <TextField
           margin="dense"
-          label="Descripción"
+          label="Tipo de gráfico"
           fullWidth
-          multiline
-          minRows={3}
-          value={current?.description || ''}
-          onChange={(e) => setCurrent({ ...current, description: e.target.value })}
+          value={current?.tipo || ''}
+          onChange={(e) => setCurrent({ ...current, tipo: e.target.value })}
+        />
+        <FormControl fullWidth margin="dense">
+          <InputLabel id="plantillas-label">Plantillas</InputLabel>
+          <Select
+            labelId="plantillas-label"
+            multiple
+            value={current?.plantillas || []}
+            onChange={(e) => setCurrent({ ...current, plantillas: e.target.value })}
+            renderValue={(selected) => selected.join(', ')}
+          >
+            {options.plantillas.map((p) => (
+              <MenuItem key={p} value={p}>
+                <Checkbox checked={current?.plantillas?.indexOf(p) > -1} />
+                <ListItemText primary={p} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          margin="dense"
+          label="Agrupar por"
+          select
+          fullWidth
+          value={current?.groupBy || ''}
+          onChange={(e) => setCurrent({ ...current, groupBy: e.target.value })}
+        >
+          {options.groupFields.map((g) => (
+            <MenuItem key={g} value={g}>{g}</MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          margin="dense"
+          label="Medida"
+          select
+          fullWidth
+          value={current?.measure || ''}
+          onChange={(e) => setCurrent({ ...current, measure: e.target.value })}
+        >
+          {options.measures.map((m) => (
+            <MenuItem key={m} value={m}>{m}</MenuItem>
+          ))}
+        </TextField>
+        <TextField
+          margin="dense"
+          label="Sección"
+          fullWidth
+          value={current?.section || ''}
+          onChange={(e) => setCurrent({ ...current, section: e.target.value })}
         />
       </DialogContent>
       <DialogActions>
@@ -126,29 +188,31 @@ const FunctionCenterPage = () => {
   return (
     <AdminSectionLayout title="Centro de Funciones">
       <Box display="flex" justifyContent="flex-end" mb={2}>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setCurrent({}); setDialogOpen(true); }}>
-          Nueva Función
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => { setCurrent({ plantillas: [] }); setDialogOpen(true); }}>
+          Nueva Configuración
         </Button>
       </Box>
       <TableContainer component={Paper} sx={{ backgroundColor: isDarkMode ? '#424242' : '#fff' }}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Endpoint</TableCell>
-              <TableCell>Descripción</TableCell>
+              <TableCell>Título</TableCell>
+              <TableCell>Tipo</TableCell>
+              <TableCell>Agrupar por</TableCell>
+              <TableCell>Medida</TableCell>
               <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {functions.map((f) => (
-              <TableRow key={f._id}>
-                <TableCell>{f.name}</TableCell>
-                <TableCell>{f.endpoint}</TableCell>
-                <TableCell>{f.description}</TableCell>
+            {configs.map((c) => (
+              <TableRow key={c._id}>
+                <TableCell>{c.titulo}</TableCell>
+                <TableCell>{c.tipo}</TableCell>
+                <TableCell>{c.groupBy}</TableCell>
+                <TableCell>{c.measure}</TableCell>
                 <TableCell>
-                  <Button size="small" onClick={() => { setCurrent(f); setDialogOpen(true); }}><EditIcon fontSize="small" /></Button>
-                  <Button size="small" color="error" onClick={() => handleDelete(f._id)}><DeleteIcon fontSize="small" /></Button>
+                  <Button size="small" onClick={() => { setCurrent(c); setDialogOpen(true); }}><EditIcon fontSize="small" /></Button>
+                  <Button size="small" color="error" onClick={() => handleDelete(c._id)}><DeleteIcon fontSize="small" /></Button>
                 </TableCell>
               </TableRow>
             ))}
