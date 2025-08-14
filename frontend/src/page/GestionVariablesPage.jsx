@@ -185,6 +185,11 @@ const GestionVariablesPage = () => {
     valor_maximo: '',
     umbral_preventivo: '',
     umbral_critico: '',
+    flexible: false,
+    umbral_preventivo_inferior: '',
+    umbral_critico_inferior: '',
+    umbral_preventivo_superior: '',
+    umbral_critico_superior: '',
     activo: true
   });
 
@@ -200,6 +205,11 @@ const GestionVariablesPage = () => {
     valor_maximo: '',
     umbral_preventivo: '',
     umbral_critico: '',
+    umbral_critico_inferior: '',
+    umbral_preventivo_inferior: '',
+    umbral_preventivo_superior: '',
+    umbral_critico_superior: '',
+    flexible: false,
     secretaria: '',
     activo: true
   });
@@ -275,11 +285,30 @@ const GestionVariablesPage = () => {
 
   // Validación de umbrales optimizada
   const umbralesValidos = useCallback((valores) => {
-    const { valor_minimo, valor_maximo, umbral_preventivo, umbral_critico } = valores;
+    const {
+      valor_minimo,
+      valor_maximo,
+      umbral_preventivo,
+      umbral_critico,
+      flexible,
+      umbral_preventivo_inferior,
+      umbral_critico_inferior,
+      umbral_preventivo_superior,
+      umbral_critico_superior
+    } = valores;
+    if (!flexible) {
+      return (
+        Number(valor_minimo) < Number(umbral_critico) &&
+        Number(umbral_critico) < Number(umbral_preventivo) &&
+        Number(umbral_preventivo) < Number(valor_maximo)
+      );
+    }
     return (
-      Number(valor_minimo) < Number(umbral_critico) &&
-      Number(umbral_critico) < Number(umbral_preventivo) &&
-      Number(umbral_preventivo) < Number(valor_maximo)
+      Number(valor_minimo) <= Number(umbral_critico_inferior) &&
+      Number(umbral_critico_inferior) < Number(umbral_preventivo_inferior) &&
+      Number(umbral_preventivo_inferior) < Number(umbral_preventivo_superior) &&
+      Number(umbral_preventivo_superior) < Number(umbral_critico_superior) &&
+      Number(umbral_critico_superior) <= Number(valor_maximo)
     );
   }, []);
 
@@ -293,7 +322,13 @@ const GestionVariablesPage = () => {
       valor_minimo: { required: true },
       valor_maximo: { required: true },
       umbral_preventivo: { required: true },
-      umbral_critico: { required: true }
+      umbral_critico: { required: true },
+      ...(newVar.flexible ? {
+        umbral_preventivo_inferior: { required: true },
+        umbral_critico_inferior: { required: true },
+        umbral_preventivo_superior: { required: true },
+        umbral_critico_superior: { required: true }
+      } : {})
     });
 
     if (!isValid || !umbralesValidos(newVar)) return;
@@ -306,9 +341,17 @@ const GestionVariablesPage = () => {
         ...newVar,
         valor_maximo: Number(newVar.valor_maximo),
         umbral_preventivo: Number(newVar.umbral_preventivo),
-        umbral_critico: Number(newVar.umbral_critico)
+        umbral_critico: Number(newVar.umbral_critico),
+        flexible: newVar.flexible
       };
-      
+
+      if (newVar.flexible) {
+        payload.umbral_preventivo_inferior = Number(newVar.umbral_preventivo_inferior);
+        payload.umbral_critico_inferior = Number(newVar.umbral_critico_inferior);
+        payload.umbral_preventivo_superior = Number(newVar.umbral_preventivo_superior);
+        payload.umbral_critico_superior = Number(newVar.umbral_critico_superior);
+      }
+
       await apiClient.post('/variables', payload);
       resetNewVar();
       await fetchVariables();
@@ -344,9 +387,17 @@ const GestionVariablesPage = () => {
         ...editingVar,
         valor_maximo: Number(editingVar.valor_maximo),
         umbral_preventivo: Number(editingVar.umbral_preventivo),
-        umbral_critico: Number(editingVar.umbral_critico)
+        umbral_critico: Number(editingVar.umbral_critico),
+        flexible: editingVar.flexible
       };
-      
+
+      if (editingVar.flexible) {
+        payload.umbral_preventivo_inferior = Number(editingVar.umbral_preventivo_inferior);
+        payload.umbral_critico_inferior = Number(editingVar.umbral_critico_inferior);
+        payload.umbral_preventivo_superior = Number(editingVar.umbral_preventivo_superior);
+        payload.umbral_critico_superior = Number(editingVar.umbral_critico_superior);
+      }
+
       await apiClient.put(`/variables/${editingVar._id}`, payload);
       setEditingVar(null);
       await fetchVariables();
@@ -371,7 +422,13 @@ const GestionVariablesPage = () => {
       valor_maximo: { required: true },
       umbral_preventivo: { required: true },
       umbral_critico: { required: true },
-      secretaria: { required: true }
+      secretaria: { required: true },
+      ...(newVarEspecifica.flexible ? {
+        umbral_critico_inferior: { required: true },
+        umbral_preventivo_inferior: { required: true },
+        umbral_preventivo_superior: { required: true },
+        umbral_critico_superior: { required: true }
+      } : {})
     });
 
     if (!isValid || !umbralesValidos(newVarEspecifica)) return;
@@ -384,9 +441,17 @@ const GestionVariablesPage = () => {
         ...newVarEspecifica,
         valor_maximo: Number(newVarEspecifica.valor_maximo),
         umbral_preventivo: Number(newVarEspecifica.umbral_preventivo),
-        umbral_critico: Number(newVarEspecifica.umbral_critico)
+        umbral_critico: Number(newVarEspecifica.umbral_critico),
+        flexible: newVarEspecifica.flexible
       };
-      
+
+      if (newVarEspecifica.flexible) {
+        payload.umbral_critico_inferior = Number(newVarEspecifica.umbral_critico_inferior);
+        payload.umbral_preventivo_inferior = Number(newVarEspecifica.umbral_preventivo_inferior);
+        payload.umbral_preventivo_superior = Number(newVarEspecifica.umbral_preventivo_superior);
+        payload.umbral_critico_superior = Number(newVarEspecifica.umbral_critico_superior);
+      }
+
       await apiClient.post('/variables-especificas', payload);
       resetNewVarEspecifica();
       await fetchVariablesEspecificas();
@@ -422,9 +487,17 @@ const GestionVariablesPage = () => {
         ...editingVarEspecifica,
         valor_maximo: Number(editingVarEspecifica.valor_maximo),
         umbral_preventivo: Number(editingVarEspecifica.umbral_preventivo),
-        umbral_critico: Number(editingVarEspecifica.umbral_critico)
+        umbral_critico: Number(editingVarEspecifica.umbral_critico),
+        flexible: editingVarEspecifica.flexible
       };
-      
+
+      if (editingVarEspecifica.flexible) {
+        payload.umbral_critico_inferior = Number(editingVarEspecifica.umbral_critico_inferior);
+        payload.umbral_preventivo_inferior = Number(editingVarEspecifica.umbral_preventivo_inferior);
+        payload.umbral_preventivo_superior = Number(editingVarEspecifica.umbral_preventivo_superior);
+        payload.umbral_critico_superior = Number(editingVarEspecifica.umbral_critico_superior);
+      }
+
       await apiClient.put(`/variables-especificas/${editingVarEspecifica._id}`, payload);
       setEditingVarEspecifica(null);
       await fetchVariablesEspecificas();
@@ -612,7 +685,51 @@ const GestionVariablesPage = () => {
                   required
                   sx={{ minWidth: 120 }}
                 />
-                
+
+                <OptimizedCheckbox
+                  name="flexible"
+                  label="Flexible"
+                  checked={newVar.flexible}
+                  onChange={updateNewVar}
+                />
+
+                {newVar.flexible && (
+                  <>
+                    <OptimizedTextField
+                      name="umbral_critico_inferior"
+                      label="Umbral crítico inferior"
+                      type="number"
+                      value={newVar.umbral_critico_inferior}
+                      onChange={updateNewVar}
+                      sx={{ minWidth: 160 }}
+                    />
+                    <OptimizedTextField
+                      name="umbral_preventivo_inferior"
+                      label="Umbral preventivo inferior"
+                      type="number"
+                      value={newVar.umbral_preventivo_inferior}
+                      onChange={updateNewVar}
+                      sx={{ minWidth: 160 }}
+                    />
+                    <OptimizedTextField
+                      name="umbral_preventivo_superior"
+                      label="Umbral preventivo superior"
+                      type="number"
+                      value={newVar.umbral_preventivo_superior}
+                      onChange={updateNewVar}
+                      sx={{ minWidth: 160 }}
+                    />
+                    <OptimizedTextField
+                      name="umbral_critico_superior"
+                      label="Umbral crítico superior"
+                      type="number"
+                      value={newVar.umbral_critico_superior}
+                      onChange={updateNewVar}
+                      sx={{ minWidth: 160 }}
+                    />
+                  </>
+                )}
+
                 <OptimizedCheckbox
                   name="activo"
                   label="Activo"
@@ -644,9 +761,15 @@ const GestionVariablesPage = () => {
                 </Button>
               </Box>
               
-              {newVar.valor_minimo && newVar.valor_maximo && newVar.umbral_preventivo && newVar.umbral_critico && !umbralesValidos(newVar) && (
+              {(
+                newVar.flexible
+                  ? (newVar.valor_minimo && newVar.valor_maximo && newVar.umbral_critico_inferior && newVar.umbral_preventivo_inferior && newVar.umbral_preventivo_superior && newVar.umbral_critico_superior && !umbralesValidos(newVar))
+                  : (newVar.valor_minimo && newVar.valor_maximo && newVar.umbral_preventivo && newVar.umbral_critico && !umbralesValidos(newVar))
+              ) && (
                 <Alert severity="warning" sx={{ mt: 2 }}>
-                  Los umbrales deben cumplir: Mínimo &lt; Crítico &lt; Preventivo &lt; Máximo
+                  {newVar.flexible
+                    ? 'Respetar: Min ≤ Crítico inf < Preventivo inf < Preventivo sup < Crítico sup ≤ Máx'
+                    : 'Los umbrales deben cumplir: Mínimo < Crítico < Preventivo < Máximo'}
                 </Alert>
               )}
               {createError && <Alert severity="error" sx={{ mt: 2 }}>{createError}</Alert>}
@@ -798,6 +921,50 @@ const GestionVariablesPage = () => {
                   required
                   sx={{ minWidth: 120 }}
                 />
+
+                <OptimizedCheckbox
+                  name="flexible"
+                  label="Flexible"
+                  checked={newVarEspecifica.flexible}
+                  onChange={updateNewVarEspecifica}
+                />
+
+                {newVarEspecifica.flexible && (
+                  <>
+                    <OptimizedTextField
+                      name="umbral_critico_inferior"
+                      label="Umbral crítico inferior"
+                      type="number"
+                      value={newVarEspecifica.umbral_critico_inferior}
+                      onChange={updateNewVarEspecifica}
+                      sx={{ minWidth: 160 }}
+                    />
+                    <OptimizedTextField
+                      name="umbral_preventivo_inferior"
+                      label="Umbral preventivo inferior"
+                      type="number"
+                      value={newVarEspecifica.umbral_preventivo_inferior}
+                      onChange={updateNewVarEspecifica}
+                      sx={{ minWidth: 160 }}
+                    />
+                    <OptimizedTextField
+                      name="umbral_preventivo_superior"
+                      label="Umbral preventivo superior"
+                      type="number"
+                      value={newVarEspecifica.umbral_preventivo_superior}
+                      onChange={updateNewVarEspecifica}
+                      sx={{ minWidth: 160 }}
+                    />
+                    <OptimizedTextField
+                      name="umbral_critico_superior"
+                      label="Umbral crítico superior"
+                      type="number"
+                      value={newVarEspecifica.umbral_critico_superior}
+                      onChange={updateNewVarEspecifica}
+                      sx={{ minWidth: 160 }}
+                    />
+                  </>
+                )}
                 
                 <OptimizedSelect
                   name="secretaria"
@@ -834,9 +1001,15 @@ const GestionVariablesPage = () => {
               </Box>
               
               {createErrorEspecifica && <Alert severity="error" sx={{ mt: 2 }}>{createErrorEspecifica}</Alert>}
-              {newVarEspecifica.valor_minimo && newVarEspecifica.valor_maximo && newVarEspecifica.umbral_preventivo && newVarEspecifica.umbral_critico && !umbralesValidos(newVarEspecifica) && (
+              {(
+                newVarEspecifica.flexible
+                  ? (newVarEspecifica.valor_minimo && newVarEspecifica.valor_maximo && newVarEspecifica.umbral_critico_inferior && newVarEspecifica.umbral_preventivo_inferior && newVarEspecifica.umbral_preventivo_superior && newVarEspecifica.umbral_critico_superior && !umbralesValidos(newVarEspecifica))
+                  : (newVarEspecifica.valor_minimo && newVarEspecifica.valor_maximo && newVarEspecifica.umbral_preventivo && newVarEspecifica.umbral_critico && !umbralesValidos(newVarEspecifica))
+              ) && (
                 <Alert severity="warning" sx={{ mt: 2 }}>
-                  Los umbrales deben cumplir: Mínimo &lt; Crítico &lt; Preventivo &lt; Máximo
+                  {newVarEspecifica.flexible
+                    ? 'Respetar: Min ≤ Crítico inf < Preventivo inf < Preventivo sup < Crítico sup ≤ Máx'
+                    : 'Los umbrales deben cumplir: Mínimo < Crítico < Preventivo < Máximo'}
                 </Alert>
               )}
             </CardContent>

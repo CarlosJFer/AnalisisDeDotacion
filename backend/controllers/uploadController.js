@@ -2,6 +2,9 @@ const xlsx = require('xlsx');
 const path = require('path');
 const fs = require('fs');
 const emailService = require('../services/emailService');
+const Variable = require('../models/Variable');
+const VariableValue = require('../models/VariableValue');
+const Dependency = require('../models/Dependency');
 
 // Función mejorada para limpiar los datos del Excel:
 // - Comienza desde la fila 4
@@ -167,6 +170,30 @@ async function uploadFile(req, res) {
           // Eliminar agentes previos del mismo archivo y plantilla
           await Agent.deleteMany({ sourceFile: file.originalname, templateUsed: template._id });
           await Agent.insertMany(agentes);
+
+          // Calcular y almacenar valores de variables por dependencia
+          try {
+            const totalVar = await Variable.findOne({ nombre: /total/i });
+            if (totalVar) {
+              const counts = agentes.reduce((acc, a) => {
+                const dep = a['Dependencia donde trabaja'];
+                if (!dep) return acc;
+                acc[dep] = (acc[dep] || 0) + 1;
+                return acc;
+              }, {});
+              for (const [depName, count] of Object.entries(counts)) {
+                const depDoc = await Dependency.findOne({ nombre: depName });
+                if (!depDoc) continue;
+                await VariableValue.findOneAndUpdate(
+                  { dependenciaId: depDoc._id, variableId: totalVar._id },
+                  { valor_actual: count, fecha: new Date() },
+                  { upsert: true, new: true, setDefaultsOnInsert: true }
+                );
+              }
+            }
+          } catch (e) {
+            console.error('Error calculando VariableValue:', e);
+          }
 
           // --- Lógica de análisis agregada ---
           // 1. Total de agentes

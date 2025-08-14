@@ -5,7 +5,19 @@ const emailService = require('../services/emailService');
 
 // Construye dinámicamente el objeto de filtros para consultas
 const buildMatchStage = (query) => {
-  const match = { plantilla: "Rama completa - Planta" };
+  const match = {};
+  match.plantilla = query.plantilla || 'Rama completa - Planta';
+
+  // Filtros dinámicos recibidos como JSON en query.filters
+  if (query.filters) {
+    try {
+      const extra = JSON.parse(query.filters);
+      Object.assign(match, extra);
+    } catch (e) {
+      console.error('Error parsing filters:', e);
+    }
+  }
+
   if (query.dependencia) match['Dependencia donde trabaja'] = query.dependencia;
   if (query.secretaria) match['Secretaria'] = query.secretaria;
   if (query.subsecretaria) match['Subsecretaria'] = query.subsecretaria;

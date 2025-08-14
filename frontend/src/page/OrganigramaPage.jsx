@@ -95,8 +95,17 @@ const OrganigramaPage = () => {
       const valor_actual = valueObj ? valueObj.valor_actual : null;
       let estado = 'ok';
       if (valor_actual !== null) {
-        if (valor_actual >= v.umbral_critico && valor_actual < v.umbral_preventivo) estado = 'preventivo';
-        if (valor_actual >= v.umbral_preventivo) estado = 'critico';
+        if (v.flexible) {
+          const cInf = v.umbral_critico_inferior;
+          const pInf = v.umbral_preventivo_inferior;
+          const pSup = v.umbral_preventivo_superior;
+          const cSup = v.umbral_critico_superior;
+          if (valor_actual < cInf || valor_actual > cSup) estado = 'critico';
+          else if (valor_actual < pInf || valor_actual > pSup) estado = 'preventivo';
+        } else {
+          if (valor_actual >= v.umbral_preventivo) estado = 'critico';
+          else if (valor_actual >= v.umbral_critico) estado = 'preventivo';
+        }
       }
       return {
         ...v,
