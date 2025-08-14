@@ -8,8 +8,11 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormHelperText
+  FormHelperText,
+  Tooltip,
+  InputAdornment
 } from '@mui/material';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const VariableForm = ({
   values,
@@ -22,6 +25,14 @@ const VariableForm = ({
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     onChange(name, value);
   };
+
+  const infoAdornment = (title) => (
+    <InputAdornment position="end">
+      <Tooltip title={title}>
+        <InfoOutlinedIcon fontSize="small" color="action" />
+      </Tooltip>
+    </InputAdornment>
+  );
 
   return (
     <Grid container spacing={2}>
@@ -56,6 +67,7 @@ const VariableForm = ({
           value={values.valor_minimo || ''}
           onChange={handleChange('valor_minimo')}
           fullWidth
+          InputProps={{ endAdornment: infoAdornment('Valor mínimo permitido') }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
@@ -65,6 +77,7 @@ const VariableForm = ({
           value={values.valor_maximo || ''}
           onChange={handleChange('valor_maximo')}
           fullWidth
+          InputProps={{ endAdornment: infoAdornment('Valor máximo permitido') }}
         />
       </Grid>
 
@@ -74,6 +87,7 @@ const VariableForm = ({
             <Switch
               checked={Boolean(values.flexible)}
               onChange={handleChange('flexible')}
+              color="primary"
             />
           }
           label="Variable flexible"
@@ -90,6 +104,7 @@ const VariableForm = ({
               onChange={handleChange('umbral_critico')}
               fullWidth
               helperText="Valor a partir del cual se considera saturado"
+              InputProps={{ endAdornment: infoAdornment('Señala el límite crítico') }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -100,6 +115,7 @@ const VariableForm = ({
               onChange={handleChange('umbral_preventivo')}
               fullWidth
               helperText="Valor a partir del cual se activa la alerta"
+              InputProps={{ endAdornment: infoAdornment('Umbral antes del crítico') }}
             />
           </Grid>
         </>
@@ -115,6 +131,7 @@ const VariableForm = ({
               onChange={handleChange('umbral_critico_inferior')}
               fullWidth
               helperText="Por debajo del valor ideal"
+              InputProps={{ endAdornment: infoAdornment('Límite crítico inferior') }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -125,6 +142,7 @@ const VariableForm = ({
               onChange={handleChange('umbral_preventivo_inferior')}
               fullWidth
               helperText="Por debajo del valor ideal"
+              InputProps={{ endAdornment: infoAdornment('Límite preventivo inferior') }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -135,6 +153,7 @@ const VariableForm = ({
               onChange={handleChange('umbral_preventivo_superior')}
               fullWidth
               helperText="Por encima del valor ideal"
+              InputProps={{ endAdornment: infoAdornment('Límite preventivo superior') }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -145,6 +164,7 @@ const VariableForm = ({
               onChange={handleChange('umbral_critico_superior')}
               fullWidth
               helperText="Por encima del valor ideal"
+              InputProps={{ endAdornment: infoAdornment('Límite crítico superior') }}
             />
           </Grid>
         </>

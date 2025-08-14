@@ -625,11 +625,21 @@ const GestionVariablesPage = () => {
         <>
           {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-          <Box display="flex" justifyContent="flex-end" mb={2}>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenCreateVar(true)}>
-              Agregar Variable
-            </Button>
-          </Box>
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenCreateVar(true)}
+            sx={{
+              background: 'linear-gradient(135deg, #9c27b0, #7b1fa2)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #7b1fa2, #9c27b0)'
+              }
+            }}
+          >
+            Agregar Variable
+          </Button>
+        </Box>
 
           {/* Tabla de variables globales */}
           <Card 
@@ -689,11 +699,21 @@ const GestionVariablesPage = () => {
           
           {errorEspecificas && <Alert severity="error" sx={{ mb: 3 }}>{errorEspecificas}</Alert>}
 
-          <Box display="flex" justifyContent="flex-end" mb={2}>
-            <Button variant="contained" startIcon={<AddIcon />} onClick={() => setOpenCreateVarEspecifica(true)}>
-              Agregar Variable Específica
-            </Button>
-          </Box>
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenCreateVarEspecifica(true)}
+            sx={{
+              background: 'linear-gradient(135deg, #2196f3, #1976d2)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #1976d2, #2196f3)'
+              }
+            }}
+          >
+            Agregar Variable Específica
+          </Button>
+        </Box>
 
           {/* Tabla de variables específicas */}
           <Card 
@@ -746,9 +766,34 @@ const GestionVariablesPage = () => {
       )}
 
       {/* Dialog crear variable global */}
-      <Dialog open={openCreateVar} onClose={handleCloseCreateVar} fullWidth maxWidth="sm">
+      <Dialog
+        open={openCreateVar}
+        onClose={handleCloseCreateVar}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
         <Box component="form" onSubmit={handleCreateVar}>
-          <DialogTitle>Agregar Variable Global</DialogTitle>
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+            }}
+          >
+            <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }}>
+              <AddIcon sx={{ fontSize: 18 }} />
+            </Avatar>
+            Agregar Variable Global
+          </DialogTitle>
           <DialogContent>
             <VariableForm values={newVar} onChange={updateNewVar} type="global" unidadOptions={unidadOptions} />
             {(
@@ -774,10 +819,35 @@ const GestionVariablesPage = () => {
       </Dialog>
 
       {/* Dialog editar variable global */}
-      <Dialog open={Boolean(editingVar)} onClose={() => setEditingVar(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={Boolean(editingVar)}
+        onClose={() => setEditingVar(null)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
         {editingVar && (
           <Box component="form" onSubmit={handleEditVar}>
-            <DialogTitle>Editar Variable Global</DialogTitle>
+            <DialogTitle
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+              }}
+            >
+              <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }}>
+                <EditIcon sx={{ fontSize: 18 }} />
+              </Avatar>
+              Editar Variable Global
+            </DialogTitle>
             <DialogContent>
               <VariableForm values={editingVar} onChange={updateEditingVar} type="global" unidadOptions={unidadOptions} />
               {editError && <Alert severity="error" sx={{ mt: 2 }}>{editError}</Alert>}
@@ -793,9 +863,34 @@ const GestionVariablesPage = () => {
       </Dialog>
 
       {/* Dialog crear variable específica */}
-      <Dialog open={openCreateVarEspecifica} onClose={handleCloseCreateVarEspecifica} fullWidth maxWidth="sm">
+      <Dialog
+        open={openCreateVarEspecifica}
+        onClose={handleCloseCreateVarEspecifica}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
         <Box component="form" onSubmit={handleCreateVarEspecifica}>
-          <DialogTitle>Agregar Variable Específica</DialogTitle>
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+            }}
+          >
+            <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #2196f3, #1976d2)' }}>
+              <AddIcon sx={{ fontSize: 18 }} />
+            </Avatar>
+            Agregar Variable Específica
+          </DialogTitle>
           <DialogContent>
             <VariableForm
               values={newVarEspecifica}
@@ -827,10 +922,35 @@ const GestionVariablesPage = () => {
       </Dialog>
 
   {/* Dialog editar variable específica */}
-      <Dialog open={Boolean(editingVarEspecifica)} onClose={() => setEditingVarEspecifica(null)} fullWidth maxWidth="sm">
+      <Dialog
+        open={Boolean(editingVarEspecifica)}
+        onClose={() => setEditingVarEspecifica(null)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
         {editingVarEspecifica && (
           <Box component="form" onSubmit={handleEditVarEspecifica}>
-            <DialogTitle>Editar Variable Específica</DialogTitle>
+            <DialogTitle
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+              }}
+            >
+              <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #2196f3, #1976d2)' }}>
+                <EditIcon sx={{ fontSize: 18 }} />
+              </Avatar>
+              Editar Variable Específica
+            </DialogTitle>
             <DialogContent>
               <VariableForm
                 values={editingVarEspecifica}
