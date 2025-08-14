@@ -1,0 +1,64 @@
+*** Begin Patch
+
+*** Add File: backend/models/ChartConfig.js
+@@
+const mongoose = require('mongoose');
+
+/**
+ * ChartConfig model
+ *
+ * This model stores the configuration for custom charts used in the
+ * "Centro de funciones". Each configuration defines how the data
+ * should be grouped, what metric to compute, which templates
+ * (Excel sources) to use and other options. The frontend can
+ * dynamically create and modify these entries so that new charts
+ * can be generated without changing backend code.
+ */
+const chartConfigSchema = new mongoose.Schema({
+  // Unique name used internally for identification
+  nombre: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  // Human readable title to display on the dashboard
+  titulo: {
+    type: String,
+    required: true,
+  },
+  // Chart type (e.g. bar, pie, line)
+  tipo: {
+    type: String,
+    required: true,
+  },
+  // List of templates (plantillas) from which to pull data. When
+  // empty the query will pull from all templates.
+  plantillas: [
+    {
+      type: String,
+    },
+  ],
+  // Field in AnalysisData to group by (e.g. secretaria, dependencia)
+  groupBy: {
+    type: String,
+    required: true,
+  },
+  // Metric to compute. When set to "count" the aggregation will
+  // count the number of items, otherwise it will sum the specified
+  // numeric field from AnalysisData.
+  measure: {
+    type: String,
+    required: true,
+  },
+  // Optional section in which to display the chart on the dashboard
+  section: {
+    type: String,
+  },
+  // Optional arbitrary options for chart rendering
+  options: {
+    type: Object,
+    default: {},
+  },
+});
+
+module.exports = mongoose.model('ChartConfig', chartConfigSchema);
