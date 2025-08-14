@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useMemo, useCallback, memo } from 'react';
 import apiClient from '../services/api';
-import { 
+import {
   Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  CircularProgress, Alert, Snackbar, Card, CardContent, FormControl, InputLabel, Select, MenuItem, Tabs, Tab,
-  Dialog, DialogTitle, DialogContent, DialogActions, Chip, Tooltip, Avatar
+  CircularProgress, Alert, Snackbar, Card, CardContent, Tabs, Tab,
+  Dialog, DialogTitle, DialogContent, DialogActions, Chip, Tooltip, Avatar, Stack
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import TuneIcon from '@mui/icons-material/Tune';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useTheme } from '../context/ThemeContext.jsx';
-import { OptimizedTextField, OptimizedSelect, OptimizedCheckbox, useOptimizedForm } from '../components/OptimizedFormField.jsx';
+import { useOptimizedForm } from '../components/OptimizedFormField.jsx';
+import VariableForm from '../components/VariableForm.jsx';
 import AdminSectionLayout from '../components/AdminSectionLayout.jsx';
 
 const unidadesComunes = [
@@ -40,11 +40,11 @@ const VariableRow = memo(({
       }}
     >
       <TableCell>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Avatar sx={{ 
-            width: 24, 
-            height: 24, 
-            background: type === 'global' 
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Avatar sx={{
+            width: 24,
+            height: 24,
+            background: type === 'global'
               ? 'linear-gradient(135deg, #9c27b0, #7b1fa2)'
               : 'linear-gradient(135deg, #2196f3, #1976d2)',
           }}>
@@ -53,6 +53,9 @@ const VariableRow = memo(({
           <Typography variant="body2" fontWeight={500}>
             {variable.nombre}
           </Typography>
+          {variable.flexible && (
+            <Chip label="Flexible" size="small" color="info" sx={{ ml: 1 }} />
+          )}
         </Box>
       </TableCell>
       <TableCell>
@@ -156,6 +159,7 @@ const GestionVariablesPage = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState('');
+  const [openCreateVar, setOpenCreateVar] = useState(false);
   const [editingVar, setEditingVar] = useState(null);
   const [editError, setEditError] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
@@ -168,6 +172,7 @@ const GestionVariablesPage = () => {
   const [errorEspecificas, setErrorEspecificas] = useState('');
   const [creatingEspecifica, setCreatingEspecifica] = useState(false);
   const [createErrorEspecifica, setCreateErrorEspecifica] = useState('');
+  const [openCreateVarEspecifica, setOpenCreateVarEspecifica] = useState(false);
   const [editingVarEspecifica, setEditingVarEspecifica] = useState(null);
   const [editErrorEspecifica, setEditErrorEspecifica] = useState('');
   const [savingEditEspecifica, setSavingEditEspecifica] = useState(false);
@@ -222,6 +227,18 @@ const GestionVariablesPage = () => {
   const handleCloseSnackbar = useCallback(() => {
     setSnackbar(prev => ({ ...prev, open: false }));
   }, []);
+
+  const handleCloseCreateVar = useCallback(() => {
+    setOpenCreateVar(false);
+    resetNewVar();
+    setCreateError('');
+  }, [resetNewVar]);
+
+  const handleCloseCreateVarEspecifica = useCallback(() => {
+    setOpenCreateVarEspecifica(false);
+    resetNewVarEspecifica();
+    setCreateErrorEspecifica('');
+  }, [resetNewVarEspecifica]);
 
   // Fetch optimizado con AbortController
   const fetchVariables = useCallback(async () => {
@@ -356,6 +373,7 @@ const GestionVariablesPage = () => {
       resetNewVar();
       await fetchVariables();
       showSnackbar('Variable creada correctamente', 'success');
+      setOpenCreateVar(false);
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Error al crear variable';
       setCreateError(errorMessage);
@@ -376,6 +394,10 @@ const GestionVariablesPage = () => {
       showSnackbar('Error al eliminar variable', 'error');
     }
   }, [fetchVariables, showSnackbar]);
+
+  const updateEditingVar = useCallback((name, value) => {
+    setEditingVar(prev => ({ ...prev, [name]: value }));
+  }, []);
 
   const handleEditVar = useCallback(async (e) => {
     e.preventDefault();
@@ -456,6 +478,7 @@ const GestionVariablesPage = () => {
       resetNewVarEspecifica();
       await fetchVariablesEspecificas();
       showSnackbar('Variable específica creada correctamente', 'success');
+      setOpenCreateVarEspecifica(false);
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Error al crear variable específica';
       setCreateErrorEspecifica(errorMessage);
@@ -476,6 +499,10 @@ const GestionVariablesPage = () => {
       showSnackbar('Error al eliminar variable específica', 'error');
     }
   }, [fetchVariablesEspecificas, showSnackbar]);
+
+  const updateEditingVarEspecifica = useCallback((name, value) => {
+    setEditingVarEspecifica(prev => ({ ...prev, [name]: value }));
+  }, []);
 
   const handleEditVarEspecifica = useCallback(async (e) => {
     e.preventDefault();
@@ -598,183 +625,21 @@ const GestionVariablesPage = () => {
         <>
           {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
-          {/* Formulario para crear variable global */}
-          <Card 
-            sx={{ 
-              mb: 4,
-              background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.1)',
-              borderRadius: 3,
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenCreateVar(true)}
+            sx={{
+              background: 'linear-gradient(135deg, #9c27b0, #7b1fa2)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #7b1fa2, #9c27b0)'
+              }
             }}
           >
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Avatar sx={{ 
-                  width: 32, 
-                  height: 32, 
-                  background: 'linear-gradient(135deg, #9c27b0, #7b1fa2)',
-                }}>
-                  <AddIcon sx={{ fontSize: 18 }} />
-                </Avatar>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Agregar variable global
-                </Typography>
-              </Box>
-              
-              <Box component="form" onSubmit={handleCreateVar} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
-                <OptimizedTextField
-                  name="nombre"
-                  label="Nombre"
-                  value={newVar.nombre}
-                  onChange={updateNewVar}
-                  required
-                  sx={{ minWidth: 200 }}
-                />
-                
-                <OptimizedSelect
-                  name="unidad_medida"
-                  label="Unidad de medida"
-                  value={newVar.unidad_medida}
-                  onChange={updateNewVar}
-                  options={unidadOptions}
-                  required
-                  sx={{ minWidth: 180 }}
-                />
-                
-                <OptimizedTextField
-                  name="valor_minimo"
-                  label="Valor mínimo"
-                  type="number"
-                  value={newVar.valor_minimo}
-                  onChange={updateNewVar}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
-                
-                <OptimizedTextField
-                  name="valor_maximo"
-                  label="Valor máximo"
-                  type="number"
-                  value={newVar.valor_maximo}
-                  onChange={updateNewVar}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
-                
-                <OptimizedTextField
-                  name="umbral_preventivo"
-                  label="Umbral preventivo"
-                  type="number"
-                  value={newVar.umbral_preventivo}
-                  onChange={updateNewVar}
-                  required
-                  sx={{ minWidth: 140 }}
-                />
-                
-                <OptimizedTextField
-                  name="umbral_critico"
-                  label="Umbral crítico"
-                  type="number"
-                  value={newVar.umbral_critico}
-                  onChange={updateNewVar}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
-
-                <OptimizedCheckbox
-                  name="flexible"
-                  label="Flexible"
-                  checked={newVar.flexible}
-                  onChange={updateNewVar}
-                />
-
-                {newVar.flexible && (
-                  <>
-                    <OptimizedTextField
-                      name="umbral_critico_inferior"
-                      label="Umbral crítico inferior"
-                      type="number"
-                      value={newVar.umbral_critico_inferior}
-                      onChange={updateNewVar}
-                      sx={{ minWidth: 160 }}
-                    />
-                    <OptimizedTextField
-                      name="umbral_preventivo_inferior"
-                      label="Umbral preventivo inferior"
-                      type="number"
-                      value={newVar.umbral_preventivo_inferior}
-                      onChange={updateNewVar}
-                      sx={{ minWidth: 160 }}
-                    />
-                    <OptimizedTextField
-                      name="umbral_preventivo_superior"
-                      label="Umbral preventivo superior"
-                      type="number"
-                      value={newVar.umbral_preventivo_superior}
-                      onChange={updateNewVar}
-                      sx={{ minWidth: 160 }}
-                    />
-                    <OptimizedTextField
-                      name="umbral_critico_superior"
-                      label="Umbral crítico superior"
-                      type="number"
-                      value={newVar.umbral_critico_superior}
-                      onChange={updateNewVar}
-                      sx={{ minWidth: 160 }}
-                    />
-                  </>
-                )}
-
-                <OptimizedCheckbox
-                  name="activo"
-                  label="Activo"
-                  checked={newVar.activo}
-                  onChange={updateNewVar}
-                />
-                
-                <Button 
-                  type="submit" 
-                  variant="contained" 
-                  disabled={creating || !umbralesValidos(newVar)} 
-                  startIcon={creating ? <CircularProgress size={16} color="inherit" /> : <AddIcon />}
-                  sx={{
-                    background: 'linear-gradient(45deg, #9c27b0, #7b1fa2)',
-                    color: 'white',
-                    fontWeight: 600,
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 2,
-                    minWidth: 120,
-                    '&:hover': {
-                      background: 'linear-gradient(45deg, #7b1fa2, #6a1b9a)',
-                      transform: 'translateY(-1px)',
-                    },
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {creating ? 'Agregando...' : 'Agregar'}
-                </Button>
-              </Box>
-              
-              {(
-                newVar.flexible
-                  ? (newVar.valor_minimo && newVar.valor_maximo && newVar.umbral_critico_inferior && newVar.umbral_preventivo_inferior && newVar.umbral_preventivo_superior && newVar.umbral_critico_superior && !umbralesValidos(newVar))
-                  : (newVar.valor_minimo && newVar.valor_maximo && newVar.umbral_preventivo && newVar.umbral_critico && !umbralesValidos(newVar))
-              ) && (
-                <Alert severity="warning" sx={{ mt: 2 }}>
-                  {newVar.flexible
-                    ? 'Respetar: Min ≤ Crítico inf < Preventivo inf < Preventivo sup < Crítico sup ≤ Máx'
-                    : 'Los umbrales deben cumplir: Mínimo < Crítico < Preventivo < Máximo'}
-                </Alert>
-              )}
-              {createError && <Alert severity="error" sx={{ mt: 2 }}>{createError}</Alert>}
-            </CardContent>
-          </Card>
+            Agregar Variable
+          </Button>
+        </Box>
 
           {/* Tabla de variables globales */}
           <Card 
@@ -834,186 +699,21 @@ const GestionVariablesPage = () => {
           
           {errorEspecificas && <Alert severity="error" sx={{ mb: 3 }}>{errorEspecificas}</Alert>}
 
-          {/* Formulario para crear variable específica */}
-          <Card 
-            sx={{ 
-              mb: 4,
-              background: isDarkMode
-                ? 'rgba(45, 55, 72, 0.8)'
-                : 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: isDarkMode
-                ? '1px solid rgba(255, 255, 255, 0.1)'
-                : '1px solid rgba(0, 0, 0, 0.1)',
-              borderRadius: 3,
+        <Box display="flex" justifyContent="flex-end" mb={2}>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setOpenCreateVarEspecifica(true)}
+            sx={{
+              background: 'linear-gradient(135deg, #2196f3, #1976d2)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #1976d2, #2196f3)'
+              }
             }}
           >
-            <CardContent sx={{ p: 4 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-                <Avatar sx={{ 
-                  width: 32, 
-                  height: 32, 
-                  background: 'linear-gradient(135deg, #2196f3, #1976d2)',
-                }}>
-                  <AddIcon sx={{ fontSize: 18 }} />
-                </Avatar>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Agregar Variable Específica
-                </Typography>
-              </Box>
-              
-              <Box component="form" onSubmit={handleCreateVarEspecifica} sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
-                <OptimizedTextField
-                  name="nombre"
-                  label="Nombre"
-                  value={newVarEspecifica.nombre}
-                  onChange={updateNewVarEspecifica}
-                  required
-                  sx={{ minWidth: 200 }}
-                />
-                
-                <OptimizedSelect
-                  name="unidad_medida"
-                  label="Unidad de medida"
-                  value={newVarEspecifica.unidad_medida}
-                  onChange={updateNewVarEspecifica}
-                  options={unidadEspecificaOptions}
-                  required
-                  sx={{ minWidth: 180 }}
-                />
-                
-                <OptimizedTextField
-                  name="valor_minimo"
-                  label="Valor mínimo"
-                  type="number"
-                  value={newVarEspecifica.valor_minimo}
-                  onChange={updateNewVarEspecifica}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
-                
-                <OptimizedTextField
-                  name="valor_maximo"
-                  label="Valor máximo"
-                  type="number"
-                  value={newVarEspecifica.valor_maximo}
-                  onChange={updateNewVarEspecifica}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
-                
-                <OptimizedTextField
-                  name="umbral_preventivo"
-                  label="Umbral preventivo"
-                  type="number"
-                  value={newVarEspecifica.umbral_preventivo}
-                  onChange={updateNewVarEspecifica}
-                  required
-                  sx={{ minWidth: 140 }}
-                />
-                
-                <OptimizedTextField
-                  name="umbral_critico"
-                  label="Umbral crítico"
-                  type="number"
-                  value={newVarEspecifica.umbral_critico}
-                  onChange={updateNewVarEspecifica}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
-
-                <OptimizedCheckbox
-                  name="flexible"
-                  label="Flexible"
-                  checked={newVarEspecifica.flexible}
-                  onChange={updateNewVarEspecifica}
-                />
-
-                {newVarEspecifica.flexible && (
-                  <>
-                    <OptimizedTextField
-                      name="umbral_critico_inferior"
-                      label="Umbral crítico inferior"
-                      type="number"
-                      value={newVarEspecifica.umbral_critico_inferior}
-                      onChange={updateNewVarEspecifica}
-                      sx={{ minWidth: 160 }}
-                    />
-                    <OptimizedTextField
-                      name="umbral_preventivo_inferior"
-                      label="Umbral preventivo inferior"
-                      type="number"
-                      value={newVarEspecifica.umbral_preventivo_inferior}
-                      onChange={updateNewVarEspecifica}
-                      sx={{ minWidth: 160 }}
-                    />
-                    <OptimizedTextField
-                      name="umbral_preventivo_superior"
-                      label="Umbral preventivo superior"
-                      type="number"
-                      value={newVarEspecifica.umbral_preventivo_superior}
-                      onChange={updateNewVarEspecifica}
-                      sx={{ minWidth: 160 }}
-                    />
-                    <OptimizedTextField
-                      name="umbral_critico_superior"
-                      label="Umbral crítico superior"
-                      type="number"
-                      value={newVarEspecifica.umbral_critico_superior}
-                      onChange={updateNewVarEspecifica}
-                      sx={{ minWidth: 160 }}
-                    />
-                  </>
-                )}
-                
-                <OptimizedSelect
-                  name="secretaria"
-                  label="Secretaría"
-                  value={newVarEspecifica.secretaria}
-                  onChange={updateNewVarEspecifica}
-                  options={secretariaOptions}
-                  required
-                  sx={{ minWidth: 250 }}
-                />
-                
-                <Button
-                  type="submit"
-                  variant="contained"
-                  disabled={creatingEspecifica || !umbralesValidos(newVarEspecifica) || !newVarEspecifica.secretaria || !newVarEspecifica.nombre.trim()}
-                  startIcon={creatingEspecifica ? <CircularProgress size={16} color="inherit" /> : <AddIcon />}
-                  sx={{
-                    background: 'linear-gradient(45deg, #2196f3, #1976d2)',
-                    color: 'white',
-                    fontWeight: 600,
-                    px: 3,
-                    py: 1.5,
-                    borderRadius: 2,
-                    minWidth: 120,
-                    '&:hover': {
-                      background: 'linear-gradient(45deg, #1976d2, #1565c0)',
-                      transform: 'translateY(-1px)',
-                    },
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {creatingEspecifica ? 'Creando...' : 'Crear'}
-                </Button>
-              </Box>
-              
-              {createErrorEspecifica && <Alert severity="error" sx={{ mt: 2 }}>{createErrorEspecifica}</Alert>}
-              {(
-                newVarEspecifica.flexible
-                  ? (newVarEspecifica.valor_minimo && newVarEspecifica.valor_maximo && newVarEspecifica.umbral_critico_inferior && newVarEspecifica.umbral_preventivo_inferior && newVarEspecifica.umbral_preventivo_superior && newVarEspecifica.umbral_critico_superior && !umbralesValidos(newVarEspecifica))
-                  : (newVarEspecifica.valor_minimo && newVarEspecifica.valor_maximo && newVarEspecifica.umbral_preventivo && newVarEspecifica.umbral_critico && !umbralesValidos(newVarEspecifica))
-              ) && (
-                <Alert severity="warning" sx={{ mt: 2 }}>
-                  {newVarEspecifica.flexible
-                    ? 'Respetar: Min ≤ Crítico inf < Preventivo inf < Preventivo sup < Crítico sup ≤ Máx'
-                    : 'Los umbrales deben cumplir: Mínimo < Crítico < Preventivo < Máximo'}
-                </Alert>
-              )}
-            </CardContent>
-          </Card>
+            Agregar Variable Específica
+          </Button>
+        </Box>
 
           {/* Tabla de variables específicas */}
           <Card 
@@ -1064,6 +764,212 @@ const GestionVariablesPage = () => {
           </Card>
         </>
       )}
+
+      {/* Dialog crear variable global */}
+      <Dialog
+        open={openCreateVar}
+        onClose={handleCloseCreateVar}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
+        <Box component="form" onSubmit={handleCreateVar}>
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+            }}
+          >
+            <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }}>
+              <AddIcon sx={{ fontSize: 18 }} />
+            </Avatar>
+            Agregar Variable Global
+          </DialogTitle>
+          <DialogContent>
+            <VariableForm values={newVar} onChange={updateNewVar} type="global" unidadOptions={unidadOptions} />
+            {(
+              newVar.flexible
+                ? (newVar.valor_minimo && newVar.valor_maximo && newVar.umbral_critico_inferior && newVar.umbral_preventivo_inferior && newVar.umbral_preventivo_superior && newVar.umbral_critico_superior && !umbralesValidos(newVar))
+                : (newVar.valor_minimo && newVar.valor_maximo && newVar.umbral_preventivo && newVar.umbral_critico && !umbralesValidos(newVar))
+            ) && (
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                {newVar.flexible
+                  ? 'Respetar: Min ≤ Crítico inf < Preventivo inf < Preventivo sup < Crítico sup ≤ Máx'
+                  : 'Los umbrales deben cumplir: Mínimo < Crítico < Preventivo < Máximo'}
+              </Alert>
+            )}
+            {createError && <Alert severity="error" sx={{ mt: 2 }}>{createError}</Alert>}
+          </DialogContent>
+          <DialogActions>
+            <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ width: '100%' }}>
+              <Button onClick={handleCloseCreateVar}>Cancelar</Button>
+              <Button type="submit" variant="contained" disabled={creating || !umbralesValidos(newVar)}>Guardar</Button>
+            </Stack>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+      {/* Dialog editar variable global */}
+      <Dialog
+        open={Boolean(editingVar)}
+        onClose={() => setEditingVar(null)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
+        {editingVar && (
+          <Box component="form" onSubmit={handleEditVar}>
+            <DialogTitle
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+              }}
+            >
+              <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }}>
+                <EditIcon sx={{ fontSize: 18 }} />
+              </Avatar>
+              Editar Variable Global
+            </DialogTitle>
+            <DialogContent>
+              <VariableForm values={editingVar} onChange={updateEditingVar} type="global" unidadOptions={unidadOptions} />
+              {editError && <Alert severity="error" sx={{ mt: 2 }}>{editError}</Alert>}
+            </DialogContent>
+            <DialogActions>
+              <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ width: '100%' }}>
+                <Button onClick={() => setEditingVar(null)}>Cancelar</Button>
+                <Button type="submit" variant="contained" disabled={savingEdit || !umbralesValidos(editingVar)}>Guardar</Button>
+              </Stack>
+            </DialogActions>
+          </Box>
+        )}
+      </Dialog>
+
+      {/* Dialog crear variable específica */}
+      <Dialog
+        open={openCreateVarEspecifica}
+        onClose={handleCloseCreateVarEspecifica}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
+        <Box component="form" onSubmit={handleCreateVarEspecifica}>
+          <DialogTitle
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+            }}
+          >
+            <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #2196f3, #1976d2)' }}>
+              <AddIcon sx={{ fontSize: 18 }} />
+            </Avatar>
+            Agregar Variable Específica
+          </DialogTitle>
+          <DialogContent>
+            <VariableForm
+              values={newVarEspecifica}
+              onChange={updateNewVarEspecifica}
+              type="especifica"
+              unidadOptions={unidadEspecificaOptions}
+              secretariaOptions={secretariaOptions}
+            />
+            {createErrorEspecifica && <Alert severity="error" sx={{ mt: 2 }}>{createErrorEspecifica}</Alert>}
+            {(
+              newVarEspecifica.flexible
+                ? (newVarEspecifica.valor_minimo && newVarEspecifica.valor_maximo && newVarEspecifica.umbral_critico_inferior && newVarEspecifica.umbral_preventivo_inferior && newVarEspecifica.umbral_preventivo_superior && newVarEspecifica.umbral_critico_superior && !umbralesValidos(newVarEspecifica))
+                : (newVarEspecifica.valor_minimo && newVarEspecifica.valor_maximo && newVarEspecifica.umbral_preventivo && newVarEspecifica.umbral_critico && !umbralesValidos(newVarEspecifica))
+            ) && (
+              <Alert severity="warning" sx={{ mt: 2 }}>
+                {newVarEspecifica.flexible
+                  ? 'Respetar: Min ≤ Crítico inf < Preventivo inf < Preventivo sup < Crítico sup ≤ Máx'
+                  : 'Los umbrales deben cumplir: Mínimo < Crítico < Preventivo < Máximo'}
+              </Alert>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ width: '100%' }}>
+              <Button onClick={handleCloseCreateVarEspecifica}>Cancelar</Button>
+              <Button type="submit" variant="contained" disabled={creatingEspecifica || !umbralesValidos(newVarEspecifica) || !newVarEspecifica.secretaria || !newVarEspecifica.nombre.trim()}>Guardar</Button>
+            </Stack>
+          </DialogActions>
+        </Box>
+      </Dialog>
+
+  {/* Dialog editar variable específica */}
+      <Dialog
+        open={Boolean(editingVarEspecifica)}
+        onClose={() => setEditingVarEspecifica(null)}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            background: isDarkMode
+              ? 'rgba(45, 55, 72, 0.95)'
+              : 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)'
+          }
+        }}
+      >
+        {editingVarEspecifica && (
+          <Box component="form" onSubmit={handleEditVarEspecifica}>
+            <DialogTitle
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)'
+              }}
+            >
+              <Avatar sx={{ width: 32, height: 32, background: 'linear-gradient(135deg, #2196f3, #1976d2)' }}>
+                <EditIcon sx={{ fontSize: 18 }} />
+              </Avatar>
+              Editar Variable Específica
+            </DialogTitle>
+            <DialogContent>
+              <VariableForm
+                values={editingVarEspecifica}
+                onChange={updateEditingVarEspecifica}
+                type="especifica"
+                unidadOptions={unidadEspecificaOptions}
+                secretariaOptions={secretariaOptions}
+              />
+              {editErrorEspecifica && <Alert severity="error" sx={{ mt: 2 }}>{editErrorEspecifica}</Alert>}
+            </DialogContent>
+            <DialogActions>
+              <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ width: '100%' }}>
+                <Button onClick={() => setEditingVarEspecifica(null)}>Cancelar</Button>
+                <Button type="submit" variant="contained" disabled={savingEditEspecifica || !umbralesValidos(editingVarEspecifica)}>Guardar</Button>
+              </Stack>
+            </DialogActions>
+          </Box>
+        )}
+      </Dialog>
 
       <Snackbar
         open={snackbar.open}
