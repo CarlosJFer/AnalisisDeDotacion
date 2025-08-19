@@ -144,18 +144,7 @@ const DashboardPage = () => {
                 divisionNeikeBecaResponse
             ] = await Promise.all([
                 // Datos generales correspondientes a la plantilla "Rama completa - Planta"
-                safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
+
                 // Para Neikes y Beca reutilizamos los mismos endpoints que para Planta,
                 // pero pasando el parámetro "plantilla" igual a 'Rama completa - Neikes y Beca'.
                 safeGet(funcs.agentsByFunction, [], TEMPLATE_NEIKES_BECAS),
