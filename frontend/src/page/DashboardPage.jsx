@@ -98,13 +98,19 @@ const DashboardPage = () => {
             const funcRes = await apiClient.get('/functions');
             const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
 
-            const safeGet = (endpoint, defaultData) => {
+            const safeGet = (endpoint, defaultData, plantilla) => {
                 if (!endpoint) return Promise.resolve({ data: defaultData });
+                const params = { ...appliedFilters };
+                if (plantilla) {
+                    params.plantilla = plantilla;
+                }
                 return apiClient
-                    .get(endpoint, { params: appliedFilters })
+                    .get(endpoint, { params })
                     .catch(() => ({ data: defaultData }));
             };
 
+            const TEMPLATE_PLANTA_CONTRATOS = 'Planta y Contratos';
+            const TEMPLATE_NEIKES_BECAS = 'Neikes y Becas';
             const [
                 totalResponse,
                 ageDistResponse,
@@ -130,29 +136,29 @@ const DashboardPage = () => {
                 departamentoNeikeBecaResponse,
                 divisionNeikeBecaResponse
             ] = await Promise.all([
-                safeGet(funcs.totalAgents, { total: 0 }),
-                safeGet(funcs.ageDistribution, null),
-                safeGet(funcs.ageByFunction, []),
-                safeGet(funcs.agentsByFunction, []),
-                safeGet(funcs.agentsByEmploymentType, []),
-                safeGet(funcs.agentsByDependency, []),
-                safeGet(funcs.agentsBySecretaria, []),
-                safeGet(funcs.agentsBySubsecretaria, []),
-                safeGet(funcs.agentsByDireccionGeneral, []),
-                safeGet(funcs.agentsByDireccion, []),
-                safeGet(funcs.agentsByDepartamento, []),
-                safeGet(funcs.agentsByDivision, []),
-                safeGet(funcs.agentsByFunctionNeikeBeca, []),
-                safeGet(funcs.agentsByEmploymentTypeNeikeBeca, []),
-                safeGet(funcs.ageDistributionNeikeBeca, null),
-                safeGet(funcs.ageByFunctionNeikeBeca, []),
-                safeGet(funcs.agentsByDependencyNeikeBeca, []),
-                safeGet(funcs.agentsBySecretariaNeikeBeca, []),
-                safeGet(funcs.agentsBySubsecretariaNeikeBeca, []),
-                safeGet(funcs.agentsByDireccionGeneralNeikeBeca, []),
-                safeGet(funcs.agentsByDireccionNeikeBeca, []),
-                safeGet(funcs.agentsByDepartamentoNeikeBeca, []),
-                safeGet(funcs.agentsByDivisionNeikeBeca, [])
+                safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByFunctionNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByEmploymentTypeNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.ageDistributionNeikeBeca, null, TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.ageByFunctionNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDependencyNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsBySecretariaNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsBySubsecretariaNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDireccionGeneralNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDireccionNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDepartamentoNeikeBeca, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDivisionNeikeBeca, [], TEMPLATE_NEIKES_BECAS)
             ]);
 
             setTotalAgents(totalResponse.data.total);
