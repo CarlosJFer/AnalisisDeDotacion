@@ -46,7 +46,7 @@ const DashboardPage = () => {
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
     const [agentsByDivision, setAgentsByDivision] = useState([]);
 
-    // Datos para Neikes y Becas
+    // Datos para Neikes y Beca
     const [agentsByFunctionNeikeBeca, setAgentsByFunctionNeikeBeca] = useState([]);
     const [agentsByEmploymentTypeNeikeBeca, setAgentsByEmploymentTypeNeikeBeca] = useState([]);
     const [ageDistributionNeikeBeca, setAgeDistributionNeikeBeca] = useState(null);
@@ -98,86 +98,108 @@ const DashboardPage = () => {
             const funcRes = await apiClient.get('/functions');
             const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
 
-            const safeGet = (endpoint, defaultData) => {
-                if (!endpoint) return Promise.resolve({ data: defaultData });
-                return apiClient
-                    .get(endpoint, { params: appliedFilters })
-                    .catch(() => ({ data: defaultData }));
+            // Obtiene datos de forma segura: si falta el endpoint o la petición falla,
+            // devuelve el valor por defecto. En caso contrario, retorna solo el campo
+            // `data` de la respuesta.
+            const safeGet = async (endpoint, defaultData, plantilla) => {
+                if (!endpoint) return defaultData;
+                const params = { ...appliedFilters };
+                if (plantilla) {
+                    params.plantilla = plantilla;
+                }
+                try {
+                    const res = await apiClient.get(endpoint, { params });
+                    return res.data;
+                } catch {
+                    return defaultData;
+                }
             };
 
+            // Ajustar nombres de plantillas a los mismos usados en el backend.
+            // Cuando no se envía parámetro de plantilla, el backend utiliza
+            // por defecto "Rama completa - Planta".  Las estadísticas
+            // específicas de Neikes y Beca se guardan con la plantilla
+            // "Rama completa - Neikes y Beca".  Por lo tanto, para
+            // filtrar correctamente los datos según la plantilla debemos
+            // pasar estas cadenas exactas en la query.
+            const TEMPLATE_PLANTA_CONTRATOS = 'Rama completa - Planta';
+            const TEMPLATE_NEIKES_BECAS = 'Rama completa - Neikes y Beca';
             const [
-                totalResponse,
-                ageDistResponse,
-                ageFunctionResponse,
-                functionResponse,
-                employmentResponse,
-                dependencyResponse,
-                secretariaResponse,
-                subsecretariaResponse,
-                direccionGeneralResponse,
-                direccionResponse,
-                departamentoResponse,
-                divisionResponse,
-                functionNeikeBecaResponse,
-                employmentNeikeBecaResponse,
-                ageDistNeikeBecaResponse,
-                ageFunctionNeikeBecaResponse,
-                dependencyNeikeBecaResponse,
-                secretariaNeikeBecaResponse,
-                subsecretariaNeikeBecaResponse,
-                direccionGeneralNeikeBecaResponse,
-                direccionNeikeBecaResponse,
-                departamentoNeikeBecaResponse,
-                divisionNeikeBecaResponse
+                totalData,
+                ageDistData,
+                ageFunctionData,
+                functionData,
+                employmentData,
+                dependencyData,
+                secretariaData,
+                subsecretariaData,
+                direccionGeneralData,
+                direccionData,
+                departamentoData,
+                divisionData,
+                functionNeikeBecaData,
+                employmentNeikeBecaData,
+                ageDistNeikeBecaData,
+                ageFunctionNeikeBecaData,
+                dependencyNeikeBecaData,
+                secretariaNeikeBecaData,
+                subsecretariaNeikeBecaData,
+                direccionGeneralNeikeBecaData,
+                direccionNeikeBecaData,
+                departamentoNeikeBecaData,
+                divisionNeikeBecaData
             ] = await Promise.all([
-                safeGet(funcs.totalAgents, { total: 0 }),
-                safeGet(funcs.ageDistribution, null),
-                safeGet(funcs.ageByFunction, []),
-                safeGet(funcs.agentsByFunction, []),
-                safeGet(funcs.agentsByEmploymentType, []),
-                safeGet(funcs.agentsByDependency, []),
-                safeGet(funcs.agentsBySecretaria, []),
-                safeGet(funcs.agentsBySubsecretaria, []),
-                safeGet(funcs.agentsByDireccionGeneral, []),
-                safeGet(funcs.agentsByDireccion, []),
-                safeGet(funcs.agentsByDepartamento, []),
-                safeGet(funcs.agentsByDivision, []),
-                safeGet(funcs.agentsByFunctionNeikeBeca, []),
-                safeGet(funcs.agentsByEmploymentTypeNeikeBeca, []),
-                safeGet(funcs.ageDistributionNeikeBeca, null),
-                safeGet(funcs.ageByFunctionNeikeBeca, []),
-                safeGet(funcs.agentsByDependencyNeikeBeca, []),
-                safeGet(funcs.agentsBySecretariaNeikeBeca, []),
-                safeGet(funcs.agentsBySubsecretariaNeikeBeca, []),
-                safeGet(funcs.agentsByDireccionGeneralNeikeBeca, []),
-                safeGet(funcs.agentsByDireccionNeikeBeca, []),
-                safeGet(funcs.agentsByDepartamentoNeikeBeca, []),
-                safeGet(funcs.agentsByDivisionNeikeBeca, [])
+                // Datos generales correspondientes a la plantilla "Rama completa - Planta"
+                safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
+                // Para Neikes y Beca reutilizamos los mismos endpoints que para Planta,
+                // pero pasando el parámetro "plantilla" igual a 'Rama completa - Neikes y Beca'.
+                safeGet(funcs.agentsByFunction, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.ageDistribution, null, TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.ageByFunction, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDependency, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDireccion, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsByDivision, [], TEMPLATE_NEIKES_BECAS)
             ]);
 
-            setTotalAgents(totalResponse.data.total);
-            setAgeDistribution(ageDistResponse.data);
-            setAgeByFunction(ageFunctionResponse.data);
-            setAgentsByFunction(functionResponse.data);
-            setAgentsByEmploymentType(employmentResponse.data);
-            setAgentsByDependency(dependencyResponse.data);
-            setAgentsBySecretaria(secretariaResponse.data);
-            setAgentsBySubsecretaria(subsecretariaResponse.data);
-            setAgentsByDireccionGeneral(direccionGeneralResponse.data);
-            setAgentsByDireccion(direccionResponse.data);
-            setAgentsByDepartamento(departamentoResponse.data);
-            setAgentsByDivision(divisionResponse.data);
-            setAgentsByFunctionNeikeBeca(functionNeikeBecaResponse.data);
-            setAgentsByEmploymentTypeNeikeBeca(employmentNeikeBecaResponse.data);
-            setAgeDistributionNeikeBeca(ageDistNeikeBecaResponse.data);
-            setAgeByFunctionNeikeBeca(ageFunctionNeikeBecaResponse.data);
-            setAgentsByDependencyNeikeBeca(dependencyNeikeBecaResponse.data);
-            setAgentsBySecretariaNeikeBeca(secretariaNeikeBecaResponse.data);
-            setAgentsBySubsecretariaNeikeBeca(subsecretariaNeikeBecaResponse.data);
-            setAgentsByDireccionGeneralNeikeBeca(direccionGeneralNeikeBecaResponse.data);
-            setAgentsByDireccionNeikeBeca(direccionNeikeBecaResponse.data);
-            setAgentsByDepartamentoNeikeBeca(departamentoNeikeBecaResponse.data);
-            setAgentsByDivisionNeikeBeca(divisionNeikeBecaResponse.data);
+            setTotalAgents(totalData.total);
+            setAgeDistribution(ageDistData);
+            setAgeByFunction(ageFunctionData);
+            setAgentsByFunction(functionData);
+            setAgentsByEmploymentType(employmentData);
+            setAgentsByDependency(dependencyData);
+            setAgentsBySecretaria(secretariaData);
+            setAgentsBySubsecretaria(subsecretariaData);
+            setAgentsByDireccionGeneral(direccionGeneralData);
+            setAgentsByDireccion(direccionData);
+            setAgentsByDepartamento(departamentoData);
+            setAgentsByDivision(divisionData);
+            setAgentsByFunctionNeikeBeca(functionNeikeBecaData);
+            setAgentsByEmploymentTypeNeikeBeca(employmentNeikeBecaData);
+            setAgeDistributionNeikeBeca(ageDistNeikeBecaData);
+            setAgeByFunctionNeikeBeca(ageFunctionNeikeBecaData);
+            setAgentsByDependencyNeikeBeca(dependencyNeikeBecaData);
+            setAgentsBySecretariaNeikeBeca(secretariaNeikeBecaData);
+            setAgentsBySubsecretariaNeikeBeca(subsecretariaNeikeBecaData);
+            setAgentsByDireccionGeneralNeikeBeca(direccionGeneralNeikeBecaData);
+            setAgentsByDireccionNeikeBeca(direccionNeikeBecaData);
+            setAgentsByDepartamentoNeikeBeca(departamentoNeikeBecaData);
+            setAgentsByDivisionNeikeBeca(divisionNeikeBecaData);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -377,7 +399,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={4}>
                         <CustomDonutChart
                             data={agentsByEmploymentTypeNeikeBeca}
-                            title="Agentes por Situación de Revista - Neikes y Becas"
+                            title="Agentes por Situación de Revista - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="type"
@@ -423,7 +445,7 @@ const DashboardPage = () => {
                                 data={ageDistributionNeikeBeca.rangeData}
                                 xKey="range"
                                 barKey="count"
-                                title="Distribución por Rangos de Edad - Neikes y Becas"
+                                title="Distribución por Rangos de Edad - Neikes y Beca"
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
@@ -469,7 +491,7 @@ const DashboardPage = () => {
                         {ageDistributionNeikeBeca ? (
                             <CustomAreaChart
                                 data={ageDistributionNeikeBeca.rangeData}
-                                title="Distribución por Rangos de Edad según el área - Neikes y Becas"
+                                title="Distribución por Rangos de Edad según el área - Neikes y Beca"
                                 isDarkMode={isDarkMode}
                                 xKey="range"
                                 yKey="count"
@@ -486,7 +508,7 @@ const DashboardPage = () => {
                                 data={ageByFunctionNeikeBeca.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
                                 xKey="function"
                                 barKey="avgAge"
-                                title="Edad Promedio por Función (Top 10) - Neikes y Becas"
+                                title="Edad Promedio por Función (Top 10) - Neikes y Beca"
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
@@ -510,7 +532,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
                             data={agentsBySecretaria.slice(0, 8)}
-                            title="Agentes por Secretaría (Top 8) - Planta y Contrato"
+                            title="Agentes por Secretaría (Top 8) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="secretaria"
@@ -519,7 +541,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
                             data={agentsByDependency.slice(0, 8)}
-                            title="Agentes por Dependencia (Top 8) - Planta y Contrato"
+                            title="Agentes por Dependencia (Top 8) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="dependency"
@@ -528,7 +550,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
                             data={agentsBySecretariaNeikeBeca.slice(0, 8)}
-                            title="Agentes por Secretaría (Top 8) - Neikes y Becas"
+                            title="Agentes por Secretaría (Top 8) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="secretaria"
@@ -537,7 +559,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
                             data={agentsByDependencyNeikeBeca.slice(0, 8)}
-                            title="Agentes por Dependencia (Top 8) - Neikes y Becas"
+                            title="Agentes por Dependencia (Top 8) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="dependency"
@@ -549,7 +571,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsBySubsecretaria, 'subsecretaria').slice(0, 10)}
                             xKey="subsecretaria"
                             barKey="count"
-                            title="Agentes por Subsecretaría (Top 10) - Planta y Contrato"
+                            title="Agentes por Subsecretaría (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -559,7 +581,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsBySubsecretariaNeikeBeca, 'subsecretaria').slice(0, 10)}
                             xKey="subsecretaria"
                             barKey="count"
-                            title="Agentes por Subsecretaría (Top 10) - Neikes y Becas"
+                            title="Agentes por Subsecretaría (Top 10) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -576,7 +598,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 10)}
                             xKey="direccionGeneral"
                             barKey="count"
-                            title="Agentes por Dirección General (Top 10) - Planta y Contrato"
+                            title="Agentes por Dirección General (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -586,7 +608,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsByDireccion, 'direccion').slice(0, 10)}
                             xKey="direccion"
                             barKey="count"
-                            title="Agentes por Dirección (Top 10) - Planta y Contrato"
+                            title="Agentes por Dirección (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -596,7 +618,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsByDireccionGeneralNeikeBeca, 'direccionGeneral').slice(0, 10)}
                             xKey="direccionGeneral"
                             barKey="count"
-                            title="Agentes por Dirección General (Top 10) - Neikes y Becas"
+                            title="Agentes por Dirección General (Top 10) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -606,7 +628,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsByDireccionNeikeBeca, 'direccion').slice(0, 10)}
                             xKey="direccion"
                             barKey="count"
-                            title="Agentes por Dirección (Top 10) - Neikes y Becas"
+                            title="Agentes por Dirección (Top 10) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -615,7 +637,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)}
-                            title="Agentes por Departamento (Top 8) - Planta y Contrato"
+                            title="Agentes por Departamento (Top 8) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="departamento"
@@ -624,7 +646,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDivision, 'division').slice(0, 8)}
-                            title="Agentes por División (Top 8) - Planta y Contrato"
+                            title="Agentes por División (Top 8) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="division"
@@ -633,7 +655,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDepartamentoNeikeBeca, 'departamento').slice(0, 8)}
-                            title="Agentes por Departamento (Top 8) - Neikes y Becas"
+                            title="Agentes por Departamento (Top 8) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="departamento"
@@ -642,7 +664,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDivisionNeikeBeca, 'division').slice(0, 8)}
-                            title="Agentes por División (Top 8) - Neikes y Becas"
+                            title="Agentes por División (Top 8) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="division"
