@@ -98,15 +98,21 @@ const DashboardPage = () => {
             const funcRes = await apiClient.get('/functions');
             const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
 
-            const safeGet = (endpoint, defaultData, plantilla) => {
-                if (!endpoint) return Promise.resolve({ data: defaultData });
+            // Obtiene datos de forma segura: si falta el endpoint o la petición falla,
+            // devuelve el valor por defecto. En caso contrario, retorna solo el campo
+            // `data` de la respuesta.
+            const safeGet = async (endpoint, defaultData, plantilla) => {
+                if (!endpoint) return defaultData;
                 const params = { ...appliedFilters };
                 if (plantilla) {
                     params.plantilla = plantilla;
                 }
-                return apiClient
-                    .get(endpoint, { params })
-                    .catch(() => ({ data: defaultData }));
+                try {
+                    const res = await apiClient.get(endpoint, { params });
+                    return res.data;
+                } catch {
+                    return defaultData;
+                }
             };
 
             // Ajustar nombres de plantillas a los mismos usados en el backend.
@@ -119,32 +125,43 @@ const DashboardPage = () => {
             const TEMPLATE_PLANTA_CONTRATOS = 'Rama completa - Planta';
             const TEMPLATE_NEIKES_BECAS = 'Rama completa - Neikes y Beca';
             const [
-                totalResponse,
-                ageDistResponse,
-                ageFunctionResponse,
-                functionResponse,
-                employmentResponse,
-                dependencyResponse,
-                secretariaResponse,
-                subsecretariaResponse,
-                direccionGeneralResponse,
-                direccionResponse,
-                departamentoResponse,
-                divisionResponse,
-                functionNeikeBecaResponse,
-                employmentNeikeBecaResponse,
-                ageDistNeikeBecaResponse,
-                ageFunctionNeikeBecaResponse,
-                dependencyNeikeBecaResponse,
-                secretariaNeikeBecaResponse,
-                subsecretariaNeikeBecaResponse,
-                direccionGeneralNeikeBecaResponse,
-                direccionNeikeBecaResponse,
-                departamentoNeikeBecaResponse,
-                divisionNeikeBecaResponse
+                totalData,
+                ageDistData,
+                ageFunctionData,
+                functionData,
+                employmentData,
+                dependencyData,
+                secretariaData,
+                subsecretariaData,
+                direccionGeneralData,
+                direccionData,
+                departamentoData,
+                divisionData,
+                functionNeikeBecaData,
+                employmentNeikeBecaData,
+                ageDistNeikeBecaData,
+                ageFunctionNeikeBecaData,
+                dependencyNeikeBecaData,
+                secretariaNeikeBecaData,
+                subsecretariaNeikeBecaData,
+                direccionGeneralNeikeBecaData,
+                direccionNeikeBecaData,
+                departamentoNeikeBecaData,
+                divisionNeikeBecaData
             ] = await Promise.all([
                 // Datos generales correspondientes a la plantilla "Rama completa - Planta"
-
+                safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
                 // Para Neikes y Beca reutilizamos los mismos endpoints que para Planta,
                 // pero pasando el parámetro "plantilla" igual a 'Rama completa - Neikes y Beca'.
                 safeGet(funcs.agentsByFunction, [], TEMPLATE_NEIKES_BECAS),
@@ -160,29 +177,29 @@ const DashboardPage = () => {
                 safeGet(funcs.agentsByDivision, [], TEMPLATE_NEIKES_BECAS)
             ]);
 
-            setTotalAgents(totalResponse.data.total);
-            setAgeDistribution(ageDistResponse.data);
-            setAgeByFunction(ageFunctionResponse.data);
-            setAgentsByFunction(functionResponse.data);
-            setAgentsByEmploymentType(employmentResponse.data);
-            setAgentsByDependency(dependencyResponse.data);
-            setAgentsBySecretaria(secretariaResponse.data);
-            setAgentsBySubsecretaria(subsecretariaResponse.data);
-            setAgentsByDireccionGeneral(direccionGeneralResponse.data);
-            setAgentsByDireccion(direccionResponse.data);
-            setAgentsByDepartamento(departamentoResponse.data);
-            setAgentsByDivision(divisionResponse.data);
-            setAgentsByFunctionNeikeBeca(functionNeikeBecaResponse.data);
-            setAgentsByEmploymentTypeNeikeBeca(employmentNeikeBecaResponse.data);
-            setAgeDistributionNeikeBeca(ageDistNeikeBecaResponse.data);
-            setAgeByFunctionNeikeBeca(ageFunctionNeikeBecaResponse.data);
-            setAgentsByDependencyNeikeBeca(dependencyNeikeBecaResponse.data);
-            setAgentsBySecretariaNeikeBeca(secretariaNeikeBecaResponse.data);
-            setAgentsBySubsecretariaNeikeBeca(subsecretariaNeikeBecaResponse.data);
-            setAgentsByDireccionGeneralNeikeBeca(direccionGeneralNeikeBecaResponse.data);
-            setAgentsByDireccionNeikeBeca(direccionNeikeBecaResponse.data);
-            setAgentsByDepartamentoNeikeBeca(departamentoNeikeBecaResponse.data);
-            setAgentsByDivisionNeikeBeca(divisionNeikeBecaResponse.data);
+            setTotalAgents(totalData.total);
+            setAgeDistribution(ageDistData);
+            setAgeByFunction(ageFunctionData);
+            setAgentsByFunction(functionData);
+            setAgentsByEmploymentType(employmentData);
+            setAgentsByDependency(dependencyData);
+            setAgentsBySecretaria(secretariaData);
+            setAgentsBySubsecretaria(subsecretariaData);
+            setAgentsByDireccionGeneral(direccionGeneralData);
+            setAgentsByDireccion(direccionData);
+            setAgentsByDepartamento(departamentoData);
+            setAgentsByDivision(divisionData);
+            setAgentsByFunctionNeikeBeca(functionNeikeBecaData);
+            setAgentsByEmploymentTypeNeikeBeca(employmentNeikeBecaData);
+            setAgeDistributionNeikeBeca(ageDistNeikeBecaData);
+            setAgeByFunctionNeikeBeca(ageFunctionNeikeBecaData);
+            setAgentsByDependencyNeikeBeca(dependencyNeikeBecaData);
+            setAgentsBySecretariaNeikeBeca(secretariaNeikeBecaData);
+            setAgentsBySubsecretariaNeikeBeca(subsecretariaNeikeBecaData);
+            setAgentsByDireccionGeneralNeikeBeca(direccionGeneralNeikeBecaData);
+            setAgentsByDireccionNeikeBeca(direccionNeikeBecaData);
+            setAgentsByDepartamentoNeikeBeca(departamentoNeikeBecaData);
+            setAgentsByDivisionNeikeBeca(divisionNeikeBecaData);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
