@@ -103,8 +103,8 @@ const DashboardPage = () => {
 
             // Ajustar nombres de plantillas a los mismos usados en el backend.
             // Este dashboard debe consultar únicamente los datos cargados
-            // con la plantilla "Rama completa - Planta y Contratos".
-            const TEMPLATE_PLANTA_CONTRATOS = 'Rama completa - Planta y Contratos';
+            // con la plantilla "Rama completa - Planta".
+            const TEMPLATE_PLANTA = 'Rama completa - Planta';
             const [
                 totalData,
                 ageDistData,
@@ -119,19 +119,19 @@ const DashboardPage = () => {
                 departamentoData,
                 divisionData
             ] = await Promise.all([
-                // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
-                safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS)
+                // Datos generales correspondientes a la plantilla "Rama completa - Planta"
+                safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA),
+                safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA),
+                safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsByFunction, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsByDependency, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA),
+                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA)
             ]);
 
             setTotalAgents(totalData.total);
