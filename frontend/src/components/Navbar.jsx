@@ -306,8 +306,8 @@ const Navbar = () => {
           )}
         </Box>
 
-        {user ? (
-          <>
+        {user && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             {/* Información del usuario */}
             <Box
               sx={{
@@ -412,8 +412,8 @@ const Navbar = () => {
             >
               Salir
             </Button>
-          </>
-        ) : null}
+          </Box>
+        )}
       </Toolbar>
     </AppBar>
   );

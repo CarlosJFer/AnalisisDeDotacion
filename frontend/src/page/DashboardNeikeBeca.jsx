@@ -88,7 +88,9 @@ const DashboardNeikeBeca = () => {
             // `data` de la respuesta.
             const safeGet = async (endpoint, defaultData, plantilla) => {
                 if (!endpoint) return defaultData;
-                const params = { ...appliedFilters };
+                const params = Object.fromEntries(
+                    Object.entries(appliedFilters).filter(([, v]) => v)
+                );
                 if (plantilla) {
                     params.plantilla = plantilla;
                 }
