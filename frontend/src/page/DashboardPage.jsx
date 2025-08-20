@@ -43,7 +43,6 @@ const DashboardPage = () => {
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
     const [agentsByDivision, setAgentsByDivision] = useState([]);
 
-
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
     const [cleanMsg, setCleanMsg] = useState('');
@@ -398,6 +397,7 @@ const DashboardPage = () => {
                             </Box>
                         )}
                     </Grid>
+
                 </Grid>
             )}
 
