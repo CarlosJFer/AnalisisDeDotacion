@@ -123,7 +123,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Dashboard */}
+          {/* Botón Dashboard - Planta y Contratos */}
           {user && (
             <Button
               component={Link}
@@ -156,47 +156,17 @@ const Navbar = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Dashboard
+              Dashboard - Planta y Contratos
+            </Button>
+          )}
+          
+          {/* Botón Dashboard - Neikes y Becas */}
+
+              Dashboard - Neikes y Becas
             </Button>
           )}
 
-          {user && (
-            <Button
-              component={Link}
-              to="/dashboard-neike-beca"
-              startIcon={<AnalyticsIcon />}
-              sx={{
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                fontWeight: 600,
-                px: 3,
-                py: 1.5,
-                borderRadius: 3,
-                textTransform: 'none',
-                fontSize: '0.9rem',
-                background: isDarkMode
-                  ? 'rgba(255, 255, 255, 0.05)'
-                  : 'rgba(255, 255, 255, 0.7)',
-                border: isDarkMode
-                  ? '1px solid rgba(255, 255, 255, 0.1)'
-                  : '1px solid rgba(0, 0, 0, 0.08)',
-                '&:hover': {
-                  background: isDarkMode
-                    ? 'rgba(33, 150, 243, 0.2)'
-                    : 'rgba(33, 150, 243, 0.15)',
-                  color: isDarkMode ? '#64b5f6' : '#1976d2',
-                  transform: 'translateY(-2px)',
-                  boxShadow: isDarkMode
-                    ? '0 6px 20px rgba(33, 150, 243, 0.3)'
-                    : '0 6px 20px rgba(33, 150, 243, 0.2)',
-                },
-                transition: 'all 0.3s ease',
-              }}
-            >
-              Neikes y Becas
-            </Button>
-          )}
-
-          {/* Botón Funciones */}
+          {/* Botón Herramientas */}
           {user && (
             <Button
               component={Link}
@@ -229,7 +199,7 @@ const Navbar = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Funciones
+              Herramientas
             </Button>
           )}
           
