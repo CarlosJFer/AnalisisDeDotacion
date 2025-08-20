@@ -11,8 +11,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { OptimizedTextField } from './OptimizedFormField.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 
+// Eliminar el campo dependencia del filtro por solicitud del usuario
 const defaultFilters = {
-  dependencia: '',
   secretaria: '',
   subsecretaria: '',
   direccionGeneral: '',
@@ -70,13 +70,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
-          <OptimizedTextField
-            name="dependencia"
-            label="Dependencia"
-            value={localFilters.dependencia}
-            onChange={handleChange}
-            sx={{ minWidth: 200 }}
-          />
+          {/* Campo Dependencia eliminado */}
           <OptimizedTextField
             name="secretaria"
             label="Secretaría"
