@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -10,7 +10,6 @@ import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import HomeIcon from '@mui/icons-material/Home';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -19,11 +18,24 @@ import PersonIcon from '@mui/icons-material/Person';
 import NotificationBell from './NotificationBell.jsx';
 import ProfileMenu from './ProfileMenu.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
+  const [dashboardAnchorEl, setDashboardAnchorEl] = useState(null);
+
+  const handleDashboardMenuOpen = (event) => {
+    setDashboardAnchorEl(event.currentTarget);
+  };
+
+  const handleDashboardMenuClose = () => {
+    setDashboardAnchorEl(null);
+  };
 
   const handleLogoClick = () => {
     navigate('/organigrama');
@@ -123,78 +135,100 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Dashboard - Planta y Contratos */}
+          {/* Menú Dashboard con opciones internas */}
           {user && (
-            <Button
-              component={Link}
-              to="/dashboard"
-              startIcon={<DashboardIcon />}
-              sx={{
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                fontWeight: 600,
-                px: 3,
-                py: 1.5,
-                borderRadius: 3,
-                textTransform: 'none',
-                fontSize: '0.9rem',
-                background: isDarkMode
-                  ? 'rgba(255, 255, 255, 0.05)'
-                  : 'rgba(255, 255, 255, 0.7)',
-                border: isDarkMode
-                  ? '1px solid rgba(255, 255, 255, 0.1)'
-                  : '1px solid rgba(0, 0, 0, 0.08)',
-                '&:hover': {
+            <>
+              <Button
+                onClick={handleDashboardMenuOpen}
+                startIcon={<AnalyticsIcon />}
+                sx={{
+                  color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                  fontWeight: 600,
+                  px: 3,
+                  py: 1.5,
+                  borderRadius: 3,
+                  textTransform: 'none',
+                  fontSize: '0.9rem',
                   background: isDarkMode
-                    ? 'rgba(33, 150, 243, 0.2)'
-                    : 'rgba(33, 150, 243, 0.15)',
-                  color: isDarkMode ? '#64b5f6' : '#1976d2',
-                  transform: 'translateY(-2px)',
-                  boxShadow: isDarkMode
-                    ? '0 6px 20px rgba(33, 150, 243, 0.3)'
-                    : '0 6px 20px rgba(33, 150, 243, 0.2)',
-                },
-                transition: 'all 0.3s ease',
-              }}
-            >
-              Dashboard - Planta y Contratos
-            </Button>
-          )}
-
-          {/* Botón Dashboard - Neikes y Becas */}
-          {user && (
-            <Button
-              component={Link}
-              to="/dashboard-neike-beca"
-              startIcon={<AnalyticsIcon />}
-              sx={{
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                fontWeight: 600,
-                px: 3,
-                py: 1.5,
-                borderRadius: 3,
-                textTransform: 'none',
-                fontSize: '0.9rem',
-                background: isDarkMode
-                  ? 'rgba(255, 255, 255, 0.05)'
-                  : 'rgba(255, 255, 255, 0.7)',
-                border: isDarkMode
-                  ? '1px solid rgba(255, 255, 255, 0.1)'
-                  : '1px solid rgba(0, 0, 0, 0.08)',
-                '&:hover': {
-                  background: isDarkMode
-                    ? 'rgba(33, 150, 243, 0.2)'
-                    : 'rgba(33, 150, 243, 0.15)',
-                  color: isDarkMode ? '#64b5f6' : '#1976d2',
-                  transform: 'translateY(-2px)',
-                  boxShadow: isDarkMode
-                    ? '0 6px 20px rgba(33, 150, 243, 0.3)'
-                    : '0 6px 20px rgba(33, 150, 243, 0.2)',
-                },
-                transition: 'all 0.3s ease',
-              }}
-            >
-              Dashboard - Neikes y Becas
-            </Button>
+                    ? 'rgba(255, 255, 255, 0.05)'
+                    : 'rgba(255, 255, 255, 0.7)',
+                  border: isDarkMode
+                    ? '1px solid rgba(255, 255, 255, 0.1)'
+                    : '1px solid rgba(0, 0, 0, 0.08)',
+                  '&:hover': {
+                    background: isDarkMode
+                      ? 'rgba(33, 150, 243, 0.2)'
+                      : 'rgba(33, 150, 243, 0.15)',
+                    color: isDarkMode ? '#64b5f6' : '#1976d2',
+                    transform: 'translateY(-2px)',
+                    boxShadow: isDarkMode
+                      ? '0 6px 20px rgba(33, 150, 243, 0.3)'
+                      : '0 6px 20px rgba(33, 150, 243, 0.2)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                Dashboard
+              </Button>
+              <Menu
+                anchorEl={dashboardAnchorEl}
+                open={Boolean(dashboardAnchorEl)}
+                onClose={handleDashboardMenuClose}
+                PaperProps={{
+                  sx: {
+                    mt: 1,
+                    minWidth: 250,
+                    borderRadius: 3,
+                    background: isDarkMode
+                      ? 'rgba(30, 30, 30, 0.95)'
+                      : 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: isDarkMode
+                      ? '1px solid rgba(255, 255, 255, 0.1)'
+                      : '1px solid rgba(0, 0, 0, 0.08)',
+                  },
+                }}
+              >
+                <MenuItem
+                  component={Link}
+                  to="/dashboard"
+                  onClick={handleDashboardMenuClose}
+                  sx={{
+                    fontWeight: 600,
+                    '&:hover': {
+                      background: isDarkMode
+                        ? 'rgba(33, 150, 243, 0.2)'
+                        : 'rgba(33, 150, 243, 0.15)',
+                      color: isDarkMode ? '#64b5f6' : '#1976d2',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <AnalyticsIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard - Planta y Contratos" />
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/dashboard-neike-beca"
+                  onClick={handleDashboardMenuClose}
+                  sx={{
+                    fontWeight: 600,
+                    '&:hover': {
+                      background: isDarkMode
+                        ? 'rgba(33, 150, 243, 0.2)'
+                        : 'rgba(33, 150, 243, 0.15)',
+                      color: isDarkMode ? '#64b5f6' : '#1976d2',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <AnalyticsIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard - Neikes y Becas" />
+                </MenuItem>
+              </Menu>
+            </>
           )}
 
           {/* Botón Herramientas */}
