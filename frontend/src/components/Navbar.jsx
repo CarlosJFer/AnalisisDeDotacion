@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -10,19 +10,32 @@ import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Chip from '@mui/material/Chip';
 import HomeIcon from '@mui/icons-material/Home';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import NotificationBell from './NotificationBell.jsx';
 import ProfileMenu from './ProfileMenu.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { isDarkMode } = useTheme();
   const navigate = useNavigate();
+  const [dashboardAnchorEl, setDashboardAnchorEl] = useState(null);
+
+  const handleDashboardMenuOpen = (event) => {
+    setDashboardAnchorEl(event.currentTarget);
+  };
+
+  const handleDashboardMenuClose = () => {
+    setDashboardAnchorEl(null);
+  };
 
   const handleLogoClick = () => {
     navigate('/organigrama');
@@ -122,44 +135,103 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Dashboard */}
+          {/* Menú Dashboard con opciones internas */}
           {user && (
-            <Button
-              component={Link}
-              to="/dashboard"
-              startIcon={<DashboardIcon />}
-              sx={{
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                fontWeight: 600,
-                px: 3,
-                py: 1.5,
-                borderRadius: 3,
-                textTransform: 'none',
-                fontSize: '0.9rem',
-                background: isDarkMode
-                  ? 'rgba(255, 255, 255, 0.05)'
-                  : 'rgba(255, 255, 255, 0.7)',
-                border: isDarkMode
-                  ? '1px solid rgba(255, 255, 255, 0.1)'
-                  : '1px solid rgba(0, 0, 0, 0.08)',
-                '&:hover': {
+            <>
+              <Button
+                onClick={handleDashboardMenuOpen}
+                startIcon={<AnalyticsIcon />}
+                sx={{
+                  color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                  fontWeight: 600,
+                  px: 3,
+                  py: 1.5,
+                  borderRadius: 3,
+                  textTransform: 'none',
+                  fontSize: '0.9rem',
                   background: isDarkMode
-                    ? 'rgba(33, 150, 243, 0.2)'
-                    : 'rgba(33, 150, 243, 0.15)',
-                  color: isDarkMode ? '#64b5f6' : '#1976d2',
-                  transform: 'translateY(-2px)',
-                  boxShadow: isDarkMode
-                    ? '0 6px 20px rgba(33, 150, 243, 0.3)'
-                    : '0 6px 20px rgba(33, 150, 243, 0.2)',
-                },
-                transition: 'all 0.3s ease',
-              }}
-            >
-              Dashboard
-            </Button>
+                    ? 'rgba(255, 255, 255, 0.05)'
+                    : 'rgba(255, 255, 255, 0.7)',
+                  border: isDarkMode
+                    ? '1px solid rgba(255, 255, 255, 0.1)'
+                    : '1px solid rgba(0, 0, 0, 0.08)',
+                  '&:hover': {
+                    background: isDarkMode
+                      ? 'rgba(33, 150, 243, 0.2)'
+                      : 'rgba(33, 150, 243, 0.15)',
+                    color: isDarkMode ? '#64b5f6' : '#1976d2',
+                    transform: 'translateY(-2px)',
+                    boxShadow: isDarkMode
+                      ? '0 6px 20px rgba(33, 150, 243, 0.3)'
+                      : '0 6px 20px rgba(33, 150, 243, 0.2)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                Dashboard
+              </Button>
+              <Menu
+                anchorEl={dashboardAnchorEl}
+                open={Boolean(dashboardAnchorEl)}
+                onClose={handleDashboardMenuClose}
+                PaperProps={{
+                  sx: {
+                    mt: 1,
+                    minWidth: 250,
+                    borderRadius: 3,
+                    background: isDarkMode
+                      ? 'rgba(30, 30, 30, 0.95)'
+                      : 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: isDarkMode
+                      ? '1px solid rgba(255, 255, 255, 0.1)'
+                      : '1px solid rgba(0, 0, 0, 0.08)',
+                  },
+                }}
+              >
+                <MenuItem
+                  component={Link}
+                  to="/dashboard"
+                  onClick={handleDashboardMenuClose}
+                  sx={{
+                    fontWeight: 600,
+                    '&:hover': {
+                      background: isDarkMode
+                        ? 'rgba(33, 150, 243, 0.2)'
+                        : 'rgba(33, 150, 243, 0.15)',
+                      color: isDarkMode ? '#64b5f6' : '#1976d2',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <AnalyticsIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard - Planta y Contratos" />
+                </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/dashboard-neike-beca"
+                  onClick={handleDashboardMenuClose}
+                  sx={{
+                    fontWeight: 600,
+                    '&:hover': {
+                      background: isDarkMode
+                        ? 'rgba(33, 150, 243, 0.2)'
+                        : 'rgba(33, 150, 243, 0.15)',
+                      color: isDarkMode ? '#64b5f6' : '#1976d2',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <AnalyticsIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard - Neikes y Becas" />
+                </MenuItem>
+              </Menu>
+            </>
           )}
 
-          {/* Botón Funciones */}
+          {/* Botón Herramientas */}
           {user && (
             <Button
               component={Link}
@@ -192,17 +264,17 @@ const Navbar = () => {
                 transition: 'all 0.3s ease',
               }}
             >
-              Funciones
+              Herramientas
             </Button>
           )}
           
           {/* Botón Panel de administración (solo admin) */}
           {user && user.role === 'admin' && (
-            <Button 
-              component={Link} 
+            <Button
+              component={Link}
               to="/admin"
               startIcon={<AdminPanelSettingsIcon />}
-              sx={{ 
+              sx={{
                 color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                 fontWeight: 600,
                 px: 3,
@@ -210,15 +282,15 @@ const Navbar = () => {
                 borderRadius: 3,
                 textTransform: 'none',
                 fontSize: '0.9rem',
-                background: isDarkMode 
-                  ? 'rgba(255, 255, 255, 0.05)' 
+                background: isDarkMode
+                  ? 'rgba(255, 255, 255, 0.05)'
                   : 'rgba(255, 255, 255, 0.7)',
                 border: isDarkMode
                   ? '1px solid rgba(255, 255, 255, 0.1)'
                   : '1px solid rgba(0, 0, 0, 0.08)',
                 '&:hover': {
-                  background: isDarkMode 
-                    ? 'rgba(156, 39, 176, 0.2)' 
+                  background: isDarkMode
+                    ? 'rgba(156, 39, 176, 0.2)'
                     : 'rgba(156, 39, 176, 0.15)',
                   color: isDarkMode ? '#ba68c8' : '#7b1fa2',
                   transform: 'translateY(-2px)',
@@ -232,111 +304,116 @@ const Navbar = () => {
               Panel de Administración
             </Button>
           )}
+        </Box>
 
-          
-          {user ? (
-            <>
-              {/* Información del usuario */}
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: 1.5, 
+        {user ? (
+          <>
+            {/* Información del usuario */}
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
                 mx: 2,
                 px: 2,
                 py: 1,
                 borderRadius: 3,
-                background: isDarkMode 
-                  ? 'rgba(255, 255, 255, 0.05)' 
+                background: isDarkMode
+                  ? 'rgba(255, 255, 255, 0.05)'
                   : 'rgba(255, 255, 255, 0.7)',
                 border: isDarkMode
                   ? '1px solid rgba(255, 255, 255, 0.1)'
                   : '1px solid rgba(0, 0, 0, 0.08)',
-              }}>
-                <Avatar sx={{ 
-                  width: 32, 
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 32,
                   height: 32,
-                  background: user.role === 'admin' 
+                  background: user.role === 'admin'
                     ? 'linear-gradient(135deg, #ff9800, #f57c00)'
                     : 'linear-gradient(135deg, #2196f3, #1976d2)',
                   fontSize: '0.9rem',
                   fontWeight: 600,
-                }}>
-                  {user.role === 'admin' ? <AdminPanelSettingsIcon sx={{ fontSize: 18 }} /> : <PersonIcon sx={{ fontSize: 18 }} />}
-                </Avatar>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <Typography 
-                    variant="body2"
-                    sx={{ 
-                      color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {user.username}
-                  </Typography>
-                  <Chip 
-                    label={user.role === 'admin' ? 'Administrador' : 'Usuario'}
-                    size="small"
-                    sx={{
-                      height: 16,
-                      fontSize: '0.65rem',
-                      fontWeight: 600,
-                      background: user.role === 'admin' 
-                        ? 'linear-gradient(135deg, #ff9800, #f57c00)'
-                        : 'linear-gradient(135deg, #2196f3, #1976d2)',
-                      color: 'white',
-                      '& .MuiChip-label': {
-                        px: 1,
-                      }
-                    }}
-                  />
-                </Box>
-              </Box>
-
-              <ProfileMenu />
-
-              <NotificationBell />
-
-              <ThemeToggle />
-              
-              <Button 
-                onClick={logout}
-                startIcon={<LogoutIcon />}
-                sx={{ 
-                  color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                  fontWeight: 600,
-                  px: 3,
-                  py: 1.5,
-                  borderRadius: 3,
-                  textTransform: 'none',
-                  fontSize: '0.9rem',
-                  background: isDarkMode 
-                    ? 'rgba(255, 255, 255, 0.05)' 
-                    : 'rgba(255, 255, 255, 0.7)',
-                  border: isDarkMode
-                    ? '1px solid rgba(255, 255, 255, 0.1)'
-                    : '1px solid rgba(0, 0, 0, 0.08)',
-                  '&:hover': {
-                    background: isDarkMode 
-                      ? 'rgba(244, 67, 54, 0.2)' 
-                      : 'rgba(244, 67, 54, 0.15)',
-                    color: isDarkMode ? '#ef5350' : '#d32f2f',
-                    transform: 'translateY(-2px)',
-                    boxShadow: isDarkMode
-                      ? '0 6px 20px rgba(244, 67, 54, 0.3)'
-                      : '0 6px 20px rgba(244, 67, 54, 0.2)',
-                  },
-                  transition: 'all 0.3s ease',
                 }}
               >
-                Salir
-              </Button>
-            </>
-          ) : (
-            null
-          )}
-        </Box>
+                {user.role === 'admin' ? (
+                  <AdminPanelSettingsIcon sx={{ fontSize: 18 }} />
+                ) : (
+                  <PersonIcon sx={{ fontSize: 18 }} />
+                )}
+              </Avatar>
+              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {user.username}
+                </Typography>
+                <Chip
+                  label={user.role === 'admin' ? 'Administrador' : 'Usuario'}
+                  size="small"
+                  sx={{
+                    height: 16,
+                    fontSize: '0.65rem',
+                    fontWeight: 600,
+                    background: user.role === 'admin'
+                      ? 'linear-gradient(135deg, #ff9800, #f57c00)'
+                      : 'linear-gradient(135deg, #2196f3, #1976d2)',
+                    color: 'white',
+                    '& .MuiChip-label': {
+                      px: 1,
+                    },
+                  }}
+                />
+              </Box>
+            </Box>
+
+            <ProfileMenu />
+
+            <NotificationBell />
+
+            <ThemeToggle />
+
+            <Button
+              onClick={logout}
+              startIcon={<LogoutIcon />}
+              sx={{
+                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                fontWeight: 600,
+                px: 3,
+                py: 1.5,
+                borderRadius: 3,
+                textTransform: 'none',
+                fontSize: '0.9rem',
+                background: isDarkMode
+                  ? 'rgba(255, 255, 255, 0.05)'
+                  : 'rgba(255, 255, 255, 0.7)',
+                border: isDarkMode
+                  ? '1px solid rgba(255, 255, 255, 0.1)'
+                  : '1px solid rgba(0, 0, 0, 0.08)',
+                '&:hover': {
+                  background: isDarkMode
+                    ? 'rgba(244, 67, 54, 0.2)'
+                    : 'rgba(244, 67, 54, 0.15)',
+                  color: isDarkMode ? '#ef5350' : '#d32f2f',
+                  transform: 'translateY(-2px)',
+                  boxShadow: isDarkMode
+                    ? '0 6px 20px rgba(244, 67, 54, 0.3)'
+                    : '0 6px 20px rgba(244, 67, 54, 0.2)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              Salir
+            </Button>
+          </>
+        ) : null}
       </Toolbar>
     </AppBar>
   );
