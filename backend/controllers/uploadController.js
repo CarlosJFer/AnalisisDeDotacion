@@ -262,10 +262,17 @@ async function uploadFile(req, res) {
           }
 
           // 6. Guardar en AnalysisData con la estructura que espera el dashboard
-          // DEBUG: Mostrar usuario autenticado y organizationId
-          let analisis = await AnalysisData.findOne({ archivo: file.originalname, templateUsed: template._id });
+          // Buscar análisis existente por nombre de archivo y plantilla.
+          // Utilizamos el nombre de la plantilla (template.name) para diferenciar
+          // los análisis generados con diferentes plantillas y así evitar mezclar datos.
+          let analisis = await AnalysisData.findOne({
+            'archivo.nombreOriginal': file.originalname,
+            plantilla: template.name
+          });
           if (!analisis) {
+            // Crear un nuevo análisis para esta plantilla y archivo
             analisis = new AnalysisData({
+              plantilla: template.name,
               secretaria: {
                 id: req.body.secretariaId || 'default',
                 nombre: req.body.secretariaNombre || 'General'
@@ -297,16 +304,17 @@ async function uploadFile(req, res) {
               isActive: true
             });
           } else {
-            analisis.data.totalAgentes = totalAgentes;
-            analisis.data.analisisSalarial = {
-              masaTotal: masaSalarial,
-              sueldoPromedio: sueldoPromedio
-            };
-            analisis.data.agentesPorGenero = agentesPorGenero;
-            analisis.data.agentesPorContratacion = agentesPorContratacion;
-            analisis.data.agentesPorAntiguedad = agentesPorAntiguedad;
+            // Actualizar el análisis existente
+            analisis.plantilla = template.name;
+            analisis.resumen.totalAgentes = totalAgentes;
+            analisis.resumen.masaSalarial = masaSalarial;
+            analisis.resumen.sueldoPromedio = sueldoPromedio || 0;
+            analisis.analisis.contratacion = agentesPorContratacion;
+            analisis.analisis.genero = agentesPorGenero;
+            analisis.analisis.antiguedad = agentesPorAntiguedad;
             analisis.analysisDate = new Date();
-            analisis.activo = true;
+            analisis.esActual = true;
+            analisis.isActive = true;
           }
           await analisis.save();
           
