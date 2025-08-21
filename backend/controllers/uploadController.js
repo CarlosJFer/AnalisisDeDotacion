@@ -143,7 +143,9 @@ async function uploadFile(req, res) {
           obj.sourceFile = file.originalname;
           obj.uploadDate = new Date();
           obj.templateUsed = template._id;
-          obj.plantilla = template.name; // ✅ AGREGAR NOMBRE DE PLANTILLA PARA FILTROS
+          // Guardar el nombre de la plantilla sin espacios extra para evitar
+          // inconsistencias al filtrar desde el dashboard.
+          obj.plantilla = template.name.trim(); // ✅ AGREGAR NOMBRE DE PLANTILLA PARA FILTROS
           // Validar: al menos un campo clave debe tener valor válido
           const tieneClave = camposClave.some(campo => {
             const v = obj[campo];
@@ -262,10 +264,17 @@ async function uploadFile(req, res) {
           }
 
           // 6. Guardar en AnalysisData con la estructura que espera el dashboard
-          // DEBUG: Mostrar usuario autenticado y organizationId
-          let analisis = await AnalysisData.findOne({ archivo: file.originalname, templateUsed: template._id });
+          // Buscar análisis existente por nombre de archivo y plantilla.
+          // Utilizamos el nombre de la plantilla (template.name) para diferenciar
+          // los análisis generados con diferentes plantillas y así evitar mezclar datos.
+          let analisis = await AnalysisData.findOne({
+            'archivo.nombreOriginal': file.originalname,
+              plantilla: template.name.trim()
+          });
           if (!analisis) {
+            // Crear un nuevo análisis para esta plantilla y archivo
             analisis = new AnalysisData({
+                 plantilla: template.name.trim(),
               secretaria: {
                 id: req.body.secretariaId || 'default',
                 nombre: req.body.secretariaNombre || 'General'
@@ -297,16 +306,17 @@ async function uploadFile(req, res) {
               isActive: true
             });
           } else {
-            analisis.data.totalAgentes = totalAgentes;
-            analisis.data.analisisSalarial = {
-              masaTotal: masaSalarial,
-              sueldoPromedio: sueldoPromedio
-            };
-            analisis.data.agentesPorGenero = agentesPorGenero;
-            analisis.data.agentesPorContratacion = agentesPorContratacion;
-            analisis.data.agentesPorAntiguedad = agentesPorAntiguedad;
+            // Actualizar el análisis existente
+                 analisis.plantilla = template.name.trim();
+            analisis.resumen.totalAgentes = totalAgentes;
+            analisis.resumen.masaSalarial = masaSalarial;
+            analisis.resumen.sueldoPromedio = sueldoPromedio || 0;
+            analisis.analisis.contratacion = agentesPorContratacion;
+            analisis.analisis.genero = agentesPorGenero;
+            analisis.analisis.antiguedad = agentesPorAntiguedad;
             analisis.analysisDate = new Date();
-            analisis.activo = true;
+            analisis.esActual = true;
+            analisis.isActive = true;
           }
           await analisis.save();
           

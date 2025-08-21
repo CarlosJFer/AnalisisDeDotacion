@@ -11,8 +11,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import { OptimizedTextField } from './OptimizedFormField.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 
+// Eliminar el campo dependencia del filtro por solicitud del usuario
 const defaultFilters = {
-  dependencia: '',
   secretaria: '',
   subsecretaria: '',
   direccionGeneral: '',
@@ -60,23 +60,17 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
             sx={{
               width: 32,
               height: 32,
-              background: 'linear-gradient(135deg, #4caf50, #388e3c)',
+              background: 'linear-gradient(135deg, #2196f3, #1976d2)',
             }}
           >
             <SearchIcon sx={{ fontSize: 18 }} />
           </Avatar>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Filtrar dependencia
+            Filtrar datos
           </Typography>
         </Box>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'flex-end' }}>
-          <OptimizedTextField
-            name="dependencia"
-            label="Dependencia"
-            value={localFilters.dependencia}
-            onChange={handleChange}
-            sx={{ minWidth: 200 }}
-          />
+          {/* Campo Dependencia eliminado */}
           <OptimizedTextField
             name="secretaria"
             label="Secretaría"
@@ -130,11 +124,18 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
             variant="contained"
             onClick={handleSubmit}
             sx={{
-              background: 'linear-gradient(135deg, #4caf50, #388e3c)',
+              background: 'linear-gradient(135deg, #2196f3, #1976d2)',
               color: 'white',
+              fontWeight: 600,
+              px: 3,
+              py: 1.5,
+              borderRadius: 3,
+              textTransform: 'none',
               mt: { xs: 2, sm: 0 },
               '&:hover': {
-                background: 'linear-gradient(135deg, #388e3c, #2e7d32)',
+                background: 'linear-gradient(135deg, #1976d2, #1565c0)',
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 20px rgba(33, 150, 243, 0.3)',
               },
             }}
           >

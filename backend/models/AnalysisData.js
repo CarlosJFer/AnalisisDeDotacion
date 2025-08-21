@@ -3,6 +3,13 @@
 const mongoose = require('mongoose');
 
 const analysisDataSchema = new mongoose.Schema({
+  // Nombre de la plantilla utilizada para generar este análisis.
+  // Esto permite separar los datos de distintas plantillas y evitar que se mezclen.
+  plantilla: {
+    type: String,
+    required: true,
+    index: true
+  },
   secretaria: {
     id: {
       type: String,
