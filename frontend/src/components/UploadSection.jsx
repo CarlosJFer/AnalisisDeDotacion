@@ -153,8 +153,12 @@ const UploadSection = () => {
   }, []);
 
   const handleOpenConfirm = useCallback(() => {
+    if (files.length === 0 || files.some((_, idx) => !fileTemplates[idx])) {
+      setSnackbar({ open: true, message: 'Debes seleccionar una plantilla para cada archivo.', severity: 'error' });
+      return;
+    }
     setConfirmOpen(true);
-  }, []);
+  }, [files, fileTemplates]);
 
   const handleCloseConfirm = useCallback(() => {
     setConfirmOpen(false);
@@ -182,10 +186,15 @@ const UploadSection = () => {
   }, []);
 
   const handleUpload = useCallback(async () => {
-
-    // Log para depuración: mostrar los IDs de plantilla y archivos
-
     setConfirmOpen(false);
+
+    // Validar que todos los archivos tengan una plantilla seleccionada
+    const missing = files.some((_, idx) => !fileTemplates[idx]);
+    if (missing) {
+      setSnackbar({ open: true, message: 'Debes seleccionar una plantilla para cada archivo.', severity: 'error' });
+      return;
+    }
+
     setUploading(true);
     setError('');
     setSuccess('');
@@ -226,7 +235,7 @@ const UploadSection = () => {
       setUploading(false);
       setUploadProgress(0);
     }
-  }, [files]);
+  }, [files, fileTemplates]);
 
   return (
     <Card 
