@@ -103,8 +103,8 @@ const DashboardPage = () => {
 
             // Ajustar nombres de plantillas a los mismos usados en el backend.
             // Este dashboard debe consultar únicamente los datos cargados
-            // con la plantilla "Rama completa - Planta".
-            const TEMPLATE_PLANTA = 'Rama completa - Planta';
+            // con la plantilla "Rama completa - Planta y Contratos".
+            const TEMPLATE_PLANTA = 'Rama completa - Planta y Contratos';
             const [
                 totalData,
                 ageDistData,
@@ -119,7 +119,7 @@ const DashboardPage = () => {
                 departamentoData,
                 divisionData
             ] = await Promise.all([
-                // Datos generales correspondientes a la plantilla "Rama completa - Planta"
+                // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA),
                 safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA),
                 safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA),
