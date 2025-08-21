@@ -13,6 +13,7 @@ import NotificationProvider from './context/NotificationContext.jsx';
 // Páginas (lazy loading)
 const LoginPage = lazy(() => import('./page/LoginPage.jsx'));
 const DashboardPage = lazy(() => import('./page/DashboardPage.jsx'));
+const DashboardNeikeBeca = lazy(() => import('./page/DashboardNeikeBeca.jsx'));
 const AdminPage = lazy(() => import('./page/AdminPage.jsx'));
 const UserAdminPage = lazy(() => import('./page/UserAdminPage.jsx'));
 const SecretariaAdminPage = lazy(() => import('./page/SecretariaAdminPage.jsx'));
@@ -58,6 +59,7 @@ const AppLayout = () => {
             {/* Rutas Protegidas para Usuarios */}
             <Route element={<ProtectedRoute />}> 
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/dashboard-neike-beca" element={<DashboardNeikeBeca />} />
               <Route path="/comparacion" element={<ComparisonPage />} />
               <Route path="/change-password" element={<ChangePasswordPage />} />
               <Route path="/settings" element={<SettingsPage />} />
