@@ -68,22 +68,15 @@ async function uploadFile(req, res) {
         // Obtener el ID de plantilla correspondiente a este archivo
         const templateKey = `template_${i}`;
         let templateId = req.body[templateKey];
-        
-        // Si no hay templateId específico, usar el templateId general o buscar la primera plantilla disponible
+
+        // También admitir un templateId general si existe
         if (!templateId || templateId === 'undefined') {
           templateId = req.body.templateId;
         }
-        
+
+        // Si después de las comprobaciones no hay plantilla, devolver error y detener el proceso
         if (!templateId || templateId === 'undefined') {
-          // Buscar la primera plantilla disponible como fallback
-          const firstTemplate = await ImportTemplate.findOne();
-          if (firstTemplate) {
-            templateId = firstTemplate._id;
-            console.log(`Usando plantilla por defecto: ${firstTemplate.name} para archivo ${file.originalname}`);
-          } else {
-            resultados.push({ archivo: file.originalname, error: 'No se especificó plantilla y no hay plantillas disponibles.' });
-            continue;
-          }
+          return res.status(400).json({ message: 'Debes seleccionar una plantilla para cada archivo.' });
         }
         
         const template = await ImportTemplate.findById(templateId);
@@ -140,11 +133,24 @@ async function uploadFile(req, res) {
               obj[mapping.variableName] = value;
             }
           });
+
+          // Normalizar nombres de campos que difieren entre plantillas
+          if (obj['Nombre y Apellido'] && !obj['Apellido Y Nombre']) {
+            obj['Apellido Y Nombre'] = obj['Nombre y Apellido'];
+          }
+          if (obj['Apellido Y Nombre'] && !obj['Nombre y Apellido']) {
+            obj['Nombre y Apellido'] = obj['Apellido Y Nombre'];
+          }
+          if (obj['Situación de revista'] && !obj['Situación de Revista']) {
+            obj['Situación de Revista'] = obj['Situación de revista'];
+          }
+          if (obj['Situación de Revista'] && !obj['Situación de revista']) {
+            obj['Situación de revista'] = obj['Situación de Revista'];
+          }
           obj.sourceFile = file.originalname;
           obj.uploadDate = new Date();
           obj.templateUsed = template._id;
-          // Guardar el nombre de la plantilla sin espacios extra para evitar
-          // inconsistencias al filtrar desde el dashboard.
+          // Guardar el nombre de la plantilla sin espacios extra para facilitar los filtros
           obj.plantilla = template.name.trim(); // ✅ AGREGAR NOMBRE DE PLANTILLA PARA FILTROS
           // Validar: al menos un campo clave debe tener valor válido
           const tieneClave = camposClave.some(campo => {
@@ -267,14 +273,14 @@ async function uploadFile(req, res) {
           // Buscar análisis existente por nombre de archivo y plantilla.
           // Utilizamos el nombre de la plantilla (template.name) para diferenciar
           // los análisis generados con diferentes plantillas y así evitar mezclar datos.
-          let analisis = await AnalysisData.findOne({
-            'archivo.nombreOriginal': file.originalname,
+            let analisis = await AnalysisData.findOne({
+              'archivo.nombreOriginal': file.originalname,
               plantilla: template.name.trim()
-          });
+            });
           if (!analisis) {
             // Crear un nuevo análisis para esta plantilla y archivo
             analisis = new AnalysisData({
-                 plantilla: template.name.trim(),
+              plantilla: template.name.trim(),
               secretaria: {
                 id: req.body.secretariaId || 'default',
                 nombre: req.body.secretariaNombre || 'General'
@@ -307,7 +313,7 @@ async function uploadFile(req, res) {
             });
           } else {
             // Actualizar el análisis existente
-                 analisis.plantilla = template.name.trim();
+            analisis.plantilla = template.name.trim();
             analisis.resumen.totalAgentes = totalAgentes;
             analisis.resumen.masaSalarial = masaSalarial;
             analisis.resumen.sueldoPromedio = sueldoPromedio || 0;

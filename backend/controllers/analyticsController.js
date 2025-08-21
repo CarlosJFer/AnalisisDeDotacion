@@ -6,12 +6,10 @@ const emailService = require('../services/emailService');
 // Construye dinámicamente el objeto de filtros para consultas
 const buildMatchStage = (query) => {
   const match = {};
-  // Filtrar por plantilla únicamente si se especifica desde la consulta.
-  // De esta manera evitamos mezclar datos de diferentes plantillas cuando
-  // no se envía este parámetro explícitamente.
-  if (query.plantilla) {
-    match.plantilla = query.plantilla.trim();
-  }
+  // Asegurar que todas las consultas tengan el nombre de plantilla correcto.
+  // Si no se especifica, por defecto se usa "Rama completa - Planta y Contratos".
+  const plantilla = (query.plantilla || 'Rama completa - Planta y Contratos').trim();
+  match.plantilla = plantilla;
 
   // Filtros dinámicos recibidos como JSON en query.filters
   if (query.filters) {
