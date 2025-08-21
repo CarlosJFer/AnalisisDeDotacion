@@ -320,7 +320,7 @@ const OrganigramaPage = () => {
             tree={filteredTree}
             getVariablesForNode={getVariablesForNode}
             searchTerm={search}
-            onNodeSelect={(node) => navigate('/dashboard', { state: { dependencia: node.nombre } })}
+            onNodeSelect={(node) => navigate('/dashboard', { state: { nombre: node.nombre, nivel: node.nivel } })}
           />
         )
       )}

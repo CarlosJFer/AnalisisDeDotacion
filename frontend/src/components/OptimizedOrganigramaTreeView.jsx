@@ -9,6 +9,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
 import { useImperativeHandle, forwardRef } from "react";
 import { useTheme } from '../context/ThemeContext.jsx';
 
@@ -182,7 +183,7 @@ const TreeNode = memo(({
           alignItems: 'center',
           gap: 1,
           py: 0.25, // Padding vertical reducido
-        }} onClick={(e) => { e.stopPropagation(); onNodeSelect && onNodeSelect(node); }}>
+        }}>
           <Avatar 
             sx={{ 
               width: avatarSize, 
@@ -219,21 +220,36 @@ const TreeNode = memo(({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             {estado && tooltipContent && (
               <Tooltip title={tooltipContent} placement="right" enterDelay={300}>
-                <Box sx={{ cursor: 'help' }}>
+                <Box sx={{ cursor: 'help', display: 'flex', alignItems: 'center' }}>
                   <EstadoIcon estado={estado} />
                 </Box>
               </Tooltip>
             )}
-            
-            {node.funcion && node.funcion.trim() && (
+
+            {node.funcion && node.funcion.trim() && node.nombre !== 'Municipalidad' && (
               <Tooltip title={funcionTooltip} placement="right" enterDelay={300}>
-                <InfoOutlinedIcon 
-                  fontSize="small" 
-                  sx={{ 
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
-                    cursor: 'help',
-                  }} 
-                />
+                <Box sx={{ cursor: 'help', display: 'flex', alignItems: 'center' }}>
+                  <InfoOutlinedIcon
+                    fontSize="small"
+                    sx={{
+                      color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)',
+                    }}
+                  />
+                </Box>
+              </Tooltip>
+            )}
+
+            {onNodeSelect && (
+              <Tooltip title="Ver en dashboard" placement="right" enterDelay={300}>
+                <Box
+                  sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                  onClick={(e) => { e.stopPropagation(); onNodeSelect(node); }}
+                >
+                  <ArrowCircleRightOutlinedIcon
+                    fontSize="small"
+                    sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)' }}
+                  />
+                </Box>
               </Tooltip>
             )}
           </Box>
