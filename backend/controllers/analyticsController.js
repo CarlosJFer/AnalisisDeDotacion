@@ -21,14 +21,29 @@ const buildMatchStage = (query) => {
     }
   }
 
-  if (query.dependencia) match['Dependencia donde trabaja'] = query.dependencia;
-  if (query.secretaria) match['Secretaria'] = query.secretaria;
-  if (query.subsecretaria) match['Subsecretaria'] = query.subsecretaria;
-  if (query.direccionGeneral) match['Dirección general'] = query.direccionGeneral;
-  if (query.direccion) match['Dirección'] = query.direccion;
-  if (query.departamento) match['Departamento'] = query.departamento;
-  if (query.division) match['División'] = query.division;
-  if (query.funcion) match['Funcion'] = query.funcion;
+  // Filtros específicos: se usan expresiones regulares para permitir
+  // coincidencias parciales sin importar mayúsculas/minúsculas.
+  if (query.secretaria) {
+    match['Secretaria'] = { $regex: query.secretaria, $options: 'i' };
+  }
+  if (query.subsecretaria) {
+    match['Subsecretaria'] = { $regex: query.subsecretaria, $options: 'i' };
+  }
+  if (query.direccionGeneral) {
+    match['Dirección general'] = { $regex: query.direccionGeneral, $options: 'i' };
+  }
+  if (query.direccion) {
+    match['Dirección'] = { $regex: query.direccion, $options: 'i' };
+  }
+  if (query.departamento) {
+    match['Departamento'] = { $regex: query.departamento, $options: 'i' };
+  }
+  if (query.division) {
+    match['División'] = { $regex: query.division, $options: 'i' };
+  }
+  if (query.funcion) {
+    match['Funcion'] = { $regex: query.funcion, $options: 'i' };
+  }
   return match;
 };
 
