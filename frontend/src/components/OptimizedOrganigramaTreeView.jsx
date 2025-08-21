@@ -1,7 +1,7 @@
 import React, { useMemo, memo, useCallback, useState, useRef } from "react";
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
-import { Typography, Tooltip, Box, Avatar, Chip, Card } from "@mui/material";
+import { Typography, Tooltip, Box, Avatar, Chip, Card, IconButton } from "@mui/material";
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import BusinessIcon from '@mui/icons-material/Business';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
@@ -227,7 +227,7 @@ const TreeNode = memo(({
             )}
 
             {node.funcion && node.funcion.trim() && node.nombre !== 'Municipalidad' && (
-              <Tooltip title={funcionTooltip} placement="right" enterDelay={300}>
+              <Tooltip title={funcionTooltip} placement="bottom" enterDelay={300}>
                 <Box sx={{ cursor: 'help', display: 'flex', alignItems: 'center' }}>
                   <InfoOutlinedIcon
                     fontSize="small"
@@ -239,17 +239,26 @@ const TreeNode = memo(({
               </Tooltip>
             )}
 
-            {onNodeSelect && (
+            {onNodeSelect && node.nombre !== 'Municipalidad' && (
               <Tooltip title="Ver en dashboard" placement="right" enterDelay={300}>
-                <Box
-                  sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                <IconButton
+                  size="small"
                   onClick={(e) => { e.stopPropagation(); onNodeSelect(node); }}
+                  sx={{
+                    p: 0.5,
+                    color: '#fff',
+                    background: 'linear-gradient(135deg, #4caf50, #388e3c)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #66bb6a, #43a047)',
+                      transform: 'scale(1.05)',
+                    },
+                    boxShadow: isDarkMode
+                      ? '0 2px 8px rgba(0, 0, 0, 0.4)'
+                      : '0 2px 8px rgba(0, 0, 0, 0.2)',
+                  }}
                 >
-                  <ArrowCircleRightOutlinedIcon
-                    fontSize="small"
-                    sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)' }}
-                  />
-                </Box>
+                  <ArrowCircleRightOutlinedIcon fontSize="small" sx={{ color: '#fff' }} />
+                </IconButton>
               </Tooltip>
             )}
           </Box>
