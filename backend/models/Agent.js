@@ -17,6 +17,11 @@ const agentSchema = new mongoose.Schema({
   departamento: { type: String },
   division: { type: String },
 
+  // Nombre de la plantilla utilizada para cargar este agente. Se indexa
+  // para poder filtrar rápidamente los datos de cada dashboard sin que se
+  // mezclen registros de diferentes plantillas.
+  plantilla: { type: String, index: true },
+
   // Puedes añadir más campos aquí si otros excels tienen más datos.
   // La lógica del controlador los añadirá si existen en la plantilla.
   

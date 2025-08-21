@@ -143,7 +143,9 @@ async function uploadFile(req, res) {
           obj.sourceFile = file.originalname;
           obj.uploadDate = new Date();
           obj.templateUsed = template._id;
-          obj.plantilla = template.name; // ✅ AGREGAR NOMBRE DE PLANTILLA PARA FILTROS
+          // Guardar el nombre de la plantilla sin espacios extra para evitar
+          // inconsistencias al filtrar desde el dashboard.
+          obj.plantilla = template.name.trim(); // ✅ AGREGAR NOMBRE DE PLANTILLA PARA FILTROS
           // Validar: al menos un campo clave debe tener valor válido
           const tieneClave = camposClave.some(campo => {
             const v = obj[campo];
@@ -267,12 +269,12 @@ async function uploadFile(req, res) {
           // los análisis generados con diferentes plantillas y así evitar mezclar datos.
           let analisis = await AnalysisData.findOne({
             'archivo.nombreOriginal': file.originalname,
-            plantilla: template.name
+              plantilla: template.name.trim()
           });
           if (!analisis) {
             // Crear un nuevo análisis para esta plantilla y archivo
             analisis = new AnalysisData({
-              plantilla: template.name,
+                 plantilla: template.name.trim(),
               secretaria: {
                 id: req.body.secretariaId || 'default',
                 nombre: req.body.secretariaNombre || 'General'
@@ -305,7 +307,7 @@ async function uploadFile(req, res) {
             });
           } else {
             // Actualizar el análisis existente
-            analisis.plantilla = template.name;
+                 analisis.plantilla = template.name.trim();
             analisis.resumen.totalAgentes = totalAgentes;
             analisis.resumen.masaSalarial = masaSalarial;
             analisis.resumen.sueldoPromedio = sueldoPromedio || 0;
