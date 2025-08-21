@@ -12,10 +12,12 @@ import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
+import { useLocation } from 'react-router-dom';
 
 const DashboardPage = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
+    const location = useLocation();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [tabValue, setTabValue] = useState(0);
@@ -161,8 +163,25 @@ const DashboardPage = () => {
     };
 
     useEffect(() => {
+        if (location.state && location.state.nombre && location.state.nivel) {
+            const levelMap = {
+                1: 'secretaria',
+                2: 'subsecretaria',
+                3: 'direccionGeneral',
+                4: 'direccion',
+                5: 'departamento',
+                6: 'division'
+            };
+            const field = levelMap[location.state.nivel];
+            if (field) {
+                const newFilters = { ...filters, [field]: location.state.nombre };
+                setFilters(newFilters);
+                fetchAllData(newFilters);
+                return;
+            }
+        }
         fetchAllData(filters);
-    }, []);
+    }, [location.state]);
 
     const getTabButtonStyles = (value) => ({
         color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
