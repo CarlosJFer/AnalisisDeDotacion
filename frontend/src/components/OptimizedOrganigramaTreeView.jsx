@@ -245,22 +245,29 @@ const TreeNode = memo(({
                   size="small"
                   onClick={(e) => { e.stopPropagation(); onNodeSelect(node); }}
                   sx={{
-                    p: 0.5,
-                    color: '#fff',
-                    background: 'linear-gradient(135deg, #4caf50, #388e3c)',
+                    width: 24,
+                    height: 24,
+                    p: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: isDarkMode
+                      ? 'linear-gradient(135deg, rgba(76,175,80,0.3), rgba(56,142,60,0.3))'
+                      : 'linear-gradient(135deg, #c8e6c9, #a5d6a7)',
+                    borderRadius: '50%',
+                    boxShadow: 'none',
+                    transition: 'background 0.3s ease',
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #66bb6a, #43a047)',
-                      transform: 'scale(1.05)',
+                      background: isDarkMode
+                        ? 'linear-gradient(135deg, rgba(76,175,80,0.4), rgba(56,142,60,0.4))'
+                        : 'linear-gradient(135deg, #a5d6a7, #81c784)',
                     },
-                    boxShadow: isDarkMode
-                      ? '0 2px 8px rgba(0, 0, 0, 0.4)'
-                      : '0 2px 8px rgba(0, 0, 0, 0.2)',
                   }}
                 >
-                  <ArrowCircleRightOutlinedIcon fontSize="small" sx={{ color: '#fff' }} />
-                </IconButton>
-              </Tooltip>
-            )}
+                    <ArrowCircleRightOutlinedIcon fontSize="small" sx={{ color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }} />
+                  </IconButton>
+                </Tooltip>
+              )}
           </Box>
         </Box>
       }
