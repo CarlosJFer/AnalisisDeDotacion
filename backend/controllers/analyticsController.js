@@ -3,13 +3,11 @@ const Agent = require('../models/Agent'); // Importamos el modelo Agent
 const PDFDocument = require('pdfkit');
 const emailService = require('../services/emailService');
 
-// Construye dinámicamente el objeto de filtros para consultas
+// Construye dinámicamente el objeto de filtros para consultas.
+// Incluye soporte para variaciones con y sin acentos en los nombres de campo.
 const buildMatchStage = (query) => {
-  const match = {};
-  // Asegurar que todas las consultas tengan el nombre de plantilla correcto.
-  // Si no se especifica, por defecto se usa "Rama completa - Planta y Contratos".
   const plantilla = (query.plantilla || 'Rama completa - Planta y Contratos').trim();
-  match.plantilla = plantilla;
+  const match = { plantilla };
 
   // Filtros dinámicos recibidos como JSON en query.filters
   if (query.filters) {
@@ -21,29 +19,27 @@ const buildMatchStage = (query) => {
     }
   }
 
-  // Filtros específicos: se usan expresiones regulares para permitir
-  // coincidencias parciales sin importar mayúsculas/minúsculas.
-  if (query.secretaria) {
-    match['Secretaria'] = { $regex: query.secretaria, $options: 'i' };
+  // Para cada filtro específico permitimos coincidencias en campos con o sin acentos
+  // y combinamos todos los filtros mediante $and para mantener la intersección.
+  const andFilters = [];
+  const addRegexFilter = (fields, value) => {
+    if (!value) return;
+    const orConditions = fields.map(f => ({ [f]: { $regex: value, $options: 'i' } }));
+    andFilters.push({ $or: orConditions });
+  };
+
+  addRegexFilter(['Secretaria', 'Secretaría'], query.secretaria);
+  addRegexFilter(['Subsecretaria', 'Subsecretaría'], query.subsecretaria);
+  addRegexFilter(['Dirección general', 'Direccion General', 'Dirección General'], query.direccionGeneral);
+  addRegexFilter(['Dirección', 'Direccion'], query.direccion);
+  addRegexFilter(['Departamento'], query.departamento);
+  addRegexFilter(['División', 'Division'], query.division);
+  addRegexFilter(['Funcion', 'Función'], query.funcion);
+
+  if (andFilters.length) {
+    match.$and = andFilters;
   }
-  if (query.subsecretaria) {
-    match['Subsecretaria'] = { $regex: query.subsecretaria, $options: 'i' };
-  }
-  if (query.direccionGeneral) {
-    match['Dirección general'] = { $regex: query.direccionGeneral, $options: 'i' };
-  }
-  if (query.direccion) {
-    match['Dirección'] = { $regex: query.direccion, $options: 'i' };
-  }
-  if (query.departamento) {
-    match['Departamento'] = { $regex: query.departamento, $options: 'i' };
-  }
-  if (query.division) {
-    match['División'] = { $regex: query.division, $options: 'i' };
-  }
-  if (query.funcion) {
-    match['Funcion'] = { $regex: query.funcion, $options: 'i' };
-  }
+
   return match;
 };
 
@@ -1341,7 +1337,15 @@ const getAgentsBySeniority = async (req, res) => {
 };
 
 // Función auxiliar para contar estudios por tipo de columna
-const countStudies = async (match, column) => {
+// Acepta múltiples nombres de columna para contemplar variaciones.
+const countStudies = async (match, columns) => {
+  const conditions = columns.map(col => ({
+    $and: [
+      { $ne: [`$${col}`, null] },
+      { $ne: [`$${col}`, ''] }
+    ]
+  }));
+
   const res = await Agent.aggregate([
     { $match: match },
     {
@@ -1349,16 +1353,7 @@ const countStudies = async (match, column) => {
         _id: null,
         conTitulo: {
           $sum: {
-            $cond: [
-              {
-                $and: [
-                  { $ne: [`$${column}`, null] },
-                  { $ne: [`$${column}`, ''] }
-                ]
-              },
-              1,
-              0
-            ]
+            $cond: [{ $or: conditions }, 1, 0]
           }
         },
         total: { $sum: 1 }
@@ -1379,7 +1374,7 @@ const countStudies = async (match, column) => {
 const getAgentsBySecondaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudies(match, 'Estudios Secundario');
+    const result = await countStudies(match, ['Estudios Secundario', 'Estudios Secundarios']);
     res.json(result);
   } catch (err) {
     console.error('Error en estudios secundarios:', err.message);
@@ -1391,7 +1386,7 @@ const getAgentsBySecondaryStudies = async (req, res) => {
 const getAgentsByTertiaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudies(match, 'Estudios Terciario');
+    const result = await countStudies(match, ['Estudios Terciario', 'Estudios Terciarios']);
     res.json(result);
   } catch (err) {
     console.error('Error en estudios terciarios:', err.message);
@@ -1403,7 +1398,7 @@ const getAgentsByTertiaryStudies = async (req, res) => {
 const getAgentsByUniversityStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudies(match, 'Estudios Universitarios');
+    const result = await countStudies(match, ['Estudios Universitarios', 'Estudios Universitario']);
     res.json(result);
   } catch (err) {
     console.error('Error en estudios universitarios:', err.message);
@@ -1424,7 +1419,7 @@ const getTopSecretariasByUniversity = async (req, res) => {
       },
       {
         $group: {
-          _id: '$Secretaria',
+          _id: { $ifNull: ['$Secretaria', '$Secretaría'] },
           count: { $sum: 1 }
         }
       },
@@ -1452,7 +1447,7 @@ const getTopSecretariasByTertiary = async (req, res) => {
       },
       {
         $group: {
-          _id: '$Secretaria',
+          _id: { $ifNull: ['$Secretaria', '$Secretaría'] },
           count: { $sum: 1 }
         }
       },
@@ -1473,13 +1468,14 @@ const getAgentsByRegistrationType = async (req, res) => {
     const match = buildMatchStage(req.query);
     const raw = await Agent.aggregate([
       { $match: match },
+      { $addFields: { tipoReg: { $ifNull: ['$Tipo de registración', '$Tipo de registracion'] } } },
       {
         $group: {
           _id: {
             $cond: [
-              { $or: [ { $eq: ['$Tipo de registración', null] }, { $eq: ['$Tipo de registración', ''] } ] },
+              { $or: [ { $eq: ['$tipoReg', null] }, { $eq: ['$tipoReg', ''] } ] },
               'Sin tipo de registración',
-              '$Tipo de registración'
+              '$tipoReg'
             ]
           },
           count: { $sum: 1 }
@@ -1505,13 +1501,10 @@ const getAgentsByEntryTime = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
     const result = await Agent.aggregate([
-      {
-        $match: {
-          ...match,
-          'Horario de entrada': { $exists: true, $ne: null, $ne: '' }
-        }
-      },
-      { $group: { _id: '$Horario de entrada', count: { $sum: 1 } } },
+      { $match: match },
+      { $addFields: { entrada: { $ifNull: ['$Horario de entrada', '$Horario de Entrada'] } } },
+      { $match: { entrada: { $ne: null, $ne: '' } } },
+      { $group: { _id: '$entrada', count: { $sum: 1 } } },
       { $project: { _id: 0, time: '$_id', count: 1 } },
       { $sort: { count: -1 } }
     ]);
@@ -1527,13 +1520,10 @@ const getAgentsByExitTime = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
     const result = await Agent.aggregate([
-      {
-        $match: {
-          ...match,
-          'Horario de salida': { $exists: true, $ne: null, $ne: '' }
-        }
-      },
-      { $group: { _id: '$Horario de salida', count: { $sum: 1 } } },
+      { $match: match },
+      { $addFields: { salida: { $ifNull: ['$Horario de salida', '$Horario de Salida'] } } },
+      { $match: { salida: { $ne: null, $ne: '' } } },
+      { $group: { _id: '$salida', count: { $sum: 1 } } },
       { $project: { _id: 0, time: '$_id', count: 1 } },
       { $sort: { count: -1 } }
     ]);
@@ -1549,13 +1539,10 @@ const getTopRegistrationUnits = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
     const result = await Agent.aggregate([
-      {
-        $match: {
-          ...match,
-          'Unidad de registración': { $exists: true, $ne: null, $ne: '' }
-        }
-      },
-      { $group: { _id: '$Unidad de registración', count: { $sum: 1 } } },
+      { $match: match },
+      { $addFields: { unidadReg: { $ifNull: ['$Unidad de registración', '$Unidad de registracion'] } } },
+      { $match: { unidadReg: { $ne: null, $ne: '' } } },
+      { $group: { _id: '$unidadReg', count: { $sum: 1 } } },
       { $project: { _id: 0, unidad: '$_id', count: 1 } },
       { $sort: { count: -1 } },
       { $limit: 10 }
