@@ -7,6 +7,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import SchoolIcon from '@mui/icons-material/School';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
@@ -44,6 +46,18 @@ const DashboardPage = () => {
     const [agentsByDireccion, setAgentsByDireccion] = useState([]);
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
     const [agentsByDivision, setAgentsByDivision] = useState([]);
+
+    const [seniorityData, setSeniorityData] = useState([]);
+    const [secondaryData, setSecondaryData] = useState(null);
+    const [tertiaryData, setTertiaryData] = useState(null);
+    const [universityData, setUniversityData] = useState(null);
+    const [topUniSecretariasData, setTopUniSecretariasData] = useState([]);
+    const [topTerSecretariasData, setTopTerSecretariasData] = useState([]);
+
+    const [registrationTypeData, setRegistrationTypeData] = useState([]);
+    const [entryTimeData, setEntryTimeData] = useState([]);
+    const [exitTimeData, setExitTimeData] = useState([]);
+    const [topUnitsData, setTopUnitsData] = useState([]);
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -104,9 +118,9 @@ const DashboardPage = () => {
             };
 
             // Ajustar nombres de plantillas a los mismos usados en el backend.
-            // Este dashboard debe consultar únicamente los datos cargados
-            // con la plantilla "Rama completa - Planta y Contratos".
             const TEMPLATE_PLANTA_CONTRATOS = 'Rama completa - Planta y Contratos';
+            const TEMPLATE_DATOS_CONCURSO = 'Datos concurso - Planta y Contratos';
+            const TEMPLATE_CONTROL_PLANTA = 'Control de certificaciones - Planta y Contratos';
             const [
                 totalData,
                 ageDistData,
@@ -119,7 +133,17 @@ const DashboardPage = () => {
                 direccionGeneralData,
                 direccionData,
                 departamentoData,
-                divisionData
+                divisionData,
+                seniorityRes,
+                secondaryRes,
+                tertiaryRes,
+                universityRes,
+                topUniRes,
+                topTerRes,
+                regTypeRes,
+                entryTimeRes,
+                exitTimeRes,
+                topUnitsRes
             ] = await Promise.all([
                 // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
@@ -133,7 +157,19 @@ const DashboardPage = () => {
                 safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS)
+                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
+                // Datos para antigüedad y estudios
+                safeGet(funcs.agentsBySeniority, [], TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcs.agentsBySecondaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcs.agentsByTertiaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcs.agentsByUniversityStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcs.agentsByTopSecretariasUniversity, [], TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcs.agentsByTopSecretariasTertiary, [], TEMPLATE_DATOS_CONCURSO),
+                // Datos para control de certificaciones
+                safeGet(funcs.certificationsRegistrationType, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA)
             ]);
 
             setTotalAgents(totalData.total);
@@ -148,6 +184,16 @@ const DashboardPage = () => {
             setAgentsByDireccion(direccionData);
             setAgentsByDepartamento(departamentoData);
             setAgentsByDivision(divisionData);
+            setSeniorityData(seniorityRes);
+            setSecondaryData(secondaryRes);
+            setTertiaryData(tertiaryRes);
+            setUniversityData(universityRes);
+            setTopUniSecretariasData(topUniRes);
+            setTopTerSecretariasData(topTerRes);
+            setRegistrationTypeData(regTypeRes);
+            setEntryTimeData(entryTimeRes);
+            setExitTimeData(exitTimeRes);
+            setTopUnitsData(topUnitsRes);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -298,6 +344,20 @@ const DashboardPage = () => {
                 >
                     Distribución Organizacional
                 </Button>
+                <Button
+                    onClick={() => setTabValue(3)}
+                    startIcon={<SchoolIcon />}
+                    sx={getTabButtonStyles(3)}
+                >
+                    Antigüedad y Estudios
+                </Button>
+                <Button
+                    onClick={() => setTabValue(4)}
+                    startIcon={<AssignmentTurnedInIcon />}
+                    sx={getTabButtonStyles(4)}
+                >
+                    Control de certificaciones – Planta y Contratos
+                </Button>
             </Box>
 
             {/* Tab 0: Resumen General */}
@@ -350,6 +410,132 @@ const DashboardPage = () => {
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="type"
+                        />
+                    </Grid>
+                </Grid>
+            )}
+
+            {/* Tab 3: Antigüedad y Estudios */}
+            {tabValue === 3 && (
+                <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                            Antigüedad y Estudios
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomBarChart
+                            data={seniorityData}
+                            xKey="range"
+                            barKey="count"
+                            title="Cantidad de agentes según antigüedad municipal"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomDonutChart
+                            data={[
+                                { category: 'Con título secundario', count: secondaryData?.conTitulo || 0 },
+                                { category: 'Otros', count: secondaryData?.otros || 0 }
+                            ]}
+                            title="Agentes según estudios secundarios"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="category"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomDonutChart
+                            data={[
+                                { category: 'Con título terciario', count: tertiaryData?.conTitulo || 0 },
+                                { category: 'Otros', count: tertiaryData?.otros || 0 }
+                            ]}
+                            title="Agentes según estudios terciarios"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="category"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomDonutChart
+                            data={[
+                                { category: 'Con título universitario', count: universityData?.conTitulo || 0 },
+                                { category: 'Otros', count: universityData?.otros || 0 }
+                            ]}
+                            title="Agentes según estudios universitarios"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="category"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomBarChart
+                            data={topUniSecretariasData}
+                            xKey="secretaria"
+                            barKey="count"
+                            title="Top 10 secretarías con más agentes con título universitario"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomBarChart
+                            data={topTerSecretariasData}
+                            xKey="secretaria"
+                            barKey="count"
+                            title="Top 10 secretarías con más agentes con título terciario"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    </Grid>
+                </Grid>
+            )}
+
+            {/* Tab 4: Control de certificaciones */}
+            {tabValue === 4 && (
+                <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                        <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                            Control de certificaciones – Planta y Contratos
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <CustomBarChart
+                            data={registrationTypeData}
+                            xKey="tipo"
+                            barKey="count"
+                            title="Cantidad de agentes según tipo de registración"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <CustomDonutChart
+                            data={entryTimeData}
+                            title="Agentes según horario de entrada"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="time"
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <CustomDonutChart
+                            data={exitTimeData}
+                            title="Agentes según horario de salida"
+                            isDarkMode={isDarkMode}
+                            dataKey="count"
+                            nameKey="time"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <CustomBarChart
+                            data={topUnitsData}
+                            xKey="unidad"
+                            barKey="count"
+                            title="Top 10 unidades de registración con más agentes"
+                            isDarkMode={isDarkMode}
+                            height={400}
                         />
                     </Grid>
                 </Grid>

@@ -10,5 +10,15 @@ module.exports = [
   { name: 'agentsByDireccionGeneral', description: 'Agentes por dirección general', endpoint: '/analytics/agents/by-direccion-general' },
   { name: 'agentsByDireccion', description: 'Agentes por dirección', endpoint: '/analytics/agents/by-direccion' },
   { name: 'agentsByDepartamento', description: 'Agentes por departamento', endpoint: '/analytics/agents/by-departamento' },
-  { name: 'agentsByDivision', description: 'Agentes por división', endpoint: '/analytics/agents/by-division' }
+  { name: 'agentsByDivision', description: 'Agentes por división', endpoint: '/analytics/agents/by-division' },
+  { name: 'agentsBySeniority', description: 'Agentes por rangos de antigüedad', endpoint: '/analytics/agents/seniority' },
+  { name: 'agentsBySecondaryStudies', description: 'Agentes por estudios secundarios', endpoint: '/analytics/agents/secondary-studies' },
+  { name: 'agentsByTertiaryStudies', description: 'Agentes por estudios terciarios', endpoint: '/analytics/agents/tertiary-studies' },
+  { name: 'agentsByUniversityStudies', description: 'Agentes por estudios universitarios', endpoint: '/analytics/agents/university-studies' },
+  { name: 'agentsByTopSecretariasUniversity', description: 'Top secretarías con títulos universitarios', endpoint: '/analytics/agents/top-secretarias-university' },
+  { name: 'agentsByTopSecretariasTertiary', description: 'Top secretarías con títulos terciarios', endpoint: '/analytics/agents/top-secretarias-tertiary' },
+  { name: 'certificationsRegistrationType', description: 'Agentes por tipo de registración', endpoint: '/analytics/certifications/registration-type' },
+  { name: 'certificationsEntryTime', description: 'Agentes por horario de entrada', endpoint: '/analytics/certifications/entry-time' },
+  { name: 'certificationsExitTime', description: 'Agentes por horario de salida', endpoint: '/analytics/certifications/exit-time' },
+  { name: 'certificationsTopUnits', description: 'Top unidades de registración', endpoint: '/analytics/certifications/top-units' }
 ];
