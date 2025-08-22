@@ -134,6 +134,25 @@ async function uploadFile(req, res) {
                   if (!isNaN(parsed)) value = new Date(parsed);
                 }
               }
+              if (mapping.dataType === 'Time') {
+                if (typeof value === 'number') {
+                  const t = xlsx.SSF.parse_date_code(value);
+                  if (t) {
+                    const h = String(t.h).padStart(2, '0');
+                    const m = String(t.m).padStart(2, '0');
+                    const s = String(t.s).padStart(2, '0');
+                    value = `${h}:${m}:${s}`;
+                  }
+                } else if (typeof value === 'string') {
+                  const d = new Date(`1970-01-01T${value}`);
+                  if (!isNaN(d.getTime())) {
+                    const h = String(d.getHours()).padStart(2, '0');
+                    const m = String(d.getMinutes()).padStart(2, '0');
+                    const s = String(d.getSeconds()).padStart(2, '0');
+                    value = `${h}:${m}:${s}`;
+                  }
+                }
+              }
               obj[mapping.variableName] = value;
             }
           });
