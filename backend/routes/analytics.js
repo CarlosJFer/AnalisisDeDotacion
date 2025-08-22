@@ -33,6 +33,16 @@ const {
   getAgentsByDireccionNeikeBeca,
   getAgentsByDepartamentoNeikeBeca,
   getAgentsByDivisionNeikeBeca,
+  getAgentsBySeniority,
+  getAgentsBySecondaryStudies,
+  getAgentsByTertiaryStudies,
+  getAgentsByUniversityStudies,
+  getTopSecretariasByUniversity,
+  getTopSecretariasByTertiary,
+  getAgentsByRegistrationType,
+  getAgentsByEntryTime,
+  getAgentsByExitTime,
+  getTopRegistrationUnits,
   notifyDashboardModification
 } = require('../controllers/analyticsController');
 
@@ -58,6 +68,18 @@ router.get('/agents/by-direccion-general', authenticateToken, getAgentsByDirecci
 router.get('/agents/by-direccion', authenticateToken, getAgentsByDireccion);
 router.get('/agents/by-departamento', authenticateToken, getAgentsByDepartamento);
 router.get('/agents/by-division', authenticateToken, getAgentsByDivision);
+
+// Nuevos endpoints para antigüedad, estudios y certificaciones
+router.get('/agents/seniority', authenticateToken, getAgentsBySeniority);
+router.get('/agents/secondary-studies', authenticateToken, getAgentsBySecondaryStudies);
+router.get('/agents/tertiary-studies', authenticateToken, getAgentsByTertiaryStudies);
+router.get('/agents/university-studies', authenticateToken, getAgentsByUniversityStudies);
+router.get('/agents/top-secretarias-university', authenticateToken, getTopSecretariasByUniversity);
+router.get('/agents/top-secretarias-tertiary', authenticateToken, getTopSecretariasByTertiary);
+router.get('/certifications/registration-type', authenticateToken, getAgentsByRegistrationType);
+router.get('/certifications/entry-time', authenticateToken, getAgentsByEntryTime);
+router.get('/certifications/exit-time', authenticateToken, getAgentsByExitTime);
+router.get('/certifications/top-units', authenticateToken, getTopRegistrationUnits);
 
 // Rutas para Neikes y Beca
 router.get('/agents/by-function-neike-beca', authenticateToken, require('../controllers/analyticsController').getAgentsByFunctionNeikeBeca);

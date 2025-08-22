@@ -7,6 +7,8 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
+import SchoolIcon from '@mui/icons-material/School';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
@@ -43,6 +45,17 @@ const DashboardNeikeBeca = () => {
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
     const [agentsByDivision, setAgentsByDivision] = useState([]);
 
+    const [seniorityData, setSeniorityData] = useState([]);
+    const [secondaryData, setSecondaryData] = useState(null);
+    const [tertiaryData, setTertiaryData] = useState(null);
+    const [universityData, setUniversityData] = useState(null);
+    const [topUniSecretariasData, setTopUniSecretariasData] = useState([]);
+    const [topTerSecretariasData, setTopTerSecretariasData] = useState([]);
+
+    const [registrationTypeData, setRegistrationTypeData] = useState([]);
+    const [entryTimeData, setEntryTimeData] = useState([]);
+    const [exitTimeData, setExitTimeData] = useState([]);
+    const [topUnitsData, setTopUnitsData] = useState([]);
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -103,9 +116,9 @@ const DashboardNeikeBeca = () => {
             };
 
             // Ajustar nombres de plantillas a los mismos usados en el backend.
-            // Este dashboard debe consultar únicamente los datos cargados
-            // con la plantilla "Rama completa - Neikes y Beca".
             const TEMPLATE_NEIKES_BECAS = 'Rama completa - Neikes y Beca';
+            const TEMPLATE_DATOS_NEIKES = 'Datos concurso - Neikes y Beca';
+            const TEMPLATE_CONTROL_NEIKES = 'Control de certificaciones - Neikes y Becas';
             const [
                 totalData,
                 ageDistData,
@@ -118,7 +131,17 @@ const DashboardNeikeBeca = () => {
                 direccionGeneralData,
                 direccionData,
                 departamentoData,
-                divisionData
+                divisionData,
+                seniorityRes,
+                secondaryRes,
+                tertiaryRes,
+                universityRes,
+                topUniRes,
+                topTerRes,
+                regTypeRes,
+                entryTimeRes,
+                exitTimeRes,
+                topUnitsRes
             ] = await Promise.all([
                 // Datos correspondientes a la plantilla "Rama completa - Neikes y Beca"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_NEIKES_BECAS),
@@ -132,7 +155,19 @@ const DashboardNeikeBeca = () => {
                 safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDireccion, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDepartamento, [], TEMPLATE_NEIKES_BECAS),
-                safeGet(funcs.agentsByDivision, [], TEMPLATE_NEIKES_BECAS)
+                safeGet(funcs.agentsByDivision, [], TEMPLATE_NEIKES_BECAS),
+                // Datos para antigüedad y estudios
+                safeGet(funcs.agentsBySeniority, [], TEMPLATE_DATOS_NEIKES),
+                safeGet(funcs.agentsBySecondaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_NEIKES),
+                safeGet(funcs.agentsByTertiaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_NEIKES),
+                safeGet(funcs.agentsByUniversityStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_NEIKES),
+                safeGet(funcs.agentsByTopSecretariasUniversity, [], TEMPLATE_DATOS_NEIKES),
+                safeGet(funcs.agentsByTopSecretariasTertiary, [], TEMPLATE_DATOS_NEIKES),
+                // Datos para control de certificaciones
+                safeGet(funcs.certificationsRegistrationType, [], TEMPLATE_CONTROL_NEIKES),
+                safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_NEIKES),
+                safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_NEIKES),
+                safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_NEIKES)
             ]);
 
             setTotalAgents(totalData.total);
@@ -147,6 +182,16 @@ const DashboardNeikeBeca = () => {
             setAgentsByDireccion(direccionData);
             setAgentsByDepartamento(departamentoData);
             setAgentsByDivision(divisionData);
+            setSeniorityData(seniorityRes);
+            setSecondaryData(secondaryRes);
+            setTertiaryData(tertiaryRes);
+            setUniversityData(universityRes);
+            setTopUniSecretariasData(topUniRes);
+            setTopTerSecretariasData(topTerRes);
+            setRegistrationTypeData(regTypeRes);
+            setEntryTimeData(entryTimeRes);
+            setExitTimeData(exitTimeRes);
+            setTopUnitsData(topUnitsRes);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -279,6 +324,20 @@ const DashboardNeikeBeca = () => {
                     sx={getTabButtonStyles(2)}
                 >
                     Distribución Organizacional
+                </Button>
+                <Button
+                    onClick={() => setTabValue(3)}
+                    startIcon={<SchoolIcon />}
+                    sx={getTabButtonStyles(3)}
+                >
+                    Antigüedad y Estudios
+                </Button>
+                <Button
+                    onClick={() => setTabValue(4)}
+                    startIcon={<AssignmentTurnedInIcon />}
+                    sx={getTabButtonStyles(4)}
+                >
+                    Control de certificaciones – Neikes y Becas
                 </Button>
             </Box>
 
@@ -479,16 +538,142 @@ const DashboardNeikeBeca = () => {
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
-                        <CustomDonutChart
-                            data={filterValidData(agentsByDivision, 'division').slice(0, 8)}
-                            title="Agentes por División (Top 8) - Neikes y Beca"
-                            isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="division"
-                        />
-                    </Grid>
+                    <CustomDonutChart
+                        data={filterValidData(agentsByDivision, 'division').slice(0, 8)}
+                        title="Agentes por División (Top 8) - Neikes y Beca"
+                        isDarkMode={isDarkMode}
+                        dataKey="count"
+                        nameKey="division"
+                    />
                 </Grid>
-            )}
+            </Grid>
+        )}
+
+        {/* Tab 3: Antigüedad y Estudios */}
+        {tabValue === 3 && (
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                        Antigüedad y Estudios
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <CustomBarChart
+                        data={seniorityData}
+                        xKey="range"
+                        barKey="count"
+                        title="Cantidad de agentes según antigüedad municipal"
+                        isDarkMode={isDarkMode}
+                        height={400}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <CustomDonutChart
+                        data={[
+                            { category: 'Con título secundario', count: secondaryData?.conTitulo || 0 },
+                            { category: 'Otros', count: secondaryData?.otros || 0 }
+                        ]}
+                        title="Agentes según estudios secundarios"
+                        isDarkMode={isDarkMode}
+                        dataKey="count"
+                        nameKey="category"
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <CustomDonutChart
+                        data={[
+                            { category: 'Con título terciario', count: tertiaryData?.conTitulo || 0 },
+                            { category: 'Otros', count: tertiaryData?.otros || 0 }
+                        ]}
+                        title="Agentes según estudios terciarios"
+                        isDarkMode={isDarkMode}
+                        dataKey="count"
+                        nameKey="category"
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <CustomDonutChart
+                        data={[
+                            { category: 'Con título universitario', count: universityData?.conTitulo || 0 },
+                            { category: 'Otros', count: universityData?.otros || 0 }
+                        ]}
+                        title="Agentes según estudios universitarios"
+                        isDarkMode={isDarkMode}
+                        dataKey="count"
+                        nameKey="category"
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <CustomBarChart
+                        data={topUniSecretariasData}
+                        xKey="secretaria"
+                        barKey="count"
+                        title="Top 10 secretarías con más agentes con título universitario"
+                        isDarkMode={isDarkMode}
+                        height={400}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <CustomBarChart
+                        data={topTerSecretariasData}
+                        xKey="secretaria"
+                        barKey="count"
+                        title="Top 10 secretarías con más agentes con título terciario"
+                        isDarkMode={isDarkMode}
+                        height={400}
+                    />
+                </Grid>
+            </Grid>
+        )}
+
+        {/* Tab 4: Control de certificaciones */}
+        {tabValue === 4 && (
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                        Control de certificaciones – Neikes y Becas
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <CustomBarChart
+                        data={registrationTypeData}
+                        xKey="tipo"
+                        barKey="count"
+                        title="Cantidad de agentes según tipo de registración"
+                        isDarkMode={isDarkMode}
+                        height={400}
+                    />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                    <CustomDonutChart
+                        data={entryTimeData}
+                        title="Agentes según horario de entrada"
+                        isDarkMode={isDarkMode}
+                        dataKey="count"
+                        nameKey="time"
+                    />
+                </Grid>
+                <Grid item xs={12} md={3}>
+                    <CustomDonutChart
+                        data={exitTimeData}
+                        title="Agentes según horario de salida"
+                        isDarkMode={isDarkMode}
+                        dataKey="count"
+                        nameKey="time"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <CustomBarChart
+                        data={topUnitsData}
+                        xKey="unidad"
+                        barKey="count"
+                        title="Top 10 unidades de registración con más agentes"
+                        isDarkMode={isDarkMode}
+                        height={400}
+                    />
+                </Grid>
+            </Grid>
+        )}
 
             {user?.role === 'admin' && (
                 <>
