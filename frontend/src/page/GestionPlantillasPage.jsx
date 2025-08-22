@@ -177,6 +177,7 @@ const TemplateModal = ({ isOpen, onClose, onSave, template, isDarkMode }) => {
                           <MenuItem value="String">Texto</MenuItem>
                           <MenuItem value="Number">Número</MenuItem>
                           <MenuItem value="Date">Fecha</MenuItem>
+                          <MenuItem value="Time">Hora</MenuItem>
                         </Select>
                       </FormControl>
                     </Grid>
