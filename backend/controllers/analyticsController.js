@@ -3,13 +3,11 @@ const Agent = require('../models/Agent'); // Importamos el modelo Agent
 const PDFDocument = require('pdfkit');
 const emailService = require('../services/emailService');
 
-// Construye dinámicamente el objeto de filtros para consultas
+// Construye dinámicamente el objeto de filtros para consultas.
+// Incluye soporte para variaciones con y sin acentos en los nombres de campo.
 const buildMatchStage = (query) => {
-  const match = {};
-  // Asegurar que todas las consultas tengan el nombre de plantilla correcto.
-  // Si no se especifica, por defecto se usa "Rama completa - Planta y Contratos".
   const plantilla = (query.plantilla || 'Rama completa - Planta y Contratos').trim();
-  match.plantilla = plantilla;
+  const match = { plantilla };
 
   // Filtros dinámicos recibidos como JSON en query.filters
   if (query.filters) {
@@ -21,29 +19,27 @@ const buildMatchStage = (query) => {
     }
   }
 
-  // Filtros específicos: se usan expresiones regulares para permitir
-  // coincidencias parciales sin importar mayúsculas/minúsculas.
-  if (query.secretaria) {
-    match['Secretaria'] = { $regex: query.secretaria, $options: 'i' };
+  // Para cada filtro específico permitimos coincidencias en campos con o sin acentos
+  // y combinamos todos los filtros mediante $and para mantener la intersección.
+  const andFilters = [];
+  const addRegexFilter = (fields, value) => {
+    if (!value) return;
+    const orConditions = fields.map(f => ({ [f]: { $regex: value, $options: 'i' } }));
+    andFilters.push({ $or: orConditions });
+  };
+
+  addRegexFilter(['Secretaria', 'Secretaría'], query.secretaria);
+  addRegexFilter(['Subsecretaria', 'Subsecretaría'], query.subsecretaria);
+  addRegexFilter(['Dirección general', 'Direccion General', 'Dirección General'], query.direccionGeneral);
+  addRegexFilter(['Dirección', 'Direccion'], query.direccion);
+  addRegexFilter(['Departamento'], query.departamento);
+  addRegexFilter(['División', 'Division'], query.division);
+  addRegexFilter(['Funcion', 'Función'], query.funcion);
+
+  if (andFilters.length) {
+    match.$and = andFilters;
   }
-  if (query.subsecretaria) {
-    match['Subsecretaria'] = { $regex: query.subsecretaria, $options: 'i' };
-  }
-  if (query.direccionGeneral) {
-    match['Dirección general'] = { $regex: query.direccionGeneral, $options: 'i' };
-  }
-  if (query.direccion) {
-    match['Dirección'] = { $regex: query.direccion, $options: 'i' };
-  }
-  if (query.departamento) {
-    match['Departamento'] = { $regex: query.departamento, $options: 'i' };
-  }
-  if (query.division) {
-    match['División'] = { $regex: query.division, $options: 'i' };
-  }
-  if (query.funcion) {
-    match['Funcion'] = { $regex: query.funcion, $options: 'i' };
-  }
+
   return match;
 };
 
@@ -1292,10 +1288,269 @@ const getAgentsByDivisionNeikeBeca = async (req, res) => {
     res.json(result);
   } catch (err) {
     console.error('Error en análisis de agentes por división Neikes y Beca:', err.message);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error en análisis de agentes por división Neikes y Beca',
-      message: err.message 
+      message: err.message
     });
+  }
+};
+
+// -----------------------------------------------------------------------------
+// Nuevas funciones de análisis para antigüedad, estudios y certificaciones
+// -----------------------------------------------------------------------------
+
+// @desc    Cantidad de agentes según rangos de antigüedad municipal
+// @route   GET /api/analytics/agents/seniority
+// @access  Private/Admin
+const getAgentsBySeniority = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const agents = await Agent.find({
+      ...match,
+      'Años en la municipalidad': { $exists: true, $ne: null, $ne: '' }
+    }).limit(5000);
+
+    const ranges = {
+      '1-10': 0,
+      '11-20': 0,
+      '21-30': 0,
+      '31-40': 0,
+      '41-50': 0
+    };
+
+    agents.forEach(agent => {
+      const years = parseInt(agent['Años en la municipalidad'], 10);
+      if (isNaN(years)) return;
+      if (years <= 10) ranges['1-10']++;
+      else if (years <= 20) ranges['11-20']++;
+      else if (years <= 30) ranges['21-30']++;
+      else if (years <= 40) ranges['31-40']++;
+      else ranges['41-50']++;
+    });
+
+    const result = Object.entries(ranges).map(([range, count]) => ({ range, count }));
+    res.json(result);
+  } catch (err) {
+    console.error('Error en análisis de antigüedad:', err.message);
+    res.status(500).json({ error: 'Error en análisis de antigüedad', message: err.message });
+  }
+};
+
+// Función auxiliar para contar estudios por tipo de columna
+// Acepta múltiples nombres de columna para contemplar variaciones.
+const countStudies = async (match, columns) => {
+  const conditions = columns.map(col => ({
+    $and: [
+      { $ne: [`$${col}`, null] },
+      { $ne: [`$${col}`, ''] }
+    ]
+  }));
+
+  const res = await Agent.aggregate([
+    { $match: match },
+    {
+      $group: {
+        _id: null,
+        conTitulo: {
+          $sum: {
+            $cond: [{ $or: conditions }, 1, 0]
+          }
+        },
+        total: { $sum: 1 }
+      }
+    },
+    {
+      $project: {
+        _id: 0,
+        conTitulo: 1,
+        otros: { $subtract: ['$total', '$conTitulo'] }
+      }
+    }
+  ]);
+  return res[0] || { conTitulo: 0, otros: 0 };
+};
+
+// @desc    Cantidad de agentes según estudios secundarios
+const getAgentsBySecondaryStudies = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await countStudies(match, ['Estudios Secundario', 'Estudios Secundarios']);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en estudios secundarios:', err.message);
+    res.status(500).json({ error: 'Error en estudios secundarios', message: err.message });
+  }
+};
+
+// @desc    Cantidad de agentes según estudios terciarios
+const getAgentsByTertiaryStudies = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await countStudies(match, ['Estudios Terciario', 'Estudios Terciarios']);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en estudios terciarios:', err.message);
+    res.status(500).json({ error: 'Error en estudios terciarios', message: err.message });
+  }
+};
+
+// @desc    Cantidad de agentes según estudios universitarios
+const getAgentsByUniversityStudies = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await countStudies(match, ['Estudios Universitarios', 'Estudios Universitario']);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en estudios universitarios:', err.message);
+    res.status(500).json({ error: 'Error en estudios universitarios', message: err.message });
+  }
+};
+
+// @desc    Top 10 secretarías con más agentes con estudios universitarios
+const getTopSecretariasByUniversity = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await Agent.aggregate([
+      {
+        $match: {
+          ...match,
+          'Estudios Universitarios': { $exists: true, $ne: null, $ne: '' }
+        }
+      },
+      {
+        $group: {
+          _id: { $ifNull: ['$Secretaria', '$Secretaría'] },
+          count: { $sum: 1 }
+        }
+      },
+      { $project: { _id: 0, secretaria: '$_id', count: 1 } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en top secretarías universidad:', err.message);
+    res.status(500).json({ error: 'Error en top secretarías universidad', message: err.message });
+  }
+};
+
+// @desc    Top 10 secretarías con más agentes con estudios terciarios
+const getTopSecretariasByTertiary = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await Agent.aggregate([
+      {
+        $match: {
+          ...match,
+          'Estudios Terciario': { $exists: true, $ne: null, $ne: '' }
+        }
+      },
+      {
+        $group: {
+          _id: { $ifNull: ['$Secretaria', '$Secretaría'] },
+          count: { $sum: 1 }
+        }
+      },
+      { $project: { _id: 0, secretaria: '$_id', count: 1 } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en top secretarías terciario:', err.message);
+    res.status(500).json({ error: 'Error en top secretarías terciario', message: err.message });
+  }
+};
+
+// @desc    Cantidad de agentes según tipo de registración
+const getAgentsByRegistrationType = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const raw = await Agent.aggregate([
+      { $match: match },
+      { $addFields: { tipoReg: { $ifNull: ['$Tipo de registración', '$Tipo de registracion'] } } },
+      {
+        $group: {
+          _id: {
+            $cond: [
+              { $or: [ { $eq: ['$tipoReg', null] }, { $eq: ['$tipoReg', ''] } ] },
+              'Sin tipo de registración',
+              '$tipoReg'
+            ]
+          },
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    const map = { SCANN: 'Scanner', PLANI: 'Planilla', BIOME: 'Biométrico' };
+    const result = raw.map(r => ({
+      tipo: map[r._id] || r._id,
+      count: r.count
+    }));
+
+    res.json(result);
+  } catch (err) {
+    console.error('Error en tipos de registración:', err.message);
+    res.status(500).json({ error: 'Error en tipos de registración', message: err.message });
+  }
+};
+
+// @desc    Cantidad de agentes por horario de entrada
+const getAgentsByEntryTime = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await Agent.aggregate([
+      { $match: match },
+      { $addFields: { entrada: { $ifNull: ['$Horario de entrada', '$Horario de Entrada'] } } },
+      { $match: { entrada: { $ne: null, $ne: '' } } },
+      { $group: { _id: '$entrada', count: { $sum: 1 } } },
+      { $project: { _id: 0, time: '$_id', count: 1 } },
+      { $sort: { count: -1 } }
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en horarios de entrada:', err.message);
+    res.status(500).json({ error: 'Error en horarios de entrada', message: err.message });
+  }
+};
+
+// @desc    Cantidad de agentes por horario de salida
+const getAgentsByExitTime = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await Agent.aggregate([
+      { $match: match },
+      { $addFields: { salida: { $ifNull: ['$Horario de salida', '$Horario de Salida'] } } },
+      { $match: { salida: { $ne: null, $ne: '' } } },
+      { $group: { _id: '$salida', count: { $sum: 1 } } },
+      { $project: { _id: 0, time: '$_id', count: 1 } },
+      { $sort: { count: -1 } }
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en horarios de salida:', err.message);
+    res.status(500).json({ error: 'Error en horarios de salida', message: err.message });
+  }
+};
+
+// @desc    Top 10 unidades de registración con más agentes
+const getTopRegistrationUnits = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await Agent.aggregate([
+      { $match: match },
+      { $addFields: { unidadReg: { $ifNull: ['$Unidad de registración', '$Unidad de registracion'] } } },
+      { $match: { unidadReg: { $ne: null, $ne: '' } } },
+      { $group: { _id: '$unidadReg', count: { $sum: 1 } } },
+      { $project: { _id: 0, unidad: '$_id', count: 1 } },
+      { $sort: { count: -1 } },
+      { $limit: 10 }
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en unidades de registración:', err.message);
+    res.status(500).json({ error: 'Error en unidades de registración', message: err.message });
   }
 };
 
@@ -1371,5 +1626,15 @@ module.exports = {
   getAgentsByDireccionNeikeBeca,
   getAgentsByDepartamentoNeikeBeca,
   getAgentsByDivisionNeikeBeca,
+  getAgentsBySeniority,
+  getAgentsBySecondaryStudies,
+  getAgentsByTertiaryStudies,
+  getAgentsByUniversityStudies,
+  getTopSecretariasByUniversity,
+  getTopSecretariasByTertiary,
+  getAgentsByRegistrationType,
+  getAgentsByEntryTime,
+  getAgentsByExitTime,
+  getTopRegistrationUnits,
   notifyDashboardModification
 };
