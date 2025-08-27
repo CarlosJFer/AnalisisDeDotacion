@@ -74,9 +74,10 @@ async function uploadFile(req, res) {
           templateId = req.body.templateId;
         }
 
-        // Si después de las comprobaciones no hay plantilla, devolver error y detener el proceso
+        // Si después de las comprobaciones no hay plantilla, registrar error para este archivo y continuar con los demás
         if (!templateId || templateId === 'undefined') {
-          return res.status(400).json({ message: 'Debes seleccionar una plantilla para cada archivo.' });
+          resultados.push({ archivo: file.originalname, error: 'Debes seleccionar una plantilla para cada archivo.' });
+          continue;
         }
         
         const template = await ImportTemplate.findById(templateId);
@@ -104,7 +105,13 @@ async function uploadFile(req, res) {
         // Primer fila: encabezado real
         const encabezado = datos[0].map(cell => String(cell).trim());
         // Mapear los datos según el mapping de la plantilla, solo si la fila es válida
-        const camposClave = ['dni', 'legajo', 'nombre', 'DNI', 'Legajo', 'Nombre', 'Nombre y Apellido'];
+        let camposClave = [];
+        // Definir campos clave dinámicos según la plantilla
+        if (template.name && template.name.trim().toLowerCase() === 'expedientes') {
+          camposClave = ['Numero de expediente', 'Iniciador del Expediente', 'CUIT'];
+        } else {
+          camposClave = ['dni', 'legajo', 'nombre', 'DNI', 'Legajo', 'Nombre', 'Nombre y Apellido'];
+        }
         const agentes = datos.slice(1).map(row => {
           const obj = {};
           template.mappings.forEach(mapping => {
@@ -198,170 +205,166 @@ async function uploadFile(req, res) {
           await Agent.deleteMany({ sourceFile: file.originalname, templateUsed: template._id });
           await Agent.insertMany(agentes);
 
-          // Calcular y almacenar valores de variables por dependencia
-          try {
-            const totalVar = await Variable.findOne({ nombre: /total/i });
-            if (totalVar) {
-              const counts = agentes.reduce((acc, a) => {
-                const dep = a['Dependencia donde trabaja'];
-                if (!dep) return acc;
-                acc[dep] = (acc[dep] || 0) + 1;
-                return acc;
-              }, {});
-              for (const [depName, count] of Object.entries(counts)) {
-                const depDoc = await Dependency.findOne({ nombre: depName });
-                if (!depDoc) continue;
-                await VariableValue.findOneAndUpdate(
-                  { dependenciaId: depDoc._id, variableId: totalVar._id },
-                  { valor_actual: count, fecha: new Date() },
-                  { upsert: true, new: true, setDefaultsOnInsert: true }
-                );
-              }
-            }
-          } catch (e) {
-            console.error('Error calculando VariableValue:', e);
-          }
-
-          // --- Lógica de análisis agregada ---
-          // 1. Total de agentes
           const totalAgentes = agentes.length;
 
-          // 2. Por género
-          const generoMap = {};
-          agentes.forEach(a => {
-            const genero = (a['genero'] || a['Género'] || a['Genero'] || a['sexo'] || a['Sexo'] || 'No especificado').toString().trim();
-            if (!generoMap[genero]) generoMap[genero] = 0;
-            generoMap[genero]++;
-          });
-          const agentesPorGenero = Object.entries(generoMap).map(([genero, cantidad]) => ({
-            genero,
-            cantidad,
-            porcentaje: Math.round((cantidad / totalAgentes) * 100)
-          }));
-
-          // 3. Por tipo de contratación
-          const contratacionMap = {};
-          agentes.forEach(a => {
-            const tipo = (a['tipoContratacion'] || a['Tipo de Contratación'] || a['Tipo de contratación'] || a['contratacion'] || a['Contratación'] || 'No especificado').toString().trim();
-            if (!contratacionMap[tipo]) contratacionMap[tipo] = 0;
-            contratacionMap[tipo]++;
-          });
-          const agentesPorContratacion = Object.entries(contratacionMap).map(([tipo, cantidad]) => ({
-            tipo,
-            cantidad,
-            porcentaje: Math.round((cantidad / totalAgentes) * 100)
-          }));
-
-          // 4. Por antigüedad (si hay campo fechaIngreso o similar)
-          const antiguedadMap = {};
-          const hoy = new Date();
-          agentes.forEach(a => {
-            let fechaIngreso = a['fechaIngreso'] || a['Fecha de Ingreso'] || a['fechaAlta'] || a['Fecha de alta'];
-            if (fechaIngreso && typeof fechaIngreso === 'string') {
-              fechaIngreso = new Date(fechaIngreso);
+          if (template.name && template.name.trim().toLowerCase() !== 'expedientes') {
+            // Calcular y almacenar valores de variables por dependencia
+            try {
+              const totalVar = await Variable.findOne({ nombre: /total/i });
+              if (totalVar) {
+                const counts = agentes.reduce((acc, a) => {
+                  const dep = a['Dependencia donde trabaja'];
+                  if (!dep) return acc;
+                  acc[dep] = (acc[dep] || 0) + 1;
+                  return acc;
+                }, {});
+                for (const [depName, count] of Object.entries(counts)) {
+                  const depDoc = await Dependency.findOne({ nombre: depName });
+                  if (!depDoc) continue;
+                  await VariableValue.findOneAndUpdate(
+                    { dependenciaId: depDoc._id, variableId: totalVar._id },
+                    { valor_actual: count, fecha: new Date() },
+                    { upsert: true, new: true, setDefaultsOnInsert: true }
+                  );
+                }
+              }
+            } catch (e) {
+              console.error('Error calculando VariableValue:', e);
             }
-            let anios = 0;
-            if (fechaIngreso instanceof Date && !isNaN(fechaIngreso)) {
-              anios = hoy.getFullYear() - fechaIngreso.getFullYear();
+
+            // --- Lógica de análisis agregada ---
+            // 2. Por género
+            const generoMap = {};
+            agentes.forEach(a => {
+              const genero = (a['genero'] || a['Género'] || a['Genero'] || a['sexo'] || a['Sexo'] || 'No especificado').toString().trim();
+              if (!generoMap[genero]) generoMap[genero] = 0;
+              generoMap[genero]++;
+            });
+            const agentesPorGenero = Object.entries(generoMap).map(([genero, cantidad]) => ({
+              genero,
+              cantidad,
+              porcentaje: Math.round((cantidad / totalAgentes) * 100)
+            }));
+
+            // 3. Por tipo de contratación
+            const contratacionMap = {};
+            agentes.forEach(a => {
+              const tipo = (a['tipoContratacion'] || a['Tipo de Contratación'] || a['Tipo de contratación'] || a['contratacion'] || a['Contratación'] || 'No especificado').toString().trim();
+              if (!contratacionMap[tipo]) contratacionMap[tipo] = 0;
+              contratacionMap[tipo]++;
+            });
+            const agentesPorContratacion = Object.entries(contratacionMap).map(([tipo, cantidad]) => ({
+              tipo,
+              cantidad,
+              porcentaje: Math.round((cantidad / totalAgentes) * 100)
+            }));
+
+            // 4. Por antigüedad (si hay campo fechaIngreso o similar)
+            const antiguedadMap = {};
+            const hoy = new Date();
+            agentes.forEach(a => {
+              let fechaIngreso = a['fechaIngreso'] || a['Fecha de Ingreso'] || a['fechaAlta'] || a['Fecha de alta'];
+              if (fechaIngreso && typeof fechaIngreso === 'string') {
+                fechaIngreso = new Date(fechaIngreso);
+              }
+              let anios = 0;
+              if (fechaIngreso instanceof Date && !isNaN(fechaIngreso)) {
+                anios = hoy.getFullYear() - fechaIngreso.getFullYear();
+              }
+              let rango = 'Sin dato';
+              if (anios < 1) rango = 'Menos de 1 año';
+              else if (anios < 5) rango = '1-4 años';
+              else if (anios < 10) rango = '5-9 años';
+              else if (anios < 20) rango = '10-19 años';
+              else if (anios >= 20) rango = '20 años o más';
+              if (!antiguedadMap[rango]) antiguedadMap[rango] = 0;
+              antiguedadMap[rango]++;
+            });
+            const agentesPorAntiguedad = Object.entries(antiguedadMap).map(([rango, cantidad]) => ({
+              rango,
+              cantidad,
+              porcentaje: Math.round((cantidad / totalAgentes) * 100)
+            }));
+
+            // 5. Masa salarial y sueldo promedio (si hay campo sueldo)
+            let masaSalarial = 0;
+            let sueldoPromedio = 0;
+            let sueldos = agentes.map(a => Number(a['sueldo'] || a['Sueldo'] || a['remuneracion'] || a['Remuneración']) || 0).filter(v => v > 0);
+            if (sueldos.length > 0) {
+              masaSalarial = sueldos.reduce((a, b) => a + b, 0);
+              sueldoPromedio = masaSalarial / sueldos.length;
             }
-            let rango = 'Sin dato';
-            if (anios < 1) rango = 'Menos de 1 año';
-            else if (anios < 5) rango = '1-4 años';
-            else if (anios < 10) rango = '5-9 años';
-            else if (anios < 20) rango = '10-19 años';
-            else if (anios >= 20) rango = '20 años o más';
-            if (!antiguedadMap[rango]) antiguedadMap[rango] = 0;
-            antiguedadMap[rango]++;
-          });
-          const agentesPorAntiguedad = Object.entries(antiguedadMap).map(([rango, cantidad]) => ({
-            rango,
-            cantidad,
-            porcentaje: Math.round((cantidad / totalAgentes) * 100)
-          }));
 
-          // 5. Masa salarial y sueldo promedio (si hay campo sueldo)
-          let masaSalarial = 0;
-          let sueldoPromedio = 0;
-          let sueldos = agentes.map(a => Number(a['sueldo'] || a['Sueldo'] || a['remuneracion'] || a['Remuneración']) || 0).filter(v => v > 0);
-          if (sueldos.length > 0) {
-            masaSalarial = sueldos.reduce((a, b) => a + b, 0);
-            sueldoPromedio = masaSalarial / sueldos.length;
-          }
-
-          // 6. Guardar en AnalysisData con la estructura que espera el dashboard
-          // Buscar análisis existente por nombre de archivo y plantilla.
-          // Utilizamos el nombre de la plantilla (template.name) para diferenciar
-          // los análisis generados con diferentes plantillas y así evitar mezclar datos.
+            // 6. Guardar en AnalysisData con la estructura que espera el dashboard
             let analisis = await AnalysisData.findOne({
               'archivo.nombreOriginal': file.originalname,
               plantilla: template.name.trim()
             });
-          if (!analisis) {
-            // Crear un nuevo análisis para esta plantilla y archivo
-            analisis = new AnalysisData({
-              plantilla: template.name.trim(),
-              secretaria: {
-                id: req.body.secretariaId || 'default',
-                nombre: req.body.secretariaNombre || 'General'
-              },
-              organizationId: req.user && req.user.organizationId ? req.user.organizationId : (req.body.organizationId || null),
-              uploadedBy: req.user?._id || (req.body.uploadedBy || null),
-              archivo: {
-                nombreOriginal: file.originalname,
-                nombreGuardado: file.filename,
-                tamaño: file.size,
-                tipo: file.mimetype,
-                ruta: file.path
-              },
-              resumen: {
-                totalAgentes,
-                masaSalarial,
-                sueldoPromedio: sueldoPromedio || 0
-              },
-              analisis: {
-                contratacion: agentesPorContratacion,
-                genero: agentesPorGenero,
-                antiguedad: agentesPorAntiguedad
-              },
-              auditoria: {
-                creadoPor: req.user?._id || (req.body.uploadedBy || null)
-              },
-              version: 1,
-              esActual: true,
-              isActive: true
-            });
-          } else {
-            // Actualizar el análisis existente
-            analisis.plantilla = template.name.trim();
-            analisis.resumen.totalAgentes = totalAgentes;
-            analisis.resumen.masaSalarial = masaSalarial;
-            analisis.resumen.sueldoPromedio = sueldoPromedio || 0;
-            analisis.analisis.contratacion = agentesPorContratacion;
-            analisis.analisis.genero = agentesPorGenero;
-            analisis.analisis.antiguedad = agentesPorAntiguedad;
-            analisis.analysisDate = new Date();
-            analisis.esActual = true;
-            analisis.isActive = true;
+            if (!analisis) {
+              analisis = new AnalysisData({
+                plantilla: template.name.trim(),
+                secretaria: {
+                  id: req.body.secretariaId || 'default',
+                  nombre: req.body.secretariaNombre || 'General'
+                },
+                organizationId: req.user && req.user.organizationId ? req.user.organizationId : (req.body.organizationId || null),
+                uploadedBy: req.user?._id || (req.body.uploadedBy || null),
+                archivo: {
+                  nombreOriginal: file.originalname,
+                  nombreGuardado: file.filename,
+                  tamaño: file.size,
+                  tipo: file.mimetype,
+                  ruta: file.path
+                },
+                resumen: {
+                  totalAgentes,
+                  masaSalarial,
+                  sueldoPromedio: sueldoPromedio || 0
+                },
+                analisis: {
+                  contratacion: agentesPorContratacion,
+                  genero: agentesPorGenero,
+                  antiguedad: agentesPorAntiguedad
+                },
+                auditoria: {
+                  creadoPor: req.user?._id || (req.body.uploadedBy || null)
+                },
+                version: 1,
+                esActual: true,
+                isActive: true
+              });
+            } else {
+              analisis.plantilla = template.name.trim();
+              analisis.resumen.totalAgentes = totalAgentes;
+              analisis.resumen.masaSalarial = masaSalarial;
+              analisis.resumen.sueldoPromedio = sueldoPromedio || 0;
+              analisis.analisis.contratacion = agentesPorContratacion;
+              analisis.analisis.genero = agentesPorGenero;
+              analisis.analisis.antiguedad = agentesPorAntiguedad;
+              analisis.analysisDate = new Date();
+              analisis.esActual = true;
+              analisis.isActive = true;
+            }
+            await analisis.save();
+
+            // Enviar notificaciones por email y crear notificaciones en la base de datos
+            try {
+              const dashboardInfo = {
+                action: 'upload',
+                fileName: file.originalname,
+                totalRecords: totalAgentes,
+                secretaria: req.body.secretariaNombre || 'General',
+                uploadedBy: req.user?.username || 'Sistema'
+              };
+
+              await emailService.notifyDashboardUpdate(dashboardInfo);
+              console.log(`Notificaciones enviadas para archivo: ${file.originalname}`);
+            } catch (notificationError) {
+              console.error('Error enviando notificaciones:', notificationError);
+              // No fallar el upload por errores de notificación
+            }
           }
-          await analisis.save();
-          
-          // Enviar notificaciones por email y crear notificaciones en la base de datos
-          try {
-            const dashboardInfo = {
-              action: 'upload',
-              fileName: file.originalname,
-              totalRecords: totalAgentes,
-              secretaria: req.body.secretariaNombre || 'General',
-              uploadedBy: req.user?.username || 'Sistema'
-            };
-            
-            await emailService.notifyDashboardUpdate(dashboardInfo);
-            console.log(`Notificaciones enviadas para archivo: ${file.originalname}`);
-          } catch (notificationError) {
-            console.error('Error enviando notificaciones:', notificationError);
-            // No fallar el upload por errores de notificación
-          }
-          
+
           resultados.push({ archivo: file.originalname, mensaje: 'Archivo procesado y guardado correctamente', totalRegistros: totalAgentes });
         }
       } catch (err) {
