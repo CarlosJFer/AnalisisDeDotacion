@@ -9,6 +9,7 @@ const connectDB = require('./config/db'); // Importar la función centralizada
 const authRoutes = require('./routes/auth');
 const uploadRoutes = require('./routes/uploadRoutes');
 const analyticsRoutes = require('./routes/analytics');
+const expedientesRoutes = require('./routes/expedientes');
 const dependencyRoutes = require('./routes/dependency');
 const notificationRoutes = require('./routes/notifications');
 const variableRoutes = require('./routes/variables');
@@ -37,6 +38,7 @@ connectDB().then(initFunctions);
 app.use('/api/auth', authRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/analytics', expedientesRoutes);
 app.use('/api/dependencies', dependencyRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/variables', variableRoutes);
