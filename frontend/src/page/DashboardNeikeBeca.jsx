@@ -17,23 +17,6 @@ import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import { getPreviousMonthRange } from '../utils/dateUtils';
 
-// Returns previous month's start and end dates in 'es-AR' format
-const getPreviousMonthRange = () => {
-    const now = new Date();
-    const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
-    const firstDayPreviousMonth = new Date(
-        lastDayPreviousMonth.getFullYear(),
-        lastDayPreviousMonth.getMonth(),
-        1
-    );
-    const format = (d) => d.toLocaleDateString('es-AR');
-    return {
-        start: format(firstDayPreviousMonth),
-        end: format(lastDayPreviousMonth),
-    };
-};
-
 const DashboardNeikeBeca = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
@@ -108,18 +91,6 @@ const DashboardNeikeBeca = () => {
             const trimmedValue = value.trim();
             return trimmedValue !== '' && trimmedValue !== '-' && trimmedValue !== 'Sin especificar';
         });
-    };
-
-    const getPreviousMonthRange = () => {
-        const now = new Date();
-        const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
-        const firstDayPreviousMonth = new Date(lastDayPreviousMonth.getFullYear(), lastDayPreviousMonth.getMonth(), 1);
-        const format = (d) => d.toLocaleDateString('es-AR');
-        return {
-            start: format(firstDayPreviousMonth),
-            end: format(lastDayPreviousMonth)
-        };
     };
 
     const fetchAllData = async (appliedFilters = filters) => {
@@ -290,22 +261,6 @@ const DashboardNeikeBeca = () => {
                 : '0 6px 20px rgba(33, 150, 243, 0.2)',
         },
     });
-
-    const getPreviousMonthRange = () => {
-        const now = new Date();
-        const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
-        const firstDayPreviousMonth = new Date(
-            lastDayPreviousMonth.getFullYear(),
-            lastDayPreviousMonth.getMonth(),
-            1
-        );
-        const format = (d) => d.toLocaleDateString('es-AR');
-        return {
-            start: format(firstDayPreviousMonth),
-            end: format(lastDayPreviousMonth)
-        };
-    };
 
     const { start, end } = getPreviousMonthRange();
 
