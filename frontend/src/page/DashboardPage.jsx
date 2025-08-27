@@ -9,6 +9,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import SchoolIcon from '@mui/icons-material/School';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
@@ -58,6 +59,8 @@ const DashboardPage = () => {
     const [entryTimeData, setEntryTimeData] = useState([]);
     const [exitTimeData, setExitTimeData] = useState([]);
     const [topUnitsData, setTopUnitsData] = useState([]);
+    const [expTopInitiators, setExpTopInitiators] = useState([]);
+    const [expByTramite, setExpByTramite] = useState([]);
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -121,6 +124,7 @@ const DashboardPage = () => {
             const TEMPLATE_PLANTA_CONTRATOS = 'Rama completa - Planta y Contratos';
             const TEMPLATE_DATOS_CONCURSO = 'Datos concurso - Planta y Contratos';
             const TEMPLATE_CONTROL_PLANTA = 'Control de certificaciones - Planta y Contratos';
+            const TEMPLATE_EXPEDIENTES = 'Expedientes';
             const [
                 totalData,
                 ageDistData,
@@ -143,7 +147,9 @@ const DashboardPage = () => {
                 regTypeRes,
                 entryTimeRes,
                 exitTimeRes,
-                topUnitsRes
+                topUnitsRes,
+                topInitiatorsData,
+                byTramiteData
             ] = await Promise.all([
                 // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
@@ -169,7 +175,9 @@ const DashboardPage = () => {
                 safeGet(funcs.certificationsRegistrationType, [], TEMPLATE_CONTROL_PLANTA),
                 safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_PLANTA),
                 safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_PLANTA),
-                safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA)
+                safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
+                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES)
             ]);
 
             setTotalAgents(totalData.total);
@@ -194,6 +202,8 @@ const DashboardPage = () => {
             setEntryTimeData(entryTimeRes);
             setExitTimeData(exitTimeRes);
             setTopUnitsData(topUnitsRes);
+            setExpTopInitiators(topInitiatorsData);
+            setExpByTramite(byTramiteData);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -267,6 +277,24 @@ const DashboardPage = () => {
                 : '0 6px 20px rgba(33, 150, 243, 0.2)',
         },
     });
+
+    const getPreviousMonthRange = () => {
+        const now = new Date();
+        const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
+        const firstDayPreviousMonth = new Date(
+            lastDayPreviousMonth.getFullYear(),
+            lastDayPreviousMonth.getMonth(),
+            1
+        );
+        const format = (d) => d.toLocaleDateString('es-AR');
+        return {
+            start: format(firstDayPreviousMonth),
+            end: format(lastDayPreviousMonth)
+        };
+    };
+
+    const { start, end } = getPreviousMonthRange();
 
     if (loading) {
         return (
@@ -357,6 +385,13 @@ const DashboardPage = () => {
                     sx={getTabButtonStyles(4)}
                 >
                     Control de certificaciones – Planta y Contratos
+                </Button>
+                <Button
+                    onClick={() => setTabValue(5)}
+                    startIcon={<FolderOpenIcon />}
+                    sx={getTabButtonStyles(5)}
+                >
+                    Expedientes
                 </Button>
             </Box>
 
@@ -537,6 +572,44 @@ const DashboardPage = () => {
                             isDarkMode={isDarkMode}
                             height={400}
                         />
+                    </Grid>
+                </Grid>
+            )}
+
+            {/* Tab 5: Expedientes */}
+            {tabValue === 5 && (
+                <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                            Expedientes a mes vencido. Corte del {start} al {end}.
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        {expTopInitiators.length > 0 ? (
+                            <CustomBarChart
+                                data={expTopInitiators}
+                                xKey="initiator"
+                                barKey="count"
+                                title="Top 10 áreas con más trámites gestionados"
+                                isDarkMode={isDarkMode}
+                                height={400}
+                            />
+                        ) : (
+                            <Typography>Sin datos</Typography>
+                        )}
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        {expByTramite.length > 0 ? (
+                            <CustomDonutChart
+                                data={expByTramite}
+                                title="Cantidad de expedientes según tipo de trámite"
+                                isDarkMode={isDarkMode}
+                                dataKey="count"
+                                nameKey="tramite"
+                            />
+                        ) : (
+                            <Typography>Sin datos</Typography>
+                        )}
                     </Grid>
                 </Grid>
             )}
