@@ -292,6 +292,24 @@ const DashboardPage = () => {
         },
     });
 
+    const getPreviousMonthRange = () => {
+        const now = new Date();
+        const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
+        const firstDayPreviousMonth = new Date(
+            lastDayPreviousMonth.getFullYear(),
+            lastDayPreviousMonth.getMonth(),
+            1
+        );
+        const format = (d) => d.toLocaleDateString('es-AR');
+        return {
+            start: format(firstDayPreviousMonth),
+            end: format(lastDayPreviousMonth)
+        };
+    };
+
+    const { start, end } = getPreviousMonthRange();
+
     if (loading) {
         return (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
@@ -613,6 +631,44 @@ const DashboardPage = () => {
                 </Grid>
             </Grid>
         )}
+
+            {/* Tab 5: Expedientes */}
+            {tabValue === 5 && (
+                <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                            Expedientes a mes vencido. Corte del {start} al {end}.
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12}>
+                        {expTopInitiators.length > 0 ? (
+                            <CustomBarChart
+                                data={expTopInitiators}
+                                xKey="initiator"
+                                barKey="count"
+                                title="Top 10 áreas con más trámites gestionados"
+                                isDarkMode={isDarkMode}
+                                height={400}
+                            />
+                        ) : (
+                            <Typography>Sin datos</Typography>
+                        )}
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        {expByTramite.length > 0 ? (
+                            <CustomDonutChart
+                                data={expByTramite}
+                                title="Cantidad de expedientes según tipo de trámite"
+                                isDarkMode={isDarkMode}
+                                dataKey="count"
+                                nameKey="tramite"
+                            />
+                        ) : (
+                            <Typography>Sin datos</Typography>
+                        )}
+                    </Grid>
+                </Grid>
+            )}
 
             {/* Tab 1: Análisis de Edad */}
             {tabValue === 1 && (

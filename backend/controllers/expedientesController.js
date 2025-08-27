@@ -20,7 +20,6 @@ function computePreviousMonthRange() {
   );
   return { startDate, endDate };
 }
-
 const getTopInitiators = async (req, res) => {
   try {
     const { plantilla, filters } = req.query;
