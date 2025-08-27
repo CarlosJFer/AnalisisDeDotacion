@@ -59,6 +59,7 @@ const DashboardNeikeBeca = () => {
     const [topUnitsData, setTopUnitsData] = useState([]);
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
+    const { start: expStart, end: expEnd } = getPreviousMonthRange();
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -89,6 +90,18 @@ const DashboardNeikeBeca = () => {
             const trimmedValue = value.trim();
             return trimmedValue !== '' && trimmedValue !== '-' && trimmedValue !== 'Sin especificar';
         });
+    };
+
+    const getPreviousMonthRange = () => {
+        const now = new Date();
+        const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
+        const firstDayPreviousMonth = new Date(lastDayPreviousMonth.getFullYear(), lastDayPreviousMonth.getMonth(), 1);
+        const format = (d) => d.toLocaleDateString('es-AR');
+        return {
+            start: format(firstDayPreviousMonth),
+            end: format(lastDayPreviousMonth)
+        };
     };
 
     const fetchAllData = async (appliedFilters = filters) => {
@@ -174,6 +187,7 @@ const DashboardNeikeBeca = () => {
                 safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_NEIKES),
                 safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_NEIKES),
                 safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_NEIKES),
+                // Expedientes
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
                 safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES)
             ]);
@@ -714,11 +728,14 @@ const DashboardNeikeBeca = () => {
         {tabValue === 5 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <Typography variant="subtitle2" color="text.secondary">
-                        Expedientes a mes vencido. Corte del {start} al {end}.
+                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+                        Expedientes
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 3 }}>
+                        Expedientes a mes vencido. Corte del {expStart} al {expEnd}.
                     </Typography>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} md={6}>
                     {expTopInitiators.length > 0 ? (
                         <CustomBarChart
                             data={expTopInitiators}
@@ -729,20 +746,21 @@ const DashboardNeikeBeca = () => {
                             height={400}
                         />
                     ) : (
-                        <Typography>Sin datos</Typography>
+                        <Typography align="center">Sin datos</Typography>
                     )}
                 </Grid>
                 <Grid item xs={12} md={6}>
                     {expByTramite.length > 0 ? (
-                        <CustomDonutChart
+                        <CustomBarChart
                             data={expByTramite}
+                            xKey="tramite"
+                            barKey="count"
                             title="Cantidad de expedientes según tipo de trámite"
                             isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="tramite"
+                            height={400}
                         />
                     ) : (
-                        <Typography>Sin datos</Typography>
+                        <Typography align="center">Sin datos</Typography>
                     )}
                 </Grid>
             </Grid>

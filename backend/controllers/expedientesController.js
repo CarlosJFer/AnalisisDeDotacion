@@ -2,17 +2,17 @@ const Agent = require('../models/Agent');
 
 function computePreviousMonthRange() {
   const now = new Date();
-  const firstDayOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDayOfPreviousMonth = new Date(firstDayOfCurrentMonth - 1);
+  const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
   const startDate = new Date(
-    lastDayOfPreviousMonth.getFullYear(),
-    lastDayOfPreviousMonth.getMonth(),
+    lastDayPreviousMonth.getFullYear(),
+    lastDayPreviousMonth.getMonth(),
     1
   );
   const endDate = new Date(
-    lastDayOfPreviousMonth.getFullYear(),
-    lastDayOfPreviousMonth.getMonth(),
-    lastDayOfPreviousMonth.getDate(),
+    lastDayPreviousMonth.getFullYear(),
+    lastDayPreviousMonth.getMonth(),
+    lastDayPreviousMonth.getDate(),
     23,
     59,
     59,
@@ -20,48 +20,15 @@ function computePreviousMonthRange() {
   );
   return { startDate, endDate };
 }
-
-function buildMatch(query) {
-  const plantilla = (query.plantilla || 'Expedientes').trim();
-  const match = { plantilla };
-
-  if (query.filters) {
-    try {
-      const extra = JSON.parse(query.filters);
-      Object.assign(match, extra);
-    } catch (e) {
-      console.error('Error parsing filters:', e);
-    }
-  }
-
-  const andFilters = [];
-  const addRegexFilter = (fields, value) => {
-    if (!value) return;
-    const orConditions = fields.map(f => ({ [f]: { $regex: value, $options: 'i' } }));
-    andFilters.push({ $or: orConditions });
-  };
-
-  addRegexFilter(['Secretaria', 'Secretaría'], query.secretaria);
-  addRegexFilter(['Subsecretaria', 'Subsecretaría'], query.subsecretaria);
-  addRegexFilter(['Dirección general', 'Direccion General', 'Dirección General'], query.direccionGeneral);
-  addRegexFilter(['Dirección', 'Direccion'], query.direccion);
-  addRegexFilter(['Departamento'], query.departamento);
-  addRegexFilter(['División', 'Division'], query.division);
-  addRegexFilter(['Funcion', 'Función'], query.funcion);
-
-  if (andFilters.length) {
-    match.$and = andFilters;
-  }
-
-  return match;
-}
-
 const getTopInitiators = async (req, res) => {
   try {
+    const { plantilla, filters } = req.query;
     const { startDate, endDate } = computePreviousMonthRange();
-    const match = buildMatch(req.query);
-    match['Fecha de Inicio'] = { $gte: startDate, $lte: endDate };
-
+    const match = {
+      plantilla: plantilla || 'Expedientes',
+      'Fecha de Inicio': { $gte: startDate, $lte: endDate },
+      ...(filters && JSON.parse(filters))
+    };
     const topInitiators = await Agent.aggregate([
       { $match: match },
       { $group: { _id: '$Iniciador del Expediente', count: { $sum: 1 } } },
@@ -69,7 +36,6 @@ const getTopInitiators = async (req, res) => {
       { $limit: 10 },
       { $project: { initiator: '$_id', count: 1, _id: 0 } }
     ]);
-
     res.json(topInitiators);
   } catch (error) {
     console.error(error);
@@ -79,16 +45,18 @@ const getTopInitiators = async (req, res) => {
 
 const getExpedientesByTramite = async (req, res) => {
   try {
+    const { plantilla, filters } = req.query;
     const { startDate, endDate } = computePreviousMonthRange();
-    const match = buildMatch(req.query);
-    match['Fecha de Inicio'] = { $gte: startDate, $lte: endDate };
-
+    const match = {
+      plantilla: plantilla || 'Expedientes',
+      'Fecha de Inicio': { $gte: startDate, $lte: endDate },
+      ...(filters && JSON.parse(filters))
+    };
     const byTramite = await Agent.aggregate([
       { $match: match },
       { $group: { _id: '$Tramite', count: { $sum: 1 } } },
       { $project: { tramite: '$_id', count: 1, _id: 0 } }
     ]);
-
     res.json(byTramite);
   } catch (error) {
     console.error(error);
@@ -96,5 +64,8 @@ const getExpedientesByTramite = async (req, res) => {
   }
 };
 
-module.exports = { getTopInitiators, getExpedientesByTramite };
-
+module.exports = {
+  getTopInitiators,
+  getExpedientesByTramite,
+  computePreviousMonthRange
+};

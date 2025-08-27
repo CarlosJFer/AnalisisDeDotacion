@@ -61,6 +61,7 @@ const DashboardPage = () => {
     const [topUnitsData, setTopUnitsData] = useState([]);
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
+    const { start: expStart, end: expEnd } = getPreviousMonthRange();
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -91,6 +92,18 @@ const DashboardPage = () => {
             const trimmedValue = value.trim();
             return trimmedValue !== '' && trimmedValue !== '-' && trimmedValue !== 'Sin especificar';
         });
+    };
+
+    const getPreviousMonthRange = () => {
+        const now = new Date();
+        const firstDayCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDayPreviousMonth = new Date(firstDayCurrentMonth - 1);
+        const firstDayPreviousMonth = new Date(lastDayPreviousMonth.getFullYear(), lastDayPreviousMonth.getMonth(), 1);
+        const format = (d) => d.toLocaleDateString('es-AR');
+        return {
+            start: format(firstDayPreviousMonth),
+            end: format(lastDayPreviousMonth)
+        };
     };
 
     const fetchAllData = async (appliedFilters = filters) => {
@@ -176,6 +189,7 @@ const DashboardPage = () => {
                 safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_PLANTA),
                 safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_PLANTA),
                 safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
+                // Expedientes
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
                 safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES)
             ]);
@@ -554,27 +568,69 @@ const DashboardPage = () => {
                             nameKey="time"
                         />
                     </Grid>
-                    <Grid item xs={12} md={3}>
-                        <CustomDonutChart
-                            data={exitTimeData}
-                            title="Agentes según horario de salida"
-                            isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="time"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
+                <Grid item xs={12} md={3}>
+                    <CustomDonutChart
+                        data={exitTimeData}
+                        title="Agentes según horario de salida"
+                        isDarkMode={isDarkMode}
+                        dataKey="count"
+                        nameKey="time"
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <CustomBarChart
+                        data={topUnitsData}
+                        xKey="unidad"
+                        barKey="count"
+                        title="Top 10 unidades de registración con más agentes"
+                        isDarkMode={isDarkMode}
+                        height={400}
+                    />
+                </Grid>
+            </Grid>
+        )}
+
+        {/* Tab 5: Expedientes */}
+        {tabValue === 5 && (
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+                        Expedientes
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 3 }}>
+                        Expedientes a mes vencido. Corte del {expStart} al {expEnd}.
+                    </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    {expTopInitiators.length > 0 ? (
                         <CustomBarChart
-                            data={topUnitsData}
-                            xKey="unidad"
+                            data={expTopInitiators}
+                            xKey="initiator"
                             barKey="count"
-                            title="Top 10 unidades de registración con más agentes"
+                            title="Top 10 áreas con más trámites gestionados"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
-                    </Grid>
+                    ) : (
+                        <Typography align="center">Sin datos</Typography>
+                    )}
                 </Grid>
-            )}
+                <Grid item xs={12} md={6}>
+                    {expByTramite.length > 0 ? (
+                        <CustomBarChart
+                            data={expByTramite}
+                            xKey="tramite"
+                            barKey="count"
+                            title="Cantidad de expedientes según tipo de trámite"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    ) : (
+                        <Typography align="center">Sin datos</Typography>
+                    )}
+                </Grid>
+            </Grid>
+        )}
 
             {/* Tab 5: Expedientes */}
             {tabValue === 5 && (
