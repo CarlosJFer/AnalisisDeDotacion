@@ -16,6 +16,7 @@ import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import { useLocation } from 'react-router-dom';
+import { getPreviousMonthRange } from '../utils/dateUtils';
 
 // Returns the start and end dates for the previous month in 'es-AR' format
 const getPreviousMonthRange = () => {

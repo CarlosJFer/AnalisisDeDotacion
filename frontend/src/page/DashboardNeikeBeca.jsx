@@ -15,6 +15,7 @@ import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
+import { getPreviousMonthRange } from '../utils/dateUtils';
 
 // Returns previous month's start and end dates in 'es-AR' format
 const getPreviousMonthRange = () => {
