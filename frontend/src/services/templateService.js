@@ -3,29 +3,55 @@ import apiClient from './api'; // Usamos el apiClient existente
 
 const API_URL = '/templates';
 
+const extractError = (err) => {
+  if (err?.response?.data?.message) return err.response.data.message;
+  if (err?.message) return err.message;
+  return 'Error de red o del servidor';
+};
+
 // Obtener todas las plantillas
-const getAllTemplates = () => {
-  return apiClient.get(API_URL);
+const getAllTemplates = async () => {
+  try {
+    return await apiClient.get(API_URL);
+  } catch (err) {
+    throw new Error(extractError(err));
+  }
 };
 
 // Obtener una plantilla por ID
-const getTemplateById = (id) => {
-  return apiClient.get(`${API_URL}/${id}`);
+const getTemplateById = async (id) => {
+  try {
+    return await apiClient.get(`${API_URL}/${id}`);
+  } catch (err) {
+    throw new Error(extractError(err));
+  }
 };
 
 // Crear una nueva plantilla
-const createTemplate = (templateData) => {
-  return apiClient.post(API_URL, templateData);
+const createTemplate = async (templateData) => {
+  try {
+    return await apiClient.post(API_URL, templateData);
+  } catch (err) {
+    throw new Error(extractError(err));
+  }
 };
 
 // Actualizar una plantilla
-const updateTemplate = (id, templateData) => {
-  return apiClient.put(`${API_URL}/${id}`, templateData);
+const updateTemplate = async (id, templateData) => {
+  try {
+    return await apiClient.put(`${API_URL}/${id}`, templateData);
+  } catch (err) {
+    throw new Error(extractError(err));
+  }
 };
 
 // Eliminar una plantilla
-const deleteTemplate = (id) => {
-  return apiClient.delete(`${API_URL}/${id}`);
+const deleteTemplate = async (id) => {
+  try {
+    return await apiClient.delete(`${API_URL}/${id}`);
+  } catch (err) {
+    throw new Error(extractError(err));
+  }
 };
 
 const templateService = {
