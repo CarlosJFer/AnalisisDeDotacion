@@ -126,7 +126,27 @@ async function uploadFile(req, res) {
             if (idx !== -1) {
               let value = row[idx];
               // Convertir tipo de dato si es necesario
-              if (mapping.dataType === 'Number') value = Number(value);
+              if (mapping.dataType === 'Number') {
+                if (typeof value === 'string') {
+                  // Normalizar números con coma decimal y separadores de miles, y remover %
+                  let s = value.trim();
+                  s = s.replace(/%/g, ''); // quitar porcentajes, si existen
+                  // remover separador de miles común en ES (.) cuando también hay coma como decimal
+                  if (/^\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) {
+                    s = s.replace(/\./g, '').replace(/,/g, '.');
+                  } else {
+                    // reemplazar coma decimal por punto si no hay patrón de miles
+                    s = s.replace(/,/g, '.');
+                  }
+                  const num = Number(s);
+                  value = isNaN(num) ? null : num;
+                } else if (typeof value === 'number') {
+                  // mantener el número tal cual
+                } else {
+                  const num = Number(value);
+                  value = isNaN(num) ? null : num;
+                }
+              }
               if (mapping.dataType === 'Date') {
                 // Manejar fechas Excel (seriales)
                 if (typeof value === 'number') {

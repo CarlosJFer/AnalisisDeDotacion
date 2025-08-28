@@ -60,8 +60,8 @@ app.get('/', (req, res) => {
       upload: '/api/upload',
       analytics: '/api/analytics',
       dependencies: '/api/dependencies',
-      notifications: '/api/notifications'
-    }
+      notifications: '/api/notifications',
+    },
   });
 });
 
@@ -71,7 +71,7 @@ app.get('/api/health', (req, res) => {
     status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    mongodb: mongoose.connection.readyState === 1 ? 'Conectado' : 'Desconectado'
+    mongodb: mongoose.connection.readyState === 1 ? 'Conectado' : 'Desconectado',
   });
 });
 
@@ -84,32 +84,33 @@ app.use('*', (req, res) => {
       upload: '/api/upload',
       analytics: '/api/analytics',
       dependencies: '/api/dependencies',
-      notifications: '/api/notifications'
-    }
+      notifications: '/api/notifications',
+    },
   });
 });
 
 // Middleware para manejo de errores
 app.use((err, req, res, next) => {
   console.error('Error:', err.stack);
-  
+
   if (err.name === 'MulterError') {
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ message: 'Archivo demasiado grande' });
     }
   }
-  
+
   res.status(500).json({
     message: 'Error interno del servidor',
-    error: process.env.NODE_ENV === 'development' ? err.message : 'Error interno'
+    error: process.env.NODE_ENV === 'development' ? err.message : 'Error interno',
   });
 });
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`📊 Panel de salud: http://localhost:${PORT}/api/health`);
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
+  console.log(`URL: http://localhost:${PORT}`);
+  console.log(`Panel de salud: http://localhost:${PORT}/api/health`);
 });
 
 module.exports = app;
+
