@@ -19,7 +19,6 @@ import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import { useLocation } from 'react-router-dom';
 import { getPreviousMonthRange } from '../utils/dateUtils';
-import MonthCutoffAlert from '../components/MonthCutoffAlert';
 
 const DashboardPage = () => {
     const { user } = useAuth();
@@ -190,8 +189,8 @@ const DashboardPage = () => {
                 // Expedientes
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
                 safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
-                // SAC
-                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS, { startDate, endDate })
+                // SAC (sin filtros de fecha)
+                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS)
             ]);
 
             setTotalAgents(totalData.total);

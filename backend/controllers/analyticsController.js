@@ -1558,11 +1558,7 @@ const getTopRegistrationUnits = async (req, res) => {
 // Análisis SAC - Vía de captación
 const getSacViaCaptacion = async (req, res) => {
   try {
-    const { startDate: qStart, endDate: qEnd } = req.query;
-    const { startDate, endDate } = (qStart && qEnd) ? { startDate: qStart, endDate: qEnd } : getPreviousMonthRange();
-
-    const match = buildMatchStage({ ...req.query, startDate, endDate });
-    match.uploadDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    const match = buildMatchStage(req.query);
 
     const result = await Agent.aggregate([
       { $match: match },

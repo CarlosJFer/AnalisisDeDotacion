@@ -18,7 +18,6 @@ import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import { getPreviousMonthRange } from '../utils/dateUtils';
-import MonthCutoffAlert from '../components/MonthCutoffAlert';
 
 const DashboardNeikeBeca = () => {
     const { user } = useAuth();
@@ -188,8 +187,8 @@ const DashboardNeikeBeca = () => {
                 // Expedientes
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
                 safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
-                // SAC
-                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS, { startDate, endDate })
+                // SAC (sin filtros de fecha)
+                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS)
             ]);
 
             setTotalAgents(totalData.total);
