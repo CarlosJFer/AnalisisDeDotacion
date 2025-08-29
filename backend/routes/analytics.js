@@ -43,7 +43,8 @@ const {
   getAgentsByEntryTime,
   getAgentsByExitTime,
   getTopRegistrationUnits,
-  notifyDashboardModification
+  notifyDashboardModification,
+  getSacViaCaptacion
 } = require('../controllers/analyticsController');
 
 router.get('/secretarias', authenticateToken, getSecretarias);
@@ -80,6 +81,9 @@ router.get('/certifications/registration-type', authenticateToken, getAgentsByRe
 router.get('/certifications/entry-time', authenticateToken, getAgentsByEntryTime);
 router.get('/certifications/exit-time', authenticateToken, getAgentsByExitTime);
 router.get('/certifications/top-units', authenticateToken, getTopRegistrationUnits);
+
+// Rutas para SAC
+router.get('/sac/via-captacion', authenticateToken, getSacViaCaptacion);
 
 // Rutas para Neikes y Beca
 router.get('/agents/by-function-neike-beca', authenticateToken, require('../controllers/analyticsController').getAgentsByFunctionNeikeBeca);

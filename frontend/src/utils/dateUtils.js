@@ -7,9 +7,7 @@ export const getPreviousMonthRange = () => {
         lastDayPreviousMonth.getMonth(),
         1
     );
-    const format = (d) => d.toLocaleDateString('es-AR');
-    return {
-        start: format(firstDayPreviousMonth),
-        end: format(lastDayPreviousMonth),
-    };
+    const startDate = firstDayPreviousMonth.toISOString().split('T')[0];
+    const endDate = lastDayPreviousMonth.toISOString().split('T')[0];
+    return { startDate, endDate };
 };
