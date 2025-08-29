@@ -19,6 +19,18 @@ import DependencyFilter from '../components/DependencyFilter.jsx';
 import { useLocation } from 'react-router-dom';
 import { getPreviousMonthRange } from '../utils/dateUtils';
 
+const MonthCutoffAlert = ({ systemName, endDate }) => (
+    <Alert
+        severity="info"
+        icon={false}
+        sx={{ my: 2, backgroundColor: 'rgba(33, 150, 243, 0.1)', borderLeft: '6px solid #2196f3' }}
+    >
+        <Typography variant="body2" fontWeight={600}>
+            {`Datos tomados del sistema ${systemName} con corte ${endDate}.`}
+        </Typography>
+    </Alert>
+);
+
 const DashboardPage = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
@@ -64,7 +76,7 @@ const DashboardPage = () => {
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
     const [sacViaData, setSacViaData] = useState([]);
-    const { start: expStart, end: expEnd } = getPreviousMonthRange();
+    const { end: expEnd } = getPreviousMonthRange();
     const { start: sacStart, end: sacEnd } = getPreviousMonthRange();
 
     // Hooks para limpiar dashboard
@@ -586,9 +598,7 @@ const DashboardPage = () => {
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Expedientes
                     </Typography>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 3 }}>
-                        Expedientes a mes vencido. Corte del {expStart} al {expEnd}.
-                    </Typography>
+                    <MonthCutoffAlert systemName="de expedientes" endDate={expEnd} />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     {expTopInitiators.length > 0 ? (
@@ -628,9 +638,7 @@ const DashboardPage = () => {
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Análisis de vía de captación
                     </Typography>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 3 }}>
-                        {sacStart} - {sacEnd}
-                    </Typography>
+                    <MonthCutoffAlert systemName="SAC" endDate={sacEnd} />
                 </Grid>
                 <Grid item xs={12}>
                     {sacViaData.length > 0 ? (
