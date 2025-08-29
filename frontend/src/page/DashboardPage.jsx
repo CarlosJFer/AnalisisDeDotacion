@@ -20,6 +20,18 @@ import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import { useLocation } from 'react-router-dom';
 import { getPreviousMonthRange } from '../utils/dateUtils';
 
+const MonthCutoffAlert = ({ systemName, endDate }) => (
+    <Alert
+        severity="info"
+        icon={false}
+        sx={{ my: 2, backgroundColor: 'rgba(33, 150, 243, 0.1)', borderLeft: '6px solid #2196f3' }}
+    >
+        <Typography variant="body2" fontWeight={600}>
+            {`Datos tomados del sistema ${systemName} con corte ${endDate}.`}
+        </Typography>
+    </Alert>
+);
+
 const DashboardPage = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
