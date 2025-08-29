@@ -2,6 +2,7 @@ const AnalysisData = require('../models/AnalysisData');
 const Agent = require('../models/Agent'); // Importamos el modelo Agent
 const PDFDocument = require('pdfkit');
 const emailService = require('../services/emailService');
+const { getPreviousMonthRange } = require('../utils/dateUtils');
 
 // Construye dinámicamente el objeto de filtros para consultas.
 // Incluye soporte para variaciones con y sin acentos en los nombres de campo.
@@ -1554,6 +1555,29 @@ const getTopRegistrationUnits = async (req, res) => {
   }
 };
 
+// Análisis SAC - Vía de captación
+const getSacViaCaptacion = async (req, res) => {
+  try {
+    const { startDate: qStart, endDate: qEnd } = req.query;
+    const { startDate, endDate } = (qStart && qEnd) ? { startDate: qStart, endDate: qEnd } : getPreviousMonthRange();
+
+    const match = buildMatchStage({ ...req.query, startDate, endDate });
+    match.uploadDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
+
+    const result = await Agent.aggregate([
+      { $match: match },
+      { $group: { _id: '$Via', total: { $sum: '$Total' } } },
+      { $project: { via: '$_id', total: 1, _id: 0 } },
+      { $sort: { total: -1 } }
+    ]);
+
+    res.json(result);
+  } catch (err) {
+    console.error('Error en SAC vía de captación:', err.message);
+    res.status(500).json({ error: 'Error en SAC vía de captación', message: err.message });
+  }
+};
+
 // Función para notificar modificaciones en el dashboard
 const notifyDashboardModification = async (req, res) => {
   try {
@@ -1636,5 +1660,6 @@ module.exports = {
   getAgentsByEntryTime,
   getAgentsByExitTime,
   getTopRegistrationUnits,
-  notifyDashboardModification
+  notifyDashboardModification,
+  getSacViaCaptacion
 };
