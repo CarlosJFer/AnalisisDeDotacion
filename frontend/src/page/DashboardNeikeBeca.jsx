@@ -10,6 +10,7 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import SchoolIcon from '@mui/icons-material/School';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import PhoneIcon from '@mui/icons-material/Phone';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
@@ -60,7 +61,9 @@ const DashboardNeikeBeca = () => {
     const [topUnitsData, setTopUnitsData] = useState([]);
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
+    const [sacViaData, setSacViaData] = useState([]);
     const { start: expStart, end: expEnd } = getPreviousMonthRange();
+    const { start: sacStart, end: sacEnd } = getPreviousMonthRange();
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -104,7 +107,7 @@ const DashboardNeikeBeca = () => {
             // Obtiene datos de forma segura: si falta el endpoint o la petición falla,
             // devuelve el valor por defecto. En caso contrario, retorna solo el campo
             // `data` de la respuesta.
-            const safeGet = async (endpoint, defaultData, plantilla) => {
+            const safeGet = async (endpoint, defaultData, plantilla, extraParams = {}) => {
                 if (!endpoint) return defaultData;
                 const params = Object.fromEntries(
                     Object.entries(appliedFilters).filter(([, v]) => v)
@@ -112,6 +115,7 @@ const DashboardNeikeBeca = () => {
                 if (plantilla) {
                     params.plantilla = plantilla;
                 }
+                Object.assign(params, extraParams);
                 try {
                     const res = await apiClient.get(endpoint, { params });
                     return res.data;
@@ -125,6 +129,7 @@ const DashboardNeikeBeca = () => {
             const TEMPLATE_DATOS_NEIKES = 'Datos concurso - Neikes y Beca';
             const TEMPLATE_CONTROL_NEIKES = 'Control de certificaciones - Neikes y Becas';
             const TEMPLATE_EXPEDIENTES = 'Expedientes';
+            const TEMPLATE_SAC_VIAS = 'SAC - Via de captacion';
             const [
                 totalData,
                 ageDistData,
@@ -149,7 +154,8 @@ const DashboardNeikeBeca = () => {
                 exitTimeRes,
                 topUnitsRes,
                 topInitiatorsData,
-                byTramiteData
+                byTramiteData,
+                sacViaCaptacionData
             ] = await Promise.all([
                 // Datos correspondientes a la plantilla "Rama completa - Neikes y Beca"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_NEIKES_BECAS),
@@ -178,7 +184,9 @@ const DashboardNeikeBeca = () => {
                 safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_NEIKES),
                 // Expedientes
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
-                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES)
+                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
+                // SAC
+                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS, { startDate: sacStart, endDate: sacEnd })
             ]);
 
             setTotalAgents(totalData.total);
@@ -205,6 +213,7 @@ const DashboardNeikeBeca = () => {
             setTopUnitsData(topUnitsRes);
             setExpTopInitiators(topInitiatorsData);
             setExpByTramite(byTramiteData);
+            setSacViaData(sacViaCaptacionData);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -360,6 +369,13 @@ const DashboardNeikeBeca = () => {
                     sx={getTabButtonStyles(5)}
                 >
                     Expedientes
+                </Button>
+                <Button
+                    onClick={() => setTabValue(6)}
+                    startIcon={<PhoneIcon />}
+                    sx={getTabButtonStyles(6)}
+                >
+                    SAC
                 </Button>
             </Box>
 
@@ -739,9 +755,37 @@ const DashboardNeikeBeca = () => {
             </Grid>
         )}
 
-            {user?.role === 'admin' && (
-                <>
-                    <Tooltip title={cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}>
+        {/* Tab 6: SAC */}
+        {tabValue === 6 && (
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+                        Análisis de vía de captación
+                    </Typography>
+                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 3 }}>
+                        {sacStart} - {sacEnd}
+                    </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    {sacViaData.length > 0 ? (
+                        <CustomBarChart
+                            data={sacViaData}
+                            xKey="via"
+                            barKey="total"
+                            title="Análisis de vía de captación"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    ) : (
+                        <Typography align="center">Sin datos</Typography>
+                    )}
+                </Grid>
+            </Grid>
+        )}
+
+        {user?.role === 'admin' && (
+            <>
+                <Tooltip title={cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}>
                         <Fab
                             onClick={handleLimpiarDashboard}
                             disabled={cleaning}
