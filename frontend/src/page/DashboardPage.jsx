@@ -19,7 +19,7 @@ import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import { useLocation } from 'react-router-dom';
 import { getPreviousMonthRange } from '../utils/dateUtils';
-import MonthCutoffAlert from '../components/MonthCutoffAlert'; // shared alert component
+import MonthCutoffAlert from '../components/MonthCutoffAlert';
 
 const DashboardPage = () => {
     const { user } = useAuth();
