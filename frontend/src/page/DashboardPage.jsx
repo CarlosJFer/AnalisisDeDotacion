@@ -16,6 +16,7 @@ import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
+import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import { useLocation } from 'react-router-dom';
 import { getPreviousMonthRange } from '../utils/dateUtils';
 
@@ -76,8 +77,9 @@ const DashboardPage = () => {
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
     const [sacViaData, setSacViaData] = useState([]);
-    const { end: expEnd } = getPreviousMonthRange();
-    const { start: sacStart, end: sacEnd } = getPreviousMonthRange();
+    const { startDate, endDate } = getPreviousMonthRange();
+    const startDateFormatted = new Date(startDate).toLocaleDateString('es-AR');
+    const endDateFormatted = new Date(endDate).toLocaleDateString('es-AR');
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -200,7 +202,7 @@ const DashboardPage = () => {
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
                 safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
                 // SAC
-                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS, { startDate: sacStart, endDate: sacEnd })
+                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS, { startDate, endDate })
             ]);
 
             setTotalAgents(totalData.total);
@@ -301,8 +303,6 @@ const DashboardPage = () => {
                 : '0 6px 20px rgba(33, 150, 243, 0.2)',
         },
     });
-
-    const { start, end } = getPreviousMonthRange();
 
     if (loading) {
         return (
@@ -595,10 +595,10 @@ const DashboardPage = () => {
         {tabValue === 5 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
+                    <MonthCutoffAlert systemName="de expedientes" startDate={startDateFormatted} endDate={endDateFormatted} />
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Expedientes
                     </Typography>
-                    <MonthCutoffAlert systemName="de expedientes" endDate={expEnd} />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     {expTopInitiators.length > 0 ? (
@@ -635,10 +635,10 @@ const DashboardPage = () => {
         {tabValue === 6 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
+                    <MonthCutoffAlert systemName="SAC" startDate={startDateFormatted} endDate={endDateFormatted} />
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-                        Análisis de vía de captación
+                        SAC
                     </Typography>
-                    <MonthCutoffAlert systemName="SAC" endDate={sacEnd} />
                 </Grid>
                 <Grid item xs={12}>
                     {sacViaData.length > 0 ? (

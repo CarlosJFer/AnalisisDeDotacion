@@ -2,6 +2,7 @@ const AnalysisData = require('../models/AnalysisData');
 const Agent = require('../models/Agent'); // Importamos el modelo Agent
 const PDFDocument = require('pdfkit');
 const emailService = require('../services/emailService');
+const { getPreviousMonthRange } = require('../utils/dateUtils');
 
 // Construye dinámicamente el objeto de filtros para consultas.
 // Incluye soporte para variaciones con y sin acentos en los nombres de campo.
@@ -1557,12 +1558,11 @@ const getTopRegistrationUnits = async (req, res) => {
 // Análisis SAC - Vía de captación
 const getSacViaCaptacion = async (req, res) => {
   try {
-    const match = buildMatchStage(req.query);
-    const { startDate, endDate } = req.query;
+    const { startDate: qStart, endDate: qEnd } = req.query;
+    const { startDate, endDate } = (qStart && qEnd) ? { startDate: qStart, endDate: qEnd } : getPreviousMonthRange();
 
-    if (startDate && endDate) {
-      match.uploadDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
-    }
+    const match = buildMatchStage({ ...req.query, startDate, endDate });
+    match.uploadDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
 
     const result = await Agent.aggregate([
       { $match: match },
