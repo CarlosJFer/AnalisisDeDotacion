@@ -18,6 +18,7 @@ import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import { getPreviousMonthRange } from '../utils/dateUtils';
+import MonthCutoffAlert from '../components/MonthCutoffAlert';
 
 const MonthCutoffAlert = ({ systemName, startDate, endDate }) => (
     <Alert
