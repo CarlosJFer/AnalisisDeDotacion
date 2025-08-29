@@ -22,5 +22,6 @@ module.exports = [
   { name: 'certificationsExitTime', description: 'Agentes por horario de salida', endpoint: '/analytics/certifications/exit-time' },
   { name: 'certificationsTopUnits', description: 'Top unidades de registración', endpoint: '/analytics/certifications/top-units' },
   { name: 'expedientesTopInitiators', description: 'Top iniciadores de expedientes', endpoint: '/analytics/expedientes/top-initiators' },
-  { name: 'expedientesByTramite', description: 'Expedientes por tipo de trámite', endpoint: '/analytics/expedientes/by-tramite' }
+  { name: 'expedientesByTramite', description: 'Expedientes por tipo de trámite', endpoint: '/analytics/expedientes/by-tramite' },
+  { name: 'sacViaCaptacion', description: 'SAC vía de captación', endpoint: '/analytics/sac/via-captacion' }
 ];

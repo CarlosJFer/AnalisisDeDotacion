@@ -105,10 +105,12 @@ async function uploadFile(req, res) {
         // Primer fila: encabezado real
         const encabezado = datos[0].map(cell => String(cell).trim());
         // Mapear los datos según el mapping de la plantilla, solo si la fila es válida
-        let camposClave = [];
-        // Definir campos clave dinámicos según la plantilla
-        if (template.name && template.name.trim().toLowerCase() === 'expedientes') {
-          camposClave = ['Numero de expediente', 'Iniciador del Expediente', 'CUIT'];
+        let camposClave;
+        const templateName = template.name ? template.name.trim().toLowerCase() : '';
+        if (templateName.includes('via de captacion') || templateName.includes('sac')) {
+          camposClave = ['Via', 'Total'];
+        } else if (templateName.includes('expedientes')) {
+          camposClave = ['Numero de expediente', 'Iniciador del Expediente'];
         } else {
           camposClave = ['dni', 'legajo', 'nombre', 'DNI', 'Legajo', 'Nombre', 'Nombre y Apellido'];
         }

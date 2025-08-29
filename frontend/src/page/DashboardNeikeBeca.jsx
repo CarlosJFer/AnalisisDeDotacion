@@ -10,12 +10,25 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import SchoolIcon from '@mui/icons-material/School';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import PhoneIcon from '@mui/icons-material/Phone';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import { getPreviousMonthRange } from '../utils/dateUtils';
+
+const MonthCutoffAlert = ({ systemName, startDate, endDate }) => (
+    <Alert
+        severity="info"
+        icon={false}
+        sx={{ my: 2, bgcolor: 'rgba(33,150,243,0.1)', borderLeft: '6px solid #2196f3' }}
+    >
+        <Typography variant="body2" fontWeight={600}>
+            {`Datos tomados del sistema ${systemName} con corte del ${startDate} al ${endDate}.`}
+        </Typography>
+    </Alert>
+);
 
 const DashboardNeikeBeca = () => {
     const { user } = useAuth();
@@ -60,7 +73,10 @@ const DashboardNeikeBeca = () => {
     const [topUnitsData, setTopUnitsData] = useState([]);
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
-    const { start: expStart, end: expEnd } = getPreviousMonthRange();
+    const [sacViaData, setSacViaData] = useState([]);
+    const { startDate, endDate } = getPreviousMonthRange();
+    const startDateFormatted = new Date(startDate).toLocaleDateString('es-AR');
+    const endDateFormatted = new Date(endDate).toLocaleDateString('es-AR');
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -104,7 +120,7 @@ const DashboardNeikeBeca = () => {
             // Obtiene datos de forma segura: si falta el endpoint o la petición falla,
             // devuelve el valor por defecto. En caso contrario, retorna solo el campo
             // `data` de la respuesta.
-            const safeGet = async (endpoint, defaultData, plantilla) => {
+            const safeGet = async (endpoint, defaultData, plantilla, extraParams = {}) => {
                 if (!endpoint) return defaultData;
                 const params = Object.fromEntries(
                     Object.entries(appliedFilters).filter(([, v]) => v)
@@ -112,6 +128,7 @@ const DashboardNeikeBeca = () => {
                 if (plantilla) {
                     params.plantilla = plantilla;
                 }
+                Object.assign(params, extraParams);
                 try {
                     const res = await apiClient.get(endpoint, { params });
                     return res.data;
@@ -125,6 +142,7 @@ const DashboardNeikeBeca = () => {
             const TEMPLATE_DATOS_NEIKES = 'Datos concurso - Neikes y Beca';
             const TEMPLATE_CONTROL_NEIKES = 'Control de certificaciones - Neikes y Becas';
             const TEMPLATE_EXPEDIENTES = 'Expedientes';
+            const TEMPLATE_SAC_VIAS = 'SAC - Via de captacion';
             const [
                 totalData,
                 ageDistData,
@@ -149,7 +167,8 @@ const DashboardNeikeBeca = () => {
                 exitTimeRes,
                 topUnitsRes,
                 topInitiatorsData,
-                byTramiteData
+                byTramiteData,
+                sacViaCaptacionData
             ] = await Promise.all([
                 // Datos correspondientes a la plantilla "Rama completa - Neikes y Beca"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_NEIKES_BECAS),
@@ -178,7 +197,9 @@ const DashboardNeikeBeca = () => {
                 safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_NEIKES),
                 // Expedientes
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
-                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES)
+                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
+                // SAC
+                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS, { startDate, endDate })
             ]);
 
             setTotalAgents(totalData.total);
@@ -205,6 +226,7 @@ const DashboardNeikeBeca = () => {
             setTopUnitsData(topUnitsRes);
             setExpTopInitiators(topInitiatorsData);
             setExpByTramite(byTramiteData);
+            setSacViaData(sacViaCaptacionData);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -261,8 +283,6 @@ const DashboardNeikeBeca = () => {
                 : '0 6px 20px rgba(33, 150, 243, 0.2)',
         },
     });
-
-    const { start, end } = getPreviousMonthRange();
 
     if (loading) {
         return (
@@ -360,6 +380,13 @@ const DashboardNeikeBeca = () => {
                     sx={getTabButtonStyles(5)}
                 >
                     Expedientes
+                </Button>
+                <Button
+                    onClick={() => setTabValue(6)}
+                    startIcon={<PhoneIcon />}
+                    sx={getTabButtonStyles(6)}
+                >
+                    SAC
                 </Button>
             </Box>
 
@@ -701,11 +728,9 @@ const DashboardNeikeBeca = () => {
         {tabValue === 5 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
+                    <MonthCutoffAlert systemName="de expedientes" startDate={startDateFormatted} endDate={endDateFormatted} />
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Expedientes
-                    </Typography>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 3 }}>
-                        Expedientes a mes vencido. Corte del {expStart} al {expEnd}.
                     </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -739,9 +764,35 @@ const DashboardNeikeBeca = () => {
             </Grid>
         )}
 
-            {user?.role === 'admin' && (
-                <>
-                    <Tooltip title={cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}>
+        {/* Tab 6: SAC */}
+        {tabValue === 6 && (
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <MonthCutoffAlert systemName="SAC" startDate={startDateFormatted} endDate={endDateFormatted} />
+                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+                        SAC
+                    </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                    {sacViaData.length > 0 ? (
+                        <CustomBarChart
+                            data={sacViaData}
+                            xKey="via"
+                            barKey="total"
+                            title="Análisis de vía de captación"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    ) : (
+                        <Typography align="center">Sin datos</Typography>
+                    )}
+                </Grid>
+            </Grid>
+        )}
+
+        {user?.role === 'admin' && (
+            <>
+                <Tooltip title={cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}>
                         <Fab
                             onClick={handleLimpiarDashboard}
                             disabled={cleaning}
