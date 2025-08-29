@@ -10,6 +10,7 @@ import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import SchoolIcon from '@mui/icons-material/School';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import PhoneIcon from '@mui/icons-material/Phone';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
@@ -17,6 +18,18 @@ import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import { useLocation } from 'react-router-dom';
 import { getPreviousMonthRange } from '../utils/dateUtils';
+
+const MonthCutoffAlert = ({ systemName, endDate }) => (
+    <Alert
+        severity="info"
+        icon={false}
+        sx={{ my: 2, backgroundColor: 'rgba(33, 150, 243, 0.1)', borderLeft: '6px solid #2196f3' }}
+    >
+        <Typography variant="body2" fontWeight={600}>
+            {`Datos tomados del sistema ${systemName} con corte ${endDate}.`}
+        </Typography>
+    </Alert>
+);
 
 const DashboardPage = () => {
     const { user } = useAuth();
@@ -62,7 +75,9 @@ const DashboardPage = () => {
     const [topUnitsData, setTopUnitsData] = useState([]);
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
-    const { start: expStart, end: expEnd } = getPreviousMonthRange();
+    const [sacViaData, setSacViaData] = useState([]);
+    const { end: expEnd } = getPreviousMonthRange();
+    const { start: sacStart, end: sacEnd } = getPreviousMonthRange();
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -106,7 +121,7 @@ const DashboardPage = () => {
             // Obtiene datos de forma segura: si falta el endpoint o la petición falla,
             // devuelve el valor por defecto. En caso contrario, retorna solo el campo
             // `data` de la respuesta.
-            const safeGet = async (endpoint, defaultData, plantilla) => {
+            const safeGet = async (endpoint, defaultData, plantilla, extraParams = {}) => {
                 if (!endpoint) return defaultData;
                 const params = Object.fromEntries(
                     Object.entries(appliedFilters).filter(([, v]) => v)
@@ -114,6 +129,7 @@ const DashboardPage = () => {
                 if (plantilla) {
                     params.plantilla = plantilla;
                 }
+                Object.assign(params, extraParams);
                 try {
                     const res = await apiClient.get(endpoint, { params });
                     return res.data;
@@ -127,6 +143,7 @@ const DashboardPage = () => {
             const TEMPLATE_DATOS_CONCURSO = 'Datos concurso - Planta y Contratos';
             const TEMPLATE_CONTROL_PLANTA = 'Control de certificaciones - Planta y Contratos';
             const TEMPLATE_EXPEDIENTES = 'Expedientes';
+            const TEMPLATE_SAC_VIAS = 'SAC - Via de captacion';
             const [
                 totalData,
                 ageDistData,
@@ -151,7 +168,8 @@ const DashboardPage = () => {
                 exitTimeRes,
                 topUnitsRes,
                 topInitiatorsData,
-                byTramiteData
+                byTramiteData,
+                sacViaCaptacionData
             ] = await Promise.all([
                 // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
@@ -180,7 +198,9 @@ const DashboardPage = () => {
                 safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
                 // Expedientes
                 safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
-                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES)
+                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
+                // SAC
+                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS, { startDate: sacStart, endDate: sacEnd })
             ]);
 
             setTotalAgents(totalData.total);
@@ -207,6 +227,7 @@ const DashboardPage = () => {
             setTopUnitsData(topUnitsRes);
             setExpTopInitiators(topInitiatorsData);
             setExpByTramite(byTramiteData);
+            setSacViaData(sacViaCaptacionData);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -379,6 +400,13 @@ const DashboardPage = () => {
                     sx={getTabButtonStyles(5)}
                 >
                     Expedientes
+                </Button>
+                <Button
+                    onClick={() => setTabValue(6)}
+                    startIcon={<PhoneIcon />}
+                    sx={getTabButtonStyles(6)}
+                >
+                    SAC
                 </Button>
             </Box>
 
@@ -570,9 +598,7 @@ const DashboardPage = () => {
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Expedientes
                     </Typography>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 3 }}>
-                        Expedientes a mes vencido. Corte del {expStart} al {expEnd}.
-                    </Typography>
+                    <MonthCutoffAlert systemName="de expedientes" endDate={expEnd} />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     {expTopInitiators.length > 0 ? (
@@ -595,6 +621,32 @@ const DashboardPage = () => {
                             xKey="tramite"
                             barKey="count"
                             title="Cantidad de expedientes según tipo de trámite"
+                            isDarkMode={isDarkMode}
+                            height={400}
+                        />
+                    ) : (
+                        <Typography align="center">Sin datos</Typography>
+                    )}
+                </Grid>
+            </Grid>
+        )}
+
+        {/* Tab 6: SAC */}
+        {tabValue === 6 && (
+            <Grid container spacing={3}>
+                <Grid item xs={12}>
+                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+                        Análisis de vía de captación
+                    </Typography>
+                    <MonthCutoffAlert systemName="SAC" endDate={sacEnd} />
+                </Grid>
+                <Grid item xs={12}>
+                    {sacViaData.length > 0 ? (
+                        <CustomBarChart
+                            data={sacViaData}
+                            xKey="via"
+                            barKey="total"
+                            title="Análisis de vía de captación"
                             isDarkMode={isDarkMode}
                             height={400}
                         />

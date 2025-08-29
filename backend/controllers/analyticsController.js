@@ -1554,6 +1554,30 @@ const getTopRegistrationUnits = async (req, res) => {
   }
 };
 
+// Análisis SAC - Vía de captación
+const getSacViaCaptacion = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const { startDate, endDate } = req.query;
+
+    if (startDate && endDate) {
+      match.uploadDate = { $gte: new Date(startDate), $lte: new Date(endDate) };
+    }
+
+    const result = await Agent.aggregate([
+      { $match: match },
+      { $group: { _id: '$Via', total: { $sum: '$Total' } } },
+      { $project: { via: '$_id', total: 1, _id: 0 } },
+      { $sort: { total: -1 } }
+    ]);
+
+    res.json(result);
+  } catch (err) {
+    console.error('Error en SAC vía de captación:', err.message);
+    res.status(500).json({ error: 'Error en SAC vía de captación', message: err.message });
+  }
+};
+
 // Función para notificar modificaciones en el dashboard
 const notifyDashboardModification = async (req, res) => {
   try {
@@ -1636,5 +1660,6 @@ module.exports = {
   getAgentsByEntryTime,
   getAgentsByExitTime,
   getTopRegistrationUnits,
-  notifyDashboardModification
+  notifyDashboardModification,
+  getSacViaCaptacion
 };
