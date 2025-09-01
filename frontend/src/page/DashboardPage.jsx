@@ -782,7 +782,7 @@ const DashboardPage = () => {
 
             {user?.role === 'admin' && (
                 <>
-                    <Tooltip title="Borrar Dashboard">
+                    <Tooltip title="Borrar datos">
                         <Fab
                             onClick={handleOpenDeleteDialog}
                             sx={{
@@ -810,9 +810,9 @@ const DashboardPage = () => {
                     <Suspense fallback={null}>
                         {openDeleteDialog && (
                             <DeleteDashboardDialog
-                                open={openDeleteDialog}
+                                isOpen={openDeleteDialog}
                                 onClose={handleCloseDeleteDialog}
-                                onDeleted={handleDeleted}
+                                onDelete={handleDeleted}
                             />
                         )}
                     </Suspense>

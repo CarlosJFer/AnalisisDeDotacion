@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -10,16 +10,22 @@ import {
   FormControlLabel,
   Checkbox,
   CircularProgress,
+  Divider,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import apiClient from '../services/api';
 
-const DeleteDashboardDialog = ({ open, onClose, onDeleted }) => {
+const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
   const modules = useMemo(
     () => ['Planta y Contratos', 'Neikes y Becas', 'Expedientes', 'SAC'],
     []
   );
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) setSelected([]);
+  }, [isOpen]);
 
   const handleToggle = useCallback(
     (module) => () => {
@@ -33,23 +39,25 @@ const DeleteDashboardDialog = ({ open, onClose, onDeleted }) => {
   );
 
   const handleConfirm = useCallback(async () => {
+    if (selected.length === 0) return;
     setLoading(true);
     try {
-      await apiClient.post('/admin/limpiar-dashboard', { modules: selected });
-      onDeleted && onDeleted('Se eliminaron los módulos seleccionados.');
+      await apiClient.delete('/admin/dashboard', { data: { modules: selected } });
+      onDelete && onDelete('Módulos eliminados correctamente');
     } catch {
-      onDeleted && onDeleted('Error al limpiar el dashboard.');
+      onDelete && onDelete('Error al eliminar datos');
     } finally {
       setLoading(false);
       onClose();
     }
-  }, [selected, onClose, onDeleted]);
+  }, [selected, onClose, onDelete]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Selecciona los módulos a borrar</DialogTitle>
+    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ fontWeight: 600 }}>Selecciona los módulos a borrar</DialogTitle>
+      <Divider />
       <DialogContent>
-        <List>
+        <List sx={{ bgcolor: 'background.default' }}>
           {modules.map((module) => (
             <ListItem key={module} disablePadding>
               <FormControlLabel
@@ -74,9 +82,11 @@ const DeleteDashboardDialog = ({ open, onClose, onDeleted }) => {
           color="error"
           variant="contained"
           disabled={loading || selected.length === 0}
-          startIcon={loading ? <CircularProgress size={16} /> : null}
+          startIcon={
+            loading ? <CircularProgress size={16} /> : <DeleteIcon />
+          }
         >
-          {loading ? 'Eliminando...' : 'Confirmar eliminación'}
+          {loading ? 'Borrando...' : 'Borrar datos'}
         </Button>
       </DialogActions>
     </Dialog>
