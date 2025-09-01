@@ -67,9 +67,7 @@ const DashboardPage = () => {
     const [expByTramite, setExpByTramite] = useState([]);
     const [funcs, setFuncs] = useState({});
     const [sacViaData, setSacViaData] = useState([]);
-    const { startDate, endDate } = getCurrentMonthRange();
-    const startDateFormatted = new Date(startDate).toLocaleDateString('es-AR');
-    const endDateFormatted = new Date(endDate).toLocaleDateString('es-AR');
+    const { startDate, endDate } = getPreviousMonthRange();
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -586,7 +584,7 @@ const DashboardPage = () => {
         {tabValue === 5 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <MonthCutoffAlert systemName="de expedientes" startDate={startDateFormatted} endDate={endDateFormatted} />
+                    <MonthCutoffAlert systemName="de expedientes" startDate={startDate} endDate={endDate} />
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Expedientes
                     </Typography>
@@ -628,8 +626,8 @@ const DashboardPage = () => {
                 sacViaData={sacViaData}
                 funcs={funcs}
                 isDarkMode={isDarkMode}
-                startDate={startDateFormatted}
-                endDate={endDateFormatted}
+                startDate={startDate}
+                endDate={endDate}
             />
         )}
 

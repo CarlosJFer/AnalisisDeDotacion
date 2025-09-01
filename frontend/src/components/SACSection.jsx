@@ -146,10 +146,10 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
     if (coordReclamos.length) return;
     const plantilla = 'SAC - Secretaria de Coordinacion de Relaciones Territoriales';
     const [r, p, pe, c] = await Promise.all([
-      safeGet(funcs.sacCoordinacionTopReclamos, plantilla),
-      safeGet(funcs.sacCoordinacionTopPromedios, plantilla),
-      safeGet(funcs.sacCoordinacionTopPendientes, plantilla),
-      safeGet(funcs.sacCoordinacionTopCerrados, plantilla)
+      safeGet(funcs.sacCoordTerritorialTopReclamos, plantilla),
+      safeGet(funcs.sacCoordTerritorialTopPromedio, plantilla),
+      safeGet(funcs.sacCoordTerritorialTopPendientes, plantilla),
+      safeGet(funcs.sacCoordTerritorialTopCerrados, plantilla)
     ]);
     setCoordReclamos(r);
     setCoordPromedios(p);
@@ -198,29 +198,29 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             expandIcon={<ExpandMoreIcon />}
             sx={{ bgcolor: isDarkMode ? 'grey.800' : 'grey.200' }}
           >
-            <Typography variant="h6" fontWeight={600}>Cierre de problemas</Typography>
+            <Typography variant="h6" fontWeight={600}>Análisis de cierre por problemas</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 {cierreReclamos.length > 0 && (
-                  <CustomBarChart data={cierreReclamos} xKey="problem" barKey="count" title="Top reclamos" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={cierreReclamos} xKey="problem" barKey="count" title="Cantidad de reclamos" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {cierrePromedios.length > 0 && (
-                  <CustomBarChart data={cierrePromedios} xKey="problem" barKey="avgClosure" title="Top promedios" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={cierrePromedios} xKey="problem" barKey="avgClosure" title="Promedios días de cierre" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {cierrePendientes.length > 0 && (
-                  <CustomBarChart data={cierrePendientes} xKey="problem" barKey="pendientes" title="Top pendientes" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={cierrePendientes} xKey="problem" barKey="pendientes" title="Cantidad de reclamos pendientes" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {cierreCerrados.length > 0 && (
-                  <CustomBarChart data={cierreCerrados} xKey="problem" barKey="cerrados" title="Top cerrados" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={cierreCerrados} xKey="problem" barKey="cerrados" title="Cantidad de reclamos cerrados" isDarkMode={isDarkMode} />
                 )}
               </Grid>
             </Grid>
@@ -233,12 +233,12 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             expandIcon={<ExpandMoreIcon />}
             sx={{ bgcolor: isDarkMode ? 'grey.800' : 'grey.200' }}
           >
-            <Typography variant="h6" fontWeight={600}>Boca receptora</Typography>
+            <Typography variant="h6" fontWeight={600}>Análisis por boca receptora</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
             {bocaData.length > 0 && (
-              <CustomBarChart data={bocaData} xKey="boca" barKey="cantidad" title="Top bocas" isDarkMode={isDarkMode} />
+              <CustomBarChart data={bocaData} xKey="boca" barKey="cantidad" title="Top 5 bocas con mayor cantidad" isDarkMode={isDarkMode} />
             )}
           </AccordionDetails>
         </Accordion>
@@ -249,12 +249,12 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             expandIcon={<ExpandMoreIcon />}
             sx={{ bgcolor: isDarkMode ? 'grey.800' : 'grey.200' }}
           >
-            <Typography variant="h6" fontWeight={600}>Frecuencia de tipos de cierre</Typography>
+            <Typography variant="h6" fontWeight={600}>Análisis de frecuencia de tipo de cierre</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
             {frecuenciaData.length > 0 && (
-              <CustomBarChart data={frecuenciaData} xKey="tipo" barKey="cantidad" title="Tipos de cierre" isDarkMode={isDarkMode} />
+              <CustomBarChart data={frecuenciaData} xKey="tipo" barKey="cantidad" title="Frecuencia de tipos de cierre" isDarkMode={isDarkMode} />
             )}
           </AccordionDetails>
         </Accordion>
@@ -272,27 +272,27 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 {temasRecibidos.length > 0 && (
-                  <CustomBarChart data={temasRecibidos} xKey="area" barKey="valor" title="Top recibidos" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={temasRecibidos} xKey="area" barKey="valor" title="Top 5 temas recibidos por áreas" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {temasVisualizados.length > 0 && (
-                  <CustomBarChart data={temasVisualizados} xKey="area" barKey="valor" title="Top visualizados" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={temasVisualizados} xKey="area" barKey="valor" title="Top 5 visualizados sobre áreas" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {temasPendientes.length > 0 && (
-                  <CustomBarChart data={temasPendientes} xKey="area" barKey="valor" title="Top pendientes" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={temasPendientes} xKey="area" barKey="valor" title="Top 5 temas pendientes sobre áreas" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {temasProceso.length > 0 && (
-                  <CustomBarChart data={temasProceso} xKey="area" barKey="valor" title="Top en proceso" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={temasProceso} xKey="area" barKey="valor" title="Top 5 temas en proceso sobre áreas" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12}>
                 {temasCerrados.length > 0 && (
-                  <CustomBarChart data={temasCerrados} xKey="area" barKey="valor" title="Top cerrados" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={temasCerrados} xKey="area" barKey="valor" title="Top 5 temas cerrados sobre áreas" isDarkMode={isDarkMode} />
                 )}
               </Grid>
             </Grid>
@@ -312,12 +312,12 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 {contactoRecibidos.length > 0 && (
-                  <CustomBarChart data={contactoRecibidos} xKey="tipo" barKey="recibidos" title="Top recibidos" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={contactoRecibidos} xKey="tipo" barKey="recibidos" title="Contactos recibidos" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {contactoCerrados.length > 0 && (
-                  <CustomBarChart data={contactoCerrados} xKey="tipo" barKey="cerrados" title="Top cerrados" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={contactoCerrados} xKey="tipo" barKey="cerrados" title="Contactos cerrados" isDarkMode={isDarkMode} />
                 )}
               </Grid>
             </Grid>
@@ -335,7 +335,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
           <AccordionDetails>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
             {llamadasBarrio.length > 0 && (
-              <CustomBarChart data={llamadasBarrio} xKey="barrio" barKey="realizadas" title="Top llamadas" isDarkMode={isDarkMode} />
+              <CustomBarChart data={llamadasBarrio} xKey="barrio" barKey="realizadas" title="Top 5 barrios por llamadas realizadas" isDarkMode={isDarkMode} />
             )}
           </AccordionDetails>
         </Accordion>
@@ -353,22 +353,22 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 {ambienteReclamos.length > 0 && (
-                  <CustomBarChart data={ambienteReclamos} xKey="problem" barKey="count" title="Top reclamos" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={ambienteReclamos} xKey="problem" barKey="count" title="Cantidad de reclamos" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {ambientePromedios.length > 0 && (
-                  <CustomBarChart data={ambientePromedios} xKey="problem" barKey="avgClosure" title="Top promedios" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={ambientePromedios} xKey="problem" barKey="avgClosure" title="Promedios días de cierre" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {ambientePendientes.length > 0 && (
-                  <CustomBarChart data={ambientePendientes} xKey="problem" barKey="pendientes" title="Top pendientes" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={ambientePendientes} xKey="problem" barKey="pendientes" title="Cantidad de reclamos pendientes" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {ambienteCerrados.length > 0 && (
-                  <CustomBarChart data={ambienteCerrados} xKey="problem" barKey="cerrados" title="Top cerrados" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={ambienteCerrados} xKey="problem" barKey="cerrados" title="Cantidad de reclamos cerrados" isDarkMode={isDarkMode} />
                 )}
               </Grid>
             </Grid>
@@ -388,22 +388,22 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 {infraReclamos.length > 0 && (
-                  <CustomBarChart data={infraReclamos} xKey="problem" barKey="count" title="Top reclamos" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={infraReclamos} xKey="problem" barKey="count" title="Cantidad de reclamos" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {infraPromedios.length > 0 && (
-                  <CustomBarChart data={infraPromedios} xKey="problem" barKey="avgClosure" title="Top promedios" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={infraPromedios} xKey="problem" barKey="avgClosure" title="Promedios días de cierre" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {infraPendientes.length > 0 && (
-                  <CustomBarChart data={infraPendientes} xKey="problem" barKey="pendientes" title="Top pendientes" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={infraPendientes} xKey="problem" barKey="pendientes" title="Cantidad de reclamos pendientes" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {infraCerrados.length > 0 && (
-                  <CustomBarChart data={infraCerrados} xKey="problem" barKey="cerrados" title="Top cerrados" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={infraCerrados} xKey="problem" barKey="cerrados" title="Cantidad de reclamos cerrados" isDarkMode={isDarkMode} />
                 )}
               </Grid>
             </Grid>
@@ -423,22 +423,22 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
             <Grid container spacing={3}>
               <Grid item xs={12} md={6}>
                 {coordReclamos.length > 0 && (
-                  <CustomBarChart data={coordReclamos} xKey="problem" barKey="count" title="Top reclamos" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={coordReclamos} xKey="problem" barKey="count" title="Cantidad de reclamos" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {coordPromedios.length > 0 && (
-                  <CustomBarChart data={coordPromedios} xKey="problem" barKey="avgClosure" title="Top promedios" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={coordPromedios} xKey="problem" barKey="avgClosure" title="Promedios días de cierre" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {coordPendientes.length > 0 && (
-                  <CustomBarChart data={coordPendientes} xKey="problem" barKey="pendientes" title="Top pendientes" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={coordPendientes} xKey="problem" barKey="pendientes" title="Cantidad de reclamos pendientes" isDarkMode={isDarkMode} />
                 )}
               </Grid>
               <Grid item xs={12} md={6}>
                 {coordCerrados.length > 0 && (
-                  <CustomBarChart data={coordCerrados} xKey="problem" barKey="cerrados" title="Top cerrados" isDarkMode={isDarkMode} />
+                  <CustomBarChart data={coordCerrados} xKey="problem" barKey="cerrados" title="Cantidad de reclamos cerrados" isDarkMode={isDarkMode} />
                 )}
               </Grid>
             </Grid>

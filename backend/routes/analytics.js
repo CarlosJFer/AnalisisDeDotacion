@@ -132,10 +132,10 @@ router.get('/sac/secretaria-infraestructura/top-reclamos', authenticateToken, ge
 router.get('/sac/secretaria-infraestructura/top-promedios', authenticateToken, getInfraestructuraTopPromedios);
 router.get('/sac/secretaria-infraestructura/top-pendientes', authenticateToken, getInfraestructuraTopPendientes);
 router.get('/sac/secretaria-infraestructura/top-cerrados', authenticateToken, getInfraestructuraTopCerrados);
-router.get('/sac/secretaria-coordinacion/top-reclamos', authenticateToken, getCoordinacionTopReclamos);
-router.get('/sac/secretaria-coordinacion/top-promedios', authenticateToken, getCoordinacionTopPromedios);
-router.get('/sac/secretaria-coordinacion/top-pendientes', authenticateToken, getCoordinacionTopPendientes);
-router.get('/sac/secretaria-coordinacion/top-cerrados', authenticateToken, getCoordinacionTopCerrados);
+router.get('/sac/coordinacion-territorial/top-reclamos', authenticateToken, getCoordinacionTopReclamos);
+router.get('/sac/coordinacion-territorial/top-promedios', authenticateToken, getCoordinacionTopPromedios);
+router.get('/sac/coordinacion-territorial/top-pendientes', authenticateToken, getCoordinacionTopPendientes);
+router.get('/sac/coordinacion-territorial/top-cerrados', authenticateToken, getCoordinacionTopCerrados);
 
 // Rutas para Neikes y Beca
 router.get('/agents/by-function-neike-beca', authenticateToken, require('../controllers/analyticsController').getAgentsByFunctionNeikeBeca);

@@ -46,8 +46,24 @@ module.exports = [
   { name: 'sacInfraestructuraTopPromedios', description: 'SAC infraestructura - top promedios', endpoint: '/analytics/sac/secretaria-infraestructura/top-promedios' },
   { name: 'sacInfraestructuraTopPendientes', description: 'SAC infraestructura - top pendientes', endpoint: '/analytics/sac/secretaria-infraestructura/top-pendientes' },
   { name: 'sacInfraestructuraTopCerrados', description: 'SAC infraestructura - top cerrados', endpoint: '/analytics/sac/secretaria-infraestructura/top-cerrados' },
-  { name: 'sacCoordinacionTopReclamos', description: 'SAC coordinación - top reclamos', endpoint: '/analytics/sac/secretaria-coordinacion/top-reclamos' },
-  { name: 'sacCoordinacionTopPromedios', description: 'SAC coordinación - top promedios', endpoint: '/analytics/sac/secretaria-coordinacion/top-promedios' },
-  { name: 'sacCoordinacionTopPendientes', description: 'SAC coordinación - top pendientes', endpoint: '/analytics/sac/secretaria-coordinacion/top-pendientes' },
-  { name: 'sacCoordinacionTopCerrados', description: 'SAC coordinación - top cerrados', endpoint: '/analytics/sac/secretaria-coordinacion/top-cerrados' }
+  {
+    name: 'sacCoordTerritorialTopReclamos',
+    description: 'SAC coordinación territorial - top reclamos',
+    endpoint: '/analytics/sac/coordinacion-territorial/top-reclamos'
+  },
+  {
+    name: 'sacCoordTerritorialTopPromedio',
+    description: 'SAC coordinación territorial - top promedios',
+    endpoint: '/analytics/sac/coordinacion-territorial/top-promedios'
+  },
+  {
+    name: 'sacCoordTerritorialTopPendientes',
+    description: 'SAC coordinación territorial - top pendientes',
+    endpoint: '/analytics/sac/coordinacion-territorial/top-pendientes'
+  },
+  {
+    name: 'sacCoordTerritorialTopCerrados',
+    description: 'SAC coordinación territorial - top cerrados',
+    endpoint: '/analytics/sac/coordinacion-territorial/top-cerrados'
+  }
 ];
