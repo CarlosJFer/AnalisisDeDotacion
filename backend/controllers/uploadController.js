@@ -107,8 +107,14 @@ async function uploadFile(req, res) {
         // Mapear los datos según el mapping de la plantilla, solo si la fila es válida
         let camposClave;
         const templateName = template.name ? template.name.trim().toLowerCase() : '';
-        if (templateName.includes('via de captacion') || templateName.includes('sac')) {
+        if (templateName.includes('via de captacion')) {
           camposClave = ['Via', 'Total'];
+        } else if (templateName.includes('sac')) {
+          const mappingNames = template.mappings.map(m => m.variableName);
+          const descField = mappingNames.find(n => /descripcion|problema|boca|tema|contacto|barrio/i.test(n)) || mappingNames[0];
+          const qtyField = mappingNames.find(n => /cantidad/i.test(n));
+          camposClave = [descField];
+          if (qtyField && qtyField !== descField) camposClave.push(qtyField);
         } else if (templateName.includes('expedientes')) {
           camposClave = ['Numero de expediente', 'Iniciador del Expediente'];
         } else {
