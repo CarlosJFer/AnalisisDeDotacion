@@ -144,7 +144,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
 
   const fetchCoordinacion = useCallback(async () => {
     if (coordReclamos.length) return;
-    const plantilla = 'SAC - Secretaria de Coordinacion de Relaciones Territoriales';
+    const plantilla = 'SAC - Secretaria de coordinacion de relaciones territoriales';
     const [r, p, pe, c] = await Promise.all([
       safeGet(funcs.sacCoordTerritorialTopReclamos, plantilla),
       safeGet(funcs.sacCoordTerritorialTopPromedio, plantilla),
