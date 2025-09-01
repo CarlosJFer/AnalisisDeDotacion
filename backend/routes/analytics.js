@@ -84,6 +84,32 @@ router.get('/certifications/top-units', authenticateToken, getTopRegistrationUni
 
 // Rutas para SAC
 router.get('/sac/via-captacion', authenticateToken, getSacViaCaptacion);
+router.get('/sac/cierre-problemas/top-reclamos', authenticateToken, getCierreProblemasTopByReclamos);
+router.get('/sac/cierre-problemas/top-promedios', authenticateToken, getCierreProblemasTopByPromedios);
+router.get('/sac/cierre-problemas/top-pendientes', authenticateToken, getCierreProblemasTopByPendientes);
+router.get('/sac/cierre-problemas/top-cerrados', authenticateToken, getCierreProblemasTopByCerrados);
+router.get('/sac/boca-receptora/top', authenticateToken, getBocaReceptoraTop);
+router.get('/sac/frecuencia-tipos-cierre', authenticateToken, getFrecuenciaTiposCierre);
+router.get('/sac/temas/top-recibidos', authenticateToken, getTemasTopRecibidos);
+router.get('/sac/temas/top-visualizados', authenticateToken, getTemasTopVisualizados);
+router.get('/sac/temas/top-pendientes', authenticateToken, getTemasTopPendientes);
+router.get('/sac/temas/top-proceso', authenticateToken, getTemasTopEnProceso);
+router.get('/sac/temas/top-cerrados', authenticateToken, getTemasTopCerrados);
+router.get('/sac/tipo-contacto/top-recibidos', authenticateToken, getTipoContactoTopRecibidos);
+router.get('/sac/tipo-contacto/top-cerrados', authenticateToken, getTipoContactoTopCerrados);
+router.get('/sac/llamadas-barrio/top', authenticateToken, getLlamadasBarrioTop);
+router.get('/sac/secretaria-ambiente/top-reclamos', authenticateToken, getAmbienteTopReclamos);
+router.get('/sac/secretaria-ambiente/top-promedios', authenticateToken, getAmbienteTopPromedios);
+router.get('/sac/secretaria-ambiente/top-pendientes', authenticateToken, getAmbienteTopPendientes);
+router.get('/sac/secretaria-ambiente/top-cerrados', authenticateToken, getAmbienteTopCerrados);
+router.get('/sac/secretaria-infraestructura/top-reclamos', authenticateToken, getInfraestructuraTopReclamos);
+router.get('/sac/secretaria-infraestructura/top-promedios', authenticateToken, getInfraestructuraTopPromedios);
+router.get('/sac/secretaria-infraestructura/top-pendientes', authenticateToken, getInfraestructuraTopPendientes);
+router.get('/sac/secretaria-infraestructura/top-cerrados', authenticateToken, getInfraestructuraTopCerrados);
+router.get('/sac/secretaria-coordinacion/top-reclamos', authenticateToken, getCoordinacionTopReclamos);
+router.get('/sac/secretaria-coordinacion/top-promedios', authenticateToken, getCoordinacionTopPromedios);
+router.get('/sac/secretaria-coordinacion/top-pendientes', authenticateToken, getCoordinacionTopPendientes);
+router.get('/sac/secretaria-coordinacion/top-cerrados', authenticateToken, getCoordinacionTopCerrados);
 
 // Rutas para Neikes y Beca
 router.get('/agents/by-function-neike-beca', authenticateToken, require('../controllers/analyticsController').getAgentsByFunctionNeikeBeca);
