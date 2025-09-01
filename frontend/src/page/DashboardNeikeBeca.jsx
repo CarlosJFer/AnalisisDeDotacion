@@ -64,8 +64,6 @@ const DashboardNeikeBeca = () => {
     const [expByTramite, setExpByTramite] = useState([]);
     const [sacViaData, setSacViaData] = useState([]);
     const { startDate, endDate } = getPreviousMonthRange();
-    const startDateFormatted = new Date(startDate).toLocaleDateString('es-AR');
-    const endDateFormatted = new Date(endDate).toLocaleDateString('es-AR');
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -717,7 +715,7 @@ const DashboardNeikeBeca = () => {
         {tabValue === 5 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <MonthCutoffAlert systemName="de expedientes" startDate={startDateFormatted} endDate={endDateFormatted} />
+                    <MonthCutoffAlert systemName="de expedientes" startDate={startDate} endDate={endDate} />
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Expedientes
                     </Typography>
@@ -757,7 +755,7 @@ const DashboardNeikeBeca = () => {
         {tabValue === 6 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <MonthCutoffAlert systemName="SAC" startDate={startDateFormatted} endDate={endDateFormatted} />
+                    <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         SAC
                     </Typography>
