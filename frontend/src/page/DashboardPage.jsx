@@ -19,7 +19,7 @@ import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import SacSection from '../components/SACSection';
 import { useLocation } from 'react-router-dom';
-import { getPreviousMonthRange } from '../utils/dateUtils';
+import { getCurrentMonthRange } from '../utils/dateUtils';
 
 const DashboardPage = () => {
     const { user } = useAuth();
@@ -67,7 +67,7 @@ const DashboardPage = () => {
     const [expByTramite, setExpByTramite] = useState([]);
     const [funcs, setFuncs] = useState({});
     const [sacViaData, setSacViaData] = useState([]);
-    const { startDate, endDate } = getPreviousMonthRange();
+    const { startDate, endDate } = getCurrentMonthRange();
     const startDateFormatted = new Date(startDate).toLocaleDateString('es-AR');
     const endDateFormatted = new Date(endDate).toLocaleDateString('es-AR');
 

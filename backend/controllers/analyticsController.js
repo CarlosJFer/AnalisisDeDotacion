@@ -1733,7 +1733,7 @@ const getTipoContactoTopRecibidos = (req, res) =>
       { field: 'Cerrados', op: 'sum', alias: 'cerrados' }
     ],
     sortField: 'recibidos',
-    defaultPlantilla: 'SAC - Discriminación por tipo de contacto'
+    defaultPlantilla: 'SAC - Discriminacion por tipo de contacto'
   });
 
 const getTipoContactoTopCerrados = (req, res) =>
@@ -1745,17 +1745,17 @@ const getTipoContactoTopCerrados = (req, res) =>
       { field: 'Cerrados', op: 'sum', alias: 'cerrados' }
     ],
     sortField: 'cerrados',
-    defaultPlantilla: 'SAC - Discriminación por tipo de contacto'
+    defaultPlantilla: 'SAC - Discriminacion por tipo de contacto'
   });
 
-// SAC - Evaluación de llamadas por barrio
+// SAC - Evaluacion de llamadas por barrio
 const getLlamadasBarrioTop = (req, res) =>
   aggregateSac(req, res, {
     groupField: 'Barrio',
     groupAlias: 'barrio',
     metrics: [{ field: 'Realizadas', op: 'sum', alias: 'realizadas' }],
     sortField: 'realizadas',
-    defaultPlantilla: 'SAC - Evaluación de llamadas por barrio'
+    defaultPlantilla: 'SAC - Evaluacion de llamadas por barrio'
   });
 
 // SAC - Secretaría de ambiente y desarrollo sustentable
@@ -1884,7 +1884,7 @@ const getCoordinacionTopReclamos = (req, res) =>
       { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
     ],
     sortField: 'count',
-    defaultPlantilla: 'SAC - Secretaria de coordinación de relaciones territoriales'
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
   });
 
 const getCoordinacionTopPromedios = (req, res) =>
@@ -1898,7 +1898,7 @@ const getCoordinacionTopPromedios = (req, res) =>
       { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
     ],
     sortField: 'avgClosure',
-    defaultPlantilla: 'SAC - Secretaria de coordinación de relaciones territoriales'
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
   });
 
 const getCoordinacionTopPendientes = (req, res) =>
@@ -1912,7 +1912,7 @@ const getCoordinacionTopPendientes = (req, res) =>
       { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
     ],
     sortField: 'pendientes',
-    defaultPlantilla: 'SAC - Secretaria de coordinación de relaciones territoriales'
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
   });
 
 const getCoordinacionTopCerrados = (req, res) =>
@@ -1926,7 +1926,7 @@ const getCoordinacionTopCerrados = (req, res) =>
       { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
     ],
     sortField: 'cerrados',
-    defaultPlantilla: 'SAC - Secretaria de coordinación de relaciones territoriales'
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
   });
 
 // Función para notificar modificaciones en el dashboard
