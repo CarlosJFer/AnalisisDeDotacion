@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -17,8 +17,10 @@ import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
+import SacSection from '../components/SACSection';
 import { useLocation } from 'react-router-dom';
-import { getPreviousMonthRange } from '../utils/dateUtils';
+import { getPreviousMonthRange } from '../utils/dateUtils.js';
+const DeleteDashboardDialog = lazy(() => import('../components/DeleteDashboardDialog'));
 
 const DashboardPage = () => {
     const { user } = useAuth();
@@ -64,28 +66,20 @@ const DashboardPage = () => {
     const [topUnitsData, setTopUnitsData] = useState([]);
     const [expTopInitiators, setExpTopInitiators] = useState([]);
     const [expByTramite, setExpByTramite] = useState([]);
+    const [funcs, setFuncs] = useState({});
     const [sacViaData, setSacViaData] = useState([]);
     const { startDate, endDate } = getPreviousMonthRange();
-    const startDateFormatted = new Date(startDate).toLocaleDateString('es-AR');
-    const endDateFormatted = new Date(endDate).toLocaleDateString('es-AR');
 
-    // Hooks para limpiar dashboard
-    const [cleaning, setCleaning] = useState(false);
-    const [cleanMsg, setCleanMsg] = useState('');
+    // Diálogo de borrado de dashboard
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [deleteMsg, setDeleteMsg] = useState('');
 
-    const handleLimpiarDashboard = async () => {
-        setCleaning(true);
-        setCleanMsg('');
-        try {
-            await apiClient.post('/admin/limpiar-dashboard');
-            setCleanMsg('Dashboard limpiado correctamente.');
-            window.location.reload();
-        } catch (err) {
-            setCleanMsg('Error al limpiar el dashboard.');
-        } finally {
-            setCleaning(false);
-        }
-    };
+    const handleOpenDeleteDialog = useCallback(() => setOpenDeleteDialog(true), []);
+    const handleCloseDeleteDialog = useCallback(() => setOpenDeleteDialog(false), []);
+    const handleDeleted = useCallback((msg) => {
+        setDeleteMsg(msg);
+        window.location.reload();
+    }, []);
 
     // Función para filtrar datos que no sean "-" o vacíos
     const filterValidData = (data, nameKey) => {
@@ -106,7 +100,8 @@ const DashboardPage = () => {
 
         try {
             const funcRes = await apiClient.get('/functions');
-            const funcs = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
+            const funcMap = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
+            setFuncs(funcMap);
 
             // Obtiene datos de forma segura: si falta el endpoint o la petición falla,
             // devuelve el valor por defecto. En caso contrario, retorna solo el campo
@@ -162,35 +157,35 @@ const DashboardPage = () => {
                 sacViaCaptacionData
             ] = await Promise.all([
                 // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
-                safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcs.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsBySubsecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
                 // Datos para antigüedad y estudios
-                safeGet(funcs.agentsBySeniority, [], TEMPLATE_DATOS_CONCURSO),
-                safeGet(funcs.agentsBySecondaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
-                safeGet(funcs.agentsByTertiaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
-                safeGet(funcs.agentsByUniversityStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
-                safeGet(funcs.agentsByTopSecretariasUniversity, [], TEMPLATE_DATOS_CONCURSO),
-                safeGet(funcs.agentsByTopSecretariasTertiary, [], TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsBySeniority, [], TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsBySecondaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsByTertiaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsByUniversityStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsByTopSecretariasUniversity, [], TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsByTopSecretariasTertiary, [], TEMPLATE_DATOS_CONCURSO),
                 // Datos para control de certificaciones
-                safeGet(funcs.certificationsRegistrationType, [], TEMPLATE_CONTROL_PLANTA),
-                safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_PLANTA),
-                safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_PLANTA),
-                safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcMap.certificationsRegistrationType, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcMap.certificationsEntryTime, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcMap.certificationsExitTime, [], TEMPLATE_CONTROL_PLANTA),
+                safeGet(funcMap.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
                 // Expedientes
-                safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
-                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
+                safeGet(funcMap.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
+                safeGet(funcMap.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
                 // SAC (sin filtros de fecha)
-                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS)
+                safeGet(funcMap.sacViaCaptacion, [], TEMPLATE_SAC_VIAS)
             ]);
 
             setTotalAgents(totalData.total);
@@ -334,7 +329,9 @@ const DashboardPage = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            {tabValue !== 6 && (
+                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            )}
 
             {/* Navegación por botones */}
             <Box
@@ -583,7 +580,7 @@ const DashboardPage = () => {
         {tabValue === 5 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
-                    <MonthCutoffAlert systemName="de expedientes" startDate={startDateFormatted} endDate={endDateFormatted} />
+                    <MonthCutoffAlert systemName="de expedientes" startDate={startDate} endDate={endDate} />
                     <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
                         Expedientes
                     </Typography>
@@ -621,28 +618,13 @@ const DashboardPage = () => {
 
         {/* Tab 6: SAC */}
         {tabValue === 6 && (
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
-                    <MonthCutoffAlert systemName="SAC" startDate={startDateFormatted} endDate={endDateFormatted} />
-                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-                        SAC
-                    </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    {sacViaData.length > 0 ? (
-                        <CustomBarChart
-                            data={sacViaData}
-                            xKey="via"
-                            barKey="total"
-                            title="Análisis de vía de captación"
-                            isDarkMode={isDarkMode}
-                            height={400}
-                        />
-                    ) : (
-                        <Typography align="center">Sin datos</Typography>
-                    )}
-                </Grid>
-            </Grid>
+            <SacSection
+                sacViaData={sacViaData}
+                funcs={funcs}
+                isDarkMode={isDarkMode}
+                startDate={startDate}
+                endDate={endDate}
+            />
         )}
 
             {/* Tab 1: Análisis de Edad */}
@@ -800,10 +782,9 @@ const DashboardPage = () => {
 
             {user?.role === 'admin' && (
                 <>
-                    <Tooltip title={cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}>
+                    <Tooltip title="Borrar Dashboard">
                         <Fab
-                            onClick={handleLimpiarDashboard}
-                            disabled={cleaning}
+                            onClick={handleOpenDeleteDialog}
                             sx={{
                                 position: 'fixed',
                                 bottom: 24,
@@ -815,21 +796,26 @@ const DashboardPage = () => {
                                 },
                             }}
                         >
-                            {cleaning ? (
-                                <CircularProgress size={24} sx={{ color: 'white' }} />
-                            ) : (
-                                <CleaningServicesIcon />
-                            )}
+                            <CleaningServicesIcon />
                         </Fab>
                     </Tooltip>
-                    {cleanMsg && (
+                    {deleteMsg && (
                         <Alert
-                            severity={cleanMsg.includes('Error') ? 'error' : 'success'}
+                            severity={deleteMsg.includes('Error') ? 'error' : 'success'}
                             sx={{ position: 'fixed', bottom: 90, right: 24, zIndex: 1300 }}
                         >
-                            {cleanMsg}
+                            {deleteMsg}
                         </Alert>
                     )}
+                    <Suspense fallback={null}>
+                        {openDeleteDialog && (
+                            <DeleteDashboardDialog
+                                open={openDeleteDialog}
+                                onClose={handleCloseDeleteDialog}
+                                onDeleted={handleDeleted}
+                            />
+                        )}
+                    </Suspense>
                 </>
             )}
 
