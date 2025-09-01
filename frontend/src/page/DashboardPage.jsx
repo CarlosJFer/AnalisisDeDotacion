@@ -19,7 +19,7 @@ import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import SacSection from '../components/SACSection';
 import { useLocation } from 'react-router-dom';
-import { getCurrentMonthRange } from '../utils/dateUtils';
+import { getPreviousMonthRange } from '../utils/dateUtils.js';
 
 const DashboardPage = () => {
     const { user } = useAuth();
