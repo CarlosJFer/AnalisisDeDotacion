@@ -1574,6 +1574,361 @@ const getSacViaCaptacion = async (req, res) => {
   }
 };
 
+// Helper genérico para agregaciones SAC
+const aggregateSac = async (req, res, { groupField, groupAlias, metrics, sortField, limit = 5, defaultPlantilla }) => {
+  try {
+    const match = buildMatchStage({ ...req.query, plantilla: req.query.plantilla || defaultPlantilla });
+    const groupStage = { _id: `$${groupField}` };
+    metrics.forEach(m => {
+      if (m.op === 'sum') groupStage[m.alias] = { $sum: `$${m.field}` };
+      if (m.op === 'avg') groupStage[m.alias] = { $avg: `$${m.field}` };
+    });
+    const projectStage = { _id: 0, [groupAlias]: '$_id' };
+    metrics.forEach(m => { projectStage[m.alias] = 1; });
+    const pipeline = [
+      { $match: match },
+      { $group: groupStage },
+      { $sort: { [sortField]: -1 } },
+      { $limit: limit },
+      { $project: projectStage }
+    ];
+    const data = await Agent.aggregate(pipeline);
+    res.json(data);
+  } catch (err) {
+    console.error('Error en agregación SAC:', err.message);
+    res.status(500).json({ error: 'Error en análisis SAC', message: err.message });
+  }
+};
+
+// SAC - Cierre de problemas
+const getCierreProblemasTopByReclamos = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Problema - Descripcion',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Promedio cierre en dias', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'count',
+    defaultPlantilla: 'SAC - Cierre de problemas'
+  });
+
+const getCierreProblemasTopByPromedios = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Problema - Descripcion',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Promedio cierre en dias', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'avgClosure',
+    defaultPlantilla: 'SAC - Cierre de problemas'
+  });
+
+const getCierreProblemasTopByPendientes = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Problema - Descripcion',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Promedio cierre en dias', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'pendientes',
+    defaultPlantilla: 'SAC - Cierre de problemas'
+  });
+
+const getCierreProblemasTopByCerrados = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Problema - Descripcion',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Promedio cierre en dias', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'cerrados',
+    defaultPlantilla: 'SAC - Cierre de problemas'
+  });
+
+// SAC - Boca receptora
+const getBocaReceptoraTop = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Boca',
+    groupAlias: 'boca',
+    metrics: [{ field: 'Cantidad', op: 'sum', alias: 'cantidad' }],
+    sortField: 'cantidad',
+    defaultPlantilla: 'SAC - Boca receptora'
+  });
+
+// SAC - Frecuencia de tipos de cierre
+const getFrecuenciaTiposCierre = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Tipo de cierre - Descripcion',
+    groupAlias: 'tipo',
+    metrics: [{ field: 'Cantidad', op: 'sum', alias: 'cantidad' }],
+    sortField: 'cantidad',
+    defaultPlantilla: 'SAC - Frecuencia de tipos de cierre'
+  });
+
+// SAC - Temas
+const getTemasTopRecibidos = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Area',
+    groupAlias: 'area',
+    metrics: [{ field: 'Cantidad de recibidos', op: 'sum', alias: 'valor' }],
+    sortField: 'valor',
+    defaultPlantilla: 'SAC - Temas'
+  });
+
+const getTemasTopVisualizados = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Area',
+    groupAlias: 'area',
+    metrics: [{ field: 'Cantidad de visualizados', op: 'sum', alias: 'valor' }],
+    sortField: 'valor',
+    defaultPlantilla: 'SAC - Temas'
+  });
+
+const getTemasTopPendientes = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Area',
+    groupAlias: 'area',
+    metrics: [{ field: 'Cantidad de pendientes', op: 'sum', alias: 'valor' }],
+    sortField: 'valor',
+    defaultPlantilla: 'SAC - Temas'
+  });
+
+const getTemasTopEnProceso = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Area',
+    groupAlias: 'area',
+    metrics: [{ field: 'Cantidad en proceso', op: 'sum', alias: 'valor' }],
+    sortField: 'valor',
+    defaultPlantilla: 'SAC - Temas'
+  });
+
+const getTemasTopCerrados = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Area',
+    groupAlias: 'area',
+    metrics: [{ field: 'Cantidad de cerrados', op: 'sum', alias: 'valor' }],
+    sortField: 'valor',
+    defaultPlantilla: 'SAC - Temas'
+  });
+
+// SAC - Discriminación por tipo de contacto
+const getTipoContactoTopRecibidos = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Tipo de contacto',
+    groupAlias: 'tipo',
+    metrics: [
+      { field: 'Recibidos', op: 'sum', alias: 'recibidos' },
+      { field: 'Cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'recibidos',
+    defaultPlantilla: 'SAC - Discriminacion por tipo de contacto'
+  });
+
+const getTipoContactoTopCerrados = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Tipo de contacto',
+    groupAlias: 'tipo',
+    metrics: [
+      { field: 'Recibidos', op: 'sum', alias: 'recibidos' },
+      { field: 'Cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'cerrados',
+    defaultPlantilla: 'SAC - Discriminacion por tipo de contacto'
+  });
+
+// SAC - Evaluacion de llamadas por barrio
+const getLlamadasBarrioTop = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Barrio',
+    groupAlias: 'barrio',
+    metrics: [{ field: 'Realizadas', op: 'sum', alias: 'realizadas' }],
+    sortField: 'realizadas',
+    defaultPlantilla: 'SAC - Evaluacion de llamadas por barrio'
+  });
+
+// SAC - Secretaría de ambiente y desarrollo sustentable
+const getAmbienteTopReclamos = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'count',
+    defaultPlantilla: 'SAC - Secretaria de ambiente y desarrollo sustentable'
+  });
+
+const getAmbienteTopPromedios = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'avgClosure',
+    defaultPlantilla: 'SAC - Secretaria de ambiente y desarrollo sustentable'
+  });
+
+const getAmbienteTopPendientes = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'pendientes',
+    defaultPlantilla: 'SAC - Secretaria de ambiente y desarrollo sustentable'
+  });
+
+const getAmbienteTopCerrados = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'cerrados',
+    defaultPlantilla: 'SAC - Secretaria de ambiente y desarrollo sustentable'
+  });
+
+// SAC - Secretaría de infraestructura
+const getInfraestructuraTopReclamos = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'count',
+    defaultPlantilla: 'SAC - Secretaria de infraestructura'
+  });
+
+const getInfraestructuraTopPromedios = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'avgClosure',
+    defaultPlantilla: 'SAC - Secretaria de infraestructura'
+  });
+
+const getInfraestructuraTopPendientes = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'pendientes',
+    defaultPlantilla: 'SAC - Secretaria de infraestructura'
+  });
+
+const getInfraestructuraTopCerrados = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'cerrados',
+    defaultPlantilla: 'SAC - Secretaria de infraestructura'
+  });
+
+// SAC - Secretaría de coordinación de relaciones territoriales
+const getCoordinacionTopReclamos = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'count',
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
+  });
+
+const getCoordinacionTopPromedios = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'avgClosure',
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
+  });
+
+const getCoordinacionTopPendientes = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'pendientes',
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
+  });
+
+const getCoordinacionTopCerrados = (req, res) =>
+  aggregateSac(req, res, {
+    groupField: 'Descripcion del problema',
+    groupAlias: 'problem',
+    metrics: [
+      { field: 'Cantidad de reclamos', op: 'sum', alias: 'count' },
+      { field: 'Cierre en dias promedio', op: 'avg', alias: 'avgClosure' },
+      { field: 'Reclamos pendientes', op: 'sum', alias: 'pendientes' },
+      { field: 'Reclamos cerrados', op: 'sum', alias: 'cerrados' }
+    ],
+    sortField: 'cerrados',
+    defaultPlantilla: 'SAC - Secretaria de Coordinacion de Relaciones Territoriales'
+  });
+
 // Función para notificar modificaciones en el dashboard
 const notifyDashboardModification = async (req, res) => {
   try {
@@ -1656,6 +2011,32 @@ module.exports = {
   getAgentsByEntryTime,
   getAgentsByExitTime,
   getTopRegistrationUnits,
+  getCierreProblemasTopByReclamos,
+  getCierreProblemasTopByPromedios,
+  getCierreProblemasTopByPendientes,
+  getCierreProblemasTopByCerrados,
+  getBocaReceptoraTop,
+  getFrecuenciaTiposCierre,
+  getTemasTopRecibidos,
+  getTemasTopVisualizados,
+  getTemasTopPendientes,
+  getTemasTopEnProceso,
+  getTemasTopCerrados,
+  getTipoContactoTopRecibidos,
+  getTipoContactoTopCerrados,
+  getLlamadasBarrioTop,
+  getAmbienteTopReclamos,
+  getAmbienteTopPromedios,
+  getAmbienteTopPendientes,
+  getAmbienteTopCerrados,
+  getInfraestructuraTopReclamos,
+  getInfraestructuraTopPromedios,
+  getInfraestructuraTopPendientes,
+  getInfraestructuraTopCerrados,
+  getCoordinacionTopReclamos,
+  getCoordinacionTopPromedios,
+  getCoordinacionTopPendientes,
+  getCoordinacionTopCerrados,
   notifyDashboardModification,
   getSacViaCaptacion
 };
