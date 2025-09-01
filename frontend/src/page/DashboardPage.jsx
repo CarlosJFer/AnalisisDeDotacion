@@ -67,7 +67,7 @@ const DashboardPage = () => {
     const [expByTramite, setExpByTramite] = useState([]);
     const [funcs, setFuncs] = useState({});
     const [sacViaData, setSacViaData] = useState([]);
-    const { startDate, endDate } = getPreviousMonthRange();
+    const { startDate, endDate } = getCurrentMonthRange();
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
