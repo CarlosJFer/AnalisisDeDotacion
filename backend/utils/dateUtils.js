@@ -12,4 +12,13 @@ function getPreviousMonthRange() {
   return { startDate, endDate };
 }
 
-module.exports = { getPreviousMonthRange };
+function getCurrentMonthRange() {
+  const now = new Date();
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const startDate = firstDay.toISOString().split('T')[0];
+  const endDate = lastDay.toISOString().split('T')[0];
+  return { startDate, endDate };
+}
+
+module.exports = { getPreviousMonthRange, getCurrentMonthRange };
