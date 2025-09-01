@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -20,6 +20,7 @@ import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import SacSection from '../components/SACSection';
 import { useLocation } from 'react-router-dom';
 import { getPreviousMonthRange } from '../utils/dateUtils.js';
+const DeleteDashboardDialog = lazy(() => import('../components/DeleteDashboardDialog'));
 
 const DashboardPage = () => {
     const { user } = useAuth();
@@ -69,23 +70,16 @@ const DashboardPage = () => {
     const [sacViaData, setSacViaData] = useState([]);
     const { startDate, endDate } = getPreviousMonthRange();
 
-    // Hooks para limpiar dashboard
-    const [cleaning, setCleaning] = useState(false);
-    const [cleanMsg, setCleanMsg] = useState('');
+    // Diálogo de borrado de dashboard
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [deleteMsg, setDeleteMsg] = useState('');
 
-    const handleLimpiarDashboard = async () => {
-        setCleaning(true);
-        setCleanMsg('');
-        try {
-            await apiClient.post('/admin/limpiar-dashboard');
-            setCleanMsg('Dashboard limpiado correctamente.');
-            window.location.reload();
-        } catch (err) {
-            setCleanMsg('Error al limpiar el dashboard.');
-        } finally {
-            setCleaning(false);
-        }
-    };
+    const handleOpenDeleteDialog = useCallback(() => setOpenDeleteDialog(true), []);
+    const handleCloseDeleteDialog = useCallback(() => setOpenDeleteDialog(false), []);
+    const handleDeleted = useCallback((msg) => {
+        setDeleteMsg(msg);
+        window.location.reload();
+    }, []);
 
     // Función para filtrar datos que no sean "-" o vacíos
     const filterValidData = (data, nameKey) => {
@@ -788,10 +782,9 @@ const DashboardPage = () => {
 
             {user?.role === 'admin' && (
                 <>
-                    <Tooltip title={cleaning ? 'Limpiando...' : 'Limpiar Dashboard'}>
+                    <Tooltip title="Borrar Dashboard">
                         <Fab
-                            onClick={handleLimpiarDashboard}
-                            disabled={cleaning}
+                            onClick={handleOpenDeleteDialog}
                             sx={{
                                 position: 'fixed',
                                 bottom: 24,
@@ -803,21 +796,26 @@ const DashboardPage = () => {
                                 },
                             }}
                         >
-                            {cleaning ? (
-                                <CircularProgress size={24} sx={{ color: 'white' }} />
-                            ) : (
-                                <CleaningServicesIcon />
-                            )}
+                            <CleaningServicesIcon />
                         </Fab>
                     </Tooltip>
-                    {cleanMsg && (
+                    {deleteMsg && (
                         <Alert
-                            severity={cleanMsg.includes('Error') ? 'error' : 'success'}
+                            severity={deleteMsg.includes('Error') ? 'error' : 'success'}
                             sx={{ position: 'fixed', bottom: 90, right: 24, zIndex: 1300 }}
                         >
-                            {cleanMsg}
+                            {deleteMsg}
                         </Alert>
                     )}
+                    <Suspense fallback={null}>
+                        {openDeleteDialog && (
+                            <DeleteDashboardDialog
+                                open={openDeleteDialog}
+                                onClose={handleCloseDeleteDialog}
+                                onDeleted={handleDeleted}
+                            />
+                        )}
+                    </Suspense>
                 </>
             )}
 
