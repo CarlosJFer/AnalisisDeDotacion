@@ -335,7 +335,9 @@ const DashboardPage = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            {tabValue !== 6 && (
+                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            )}
 
             {/* Navegación por botones */}
             <Box
