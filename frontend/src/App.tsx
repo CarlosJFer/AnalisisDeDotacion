@@ -26,6 +26,12 @@ const GestionPlantillasPage = lazy(() => import('./page/GestionPlantillasPage.js
 import GestionVariablesPage from './page/GestionVariablesPage.jsx';
 const FunctionCenterPage = lazy(() => import('./page/FunctionCenterPage.jsx'));
 const DebugComponent = lazy(() => import('./components/DebugComponent.jsx'));
+const ToolsPage = lazy(() => import('./page/ToolsPage.jsx'));
+const ExpedientesTool = lazy(() => import('./page/tools/ExpedientesTool.jsx'));
+const AgrupamientoNivelesTool = lazy(() => import('./page/tools/AgrupamientoNivelesTool.jsx'));
+const ABNATool = lazy(() => import('./page/tools/ABNATool.jsx'));
+const AIDTool = lazy(() => import('./page/tools/AIDTool.jsx'));
+const ResolucionesTool = lazy(() => import('./page/tools/ResolucionesTool.jsx'));
 
 // Componentes
 import Navbar from './components/Navbar.jsx';
@@ -64,6 +70,12 @@ const AppLayout = () => {
               <Route path="/change-password" element={<ChangePasswordPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/organigrama" element={<OrganigramaPage />} />
+              <Route path="/tools" element={<ToolsPage />} />
+              <Route path="/tools/expedientes" element={<ExpedientesTool />} />
+              <Route path="/tools/agrupamiento-niveles" element={<AgrupamientoNivelesTool />} />
+              <Route path="/tools/abna" element={<ABNATool />} />
+              <Route path="/tools/aid" element={<AIDTool />} />
+              <Route path="/tools/resoluciones" element={<ResolucionesTool />} />
             </Route>
             {/* Rutas Protegidas solo para Admins */}
             <Route element={<ProtectedRoute adminOnly={true} />}>

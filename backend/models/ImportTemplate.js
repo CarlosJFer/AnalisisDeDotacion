@@ -17,6 +17,16 @@ const importTemplateSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true, trim: true },
   description: { type: String, trim: true },
   dataStartRow: { type: Number, required: true, default: 2, min: 1 },
+  dataEndRow: {
+    type: Number,
+    min: 1,
+    validate: {
+      validator: function (v) {
+        return v === undefined || v >= this.dataStartRow;
+      },
+      message: 'dataEndRow debe ser mayor o igual a dataStartRow'
+    }
+  },
   sheetName: { type: String, trim: true }, // opcional
   mappings: {
     type: [columnMappingSchema],
