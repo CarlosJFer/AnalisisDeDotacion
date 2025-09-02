@@ -242,9 +242,33 @@ const DashboardPage = () => {
         }
     };
 
+    const sanitizeFilters = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([k, v]) => {
+                if (!v) return false;
+                const fieldName = fieldMap[k];
+                return availableFields.size === 0 || availableFields.has(fieldName);
+            })
+        );
+    };
+
     const handleApplyFilters = (newFilters) => {
-        setFilters(newFilters);
-        fetchAllData(newFilters);
+        const clean = sanitizeFilters(newFilters);
+        setFilters(clean);
+        fetchAllData(clean);
+    };
+
+    const handleOrgNav = (nivel, valor) => {
+        const baseFilters = {
+            secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
+            subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
+            direccionGeneral: nivel === 'direccionGeneral' || nivel === 3 ? valor : '',
+            direccion: nivel === 'direccion' || nivel === 4 ? valor : '',
+            departamento: nivel === 'departamento' || nivel === 5 ? valor : '',
+            division: nivel === 'division' || nivel === 6 ? valor : '',
+            funcion: ''
+        };
+        handleApplyFilters(baseFilters);
     };
 
     const handleOrgNav = (nivel, valor) => {
