@@ -96,7 +96,10 @@ async function uploadFile(req, res) {
         }
         // Limpiar datos desde la fila indicada en la plantilla (dataStartRow)
         const data = xlsx.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
-        const datos = data.slice((template.dataStartRow || 2) - 1); // dataStartRow es 2-based
+        const { dataStartRow = 2, dataEndRow } = template;
+        const startIndex = dataStartRow - 1;
+        const endIndex = dataEndRow ? dataEndRow - 1 : data.length - 1;
+        const datos = data.slice(startIndex, endIndex + 1); // incluye fila de inicio y fin
         if (!datos.length) {
           try { fs.unlinkSync(filePath); } catch (e) {}
           resultados.push({ archivo: file.originalname, error: 'No se encontraron datos válidos en el archivo Excel (verifica la fila de inicio en la plantilla).' });
