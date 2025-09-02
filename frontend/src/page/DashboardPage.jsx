@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip, Snackbar } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -39,6 +39,7 @@ const DashboardPage = () => {
         funcion: ''
     });
     const [availableFields, setAvailableFields] = useState(new Set());
+    const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
     
     // Estados para todos los datos
     const [totalAgents, setTotalAgents] = useState(0);
@@ -105,6 +106,11 @@ const DashboardPage = () => {
         funcion: 'Funcion'
     };
     const filterFields = ['Secretaria','Subsecretaria','Dirección general','Dirección','Departamento','División','Funcion'];
+
+    useEffect(() => {
+        const has = filterFields.some(f => availableFields.has(f));
+        setShowNoFiltersAlert(!has && tabValue !== 6);
+    }, [availableFields, tabValue]);
 
     const fetchAllData = async (appliedFilters = filters) => {
         setLoading(true);
@@ -369,6 +375,16 @@ const DashboardPage = () => {
                     </Alert>
                 )
             )}
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
 
             {/* Navegación por botones */}
             <Box

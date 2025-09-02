@@ -235,7 +235,7 @@ const Navbar = () => {
           {user && (
             <Button
               component={Link}
-              to="/"
+              to="/tools"
               startIcon={<DashboardCustomizeIcon />}
               sx={{
                 color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
