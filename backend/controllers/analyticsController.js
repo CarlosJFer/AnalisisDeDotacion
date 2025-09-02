@@ -20,11 +20,25 @@ const buildMatchStage = (query) => {
     }
   }
 
+  // Campos disponibles enviados por el frontend para evitar filtrar por campos inexistentes
+  const availableFields = new Set();
+  if (query.availableFields) {
+    try {
+      const arr = Array.isArray(query.availableFields)
+        ? query.availableFields
+        : JSON.parse(query.availableFields);
+      arr.forEach(f => availableFields.add(f));
+    } catch (e) {
+      console.error('Error parsing availableFields:', e);
+    }
+  }
+
   // Para cada filtro específico permitimos coincidencias en campos con o sin acentos
   // y combinamos todos los filtros mediante $and para mantener la intersección.
   const andFilters = [];
   const addRegexFilter = (fields, value) => {
     if (!value) return;
+    if (availableFields.size && !fields.some(f => availableFields.has(f))) return;
     const orConditions = fields.map(f => ({ [f]: { $regex: value, $options: 'i' } }));
     andFilters.push({ $or: orConditions });
   };
