@@ -109,8 +109,8 @@ const DashboardPage = () => {
 
     useEffect(() => {
         const has = filterFields.some(f => availableFields.has(f));
-        setShowNoFiltersAlert(!has && tabValue !== 6);
-    }, [availableFields, tabValue]);
+        setShowNoFiltersAlert(!has);
+    }, [availableFields]);
 
     const fetchAllData = async (appliedFilters = filters) => {
         setLoading(true);
@@ -366,15 +366,17 @@ const DashboardPage = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            {tabValue !== 6 && (
-                filterFields.some(f => availableFields.has(f)) ? (
-                    <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
-                ) : (
-                    <Alert severity="info">
-                        Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
-                    </Alert>
-                )
-            )}
+            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
 
             <Snackbar
                 open={showNoFiltersAlert}

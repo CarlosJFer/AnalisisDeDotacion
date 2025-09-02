@@ -360,6 +360,16 @@ const DashboardNeikeBeca = () => {
                 </Alert>
             </Snackbar>
 
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
+
             {/* Navegación por botones */}
             <Box
                 sx={{
