@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip, Snackbar } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from '../services/api';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -38,6 +38,10 @@ const DashboardPage = () => {
         division: '',
         funcion: ''
     });
+    const [availableFields, setAvailableFields] = useState(new Set());
+    const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
+    const [filterApplied, setFilterApplied] = useState(false);
+    const [noData, setNoData] = useState(false);
     
     // Estados para todos los datos
     const [totalAgents, setTotalAgents] = useState(0);
@@ -94,6 +98,32 @@ const DashboardPage = () => {
         });
     };
 
+    const fieldMap = {
+        secretaria: 'Secretaria',
+        subsecretaria: 'Subsecretaria',
+        direccionGeneral: 'Dirección general',
+        direccion: 'Dirección',
+        departamento: 'Departamento',
+        division: 'División',
+        funcion: 'Funcion'
+    };
+    const filterFields = ['Secretaria','Subsecretaria','Dirección general','Dirección','Departamento','División','Funcion'];
+
+    const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const hasField = (name, fields = availableFields) => {
+        if (!fields.size) return true;
+        const target = normalize(name);
+        for (const f of fields) {
+            if (normalize(f) === target) return true;
+        }
+        return false;
+    };
+
+    useEffect(() => {
+        setFilterApplied(false);
+        setNoData(false);
+    }, [tabValue]);
+
     const fetchAllData = async (appliedFilters = filters) => {
         setLoading(true);
         setError('');
@@ -109,10 +139,17 @@ const DashboardPage = () => {
             const safeGet = async (endpoint, defaultData, plantilla, extraParams = {}) => {
                 if (!endpoint) return defaultData;
                 const params = Object.fromEntries(
-                    Object.entries(appliedFilters).filter(([, v]) => v)
+                    Object.entries(appliedFilters).filter(([k, v]) => {
+                        if (!v) return false;
+                        const fieldName = fieldMap[k];
+                        return hasField(fieldName);
+                    })
                 );
                 if (plantilla) {
                     params.plantilla = plantilla;
+                }
+                if (availableFields.size) {
+                    params.availableFields = Array.from(availableFields);
                 }
                 Object.assign(params, extraParams);
                 try {
@@ -200,6 +237,11 @@ const DashboardPage = () => {
             setAgentsByDireccion(direccionData);
             setAgentsByDepartamento(departamentoData);
             setAgentsByDivision(divisionData);
+            let fieldSet = availableFields;
+            if (dependencyData.length) {
+                fieldSet = new Set(Object.keys(dependencyData[0]));
+                setAvailableFields(fieldSet);
+            }
             setSeniorityData(seniorityRes);
             setSecondaryData(secondaryRes);
             setTertiaryData(tertiaryRes);
@@ -214,6 +256,10 @@ const DashboardPage = () => {
             setExpByTramite(byTramiteData);
             setSacViaData(sacViaCaptacionData);
 
+            const has = filterFields.some(f => hasField(f, fieldSet));
+            setShowNoFiltersAlert(!has);
+            setNoData(totalData.total === 0);
+
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
             console.error(err);
@@ -222,30 +268,63 @@ const DashboardPage = () => {
         }
     };
 
+    const sanitizeFilters = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([k, v]) => {
+                if (!v) return false;
+                const fieldName = fieldMap[k];
+                return hasField(fieldName);
+            })
+        );
+    };
+
     const handleApplyFilters = (newFilters) => {
-        setFilters(newFilters);
-        fetchAllData(newFilters);
+        const clean = sanitizeFilters(newFilters);
+        setFilters(clean);
+        setFilterApplied(true);
+        setNoData(false);
+        fetchAllData(clean);
+    };
+
+    const levelMap = {
+        1: 'secretaria',
+        2: 'subsecretaria',
+        3: 'direccionGeneral',
+        4: 'direccion',
+        5: 'departamento',
+        6: 'division',
+        7: 'funcion',
+        secretaria: 'secretaria',
+        subsecretaria: 'subsecretaria',
+        direccionGeneral: 'direccionGeneral',
+        direccion: 'direccion',
+        departamento: 'departamento',
+        division: 'division',
+        funcion: 'funcion'
+    };
+
+    const applyOrgNav = (nivel, valor) => {
+        const key = levelMap[nivel];
+        if (!key) return;
+        const baseFilters = {
+            secretaria: '',
+            subsecretaria: '',
+            direccionGeneral: '',
+            direccion: '',
+            departamento: '',
+            division: '',
+            funcion: ''
+        };
+        baseFilters[key] = valor;
+        handleApplyFilters(baseFilters);
     };
 
     useEffect(() => {
         if (location.state && location.state.nombre && location.state.nivel) {
-            const levelMap = {
-                1: 'secretaria',
-                2: 'subsecretaria',
-                3: 'direccionGeneral',
-                4: 'direccion',
-                5: 'departamento',
-                6: 'division'
-            };
-            const field = levelMap[location.state.nivel];
-            if (field) {
-                const newFilters = { ...filters, [field]: location.state.nombre };
-                setFilters(newFilters);
-                fetchAllData(newFilters);
-                return;
-            }
+            applyOrgNav(location.state.nivel, location.state.nombre);
+        } else {
+            fetchAllData(filters);
         }
-        fetchAllData(filters);
     }, [location.state]);
 
     const getTabButtonStyles = (value) => ({
@@ -329,8 +408,22 @@ const DashboardPage = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            {tabValue !== 6 && (
-                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
+
+            {filterApplied && noData && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                    No se encontraron datos con los filtros aplicados.
+                </Alert>
             )}
 
             {/* Navegación por botones */}
