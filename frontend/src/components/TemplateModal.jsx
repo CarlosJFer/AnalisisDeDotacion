@@ -33,6 +33,12 @@ function validate(form) {
   if (!Number.isInteger(row) || row < 1) {
     errors.dataStartRow = 'Debe ser un entero ≥ 1';
   }
+  if (form.dataEndRow !== undefined && form.dataEndRow !== '') {
+    const end = Number(form.dataEndRow);
+    if (!Number.isInteger(end) || end < row) {
+      errors.dataEndRow = 'Debe ser un entero ≥ fila inicio';
+    }
+  }
   if (!Array.isArray(form.mappings) || form.mappings.length === 0) {
     errors.mappingsGeneral = 'Agrega al menos un mapeo';
   } else {
@@ -48,7 +54,7 @@ function validate(form) {
 }
 
 const TemplateModal = ({ open, onClose, onSubmit, initialData, isDarkMode, saving = false }) => {
-  const [form, setForm] = useState({ name: '', description: '', dataStartRow: 2, mappings: [] });
+  const [form, setForm] = useState({ name: '', description: '', dataStartRow: 2, dataEndRow: undefined, mappings: [] });
   const [touched, setTouched] = useState({});
   const [initializing, setInitializing] = useState(false);
   const [debouncedForm, setDebouncedForm] = useState(form);
@@ -64,6 +70,7 @@ const TemplateModal = ({ open, onClose, onSubmit, initialData, isDarkMode, savin
         name: initialData.name || '',
         description: initialData.description || '',
         dataStartRow: initialData.dataStartRow ?? 2,
+        dataEndRow: initialData.dataEndRow,
         mappings: Array.isArray(initialData.mappings)
           ? initialData.mappings.map(m => ({
               columnHeader: m.columnHeader || '',
@@ -73,7 +80,7 @@ const TemplateModal = ({ open, onClose, onSubmit, initialData, isDarkMode, savin
           : [],
       });
     } else {
-      setForm({ name: '', description: '', dataStartRow: 2, mappings: [] });
+      setForm({ name: '', description: '', dataStartRow: 2, dataEndRow: undefined, mappings: [] });
     }
     setTouched({});
     const id = setTimeout(() => setInitializing(false), 0);
@@ -123,6 +130,7 @@ const TemplateModal = ({ open, onClose, onSubmit, initialData, isDarkMode, savin
     const hasFieldErrors =
       nowErrors.name ||
       nowErrors.dataStartRow ||
+      nowErrors.dataEndRow ||
       nowErrors.mappingsGeneral ||
       (nowErrors.mappings || []).some(m => Object.keys(m || {}).length);
     if (hasFieldErrors) return;
@@ -193,6 +201,19 @@ const TemplateModal = ({ open, onClose, onSubmit, initialData, isDarkMode, savin
                   inputProps={{ min: 1 }}
                   error={Boolean(touched.all && errors.dataStartRow)}
                   helperText={touched.all && errors.dataStartRow}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  name="dataEndRow"
+                  label="Fila de fin de datos"
+                  type="number"
+                  value={form.dataEndRow ?? ''}
+                  onChange={e => setField('dataEndRow', e.target.value === '' ? undefined : Number(e.target.value))}
+                  fullWidth
+                  inputProps={{ min: 1 }}
+                  error={Boolean(touched.all && errors.dataEndRow)}
+                  helperText={touched.all && errors.dataEndRow ? errors.dataEndRow : 'Opcional. Dejar en blanco para leer hasta el final'}
                 />
               </Grid>
 

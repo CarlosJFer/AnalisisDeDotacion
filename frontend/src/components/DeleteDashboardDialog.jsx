@@ -11,11 +11,15 @@ import {
   Checkbox,
   CircularProgress,
   Divider,
+  DialogContentText,
+  Typography
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from '../services/api';
 
 const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
+  const { isDarkMode } = useTheme();
   const modules = useMemo(
     () => ['Planta y Contratos', 'Neikes y Becas', 'Expedientes', 'SAC'],
     []
@@ -53,11 +57,22 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
   }, [selected, onClose, onDelete]);
 
   return (
-    <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle sx={{ fontWeight: 600 }}>Selecciona los módulos a borrar</DialogTitle>
-      <Divider />
+    <Dialog
+      open={isOpen}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      PaperProps={{
+        sx: { borderRadius: 3, bgcolor: isDarkMode ? '#1e293b' : '#f8fafc' }
+      }}
+    >
+      <DialogTitle sx={{ fontWeight: 600 }}>Borrar datos del dashboard</DialogTitle>
       <DialogContent>
-        <List sx={{ bgcolor: 'background.default' }}>
+        <DialogContentText sx={{ mb: 2 }}>
+          Selecciona los módulos cuyos datos deseas eliminar.
+        </DialogContentText>
+        <Divider sx={{ mb: 2 }} />
+        <List sx={{ bgcolor: 'transparent' }}>
           {modules.map((module) => (
             <ListItem key={module} disablePadding>
               <FormControlLabel
@@ -67,7 +82,7 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
                     onChange={handleToggle(module)}
                   />
                 }
-                label={module}
+                label={<Typography>{module}</Typography>}
               />
             </ListItem>
           ))}
@@ -82,11 +97,9 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
           color="error"
           variant="contained"
           disabled={loading || selected.length === 0}
-          startIcon={
-            loading ? <CircularProgress size={16} /> : <DeleteIcon />
-          }
         >
-          {loading ? 'Borrando...' : 'Borrar datos'}
+          {loading ? <CircularProgress size={24} /> : <DeleteIcon />}
+          {loading ? ' Borrando...' : ' Borrar datos'}
         </Button>
       </DialogActions>
     </Dialog>
