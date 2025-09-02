@@ -392,7 +392,49 @@ const DashboardNeikeBeca = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            {filterFields.some(f => availableFields.has(f)) ? (
+                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            ) : (
+                <Alert severity="info">
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            )}
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
+
+            {filterApplied && noData && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                    No se encontraron datos con los filtros aplicados.
+                </Alert>
+            )}
 
             <Snackbar
                 open={showNoFiltersAlert}
