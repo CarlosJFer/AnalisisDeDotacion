@@ -258,7 +258,7 @@ const DashboardPage = () => {
         fetchAllData(clean);
     };
 
-    const handleOrgNav = (nivel, valor) => {
+    const applyOrgNav = (nivel, valor) => {
         const baseFilters = {
             secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
             subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
@@ -271,23 +271,9 @@ const DashboardPage = () => {
         handleApplyFilters(baseFilters);
     };
 
-    const handleOrgNav = (nivel, valor) => {
-        const newFilters = {
-            secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
-            subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
-            direccionGeneral: nivel === 'direccionGeneral' || nivel === 3 ? valor : '',
-            direccion: nivel === 'direccion' || nivel === 4 ? valor : '',
-            departamento: nivel === 'departamento' || nivel === 5 ? valor : '',
-            division: nivel === 'division' || nivel === 6 ? valor : '',
-            funcion: ''
-        };
-        setFilters(newFilters);
-        fetchAllData(newFilters);
-    };
-
     useEffect(() => {
         if (location.state && location.state.nombre && location.state.nivel) {
-            handleOrgNav(location.state.nivel, location.state.nombre);
+            applyOrgNav(location.state.nivel, location.state.nombre);
         } else {
             fetchAllData(filters);
         }

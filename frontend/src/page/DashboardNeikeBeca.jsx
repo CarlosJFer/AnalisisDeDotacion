@@ -251,20 +251,6 @@ const DashboardNeikeBeca = () => {
         handleApplyFilters(baseFilters);
     };
 
-    const handleOrgNav = (nivel, valor) => {
-        const newFilters = {
-            secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
-            subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
-            direccionGeneral: nivel === 'direccionGeneral' || nivel === 3 ? valor : '',
-            direccion: nivel === 'direccion' || nivel === 4 ? valor : '',
-            departamento: nivel === 'departamento' || nivel === 5 ? valor : '',
-            division: nivel === 'division' || nivel === 6 ? valor : '',
-            funcion: ''
-        };
-        setFilters(newFilters);
-        fetchAllData(newFilters);
-    };
-
     useEffect(() => {
         fetchAllData(filters);
     }, []);
