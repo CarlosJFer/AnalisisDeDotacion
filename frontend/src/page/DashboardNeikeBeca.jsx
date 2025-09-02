@@ -32,6 +32,8 @@ const DashboardNeikeBeca = () => {
     });
     const [availableFields, setAvailableFields] = useState(new Set());
     const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
+    const [filterApplied, setFilterApplied] = useState(false);
+    const [noData, setNoData] = useState(false);
     
     // Estados para todos los datos
     const [totalAgents, setTotalAgents] = useState(0);
@@ -101,10 +103,20 @@ const DashboardNeikeBeca = () => {
     };
     const filterFields = ['Secretaria','Subsecretaria','Dirección general','Dirección','Departamento','División','Funcion'];
 
+    const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const hasField = (name, fields = availableFields) => {
+        if (!fields.size) return true;
+        const target = normalize(name);
+        for (const f of fields) {
+            if (normalize(f) === target) return true;
+        }
+        return false;
+    };
+
     useEffect(() => {
-        const has = filterFields.some(f => availableFields.has(f));
-        setShowNoFiltersAlert(!has);
-    }, [availableFields, tabValue]);
+        setFilterApplied(false);
+        setNoData(false);
+    }, [tabValue]);
 
     const fetchAllData = async (appliedFilters = filters) => {
         setLoading(true);
@@ -123,7 +135,7 @@ const DashboardNeikeBeca = () => {
                     Object.entries(appliedFilters).filter(([k, v]) => {
                         if (!v) return false;
                         const fieldName = fieldMap[k];
-                        return availableFields.size === 0 || availableFields.has(fieldName);
+                        return hasField(fieldName);
                     })
                 );
                 if (plantilla) {
@@ -218,7 +230,14 @@ const DashboardNeikeBeca = () => {
             setEntryTimeData(entryTimeRes);
             setExitTimeData(exitTimeRes);
             setTopUnitsData(topUnitsRes);
-            setAvailableFields(new Set(dependencyData[0] ? Object.keys(dependencyData[0]) : []));
+            let fieldSet = availableFields;
+            if (dependencyData.length) {
+                fieldSet = new Set(Object.keys(dependencyData[0]));
+                setAvailableFields(fieldSet);
+            }
+            const has = filterFields.some(f => hasField(f, fieldSet));
+            setShowNoFiltersAlert(!has);
+            setNoData(totalData.total === 0);
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -233,7 +252,7 @@ const DashboardNeikeBeca = () => {
             Object.entries(obj).filter(([k, v]) => {
                 if (!v) return false;
                 const fieldName = fieldMap[k];
-                return availableFields.size === 0 || availableFields.has(fieldName);
+                return hasField(fieldName);
             })
         );
     };
@@ -241,19 +260,40 @@ const DashboardNeikeBeca = () => {
     const handleApplyFilters = (newFilters) => {
         const clean = sanitizeFilters(newFilters);
         setFilters(clean);
+        setFilterApplied(true);
+        setNoData(false);
         fetchAllData(clean);
     };
 
+    const levelMap = {
+        1: 'secretaria',
+        2: 'subsecretaria',
+        3: 'direccionGeneral',
+        4: 'direccion',
+        5: 'departamento',
+        6: 'division',
+        7: 'funcion',
+        secretaria: 'secretaria',
+        subsecretaria: 'subsecretaria',
+        direccionGeneral: 'direccionGeneral',
+        direccion: 'direccion',
+        departamento: 'departamento',
+        division: 'division',
+        funcion: 'funcion'
+    };
     const handleOrgNav = (nivel, valor) => {
+        const key = levelMap[nivel];
+        if (!key) return;
         const baseFilters = {
-            secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
-            subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
-            direccionGeneral: nivel === 'direccionGeneral' || nivel === 3 ? valor : '',
-            direccion: nivel === 'direccion' || nivel === 4 ? valor : '',
-            departamento: nivel === 'departamento' || nivel === 5 ? valor : '',
-            division: nivel === 'division' || nivel === 6 ? valor : '',
+            secretaria: '',
+            subsecretaria: '',
+            direccionGeneral: '',
+            direccion: '',
+            departamento: '',
+            division: '',
             funcion: ''
         };
+        baseFilters[key] = valor;
         handleApplyFilters(baseFilters);
     };
 
@@ -369,6 +409,22 @@ const DashboardNeikeBeca = () => {
                     Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
                 </Alert>
             </Snackbar>
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
+
+            {filterApplied && noData && (
+                <Alert severity="info" sx={{ mt: 2 }}>
+                    No se encontraron datos con los filtros aplicados.
+                </Alert>
+            )}
 
             {/* Navegación por botones */}
             <Box
