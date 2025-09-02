@@ -118,7 +118,7 @@ const DashboardNeikeBeca = () => {
         setNoData(false);
     }, [tabValue]);
 
-    const fetchAllData = async (appliedFilters = filters) => {
+    const fetchAllData = async (appliedFilters = filters, fromFilter = false) => {
         setLoading(true);
         setError('');
 
@@ -236,7 +236,9 @@ const DashboardNeikeBeca = () => {
                 setAvailableFields(fieldSet);
             }
             const has = filterFields.some(f => hasField(f, fieldSet));
-            setShowNoFiltersAlert(!has);
+            if (fromFilter) {
+                setShowNoFiltersAlert(!has);
+            }
             setNoData(totalData.total === 0);
 
         } catch (err) {
@@ -262,7 +264,7 @@ const DashboardNeikeBeca = () => {
         setFilters(clean);
         setFilterApplied(true);
         setNoData(false);
-        fetchAllData(clean);
+        fetchAllData(clean, true);
     };
 
     const levelMap = {
@@ -275,14 +277,22 @@ const DashboardNeikeBeca = () => {
         7: 'funcion',
         secretaria: 'secretaria',
         subsecretaria: 'subsecretaria',
-        direccionGeneral: 'direccionGeneral',
+        direcciongeneral: 'direccionGeneral',
         direccion: 'direccion',
         departamento: 'departamento',
         division: 'division',
         funcion: 'funcion'
     };
     const handleOrgNav = (nivel, valor) => {
-        const key = levelMap[nivel];
+        const key = levelMap[
+            typeof nivel === 'string'
+                ? nivel
+                      .normalize('NFD')
+                      .replace(/[\u0300-\u036f]/g, '')
+                      .toLowerCase()
+                      .replace(/\s+/g, '')
+                : nivel
+        ];
         if (!key) return;
         const baseFilters = {
             secretaria: '',
@@ -298,7 +308,7 @@ const DashboardNeikeBeca = () => {
     };
 
     useEffect(() => {
-        fetchAllData(filters);
+        fetchAllData(filters, false);
     }, []);
 
     const getTabButtonStyles = (value) => ({
@@ -425,6 +435,26 @@ const DashboardNeikeBeca = () => {
                     No se encontraron datos con los filtros aplicados.
                 </Alert>
             )}
+
+            <Snackbar
+                open={showNoFiltersAlert}
+                onClose={() => setShowNoFiltersAlert(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            </Snackbar>
+
+            <Snackbar
+                open={filterApplied && noData}
+                onClose={() => setNoData(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setNoData(false)}>
+                    No se encontraron datos con los filtros aplicados.
+                </Alert>
+            </Snackbar>
 
             {/* Navegación por botones */}
             <Box

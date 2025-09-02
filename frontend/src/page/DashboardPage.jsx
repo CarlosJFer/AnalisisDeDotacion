@@ -124,7 +124,7 @@ const DashboardPage = () => {
         setNoData(false);
     }, [tabValue]);
 
-    const fetchAllData = async (appliedFilters = filters) => {
+    const fetchAllData = async (appliedFilters = filters, fromFilter = false) => {
         setLoading(true);
         setError('');
 
@@ -257,7 +257,9 @@ const DashboardPage = () => {
             setSacViaData(sacViaCaptacionData);
 
             const has = filterFields.some(f => hasField(f, fieldSet));
-            setShowNoFiltersAlert(!has);
+            if (fromFilter) {
+                setShowNoFiltersAlert(!has);
+            }
             setNoData(totalData.total === 0);
 
         } catch (err) {
@@ -283,7 +285,7 @@ const DashboardPage = () => {
         setFilters(clean);
         setFilterApplied(true);
         setNoData(false);
-        fetchAllData(clean);
+        fetchAllData(clean, true);
     };
 
     const levelMap = {
@@ -296,7 +298,7 @@ const DashboardPage = () => {
         7: 'funcion',
         secretaria: 'secretaria',
         subsecretaria: 'subsecretaria',
-        direccionGeneral: 'direccionGeneral',
+        direcciongeneral: 'direccionGeneral',
         direccion: 'direccion',
         departamento: 'departamento',
         division: 'division',
@@ -304,7 +306,15 @@ const DashboardPage = () => {
     };
 
     const applyOrgNav = (nivel, valor) => {
-        const key = levelMap[nivel];
+        const key = levelMap[
+            typeof nivel === 'string'
+                ? nivel
+                      .normalize('NFD')
+                      .replace(/[\u0300-\u036f]/g, '')
+                      .toLowerCase()
+                      .replace(/\s+/g, '')
+                : nivel
+        ];
         if (!key) return;
         const baseFilters = {
             secretaria: '',
@@ -323,7 +333,7 @@ const DashboardPage = () => {
         if (location.state && location.state.nombre && location.state.nivel) {
             applyOrgNav(location.state.nivel, location.state.nombre);
         } else {
-            fetchAllData(filters);
+            fetchAllData(filters, false);
         }
     }, [location.state]);
 
@@ -420,11 +430,15 @@ const DashboardPage = () => {
                 </Alert>
             </Snackbar>
 
-            {filterApplied && noData && (
-                <Alert severity="info" sx={{ mt: 2 }}>
+            <Snackbar
+                open={filterApplied && noData}
+                onClose={() => setNoData(false)}
+                autoHideDuration={6000}
+            >
+                <Alert severity="info" onClose={() => setNoData(false)}>
                     No se encontraron datos con los filtros aplicados.
                 </Alert>
-            )}
+            </Snackbar>
 
             {/* Navegación por botones */}
             <Box
