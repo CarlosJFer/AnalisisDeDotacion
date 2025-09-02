@@ -209,6 +209,18 @@ async function uploadFile(req, res) {
           obj.templateUsed = template._id;
           // Guardar el nombre de la plantilla sin espacios extra para facilitar los filtros
           obj.plantilla = template.name.trim(); // ✅ AGREGAR NOMBRE DE PLANTILLA PARA FILTROS
+          const allowedFilterFields = [
+            'Secretaria',
+            'Subsecretaria',
+            'Dirección general',
+            'Dirección',
+            'Departamento',
+            'División',
+            'Funcion'
+          ];
+          obj.availableFields = Object.keys(obj).filter(k =>
+            allowedFilterFields.includes(k)
+          );
           // Validar: al menos un campo clave debe tener valor válido
           const tieneClave = camposClave.some(campo => {
             const v = obj[campo];

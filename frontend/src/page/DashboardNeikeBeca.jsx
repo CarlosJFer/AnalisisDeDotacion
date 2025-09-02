@@ -30,6 +30,7 @@ const DashboardNeikeBeca = () => {
         division: '',
         funcion: ''
     });
+    const [availableFields, setAvailableFields] = useState(new Set());
     
     // Estados para todos los datos
     const [totalAgents, setTotalAgents] = useState(0);
@@ -88,6 +89,17 @@ const DashboardNeikeBeca = () => {
         });
     };
 
+    const fieldMap = {
+        secretaria: 'Secretaria',
+        subsecretaria: 'Subsecretaria',
+        direccionGeneral: 'Dirección general',
+        direccion: 'Dirección',
+        departamento: 'Departamento',
+        division: 'División',
+        funcion: 'Funcion'
+    };
+    const filterFields = ['Secretaria','Subsecretaria','Dirección general','Dirección','Departamento','División','Funcion'];
+
     const fetchAllData = async (appliedFilters = filters) => {
         setLoading(true);
         setError('');
@@ -102,10 +114,17 @@ const DashboardNeikeBeca = () => {
             const safeGet = async (endpoint, defaultData, plantilla, extraParams = {}) => {
                 if (!endpoint) return defaultData;
                 const params = Object.fromEntries(
-                    Object.entries(appliedFilters).filter(([, v]) => v)
+                    Object.entries(appliedFilters).filter(([k, v]) => {
+                        if (!v) return false;
+                        const fieldName = fieldMap[k];
+                        return availableFields.size === 0 || availableFields.has(fieldName);
+                    })
                 );
                 if (plantilla) {
                     params.plantilla = plantilla;
+                }
+                if (availableFields.size) {
+                    params.availableFields = Array.from(availableFields);
                 }
                 Object.assign(params, extraParams);
                 try {
@@ -193,6 +212,7 @@ const DashboardNeikeBeca = () => {
             setEntryTimeData(entryTimeRes);
             setExitTimeData(exitTimeRes);
             setTopUnitsData(topUnitsRes);
+            setAvailableFields(new Set(dependencyData[0] ? Object.keys(dependencyData[0]) : []));
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -203,6 +223,20 @@ const DashboardNeikeBeca = () => {
     };
 
     const handleApplyFilters = (newFilters) => {
+        setFilters(newFilters);
+        fetchAllData(newFilters);
+    };
+
+    const handleOrgNav = (nivel, valor) => {
+        const newFilters = {
+            secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
+            subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
+            direccionGeneral: nivel === 'direccionGeneral' || nivel === 3 ? valor : '',
+            direccion: nivel === 'direccion' || nivel === 4 ? valor : '',
+            departamento: nivel === 'departamento' || nivel === 5 ? valor : '',
+            division: nivel === 'division' || nivel === 6 ? valor : '',
+            funcion: ''
+        };
         setFilters(newFilters);
         fetchAllData(newFilters);
     };
@@ -292,7 +326,13 @@ const DashboardNeikeBeca = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            {filterFields.some(f => availableFields.has(f)) ? (
+                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            ) : (
+                <Alert severity="info">
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            )}
 
             {/* Navegación por botones */}
             <Box
