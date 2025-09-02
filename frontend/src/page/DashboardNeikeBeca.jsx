@@ -9,15 +9,11 @@ import BusinessIcon from '@mui/icons-material/Business';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import SchoolIcon from '@mui/icons-material/School';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import PhoneIcon from '@mui/icons-material/Phone';
 import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
-import MonthCutoffAlert from '../components/MonthCutoffAlert';
-import { getPreviousMonthRange } from '../utils/dateUtils';
 
 const DashboardNeikeBeca = () => {
     const { user } = useAuth();
@@ -34,6 +30,7 @@ const DashboardNeikeBeca = () => {
         division: '',
         funcion: ''
     });
+    const [availableFields, setAvailableFields] = useState(new Set());
     
     // Estados para todos los datos
     const [totalAgents, setTotalAgents] = useState(0);
@@ -60,10 +57,6 @@ const DashboardNeikeBeca = () => {
     const [entryTimeData, setEntryTimeData] = useState([]);
     const [exitTimeData, setExitTimeData] = useState([]);
     const [topUnitsData, setTopUnitsData] = useState([]);
-    const [expTopInitiators, setExpTopInitiators] = useState([]);
-    const [expByTramite, setExpByTramite] = useState([]);
-    const [sacViaData, setSacViaData] = useState([]);
-    const { startDate, endDate } = getPreviousMonthRange();
 
     // Hooks para limpiar dashboard
     const [cleaning, setCleaning] = useState(false);
@@ -96,6 +89,17 @@ const DashboardNeikeBeca = () => {
         });
     };
 
+    const fieldMap = {
+        secretaria: 'Secretaria',
+        subsecretaria: 'Subsecretaria',
+        direccionGeneral: 'Dirección general',
+        direccion: 'Dirección',
+        departamento: 'Departamento',
+        division: 'División',
+        funcion: 'Funcion'
+    };
+    const filterFields = ['Secretaria','Subsecretaria','Dirección general','Dirección','Departamento','División','Funcion'];
+
     const fetchAllData = async (appliedFilters = filters) => {
         setLoading(true);
         setError('');
@@ -110,10 +114,17 @@ const DashboardNeikeBeca = () => {
             const safeGet = async (endpoint, defaultData, plantilla, extraParams = {}) => {
                 if (!endpoint) return defaultData;
                 const params = Object.fromEntries(
-                    Object.entries(appliedFilters).filter(([, v]) => v)
+                    Object.entries(appliedFilters).filter(([k, v]) => {
+                        if (!v) return false;
+                        const fieldName = fieldMap[k];
+                        return availableFields.size === 0 || availableFields.has(fieldName);
+                    })
                 );
                 if (plantilla) {
                     params.plantilla = plantilla;
+                }
+                if (availableFields.size) {
+                    params.availableFields = Array.from(availableFields);
                 }
                 Object.assign(params, extraParams);
                 try {
@@ -128,8 +139,6 @@ const DashboardNeikeBeca = () => {
             const TEMPLATE_NEIKES_BECAS = 'Rama completa - Neikes y Beca';
             const TEMPLATE_DATOS_NEIKES = 'Datos concurso - Neikes y Beca';
             const TEMPLATE_CONTROL_NEIKES = 'Control de certificaciones - Neikes y Becas';
-            const TEMPLATE_EXPEDIENTES = 'Expedientes';
-            const TEMPLATE_SAC_VIAS = 'SAC - Via de captacion';
             const [
                 totalData,
                 ageDistData,
@@ -152,10 +161,7 @@ const DashboardNeikeBeca = () => {
                 regTypeRes,
                 entryTimeRes,
                 exitTimeRes,
-                topUnitsRes,
-                topInitiatorsData,
-                byTramiteData,
-                sacViaCaptacionData
+                topUnitsRes
             ] = await Promise.all([
                 // Datos correspondientes a la plantilla "Rama completa - Neikes y Beca"
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_NEIKES_BECAS),
@@ -181,12 +187,7 @@ const DashboardNeikeBeca = () => {
                 safeGet(funcs.certificationsRegistrationType, [], TEMPLATE_CONTROL_NEIKES),
                 safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_NEIKES),
                 safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_NEIKES),
-                safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_NEIKES),
-                // Expedientes
-                safeGet(funcs.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
-                safeGet(funcs.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
-                // SAC (sin filtros de fecha)
-                safeGet(funcs.sacViaCaptacion, [], TEMPLATE_SAC_VIAS)
+                safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_NEIKES)
             ]);
 
             setTotalAgents(totalData.total);
@@ -211,9 +212,7 @@ const DashboardNeikeBeca = () => {
             setEntryTimeData(entryTimeRes);
             setExitTimeData(exitTimeRes);
             setTopUnitsData(topUnitsRes);
-            setExpTopInitiators(topInitiatorsData);
-            setExpByTramite(byTramiteData);
-            setSacViaData(sacViaCaptacionData);
+            setAvailableFields(new Set(dependencyData[0] ? Object.keys(dependencyData[0]) : []));
 
         } catch (err) {
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
@@ -223,9 +222,33 @@ const DashboardNeikeBeca = () => {
         }
     };
 
+    const sanitizeFilters = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([k, v]) => {
+                if (!v) return false;
+                const fieldName = fieldMap[k];
+                return availableFields.size === 0 || availableFields.has(fieldName);
+            })
+        );
+    };
+
     const handleApplyFilters = (newFilters) => {
-        setFilters(newFilters);
-        fetchAllData(newFilters);
+        const clean = sanitizeFilters(newFilters);
+        setFilters(clean);
+        fetchAllData(clean);
+    };
+
+    const handleOrgNav = (nivel, valor) => {
+        const baseFilters = {
+            secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
+            subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
+            direccionGeneral: nivel === 'direccionGeneral' || nivel === 3 ? valor : '',
+            direccion: nivel === 'direccion' || nivel === 4 ? valor : '',
+            departamento: nivel === 'departamento' || nivel === 5 ? valor : '',
+            division: nivel === 'division' || nivel === 6 ? valor : '',
+            funcion: ''
+        };
+        handleApplyFilters(baseFilters);
     };
 
     useEffect(() => {
@@ -313,7 +336,13 @@ const DashboardNeikeBeca = () => {
                 Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            {filterFields.some(f => availableFields.has(f)) ? (
+                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+            ) : (
+                <Alert severity="info">
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                </Alert>
+            )}
 
             {/* Navegación por botones */}
             <Box
@@ -360,20 +389,6 @@ const DashboardNeikeBeca = () => {
                     sx={getTabButtonStyles(4)}
                 >
                     Control de certificaciones – Neikes y Becas
-                </Button>
-                <Button
-                    onClick={() => setTabValue(5)}
-                    startIcon={<FolderOpenIcon />}
-                    sx={getTabButtonStyles(5)}
-                >
-                    Expedientes
-                </Button>
-                <Button
-                    onClick={() => setTabValue(6)}
-                    startIcon={<PhoneIcon />}
-                    sx={getTabButtonStyles(6)}
-                >
-                    SAC
                 </Button>
             </Box>
 
@@ -711,71 +726,6 @@ const DashboardNeikeBeca = () => {
             </Grid>
         )}
 
-        {/* Tab 5: Expedientes */}
-        {tabValue === 5 && (
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
-                    <MonthCutoffAlert systemName="de expedientes" startDate={startDate} endDate={endDate} />
-                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-                        Expedientes
-                    </Typography>
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    {expTopInitiators.length > 0 ? (
-                        <CustomBarChart
-                            data={expTopInitiators}
-                            xKey="initiator"
-                            barKey="count"
-                            title="Top 10 áreas con más trámites gestionados"
-                            isDarkMode={isDarkMode}
-                            height={400}
-                        />
-                    ) : (
-                        <Typography align="center">Sin datos</Typography>
-                    )}
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    {expByTramite.length > 0 ? (
-                        <CustomBarChart
-                            data={expByTramite}
-                            xKey="tramite"
-                            barKey="count"
-                            title="Cantidad de expedientes según tipo de trámite"
-                            isDarkMode={isDarkMode}
-                            height={400}
-                        />
-                    ) : (
-                        <Typography align="center">Sin datos</Typography>
-                    )}
-                </Grid>
-            </Grid>
-        )}
-
-        {/* Tab 6: SAC */}
-        {tabValue === 6 && (
-            <Grid container spacing={3}>
-                <Grid item xs={12}>
-                    <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
-                    <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-                        SAC
-                    </Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    {sacViaData.length > 0 ? (
-                        <CustomBarChart
-                            data={sacViaData}
-                            xKey="via"
-                            barKey="total"
-                            title="Análisis de vía de captación"
-                            isDarkMode={isDarkMode}
-                            height={400}
-                        />
-                    ) : (
-                        <Typography align="center">Sin datos</Typography>
-                    )}
-                </Grid>
-            </Grid>
-        )}
 
         {user?.role === 'admin' && (
             <>

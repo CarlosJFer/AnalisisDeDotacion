@@ -38,6 +38,7 @@ const DashboardPage = () => {
         division: '',
         funcion: ''
     });
+    const [availableFields, setAvailableFields] = useState(new Set());
     
     // Estados para todos los datos
     const [totalAgents, setTotalAgents] = useState(0);
@@ -94,6 +95,17 @@ const DashboardPage = () => {
         });
     };
 
+    const fieldMap = {
+        secretaria: 'Secretaria',
+        subsecretaria: 'Subsecretaria',
+        direccionGeneral: 'Dirección general',
+        direccion: 'Dirección',
+        departamento: 'Departamento',
+        division: 'División',
+        funcion: 'Funcion'
+    };
+    const filterFields = ['Secretaria','Subsecretaria','Dirección general','Dirección','Departamento','División','Funcion'];
+
     const fetchAllData = async (appliedFilters = filters) => {
         setLoading(true);
         setError('');
@@ -109,10 +121,17 @@ const DashboardPage = () => {
             const safeGet = async (endpoint, defaultData, plantilla, extraParams = {}) => {
                 if (!endpoint) return defaultData;
                 const params = Object.fromEntries(
-                    Object.entries(appliedFilters).filter(([, v]) => v)
+                    Object.entries(appliedFilters).filter(([k, v]) => {
+                        if (!v) return false;
+                        const fieldName = fieldMap[k];
+                        return availableFields.size === 0 || availableFields.has(fieldName);
+                    })
                 );
                 if (plantilla) {
                     params.plantilla = plantilla;
+                }
+                if (availableFields.size) {
+                    params.availableFields = Array.from(availableFields);
                 }
                 Object.assign(params, extraParams);
                 try {
@@ -200,6 +219,7 @@ const DashboardPage = () => {
             setAgentsByDireccion(direccionData);
             setAgentsByDepartamento(departamentoData);
             setAgentsByDivision(divisionData);
+            setAvailableFields(new Set(dependencyData[0] ? Object.keys(dependencyData[0]) : []));
             setSeniorityData(seniorityRes);
             setSecondaryData(secondaryRes);
             setTertiaryData(tertiaryRes);
@@ -222,30 +242,41 @@ const DashboardPage = () => {
         }
     };
 
+    const sanitizeFilters = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).filter(([k, v]) => {
+                if (!v) return false;
+                const fieldName = fieldMap[k];
+                return availableFields.size === 0 || availableFields.has(fieldName);
+            })
+        );
+    };
+
     const handleApplyFilters = (newFilters) => {
-        setFilters(newFilters);
-        fetchAllData(newFilters);
+        const clean = sanitizeFilters(newFilters);
+        setFilters(clean);
+        fetchAllData(clean);
+    };
+
+    const handleOrgNav = (nivel, valor) => {
+        const baseFilters = {
+            secretaria: nivel === 'secretaria' || nivel === 1 ? valor : '',
+            subsecretaria: nivel === 'subsecretaria' || nivel === 2 ? valor : '',
+            direccionGeneral: nivel === 'direccionGeneral' || nivel === 3 ? valor : '',
+            direccion: nivel === 'direccion' || nivel === 4 ? valor : '',
+            departamento: nivel === 'departamento' || nivel === 5 ? valor : '',
+            division: nivel === 'division' || nivel === 6 ? valor : '',
+            funcion: ''
+        };
+        handleApplyFilters(baseFilters);
     };
 
     useEffect(() => {
         if (location.state && location.state.nombre && location.state.nivel) {
-            const levelMap = {
-                1: 'secretaria',
-                2: 'subsecretaria',
-                3: 'direccionGeneral',
-                4: 'direccion',
-                5: 'departamento',
-                6: 'division'
-            };
-            const field = levelMap[location.state.nivel];
-            if (field) {
-                const newFilters = { ...filters, [field]: location.state.nombre };
-                setFilters(newFilters);
-                fetchAllData(newFilters);
-                return;
-            }
+            handleOrgNav(location.state.nivel, location.state.nombre);
+        } else {
+            fetchAllData(filters);
         }
-        fetchAllData(filters);
     }, [location.state]);
 
     const getTabButtonStyles = (value) => ({
@@ -330,7 +361,13 @@ const DashboardPage = () => {
             </Typography>
 
             {tabValue !== 6 && (
-                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+                filterFields.some(f => availableFields.has(f)) ? (
+                    <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+                ) : (
+                    <Alert severity="info">
+                        Esta sección no tiene datos de Secretaría/Subsecretaría/Dirección...
+                    </Alert>
+                )
             )}
 
             {/* Navegación por botones */}

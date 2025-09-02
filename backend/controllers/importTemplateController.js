@@ -22,6 +22,18 @@ function validateTemplatePayload(body, { partial = false } = {}) {
     else payload.dataStartRow = n;
   }
 
+  if (payload.dataEndRow !== undefined) {
+    const m = Number(payload.dataEndRow);
+    if (!isPositiveInt(m)) errors.push('dataEndRow debe ser un entero mayor o igual a 1.');
+    else payload.dataEndRow = m;
+  }
+
+  if (payload.dataStartRow !== undefined && payload.dataEndRow !== undefined) {
+    if (payload.dataEndRow < payload.dataStartRow) {
+      errors.push('dataEndRow debe ser mayor o igual a dataStartRow.');
+    }
+  }
+
   if (payload.description !== undefined && typeof payload.description === 'string') {
     payload.description = payload.description.trim();
   }
@@ -115,6 +127,11 @@ exports.updateTemplate = async (req, res) => {
     const { valid, errors, payload } = validateTemplatePayload(req.body, { partial: true });
     if (!valid) return res.status(400).json({ message: errors.join(' ') });
 
+    const startRow = payload.dataStartRow !== undefined ? payload.dataStartRow : template.dataStartRow;
+    if (payload.dataEndRow !== undefined && payload.dataEndRow < startRow) {
+      return res.status(400).json({ message: 'dataEndRow debe ser mayor o igual a dataStartRow.' });
+    }
+
     if (payload.name && payload.name.trim() && payload.name.trim() !== template.name) {
       const clash = await ImportTemplate.findOne({
         _id: { $ne: id },
@@ -124,7 +141,7 @@ exports.updateTemplate = async (req, res) => {
     }
 
     // Asignación segura solo de campos presentes
-    ['name', 'description', 'dataStartRow', 'sheetName', 'mappings'].forEach((k) => {
+    ['name', 'description', 'dataStartRow', 'dataEndRow', 'sheetName', 'mappings'].forEach((k) => {
       if (payload[k] !== undefined) template[k] = payload[k];
     });
 

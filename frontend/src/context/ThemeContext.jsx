@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 
@@ -146,18 +146,18 @@ export const CustomThemeProvider = ({ children }) => {
     setAccessibility(prev => ({ ...prev, ...newSettings }));
   };
 
-  const currentTheme = isDarkMode ? darkTheme : lightTheme;
+  const baseTheme = isDarkMode ? darkTheme : lightTheme;
 
   // Aplicar configuraciones de accesibilidad
-  const accessibleTheme = createTheme({
-    ...currentTheme,
+  const accessibleTheme = useMemo(() => createTheme({
+    ...baseTheme,
     typography: {
-      ...currentTheme.typography,
-      fontSize: accessibility.fontSize === 'large' ? 16 : 
+      ...baseTheme.typography,
+      fontSize: accessibility.fontSize === 'large' ? 16 :
                 accessibility.fontSize === 'small' ? 12 : 14,
     },
     palette: {
-      ...currentTheme.palette,
+      ...baseTheme.palette,
       ...(accessibility.highContrast && {
         primary: { main: isDarkMode ? '#ffffff' : '#000000' },
         text: {
@@ -167,12 +167,12 @@ export const CustomThemeProvider = ({ children }) => {
       }),
     },
     transitions: {
-      ...currentTheme.transitions,
+      ...baseTheme.transitions,
       ...(accessibility.reducedMotion && {
         create: () => 'none',
       }),
     },
-  });
+  }), [baseTheme, accessibility]);
 
   const value = {
     isDarkMode,
