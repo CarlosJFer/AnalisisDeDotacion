@@ -1,4 +1,4 @@
-import React, { useMemo, memo, useCallback, useState, useRef } from "react";
+﻿import React, { useMemo, memo, useCallback, useState, useRef } from "react";
 import { SimpleTreeView } from '@mui/x-tree-view/SimpleTreeView';
 import { TreeItem } from '@mui/x-tree-view/TreeItem';
 import { Typography, Tooltip, Box, Avatar, Chip, Card, IconButton } from "@mui/material";
@@ -13,7 +13,7 @@ import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOu
 import { useImperativeHandle, forwardRef } from "react";
 import { useTheme } from '../context/ThemeContext.jsx';
 
-// Función memoizada para determinar estado de variables
+// FunciÃ³n memoizada para determinar estado de variables
 const getEstadoVariables = (variables) => {
   if (!variables || variables.length === 0) return 'sin';
   let hayCritico = false;
@@ -27,7 +27,7 @@ const getEstadoVariables = (variables) => {
   return 'ok';
 };
 
-// Componente de ícono ultra-optimizado
+// Componente de Ã­cono ultra-optimizado
 const EstadoIcon = memo(({ estado }) => {
   const iconMap = {
     critico: <ErrorIcon fontSize="small" sx={{ color: '#f44336' }} />,
@@ -77,13 +77,13 @@ const EstadoChip = memo(({ estado, variablesCount }) => {
   return (
     <Chip 
       size="small" 
-      label={`${variablesCount} ${estado === 'critico' ? 'Críticas' : estado === 'preventivo' ? 'Preventivas' : estado === 'ok' ? 'OK' : 'Sin variables'}`}
+      label={`${variablesCount} ${estado === 'critico' ? 'CrÃ­ticas' : estado === 'preventivo' ? 'Preventivas' : estado === 'ok' ? 'OK' : 'Sin variables'}`}
       sx={style}
     />
   );
 });
 
-// Función de resaltado ultra-optimizada
+// FunciÃ³n de resaltado ultra-optimizada
 const HighlightText = memo(({ text, term }) => {
   if (!term || term.length < 2) return text;
   
@@ -107,7 +107,7 @@ const HighlightText = memo(({ text, term }) => {
 });
 
 // Componente de nodo ultra-optimizado
-const TreeNode = memo(({
+const TreeNode = memo(({ 
   node,
   isDarkMode,
   getVariablesForNode,
@@ -115,9 +115,10 @@ const TreeNode = memo(({
   level = 0,
   expanded,
   onToggle,
-  onNodeSelect
+  onNodeSelect,
+  onNodeSelectNeike
 }) => {
-  // Memoización agresiva de variables
+  // MemoizaciÃ³n agresiva de variables
   const variables = useMemo(() => 
     getVariablesForNode ? getVariablesForNode(node) : [], 
     [getVariablesForNode, node._id] // Solo re-calcular si cambia el ID del nodo
@@ -138,7 +139,7 @@ const TreeNode = memo(({
   }, [estado, variables]);
 
   const funcionTooltip = useMemo(() => {
-    return node.funcion && node.funcion.trim() ? node.funcion : 'Sin descripción de funciones';
+    return node.funcion && node.funcion.trim() ? node.funcion : 'Sin descripciÃ³n de funciones';
   }, [node.funcion]);
 
   // Estilos pre-calculados
@@ -169,7 +170,7 @@ const TreeNode = memo(({
           border: isDarkMode
             ? '1px solid rgba(255, 255, 255, 0.1)'
             : '1px solid rgba(0, 0, 0, 0.1)',
-          transition: 'background-color 0.15s ease', // Solo transición de color
+          transition: 'background-color 0.15s ease', // Solo transiciÃ³n de color
           '&:hover': {
             background: isDarkMode
               ? 'rgba(255, 255, 255, 0.08)'
@@ -239,35 +240,69 @@ const TreeNode = memo(({
               </Tooltip>
             )}
 
-            {onNodeSelect && node.nombre !== 'Municipalidad' && (
-              <Tooltip title="Ver en dashboard" placement="right" enterDelay={300}>
-                <IconButton
-                  size="small"
-                  onClick={(e) => { e.stopPropagation(); onNodeSelect(node); }}
-                  sx={{
-                    width: 24,
-                    height: 24,
-                    p: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: isDarkMode
-                      ? 'linear-gradient(135deg, rgba(76,175,80,0.3), rgba(56,142,60,0.3))'
-                      : 'linear-gradient(135deg, #c8e6c9, #a5d6a7)',
-                    borderRadius: '50%',
-                    boxShadow: 'none',
-                    transition: 'background 0.3s ease',
-                    '&:hover': {
-                      background: isDarkMode
-                        ? 'linear-gradient(135deg, rgba(76,175,80,0.4), rgba(56,142,60,0.4))'
-                        : 'linear-gradient(135deg, #a5d6a7, #81c784)',
-                    },
-                  }}
-                >
-                    <ArrowCircleRightOutlinedIcon fontSize="small" sx={{ color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }} />
-                  </IconButton>
-                </Tooltip>
-              )}
+            {node.nombre !== 'Municipalidad' && (
+              <>
+                {onNodeSelect && (
+                  <Tooltip title="Ver dashboard planta y contratos" placement="top" enterDelay={300}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => { e.stopPropagation(); onNodeSelect(node); }}
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        p: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: isDarkMode
+                          ? 'linear-gradient(135deg, rgba(76,175,80,0.5), rgba(56,142,60,0.5))'
+                          : 'linear-gradient(135deg, #a5d6a7, #66bb6a)',
+                        borderRadius: '50%',
+                        boxShadow: 'none',
+                        transition: 'background 0.3s ease',
+                        '&:hover': {
+                          background: isDarkMode
+                            ? 'linear-gradient(135deg, rgba(76,175,80,0.6), rgba(56,142,60,0.6))'
+                            : 'linear-gradient(135deg, #81c784, #43a047)',
+                        },
+                      }}
+                    >
+                      <ArrowCircleRightOutlinedIcon fontSize="small" sx={{ color: '#ffffff' }} />
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {onNodeSelectNeike && (
+                  <Tooltip title="Ver dashboard neikes y beca" placement="bottom" enterDelay={300}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => { e.stopPropagation(); onNodeSelectNeike(node); }}
+                      sx={{
+                        width: 24,
+                        height: 24,
+                        p: 0,
+                        ml: 0.75,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: isDarkMode
+                          ? 'linear-gradient(135deg, rgba(255,152,0,0.5), rgba(245,124,0,0.5))'
+                          : 'linear-gradient(135deg, #ffb74d, #fb8c00)',
+                        borderRadius: '50%',
+                        boxShadow: 'none',
+                        transition: 'background 0.3s ease',
+                        '&:hover': {
+                          background: isDarkMode
+                            ? 'linear-gradient(135deg, rgba(255,152,0,0.6), rgba(245,124,0,0.6))'
+                            : 'linear-gradient(135deg, #ffcc80, #f57c00)',
+                        },
+                      }}
+                    >
+                      <ArrowCircleRightOutlinedIcon fontSize="small" sx={{ color: '#ffffff' }} />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </>
+            )}
           </Box>
         </Box>
       }
@@ -284,6 +319,7 @@ const TreeNode = memo(({
             expanded={expanded}
             onToggle={onToggle}
             onNodeSelect={onNodeSelect}
+            onNodeSelectNeike={onNodeSelectNeike}
           />
         ))
       }
@@ -291,12 +327,12 @@ const TreeNode = memo(({
   );
 });
 
-const OptimizedOrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm, onNodeSelect }, ref) => {
+const OptimizedOrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, searchTerm, onNodeSelect, onNodeSelectNeike }, ref) => {
   const { isDarkMode } = useTheme();
   const treeMemo = useMemo(() => tree, [tree]);
   const [expanded, setExpanded] = useState([]);
   
-  // Función optimizada para obtener todos los IDs
+  // FunciÃ³n optimizada para obtener todos los IDs
   const getAllIds = useCallback((nodes) => {
     const ids = [];
     const traverse = (nodeList) => {
@@ -424,6 +460,7 @@ const OptimizedOrganigramaTreeView = forwardRef(({ tree, getVariablesForNode, se
             level={0}
             expanded={expanded}
             onNodeSelect={onNodeSelect}
+            onNodeSelectNeike={onNodeSelectNeike}
           />
         ))}
       </SimpleTreeView>

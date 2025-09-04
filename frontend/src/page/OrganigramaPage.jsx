@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
+﻿import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import OrganigramaTreeView from "../components/OrganigramaTreeView.jsx";
 import { Box, Typography, CircularProgress, Alert, TextField, Button, Avatar, Card, CardContent } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
@@ -77,7 +77,7 @@ const OrganigramaPage = () => {
         setVariables(varRes.data);
         setVariableValues(valRes.data);
       } catch (err) {
-        setError("No se pudo cargar el árbol de dependencias, variables o valores actuales");
+        setError("No se pudo cargar el Ã¡rbol de dependencias, variables o valores actuales");
       } finally {
         setLoading(false);
       }
@@ -115,7 +115,7 @@ const OrganigramaPage = () => {
     });
   }, [variables, variableValues]);
 
-  // Búsqueda y reconstrucción del árbol filtrado
+  // BÃºsqueda y reconstrucciÃ³n del Ã¡rbol filtrado
   const filteredTree = useMemo(() => {
     if (!search || search.length < 2) return tree;
     const term = search.toLowerCase();
@@ -142,16 +142,16 @@ const OrganigramaPage = () => {
     return buildTreeFromFlatList(filteredList);
   }, [search, flatList, tree]);
 
-  // Efecto para expandir automáticamente los nodos relevantes al buscar
+  // Efecto para expandir automÃ¡ticamente los nodos relevantes al buscar
   useEffect(() => {
     if (treeViewRef.current) {
       if (search && search.length >= 2 && autoExpanded.length > 0) {
-        // Expandir nodos relevantes cuando hay búsqueda
+        // Expandir nodos relevantes cuando hay bÃºsqueda
         if (treeViewRef.current.expandAll) {
           treeViewRef.current.expandAll(autoExpanded);
         }
       } else if (!search || search.length < 2) {
-        // Colapsar todo cuando no hay búsqueda o es muy corta
+        // Colapsar todo cuando no hay bÃºsqueda o es muy corta
         if (treeViewRef.current.collapseAll) {
           treeViewRef.current.collapseAll();
         }
@@ -215,7 +215,7 @@ const OrganigramaPage = () => {
         <CardContent sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
             <TextField
-              label="Buscar dependencia o función"
+              label="Buscar dependencia o funciÃ³n"
               value={search}
               onChange={e => setSearch(e.target.value)}
               size="small"
@@ -321,6 +321,7 @@ const OrganigramaPage = () => {
             getVariablesForNode={getVariablesForNode}
             searchTerm={search}
             onNodeSelect={(node) => navigate('/dashboard', { state: { nombre: node.nombre, nivel: node.nivel } })}
+            onNodeSelectNeike={(node) => navigate('/dashboard-neike-beca', { state: { nombre: node.nombre, nivel: node.nivel } })}
           />
         )
       )}
@@ -329,3 +330,4 @@ const OrganigramaPage = () => {
 };
 
 export default OrganigramaPage; 
+

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+﻿import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -58,7 +58,7 @@ const Navbar = () => {
           : '1px solid rgba(0, 0, 0, 0.08)',
       }}
     >
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', py: 1.5, px: 3 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'flex-start', py: 1.5, px: 3 }}>
         {/* Logo a la izquierda - clickeable */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box
@@ -80,7 +80,7 @@ const Navbar = () => {
           >
             <img 
               src="/logo-navbar.png" 
-              alt="Logo Análisis de dotación municipal" 
+              alt="Logo AnÃ¡lisis de dotaciÃ³n municipal" 
               style={{
                 height: '45px',
                 width: 'auto',
@@ -91,14 +91,16 @@ const Navbar = () => {
           </Box>
         </Box>
 
-        {/* Menú de navegación a la derecha */}
+        {/* MenÃº de navegaciÃ³n a la derecha */}
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: { xs: 0.5, sm: 1 },
           flexWrap: 'wrap',
+          ml: 'auto',
+          mr: 1,
         }}>
-          {/* Botón Inicio (Organigrama) */}
+          {/* BotÃ³n Inicio (Organigrama) */}
           {user && (
             <Button 
               component={Link} 
@@ -135,7 +137,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Menú Dashboard con opciones internas */}
+          {/* MenÃº Dashboard con opciones internas */}
           {user && (
             <>
               <Button
@@ -231,7 +233,7 @@ const Navbar = () => {
             </>
           )}
 
-          {/* Botón Herramientas */}
+          {/* BotÃ³n Herramientas */}
           {user && (
             <Button
               component={Link}
@@ -268,7 +270,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Panel de administración (solo admin) */}
+          {/* BotÃ³n Panel de administraciÃ³n (solo admin) */}
           {user && user.role === 'admin' && (
             <Button
               component={Link}
@@ -308,13 +310,13 @@ const Navbar = () => {
 
         {user && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            {/* Información del usuario */}
+            {/* InformaciÃ³n del usuario */}
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1.5,
-                mx: 2,
+                ml: 0.5, mr: 1,
                 px: 2,
                 py: 1,
                 borderRadius: 3,
@@ -420,3 +422,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

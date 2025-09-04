@@ -55,7 +55,7 @@ export const useOptimizedForm = (initialValues) => {
 // TextField optimizado con debouncing
 export const OptimizedTextField = memo(({ 
   name, 
-  value, 
+  value = '', 
   onChange, 
   debounceMs = 300,
   ...props 
@@ -97,7 +97,7 @@ export const OptimizedTextField = memo(({
   return (
     <TextField
       {...props}
-      value={localValue}
+      value={localValue ?? ''}
       onChange={handleChange}
       size="small"
     />

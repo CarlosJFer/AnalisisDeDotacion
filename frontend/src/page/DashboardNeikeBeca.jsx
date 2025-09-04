@@ -22,13 +22,13 @@ const DashboardNeikeBeca = () => {
     const [error, setError] = useState('');
     const [tabValue, setTabValue] = useState(0);
     const [filters, setFilters] = useState({
-        Secretaría: '',
-        subSecretaría: '',
+        secretaria: '',
+        subsecretaria: '',
         direccionGeneral: '',
         direccion: '',
         departamento: '',
         division: '',
-        Función: ''
+        funcion: ''
     });
     const [availableFields, setAvailableFields] = useState(new Set());
     const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
@@ -42,8 +42,8 @@ const DashboardNeikeBeca = () => {
     const [agentsByFunction, setAgentsByFunction] = useState([]);
     const [agentsByEmploymentType, setAgentsByEmploymentType] = useState([]);
     const [agentsByDependency, setAgentsByDependency] = useState([]);
-    const [agentsBySecretaría, setAgentsBySecretaría] = useState([]);
-    const [agentsBySubSecretaría, setAgentsBySubSecretaría] = useState([]);
+    const [agentsBySecretaria, setAgentsBySecretaria] = useState([]);
+    const [agentsBySubsecretaria, setAgentsBySubsecretaria] = useState([]);
     const [agentsByDireccionGeneral, setAgentsByDireccionGeneral] = useState([]);
     const [agentsByDireccion, setAgentsByDireccion] = useState([]);
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
@@ -53,8 +53,8 @@ const DashboardNeikeBeca = () => {
     const [secondaryData, setSecondaryData] = useState(null);
     const [tertiaryData, setTertiaryData] = useState(null);
     const [universityData, setUniversityData] = useState(null);
-    const [topUniSecretaríasData, setTopUniSecretaríasData] = useState([]);
-    const [topTerSecretaríasData, setTopTerSecretaríasData] = useState([]);
+    const [topUniSecretariasData, setTopUniSecretariasData] = useState([]);
+    const [topTerSecretariasData, setTopTerSecretariasData] = useState([]);
 
     const [registrationTypeData, setRegistrationTypeData] = useState([]);
     const [entryTimeData, setEntryTimeData] = useState([]);
@@ -79,7 +79,7 @@ const DashboardNeikeBeca = () => {
         }
     };
 
-    // FunciÃ³n para filtrar datos que no sean "-" o vacÃ­os
+    // Función para filtrar datos que no sean "-" o vacÃ­os
     const filterValidData = (data, nameKey) => {
         return data.filter(item => {
             const value = item[nameKey];
@@ -93,15 +93,15 @@ const DashboardNeikeBeca = () => {
     };
 
     const fieldMap = {
-        secretaria: 'Secretaría',
-        subsecretaria: 'Subsecretaría',
-        direccionGeneral: 'Dirección general',
-        direccion: 'Dirección',
-        departamento: 'Departamento',
-        division: 'División',
-        funcion: 'Función'
+        secretaria: "Secretaria",
+        subsecretaria: "Subsecretaria",
+        direccionGeneral: "Direccion general",
+        direccion: "Direccion",
+        departamento: "Departamento",
+        division: "Division",
+        funcion: "Funcion"
     };
-    const filterFields = ['Secretaría','Subsecretaría','Dirección general','Dirección','Departamento','División','Función'];
+    const filterFields = ["Secretaria","Subsecretaria","Direccion general","Direccion","Departamento","Division","Funcion"];
 
     const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const hasField = (name, fields = availableFields) => {
@@ -164,8 +164,8 @@ const DashboardNeikeBeca = () => {
                 functionData,
                 employmentData,
                 dependencyData,
-                SecretaríaData,
-                subSecretaríaData,
+                secretariaData,
+                subsecretariaData,
                 direccionGeneralData,
                 direccionData,
                 departamentoData,
@@ -188,19 +188,19 @@ const DashboardNeikeBeca = () => {
                 safeGet(funcs.agentsByFunction, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDependency, [], TEMPLATE_NEIKES_BECAS),
-                safeGet(funcs.agentsBySecretaría, [], TEMPLATE_NEIKES_BECAS),
-                safeGet(funcs.agentsBySubSecretaría, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsBySecretaria, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.agentsBySubsecretaria, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDireccionGeneral, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDireccion, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDepartamento, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDivision, [], TEMPLATE_NEIKES_BECAS),
-                // Datos para antigÃ¼edad y estudios
+                // Datos para Antigüedad y estudios
                 safeGet(funcs.agentsBySeniority, [], TEMPLATE_DATOS_NEIKES),
                 safeGet(funcs.agentsBySecondaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_NEIKES),
                 safeGet(funcs.agentsByTertiaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_NEIKES),
                 safeGet(funcs.agentsByUniversityStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_NEIKES),
-                safeGet(funcs.agentsByTopSecretaríasUniversity, [], TEMPLATE_DATOS_NEIKES),
-                safeGet(funcs.agentsByTopSecretaríasTertiary, [], TEMPLATE_DATOS_NEIKES),
+                safeGet(funcs.agentsByTopSecretariasUniversity, [], TEMPLATE_DATOS_NEIKES),
+                safeGet(funcs.agentsByTopSecretariasTertiary, [], TEMPLATE_DATOS_NEIKES),
                 // Datos para control de certificaciones
                 safeGet(funcs.certificationsRegistrationType, [], TEMPLATE_CONTROL_NEIKES),
                 safeGet(funcs.certificationsEntryTime, [], TEMPLATE_CONTROL_NEIKES),
@@ -214,8 +214,8 @@ const DashboardNeikeBeca = () => {
             setAgentsByFunction(functionData);
             setAgentsByEmploymentType(employmentData);
             setAgentsByDependency(dependencyData);
-            setAgentsBySecretaría(SecretaríaData);
-            setAgentsBySubSecretaría(subSecretaríaData);
+            setAgentsBySecretaria(secretariaData);
+            setAgentsBySubsecretaria(subsecretariaData);
             setAgentsByDireccionGeneral(direccionGeneralData);
             setAgentsByDireccion(direccionData);
             setAgentsByDepartamento(departamentoData);
@@ -224,21 +224,20 @@ const DashboardNeikeBeca = () => {
             setSecondaryData(secondaryRes);
             setTertiaryData(tertiaryRes);
             setUniversityData(universityRes);
-            setTopUniSecretaríasData(topUniRes);
-            setTopTerSecretaríasData(topTerRes);
+            setTopUniSecretariasData(topUniRes);
+            setTopTerSecretariasData(topTerRes);
             setRegistrationTypeData(regTypeRes);
             setEntryTimeData(entryTimeRes);
             setExitTimeData(exitTimeRes);
             setTopUnitsData(topUnitsRes);
-            // Determinar dinámicamente los campos organizacionales disponibles
             const fieldSet = new Set();
-            if (secretariaData?.length) fieldSet.add('Secretaría');
-            if (subsecretariaData?.length) fieldSet.add('Subsecretaría');
-            if (direccionGeneralData?.length) fieldSet.add('Dirección general');
-            if (direccionData?.length) fieldSet.add('Dirección');
+            if (secretariaData?.length) fieldSet.add('Secretaria');
+            if (subsecretariaData?.length) fieldSet.add('Subsecretaria');
+            if (direccionGeneralData?.length) fieldSet.add('Direccion general');
+            if (direccionData?.length) fieldSet.add('Direccion');
             if (departamentoData?.length) fieldSet.add('Departamento');
-            if (divisionData?.length) fieldSet.add('División');
-            if (functionData?.length) fieldSet.add('Función');
+            if (divisionData?.length) fieldSet.add('Division');
+            if (functionData?.length) fieldSet.add('Funcion');
             setAvailableFields(fieldSet);
             const has = filterFields.some(f => hasField(f, fieldSet));
             if (fromFilter) {
@@ -273,20 +272,20 @@ const DashboardNeikeBeca = () => {
     };
 
     const levelMap = {
-        1: 'Secretaría',
-        2: 'subSecretaría',
+        1: 'secretaria',
+        2: 'subsecretaria',
         3: 'direccionGeneral',
         4: 'direccion',
         5: 'departamento',
         6: 'division',
-        7: 'Función',
-        Secretaría: 'Secretaría',
-        subSecretaría: 'subSecretaría',
+        7: 'funcion',
+        secretaria: 'secretaria',
+        subsecretaria: 'subsecretaria',
         direcciongeneral: 'direccionGeneral',
         direccion: 'direccion',
         departamento: 'departamento',
         division: 'division',
-        Función: 'Función'
+        funcion: 'funcion'
     };
     const handleOrgNav = (nivel, valor) => {
         const key = levelMap[
@@ -300,13 +299,13 @@ const DashboardNeikeBeca = () => {
         ];
         if (!key) return;
         const baseFilters = {
-            Secretaría: '',
-            subSecretaría: '',
+            secretaria: '',
+            subsecretaria: '',
             direccionGeneral: '',
             direccion: '',
             departamento: '',
             division: '',
-            Función: ''
+            funcion: ''
         };
         baseFilters[key] = valor;
         handleApplyFilters(baseFilters);
@@ -394,16 +393,11 @@ const DashboardNeikeBeca = () => {
                     mb: 2,
                 }}
             >
-                AnÃ¡lisis detallado de la dotaciÃ³n municipal con grÃ¡ficos especializados
+                Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
-            {filterFields.some(f => availableFields.has(f)) ? (
-                <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
-            ) : (
-                <Alert severity="info">
-                    Esta secciÃ³n no tiene datos de SecretarÃ­a/SubsecretarÃ­a/Dirección...
-                </Alert>
-            )}
+            <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
+
             <Snackbar
                 open={showNoFiltersAlert}
                 onClose={() => setShowNoFiltersAlert(false)}
@@ -423,7 +417,8 @@ const DashboardNeikeBeca = () => {
                     No se encontraron datos con los filtros aplicados.
                 </Alert>
             </Snackbar>
-            {/* NavegaciÃ³n por botones */}
+
+            {/* Navegación por botones */}
             <Box
                 sx={{
                     mb: 4,
@@ -446,28 +441,28 @@ const DashboardNeikeBeca = () => {
                     startIcon={<AnalyticsIcon />}
                     sx={getTabButtonStyles(1)}
                 >
-                    AnÃ¡lisis de Edad
+                    Análisis de Edad
                 </Button>
                 <Button
                     onClick={() => setTabValue(2)}
                     startIcon={<BusinessIcon />}
                     sx={getTabButtonStyles(2)}
                 >
-                    DistribuciÃ³n Organizacional
+                    Distribución Organizacional
                 </Button>
                 <Button
                     onClick={() => setTabValue(3)}
                     startIcon={<SchoolIcon />}
                     sx={getTabButtonStyles(3)}
                 >
-                    AntigÃ¼edad y Estudios
+                    Antigüedad y Estudios
                 </Button>
                 <Button
                     onClick={() => setTabValue(4)}
                     startIcon={<AssignmentTurnedInIcon />}
                     sx={getTabButtonStyles(4)}
                 >
-                    Control de certificaciones â€“ Neikes y Becas
+                    Control de certificaciones  -  Neikes y Becas
                 </Button>
             </Box>
 
@@ -484,31 +479,31 @@ const DashboardNeikeBeca = () => {
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <StatCard 
-                            title="Funciónes Ãšnicas Registradas" 
+                            title="Funciones Únicas Registradas" 
                             value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length} 
                             isDarkMode={isDarkMode} 
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <StatCard 
-                            title="Tipos de SituaciÃ³n de Revista" 
+                            title="Tipos de Situación de Revista" 
                             value={agentsByEmploymentType.length} 
                             isDarkMode={isDarkMode} 
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <StatCard 
-                            title="SecretarÃ­as" 
-                            value={agentsBySecretaría.length} 
+                            title="Secretarías" 
+                            value={agentsBySecretaria.length} 
                             isDarkMode={isDarkMode} 
                         />
                     </Grid>
                     
-                    {/* GrÃ¡ficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
+                    {/* gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
                     <Grid item xs={12} lg={8}>
                         <CustomDonutChart
                             data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
-                            title="DistribuciÃ³n de Agentes por FunciÃ³n (Top 10) - Neikes y Beca"
+                            title="Distribución de Agentes por Función (Top 10) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="function"
@@ -517,7 +512,7 @@ const DashboardNeikeBeca = () => {
                     <Grid item xs={12} lg={4}>
                         <CustomDonutChart
                             data={agentsByEmploymentType}
-                            title="Agentes por SituaciÃ³n de Revista - Neikes y Beca"
+                            title="Agentes por Situación de Revista - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="type"
@@ -526,12 +521,12 @@ const DashboardNeikeBeca = () => {
                 </Grid>
             )}
 
-            {/* Tab 1: AnÃ¡lisis de Edad */}
+            {/* Tab 1: Análisis de Edad */}
             {tabValue === 1 && (
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            AnÃ¡lisis de Edad de los Agentes Municipales
+                            Análisis de Edad de los Agentes Municipales
                         </Typography>
                         {ageDistribution?.note && (
                             <Alert severity="info" sx={{ mb: 2 }}>
@@ -547,23 +542,23 @@ const DashboardNeikeBeca = () => {
                                 data={ageDistribution.rangeData}
                                 xKey="range"
                                 barKey="count"
-                                title="DistribuciÃ³n por Rangos de Edad - Neikes y Beca"
+                                title="Distribución por Rangos de Edad - Neikes y Beca"
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
                                 <CircularProgress size={40} />
-                                <Typography sx={{ ml: 2 }}>Cargando anÃ¡lisis de edad...</Typography>
+                                <Typography sx={{ ml: 2 }}>Cargando Análisis de edad...</Typography>
                             </Box>
                         )}
                     </Grid>
 
-                    {/* Rangos de edad con Ã¡rea chart */}
+                    {/* Rangos de edad con área chart */}
                     <Grid item xs={12} lg={6}>
                         {ageDistribution ? (
                             <CustomAreaChart
                                 data={ageDistribution.rangeData}
-                                title="DistribuciÃ³n por Rangos de Edad segÃºn el Ã¡rea - Neikes y Beca"
+                                title="Distribución por Rangos de Edad según el área - Neikes y Beca"
                                 isDarkMode={isDarkMode}
                                 xKey="range"
                                 yKey="count"
@@ -580,7 +575,7 @@ const DashboardNeikeBeca = () => {
                                 data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
                                 xKey="function"
                                 barKey="avgAge"
-                                title="Edad Promedio por FunciÃ³n (Top 10) - Neikes y Beca"
+                                title="Edad Promedio por Función (Top 10) - Neikes y Beca"
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
@@ -592,22 +587,22 @@ const DashboardNeikeBeca = () => {
                 </Grid>
             )}
 
-            {/* Tab 2: DistribuciÃ³n Organizacional */}
+            {/* Tab 2: Distribución Organizacional */}
             {tabValue === 2 && (
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            DistribuciÃ³n Organizacional
+                            Distribución Organizacional
                         </Typography>
                     </Grid>
 
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
-                            data={agentsBySecretaría.slice(0, 8)}
-                            title="Agentes por SecretarÃ­a (Top 8) - Neikes y Beca"
+                            data={agentsBySecretaria.slice(0, 8)}
+                            title="Agentes por Secretaría (Top 8) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             dataKey="count"
-                            nameKey="Secretaría"
+                            nameKey="secretaria"
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -622,10 +617,10 @@ const DashboardNeikeBeca = () => {
 
                     <Grid item xs={12}>
                         <CustomBarChart
-                            data={filterValidData(agentsBySubSecretaría, 'subSecretaría').slice(0, 10)}
-                            xKey="subSecretaría"
+                            data={filterValidData(agentsBySubsecretaria, 'subsecretaria').slice(0, 10)}
+                            xKey="subsecretaria"
                             barKey="count"
-                            title="Agentes por SubsecretarÃ­a (Top 10) - Neikes y Beca"
+                            title="Agentes por Subsecretaría (Top 10) - Neikes y Beca"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -633,7 +628,7 @@ const DashboardNeikeBeca = () => {
 
                     <Grid item xs={12}>
                         <Typography variant="h6" sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
-                            Estructura JerÃ¡rquica Detallada
+                            Estructura Jerárquica Detallada
                         </Typography>
                     </Grid>
 
@@ -670,7 +665,7 @@ const DashboardNeikeBeca = () => {
                     <Grid item xs={12} lg={6}>
                     <CustomDonutChart
                         data={filterValidData(agentsByDivision, 'division').slice(0, 8)}
-                        title="Agentes por DivisiÃ³n (Top 8) - Neikes y Beca"
+                        title="Agentes por División (Top 8) - Neikes y Beca"
                         isDarkMode={isDarkMode}
                         dataKey="count"
                         nameKey="division"
@@ -679,12 +674,12 @@ const DashboardNeikeBeca = () => {
             </Grid>
         )}
 
-        {/* Tab 3: AntigÃ¼edad y Estudios */}
+        {/* Tab 3: Antigüedad y Estudios */}
         {tabValue === 3 && (
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                        AntigÃ¼edad y Estudios
+                        Antigüedad y Estudios
                     </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -692,7 +687,7 @@ const DashboardNeikeBeca = () => {
                         data={seniorityData}
                         xKey="range"
                         barKey="count"
-                        title="Cantidad de agentes segÃºn antigÃ¼edad municipal"
+                        title="Cantidad de agentes según Antigüedad municipal"
                         isDarkMode={isDarkMode}
                         height={400}
                     />
@@ -700,10 +695,10 @@ const DashboardNeikeBeca = () => {
                 <Grid item xs={12} md={6}>
                     <CustomDonutChart
                         data={[
-                            { category: 'Con tÃ­tulo secundario', count: secondaryData?.conTitulo || 0 },
+                            { category: 'Con título secundario', count: secondaryData?.conTitulo || 0 },
                             { category: 'Otros', count: secondaryData?.otros || 0 }
                         ]}
-                        title="Agentes segÃºn estudios secundarios"
+                        title="Agentes según estudios secundarios"
                         isDarkMode={isDarkMode}
                         dataKey="count"
                         nameKey="category"
@@ -712,10 +707,10 @@ const DashboardNeikeBeca = () => {
                 <Grid item xs={12} md={6}>
                     <CustomDonutChart
                         data={[
-                            { category: 'Con tÃ­tulo terciario', count: tertiaryData?.conTitulo || 0 },
+                            { category: 'Con título terciario', count: tertiaryData?.conTitulo || 0 },
                             { category: 'Otros', count: tertiaryData?.otros || 0 }
                         ]}
-                        title="Agentes segÃºn estudios terciarios"
+                        title="Agentes según estudios terciarios"
                         isDarkMode={isDarkMode}
                         dataKey="count"
                         nameKey="category"
@@ -724,10 +719,10 @@ const DashboardNeikeBeca = () => {
                 <Grid item xs={12} md={6}>
                     <CustomDonutChart
                         data={[
-                            { category: 'Con tÃ­tulo universitario', count: universityData?.conTitulo || 0 },
+                            { category: 'Con título universitario', count: universityData?.conTitulo || 0 },
                             { category: 'Otros', count: universityData?.otros || 0 }
                         ]}
-                        title="Agentes segÃºn estudios universitarios"
+                        title="Agentes según estudios universitarios"
                         isDarkMode={isDarkMode}
                         dataKey="count"
                         nameKey="category"
@@ -735,20 +730,20 @@ const DashboardNeikeBeca = () => {
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <CustomBarChart
-                        data={topUniSecretaríasData}
-                        xKey="Secretaría"
+                        data={topUniSecretariasData}
+                        xKey="secretaria"
                         barKey="count"
-                        title="Top 10 secretarÃ­as con mÃ¡s agentes con tÃ­tulo universitario"
+                        title="Top 10 Secretarías con mÃ¡s agentes con título universitario"
                         isDarkMode={isDarkMode}
                         height={400}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <CustomBarChart
-                        data={topTerSecretaríasData}
-                        xKey="Secretaría"
+                        data={topTerSecretariasData}
+                        xKey="secretaria"
                         barKey="count"
-                        title="Top 10 secretarÃ­as con mÃ¡s agentes con tÃ­tulo terciario"
+                        title="Top 10 Secretarías con mÃ¡s agentes con título terciario"
                         isDarkMode={isDarkMode}
                         height={400}
                     />
@@ -761,7 +756,7 @@ const DashboardNeikeBeca = () => {
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                        Control de certificaciones â€“ Neikes y Becas
+                        Control de certificaciones  -  Neikes y Becas
                     </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -769,7 +764,7 @@ const DashboardNeikeBeca = () => {
                         data={registrationTypeData}
                         xKey="tipo"
                         barKey="count"
-                        title="Cantidad de agentes segÃºn tipo de registraciÃ³n"
+                        title="Cantidad de agentes según tipo de registración"
                         isDarkMode={isDarkMode}
                         height={400}
                     />
@@ -777,7 +772,7 @@ const DashboardNeikeBeca = () => {
                 <Grid item xs={12} md={3}>
                     <CustomDonutChart
                         data={entryTimeData}
-                        title="Agentes segÃºn horario de entrada"
+                        title="Agentes según horario de entrada"
                         isDarkMode={isDarkMode}
                         dataKey="count"
                         nameKey="time"
@@ -786,7 +781,7 @@ const DashboardNeikeBeca = () => {
                 <Grid item xs={12} md={3}>
                     <CustomDonutChart
                         data={exitTimeData}
-                        title="Agentes segÃºn horario de salida"
+                        title="Agentes según horario de salida"
                         isDarkMode={isDarkMode}
                         dataKey="count"
                         nameKey="time"
@@ -797,7 +792,7 @@ const DashboardNeikeBeca = () => {
                         data={topUnitsData}
                         xKey="unidad"
                         barKey="count"
-                        title="Top 10 unidades de registraciÃ³n con mÃ¡s agentes"
+                        title="Top 10 unidades de registración con mÃ¡s agentes"
                         isDarkMode={isDarkMode}
                         height={400}
                     />
@@ -846,5 +841,10 @@ const DashboardNeikeBeca = () => {
 };
 
 export default DashboardNeikeBeca;
+
+
+
+
+
 
 

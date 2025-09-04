@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+﻿import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -39,7 +39,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 
-// Componente de notificación mejorado
+// Componente de notificaciÃ³n mejorado
 const EnhancedAlert = ({ severity, children, sx = {} }) => {
   const { isDarkMode } = useTheme();
   
@@ -158,7 +158,7 @@ const Navbar = () => {
     navigate('/organigrama');
   };
 
-  // Función para mostrar notificación persistente
+  // FunciÃ³n para mostrar notificaciÃ³n persistente
   const showSnackbar = (message, severity = 'success') => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
@@ -172,12 +172,12 @@ const Navbar = () => {
       setProfileSuccess('');
       
       if (!newEmail.trim()) {
-        setProfileError('El correo electrónico no puede estar vacío');
+        setProfileError('El correo electrÃ³nico no puede estar vacÃ­o');
         return;
       }
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-        setProfileError('Formato de correo electrónico inválido');
+        setProfileError('Formato de correo electrÃ³nico invÃ¡lido');
         return;
       }
 
@@ -192,11 +192,11 @@ const Navbar = () => {
       // Actualizar el usuario en el contexto
       updateUser({ email: updatedEmail });
       
-      // Mostrar notificación persistente
-      showSnackbar('Correo electrónico actualizado correctamente');
+      // Mostrar notificaciÃ³n persistente
+      showSnackbar('Correo electrÃ³nico actualizado correctamente');
       
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al actualizar el correo electrónico';
+      const errorMessage = error.response?.data?.message || 'Error al actualizar el correo electrÃ³nico';
       setProfileError(errorMessage);
       showSnackbar(errorMessage, 'error');
     }
@@ -213,11 +213,11 @@ const Navbar = () => {
       // Actualizar el usuario en el contexto
       updateUser({ email: '' });
       
-      // Mostrar notificación persistente
-      showSnackbar('Correo electrónico eliminado correctamente');
+      // Mostrar notificaciÃ³n persistente
+      showSnackbar('Correo electrÃ³nico eliminado correctamente');
       
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al eliminar el correo electrónico';
+      const errorMessage = error.response?.data?.message || 'Error al eliminar el correo electrÃ³nico';
       setProfileError(errorMessage);
       showSnackbar(errorMessage, 'error');
     }
@@ -234,12 +234,12 @@ const Navbar = () => {
       }
 
       if (newPassword !== confirmPassword) {
-        setProfileError('Las contraseñas no coinciden');
+        setProfileError('Las contraseÃ±as no coinciden');
         return;
       }
 
       if (newPassword.length < 6) {
-        setProfileError('La contraseña debe tener al menos 6 caracteres');
+        setProfileError('La contraseÃ±a debe tener al menos 6 caracteres');
         return;
       }
 
@@ -253,11 +253,11 @@ const Navbar = () => {
       setConfirmPassword('');
       setShowPasswordDialog(false);
       
-      // Mostrar notificación persistente
-      showSnackbar('Contraseña actualizada correctamente');
+      // Mostrar notificaciÃ³n persistente
+      showSnackbar('ContraseÃ±a actualizada correctamente');
       
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al cambiar la contraseña';
+      const errorMessage = error.response?.data?.message || 'Error al cambiar la contraseÃ±a';
       setProfileError(errorMessage);
       showSnackbar(errorMessage, 'error');
     }
@@ -269,7 +269,7 @@ const Navbar = () => {
       setProfileSuccess('');
       
       if (!newUsername.trim()) {
-        setProfileError('El nombre de usuario no puede estar vacío');
+        setProfileError('El nombre de usuario no puede estar vacÃ­o');
         return;
       }
 
@@ -285,7 +285,7 @@ const Navbar = () => {
       // Actualizar el usuario en el contexto
       updateUser({ username: response.data.username });
       
-      // Mostrar notificación persistente
+      // Mostrar notificaciÃ³n persistente
       showSnackbar('Nombre de usuario actualizado correctamente');
       
     } catch (error) {
@@ -309,7 +309,7 @@ const Navbar = () => {
       // Actualizar el usuario en el contexto
       updateUser({ notificationsEnabled: newValue });
       
-      // Mostrar notificación persistente
+      // Mostrar notificaciÃ³n persistente
       showSnackbar('Preferencias de notificaciones actualizadas');
       
     } catch (error) {
@@ -339,7 +339,7 @@ const Navbar = () => {
         const { data } = await apiClient.get('/analytics/secretarias');
         setSecretarias(data);
       } catch (error) {
-        console.error('Error al cargar las secretarías:', error);
+        console.error('Error al cargar las secretarÃ­as:', error);
         setSecretarias([]);
       }
     };
@@ -367,7 +367,7 @@ const Navbar = () => {
           : '1px solid rgba(0, 0, 0, 0.08)',
       }}
     >
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', py: 1.5, px: 3 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'flex-start', py: 1.5, px: 3 }}>
         {/* Logo a la izquierda - clickeable */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box
@@ -389,7 +389,7 @@ const Navbar = () => {
           >
             <img 
               src="/logo-navbar.png" 
-              alt="Logo Análisis de dotación municipal" 
+              alt="Logo AnÃ¡lisis de dotaciÃ³n municipal" 
               style={{
                 height: '45px',
                 width: 'auto',
@@ -400,14 +400,16 @@ const Navbar = () => {
           </Box>
         </Box>
 
-        {/* Menú de navegación a la derecha */}
+        {/* MenÃº de navegaciÃ³n a la derecha */}
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: { xs: 0.5, sm: 1 },
           flexWrap: 'wrap',
+          ml: 'auto',
+          mr: 1,
         }}>
-          {/* Botón Inicio (Organigrama) */}
+          {/* BotÃ³n Inicio (Organigrama) */}
           {user && (
             <Button 
               component={Link} 
@@ -444,7 +446,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Dashboard */}
+          {/* BotÃ³n Dashboard */}
           {user && (
             <Button 
               component={Link} 
@@ -481,7 +483,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Panel de administración (solo admin) */}
+          {/* BotÃ³n Panel de administraciÃ³n (solo admin) */}
           {user && user.role === 'admin' && (
             <Button 
               component={Link} 
@@ -521,7 +523,7 @@ const Navbar = () => {
           
           {user ? (
             <>
-              {/* Información del usuario */}
+              {/* InformaciÃ³n del usuario */}
               <Box sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -579,11 +581,11 @@ const Navbar = () => {
                 </Box>
               </Box>
 
-              {/* Botón de Perfil */}
-              <Tooltip title="Configuración de Perfil" arrow>
+              {/* BotÃ³n de Perfil */}
+              <Tooltip title="ConfiguraciÃ³n de Perfil" arrow>
                 <IconButton 
                   onClick={handleProfileOpen}
-                  aria-label="Configuración"
+                  aria-label="ConfiguraciÃ³n"
                   sx={{ 
                     color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                     background: isDarkMode 
@@ -683,7 +685,7 @@ const Navbar = () => {
         </Box>
       </Toolbar>
 
-      {/* Menú de Perfil */}
+      {/* MenÃº de Perfil */}
       <Menu
         anchorEl={profileAnchorEl}
         open={isProfileOpen}
@@ -735,7 +737,7 @@ const Navbar = () => {
 
         {/* Opciones del perfil */}
         <Box sx={{ p: 1 }}>
-          {/* Correo electrónico (solo para usuarios) */}
+          {/* Correo electrÃ³nico (solo para usuarios) */}
           {user?.role !== 'admin' && (
             <MenuItem 
               onClick={() => setShowEmailDialog(true)}
@@ -753,7 +755,7 @@ const Navbar = () => {
               <EmailIcon sx={{ mr: 2, color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }} />
               <Box sx={{ flex: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-                  Correo Electrónico
+                  Correo ElectrÃ³nico
                 </Typography>
                 <Typography variant="caption" sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)' }}>
                   {email || 'No configurado'}
@@ -762,7 +764,7 @@ const Navbar = () => {
             </MenuItem>
           )}
 
-          {/* Cambiar contraseña (solo para usuarios) */}
+          {/* Cambiar contraseÃ±a (solo para usuarios) */}
           {user?.role !== 'admin' && (
             <MenuItem 
               onClick={() => setShowPasswordDialog(true)}
@@ -779,7 +781,7 @@ const Navbar = () => {
             >
               <LockIcon sx={{ mr: 2, color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }} />
               <Typography variant="body2" sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-                Cambiar Contraseña
+                Cambiar ContraseÃ±a
               </Typography>
             </MenuItem>
           )}
@@ -817,7 +819,7 @@ const Navbar = () => {
               py: 1,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-start',
               '&:hover': {
                 background: isDarkMode 
                   ? 'rgba(255, 255, 255, 0.1)' 
@@ -878,7 +880,7 @@ const Navbar = () => {
         </Alert>
       </Snackbar>
 
-      {/* Diálogo para correo electrónico */}
+      {/* DiÃ¡logo para correo electrÃ³nico */}
       <Dialog 
         open={showEmailDialog} 
         onClose={() => handleDialogClose('email')}
@@ -896,7 +898,7 @@ const Navbar = () => {
         }}
       >
         <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          {email ? 'Editar Correo Electrónico' : 'Agregar Correo Electrónico'}
+          {email ? 'Editar Correo ElectrÃ³nico' : 'Agregar Correo ElectrÃ³nico'}
         </DialogTitle>
         <DialogContent>
           {profileError && (
@@ -914,7 +916,7 @@ const Navbar = () => {
             name="email"
             autoFocus
             margin="dense"
-            label="Correo Electrónico"
+            label="Correo ElectrÃ³nico"
             type="email"
             fullWidth
             variant="outlined"
@@ -978,7 +980,7 @@ const Navbar = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo para cambiar contraseña */}
+      {/* DiÃ¡logo para cambiar contraseÃ±a */}
       <Dialog 
         open={showPasswordDialog} 
         onClose={() => handleDialogClose('password')}
@@ -996,7 +998,7 @@ const Navbar = () => {
         }}
       >
         <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          Cambiar Contraseña
+          Cambiar ContraseÃ±a
         </DialogTitle>
         <DialogContent>
           {profileError && (
@@ -1014,7 +1016,7 @@ const Navbar = () => {
             name="currentPassword"
             autoFocus
             margin="dense"
-            label="Contraseña Actual"
+            label="ContraseÃ±a Actual"
             type="password"
             fullWidth
             variant="outlined"
@@ -1042,7 +1044,7 @@ const Navbar = () => {
             id="new-password-field"
             name="newPassword"
             margin="dense"
-            label="Nueva Contraseña"
+            label="Nueva ContraseÃ±a"
             type="password"
             fullWidth
             variant="outlined"
@@ -1070,7 +1072,7 @@ const Navbar = () => {
             id="confirm-password-field"
             name="confirmPassword"
             margin="dense"
-            label="Confirmar Nueva Contraseña"
+            label="Confirmar Nueva ContraseÃ±a"
             type="password"
             fullWidth
             variant="outlined"
@@ -1112,12 +1114,12 @@ const Navbar = () => {
               },
             }}
           >
-            Cambiar Contraseña
+            Cambiar ContraseÃ±a
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Diálogo para cambiar nombre de usuario */}
+      {/* DiÃ¡logo para cambiar nombre de usuario */}
       <Dialog 
         open={showUsernameDialog} 
         onClose={() => handleDialogClose('username')}

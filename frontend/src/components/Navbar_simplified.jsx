@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+﻿import React, { useState, useEffect, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -37,7 +37,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Alert from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 
-// Componente de notificación mejorado
+// Componente de notificaciÃ³n mejorado
 const EnhancedAlert = ({ severity, children, sx = {} }) => {
   const { isDarkMode } = useTheme();
   
@@ -134,7 +134,7 @@ const Navbar = () => {
     navigate('/organigrama');
   };
 
-  // Función para mostrar notificación persistente
+  // FunciÃ³n para mostrar notificaciÃ³n persistente
   const showSnackbar = (message, severity = 'success') => {
     setSnackbarMessage(message);
     setSnackbarSeverity(severity);
@@ -148,12 +148,12 @@ const Navbar = () => {
       setProfileSuccess('');
       
       if (!newEmail.trim()) {
-        setProfileError('El correo electrónico no puede estar vacío');
+        setProfileError('El correo electrÃ³nico no puede estar vacÃ­o');
         return;
       }
 
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
-        setProfileError('Formato de correo electrónico inválido');
+        setProfileError('Formato de correo electrÃ³nico invÃ¡lido');
         return;
       }
 
@@ -168,11 +168,11 @@ const Navbar = () => {
       // Actualizar el usuario en el contexto
       updateUser({ email: updatedEmail });
       
-      // Mostrar notificación persistente
-      showSnackbar('Correo electrónico actualizado correctamente');
+      // Mostrar notificaciÃ³n persistente
+      showSnackbar('Correo electrÃ³nico actualizado correctamente');
       
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al actualizar el correo electrónico';
+      const errorMessage = error.response?.data?.message || 'Error al actualizar el correo electrÃ³nico';
       setProfileError(errorMessage);
       showSnackbar(errorMessage, 'error');
     }
@@ -189,11 +189,11 @@ const Navbar = () => {
       // Actualizar el usuario en el contexto
       updateUser({ email: '' });
       
-      // Mostrar notificación persistente
-      showSnackbar('Correo electrónico eliminado correctamente');
+      // Mostrar notificaciÃ³n persistente
+      showSnackbar('Correo electrÃ³nico eliminado correctamente');
       
     } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Error al eliminar el correo electrónico';
+      const errorMessage = error.response?.data?.message || 'Error al eliminar el correo electrÃ³nico';
       setProfileError(errorMessage);
       showSnackbar(errorMessage, 'error');
     }
@@ -213,7 +213,7 @@ const Navbar = () => {
       // Actualizar el usuario en el contexto
       updateUser({ notificationsEnabled: newValue });
       
-      // Mostrar notificación persistente
+      // Mostrar notificaciÃ³n persistente
       showSnackbar('Preferencias de notificaciones actualizadas');
       
     } catch (error) {
@@ -243,7 +243,7 @@ const Navbar = () => {
         const { data } = await apiClient.get('/analytics/secretarias');
         setSecretarias(data);
       } catch (error) {
-        console.error('Error al cargar las secretarías:', error);
+        console.error('Error al cargar las secretarÃ­as:', error);
         setSecretarias([]);
       }
     };
@@ -271,7 +271,7 @@ const Navbar = () => {
           : '1px solid rgba(0, 0, 0, 0.08)',
       }}
     >
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', py: 1.5, px: 3 }}>
+      <Toolbar sx={{ display: 'flex', justifyContent: 'flex-start', py: 1.5, px: 3 }}>
         {/* Logo a la izquierda - clickeable */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box
@@ -293,7 +293,7 @@ const Navbar = () => {
           >
             <img 
               src="/logo-navbar.png" 
-              alt="Logo Análisis de dotación municipal" 
+              alt="Logo AnÃ¡lisis de dotaciÃ³n municipal" 
               style={{
                 height: '45px',
                 width: 'auto',
@@ -304,14 +304,16 @@ const Navbar = () => {
           </Box>
         </Box>
 
-        {/* Menú de navegación a la derecha */}
+        {/* MenÃº de navegaciÃ³n a la derecha */}
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
           gap: { xs: 0.5, sm: 1 },
           flexWrap: 'wrap',
+          ml: 'auto',
+          mr: 1,
         }}>
-          {/* Botón Inicio (Organigrama) */}
+          {/* BotÃ³n Inicio (Organigrama) */}
           {user && (
             <Button 
               component={Link} 
@@ -348,7 +350,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Dashboard */}
+          {/* BotÃ³n Dashboard */}
           {user && (
             <Button 
               component={Link} 
@@ -385,7 +387,7 @@ const Navbar = () => {
             </Button>
           )}
           
-          {/* Botón Panel de administración (solo admin) */}
+          {/* BotÃ³n Panel de administraciÃ³n (solo admin) */}
           {user && user.role === 'admin' && (
             <Button 
               component={Link} 
@@ -425,7 +427,7 @@ const Navbar = () => {
           
           {user ? (
             <>
-              {/* Información del usuario */}
+              {/* InformaciÃ³n del usuario */}
               <Box sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -483,11 +485,11 @@ const Navbar = () => {
                 </Box>
               </Box>
 
-              {/* Botón de Perfil */}
-              <Tooltip title="Configuración de Perfil" arrow>
+              {/* BotÃ³n de Perfil */}
+              <Tooltip title="ConfiguraciÃ³n de Perfil" arrow>
                 <IconButton 
                   onClick={handleProfileOpen}
-                  aria-label="Configuración"
+                  aria-label="ConfiguraciÃ³n"
                   sx={{ 
                     color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
                     background: isDarkMode 
@@ -587,7 +589,7 @@ const Navbar = () => {
         </Box>
       </Toolbar>
 
-      {/* Menú de Perfil Simplificado */}
+      {/* MenÃº de Perfil Simplificado */}
       <Menu
         anchorEl={profileAnchorEl}
         open={isProfileOpen}
@@ -639,7 +641,7 @@ const Navbar = () => {
 
         {/* Opciones del perfil simplificadas */}
         <Box sx={{ p: 1 }}>
-          {/* Correo electrónico (solo para usuarios) */}
+          {/* Correo electrÃ³nico (solo para usuarios) */}
           {user?.role !== 'admin' && (
             <MenuItem 
               onClick={() => setShowEmailDialog(true)}
@@ -657,7 +659,7 @@ const Navbar = () => {
               <EmailIcon sx={{ mr: 2, color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }} />
               <Box sx={{ flex: 1 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-                  Correo Electrónico
+                  Correo ElectrÃ³nico
                 </Typography>
                 <Typography variant="caption" sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.5)' }}>
                   {email || 'No configurado'}
@@ -677,7 +679,7 @@ const Navbar = () => {
               py: 1,
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-start',
               '&:hover': {
                 background: isDarkMode 
                   ? 'rgba(255, 255, 255, 0.1)' 
@@ -738,7 +740,7 @@ const Navbar = () => {
         </Alert>
       </Snackbar>
 
-      {/* Diálogo para correo electrónico */}
+      {/* DiÃ¡logo para correo electrÃ³nico */}
       <Dialog 
         open={showEmailDialog} 
         onClose={handleDialogClose}
@@ -756,7 +758,7 @@ const Navbar = () => {
         }}
       >
         <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-          {email ? 'Editar Correo Electrónico' : 'Agregar Correo Electrónico'}
+          {email ? 'Editar Correo ElectrÃ³nico' : 'Agregar Correo ElectrÃ³nico'}
         </DialogTitle>
         <DialogContent>
           {profileError && (
@@ -774,7 +776,7 @@ const Navbar = () => {
             name="email"
             autoFocus
             margin="dense"
-            label="Correo Electrónico"
+            label="Correo ElectrÃ³nico"
             type="email"
             fullWidth
             variant="outlined"

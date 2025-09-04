@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip, Snackbar } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
@@ -30,13 +30,13 @@ const DashboardPage = () => {
     const [error, setError] = useState('');
     const [tabValue, setTabValue] = useState(0);
     const [filters, setFilters] = useState({
-        Secretaría: '',
-        subSecretaría: '',
+        secretaria: '',
+        subsecretaria: '',
         direccionGeneral: '',
         direccion: '',
         departamento: '',
         division: '',
-        Función: ''
+        funcion: ''
     });
     const [availableFields, setAvailableFields] = useState(new Set());
     const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
@@ -50,19 +50,19 @@ const DashboardPage = () => {
     const [agentsByFunction, setAgentsByFunction] = useState([]);
     const [agentsByEmploymentType, setAgentsByEmploymentType] = useState([]);
     const [agentsByDependency, setAgentsByDependency] = useState([]);
-    const [agentsBySecretaría, setAgentsBySecretaría] = useState([]);
-    const [agentsBySubSecretaría, setAgentsBySubSecretaría] = useState([]);
-    const [agentsByDireccionGeneral, setAgentsByDireccionGeneral] = useState([]);
-    const [agentsByDireccion, setAgentsByDireccion] = useState([]);
+    const [agentsBySecretaria, setAgentsBySecretaria] = useState([]);
+    const [agentsBySubsecretaría, setAgentsBySubsecretaría] = useState([]);
+    const [agentsBydireccionGeneral, setAgentsBydireccionGeneral] = useState([]);
+    const [agentsBydireccion, setAgentsBydireccion] = useState([]);
     const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
-    const [agentsByDivision, setAgentsByDivision] = useState([]);
+    const [agentsBydivision, setAgentsBydivision] = useState([]);
 
     const [seniorityData, setSeniorityData] = useState([]);
     const [secondaryData, setSecondaryData] = useState(null);
     const [tertiaryData, setTertiaryData] = useState(null);
     const [universityData, setUniversityData] = useState(null);
-    const [topUniSecretaríasData, setTopUniSecretaríasData] = useState([]);
-    const [topTerSecretaríasData, setTopTerSecretaríasData] = useState([]);
+    const [topUniSecretariasData, setTopUniSecretariasData] = useState([]);
+    const [topTerSecretariasData, setTopTerSecretariasData] = useState([]);
 
     const [registrationTypeData, setRegistrationTypeData] = useState([]);
     const [entryTimeData, setEntryTimeData] = useState([]);
@@ -85,7 +85,7 @@ const DashboardPage = () => {
         window.location.reload();
     }, []);
 
-    // FunciÃ³n para filtrar datos que no sean "-" o vacÃ­os
+    // Función para filtrar datos que no sean "-" o vacÃ­os
     const filterValidData = (data, nameKey) => {
         return data.filter(item => {
             const value = item[nameKey];
@@ -99,15 +99,15 @@ const DashboardPage = () => {
     };
 
     const fieldMap = {
-        secretaria: 'Secretaría',
-        subsecretaria: 'Subsecretaría',
-        direccionGeneral: 'Dirección general',
-        direccion: 'Dirección',
-        departamento: 'Departamento',
-        division: 'División',
-        funcion: 'Función'
+        secretaria: "Secretaria",
+        subsecretaria: "Subsecretaría",
+        direccionGeneral: "direccion general",
+        direccion: "direccion",
+        departamento: "Departamento",
+        division: "division",
+        funcion: "funcion"
     };
-    const filterFields = ['Secretaría','Subsecretaría','Dirección general','Dirección','Departamento','División','Función'];
+    const filterFields = ["Secretaria","Subsecretaría","direccion general","direccion","Departamento","division","funcion"];
 
     const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const hasField = (name, fields = availableFields) => {
@@ -173,8 +173,8 @@ const DashboardPage = () => {
                 functionData,
                 employmentData,
                 dependencyData,
-                SecretaríaData,
-                subSecretaríaData,
+                secretariaData,
+                SubsecretaríaData,
                 direccionGeneralData,
                 direccionData,
                 departamentoData,
@@ -200,19 +200,19 @@ const DashboardPage = () => {
                 safeGet(funcMap.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsBySecretaría, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsBySubSecretaría, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsByDireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsByDireccion, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsBySubsecretaría, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsBydireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.agentsBydireccion, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsByDivision, [], TEMPLATE_PLANTA_CONTRATOS),
-                // Datos para antigÃ¼edad y estudios
+                safeGet(funcMap.agentsBydivision, [], TEMPLATE_PLANTA_CONTRATOS),
+                // Datos para Antigüedad y estudios
                 safeGet(funcMap.agentsBySeniority, [], TEMPLATE_DATOS_CONCURSO),
                 safeGet(funcMap.agentsBySecondaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
                 safeGet(funcMap.agentsByTertiaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
                 safeGet(funcMap.agentsByUniversityStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
-                safeGet(funcMap.agentsByTopSecretaríasUniversity, [], TEMPLATE_DATOS_CONCURSO),
-                safeGet(funcMap.agentsByTopSecretaríasTertiary, [], TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsByTopSecretariasUniversity, [], TEMPLATE_DATOS_CONCURSO),
+                safeGet(funcMap.agentsByTopSecretariasTertiary, [], TEMPLATE_DATOS_CONCURSO),
                 // Datos para control de certificaciones
                 safeGet(funcMap.certificationsRegistrationType, [], TEMPLATE_CONTROL_PLANTA),
                 safeGet(funcMap.certificationsEntryTime, [], TEMPLATE_CONTROL_PLANTA),
@@ -231,27 +231,27 @@ const DashboardPage = () => {
             setAgentsByFunction(functionData);
             setAgentsByEmploymentType(employmentData);
             setAgentsByDependency(dependencyData);
-            setAgentsBySecretaría(SecretaríaData);
-            setAgentsBySubSecretaría(subSecretaríaData);
-            setAgentsByDireccionGeneral(direccionGeneralData);
-            setAgentsByDireccion(direccionData);
+            setAgentsBySecretaria(secretariaData);
+            setAgentsBySubsecretaría(SubsecretaríaData);
+            setAgentsBydireccionGeneral(direccionGeneralData);
+            setAgentsBydireccion(direccionData);
             setAgentsByDepartamento(departamentoData);
-            setAgentsByDivision(divisionData);
-            // Determinar dinámicamente los campos organizacionales disponibles
+            setAgentsBydivision(divisionData);
             const fieldSet = new Set();
-            if (secretariaData?.length) fieldSet.add('Secretaría');
-            if (subsecretariaData?.length) fieldSet.add('Subsecretaría');
-            if (direccionGeneralData?.length) fieldSet.add('Dirección general');
-            if (direccionData?.length) fieldSet.add('Dirección');
+            if (secretariaData?.length) fieldSet.add('Secretaria');
+            if (SubsecretaríaData?.length) fieldSet.add('Subsecretaría');
+            if (direccionGeneralData?.length) fieldSet.add('direccion general');
+            if (direccionData?.length) fieldSet.add('direccion');
             if (departamentoData?.length) fieldSet.add('Departamento');
-            if (divisionData?.length) fieldSet.add('División');
+            if (divisionData?.length) fieldSet.add('division');
+            if (functionData?.length) fieldSet.add('funcion');
             setAvailableFields(fieldSet);
             setSeniorityData(seniorityRes);
             setSecondaryData(secondaryRes);
             setTertiaryData(tertiaryRes);
             setUniversityData(universityRes);
-            setTopUniSecretaríasData(topUniRes);
-            setTopTerSecretaríasData(topTerRes);
+            setTopUniSecretariasData(topUniRes);
+            setTopTerSecretariasData(topTerRes);
             setRegistrationTypeData(regTypeRes);
             setEntryTimeData(entryTimeRes);
             setExitTimeData(exitTimeRes);
@@ -293,21 +293,21 @@ const DashboardPage = () => {
     };
 
     const levelMap = {
-        1: 'Secretaría',
-        2: 'subSecretaría',
-        3: 'direccionGeneral',
-        4: 'direccion',
-        5: 'departamento',
-        6: 'division',
-        7: 'Función',
-        Secretaría: 'Secretaría',
-        subSecretaría: 'subSecretaría',
-        direcciongeneral: 'direccionGeneral',
-        direccion: 'direccion',
-        departamento: 'departamento',
-        division: 'division',
-        Función: 'Función'
-    };
+    1: 'secretaria',
+    2: 'subsecretaria',
+    3: 'direccionGeneral',
+    4: 'direccion',
+    5: 'departamento',
+    6: 'division',
+    7: 'funcion',
+    secretaria: 'secretaria',
+    subsecretaria: 'subsecretaria',
+    direcciongeneral: 'direccionGeneral',
+    direccion: 'direccion',
+    departamento: 'departamento',
+    division: 'division',
+    funcion: 'funcion'
+};
 
     const applyOrgNav = (nivel, valor) => {
         const key = levelMap[
@@ -321,13 +321,13 @@ const DashboardPage = () => {
         ];
         if (!key) return;
         const baseFilters = {
-            Secretaría: '',
-            subSecretaría: '',
+            secretaria: '',
+            subsecretaria: '',
             direccionGeneral: '',
             direccion: '',
             departamento: '',
             division: '',
-            Función: ''
+            funcion: ''
         };
         baseFilters[key] = valor;
         handleApplyFilters(baseFilters);
@@ -419,7 +419,7 @@ const DashboardPage = () => {
                     mb: 2,
                 }}
             >
-                AnÃ¡lisis detallado de la dotaciÃ³n municipal con grÃ¡ficos especializados
+                Análisis detallado de la dotación municipal con gráficos especializados
             </Typography>
 
             <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
@@ -430,7 +430,7 @@ const DashboardPage = () => {
                 autoHideDuration={6000}
             >
                 <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
-                    Esta secciÃ³n no tiene datos de SecretarÃ­a/SubsecretarÃ­a/Dirección...
+                    Esta sección no tiene datos de Secretaría/Subsecretaría/direccion...
                 </Alert>
             </Snackbar>
 
@@ -444,7 +444,7 @@ const DashboardPage = () => {
                 </Alert>
             </Snackbar>
 
-            {/* NavegaciÃ³n por botones */}
+            {/* Navegación por botones */}
             <Box
                 sx={{
                     mb: 4,
@@ -467,28 +467,28 @@ const DashboardPage = () => {
                     startIcon={<AnalyticsIcon />}
                     sx={getTabButtonStyles(1)}
                 >
-                    AnÃ¡lisis de Edad
+                    Análisis de Edad
                 </Button>
                 <Button
                     onClick={() => setTabValue(2)}
                     startIcon={<BusinessIcon />}
                     sx={getTabButtonStyles(2)}
                 >
-                    DistribuciÃ³n Organizacional
+                    Distribución Organizacional
                 </Button>
                 <Button
                     onClick={() => setTabValue(3)}
                     startIcon={<SchoolIcon />}
                     sx={getTabButtonStyles(3)}
                 >
-                    AntigÃ¼edad y Estudios
+                    Antigüedad y Estudios
                 </Button>
                 <Button
                     onClick={() => setTabValue(4)}
                     startIcon={<AssignmentTurnedInIcon />}
                     sx={getTabButtonStyles(4)}
                 >
-                    Control de certificaciones â€“ Planta y Contratos
+                    Control de certificaciones  -  Planta y Contratos
                 </Button>
                 <Button
                     onClick={() => setTabValue(5)}
@@ -519,31 +519,31 @@ const DashboardPage = () => {
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <StatCard 
-                            title="Funciónes Ãšnicas Registradas" 
+                            title="funciones Únicas Registradas" 
                             value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length} 
                             isDarkMode={isDarkMode} 
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <StatCard 
-                            title="Tipos de SituaciÃ³n de Revista" 
+                            title="Tipos de Situación de Revista" 
                             value={agentsByEmploymentType.length} 
                             isDarkMode={isDarkMode} 
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
                         <StatCard 
-                            title="SecretarÃ­as" 
-                            value={agentsBySecretaría.length} 
+                            title="Secretarías" 
+                            value={agentsBySecretaria.length} 
                             isDarkMode={isDarkMode} 
                         />
                     </Grid>
                     
-                    {/* GrÃ¡ficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
+                    {/* gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
                     <Grid item xs={12} lg={8}>
                         <CustomDonutChart
                             data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
-                            title="DistribuciÃ³n de Agentes por FunciÃ³n (Top 10) - Planta y Contratos"
+                            title="Distribución de Agentes por Función (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="function"
@@ -552,7 +552,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} lg={4}>
                         <CustomDonutChart
                             data={agentsByEmploymentType}
-                            title="Agentes por SituaciÃ³n de Revista - Planta y Contratos"
+                            title="Agentes por Situación de Revista - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="type"
@@ -561,12 +561,12 @@ const DashboardPage = () => {
                 </Grid>
             )}
 
-            {/* Tab 3: AntigÃ¼edad y Estudios */}
+            {/* Tab 3: Antigüedad y Estudios */}
             {tabValue === 3 && (
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            AntigÃ¼edad y Estudios
+                            Antigüedad y Estudios
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -574,7 +574,7 @@ const DashboardPage = () => {
                             data={seniorityData}
                             xKey="range"
                             barKey="count"
-                            title="Cantidad de agentes segÃºn antigÃ¼edad municipal"
+                            title="Cantidad de agentes según Antigüedad municipal"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -582,10 +582,10 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
                             data={[
-                                { category: 'Con tÃ­tulo secundario', count: secondaryData?.conTitulo || 0 },
+                                { category: 'Con título secundario', count: secondaryData?.conTitulo || 0 },
                                 { category: 'Otros', count: secondaryData?.otros || 0 }
                             ]}
-                            title="Agentes segÃºn estudios secundarios"
+                            title="Agentes según estudios secundarios"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="category"
@@ -594,10 +594,10 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
                             data={[
-                                { category: 'Con tÃ­tulo terciario', count: tertiaryData?.conTitulo || 0 },
+                                { category: 'Con título terciario', count: tertiaryData?.conTitulo || 0 },
                                 { category: 'Otros', count: tertiaryData?.otros || 0 }
                             ]}
-                            title="Agentes segÃºn estudios terciarios"
+                            title="Agentes según estudios terciarios"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="category"
@@ -606,10 +606,10 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
                             data={[
-                                { category: 'Con tÃ­tulo universitario', count: universityData?.conTitulo || 0 },
+                                { category: 'Con título universitario', count: universityData?.conTitulo || 0 },
                                 { category: 'Otros', count: universityData?.otros || 0 }
                             ]}
-                            title="Agentes segÃºn estudios universitarios"
+                            title="Agentes según estudios universitarios"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="category"
@@ -617,20 +617,20 @@ const DashboardPage = () => {
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <CustomBarChart
-                            data={topUniSecretaríasData}
-                            xKey="Secretaría"
+                            data={topUniSecretariasData}
+                            xKey="secretaria"
                             barKey="count"
-                            title="Top 10 secretarÃ­as con mÃ¡s agentes con tÃ­tulo universitario"
+                            title="Top 10 Secretarías con mÃ¡s agentes con título universitario"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <CustomBarChart
-                            data={topTerSecretaríasData}
-                            xKey="Secretaría"
+                            data={topTerSecretariasData}
+                            xKey="secretaria"
                             barKey="count"
-                            title="Top 10 secretarÃ­as con mÃ¡s agentes con tÃ­tulo terciario"
+                            title="Top 10 Secretarías con mÃ¡s agentes con título terciario"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -643,7 +643,7 @@ const DashboardPage = () => {
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            Control de certificaciones â€“ Planta y Contratos
+                            Control de certificaciones  -  Planta y Contratos
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -651,7 +651,7 @@ const DashboardPage = () => {
                             data={registrationTypeData}
                             xKey="tipo"
                             barKey="count"
-                            title="Cantidad de agentes segÃºn tipo de registraciÃ³n"
+                            title="Cantidad de agentes según tipo de registración"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -659,7 +659,7 @@ const DashboardPage = () => {
                     <Grid item xs={12} md={3}>
                         <CustomDonutChart
                             data={entryTimeData}
-                            title="Agentes segÃºn horario de entrada"
+                            title="Agentes según horario de entrada"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="time"
@@ -668,7 +668,7 @@ const DashboardPage = () => {
                 <Grid item xs={12} md={3}>
                     <CustomDonutChart
                         data={exitTimeData}
-                        title="Agentes segÃºn horario de salida"
+                        title="Agentes según horario de salida"
                         isDarkMode={isDarkMode}
                         dataKey="count"
                         nameKey="time"
@@ -679,7 +679,7 @@ const DashboardPage = () => {
                         data={topUnitsData}
                         xKey="unidad"
                         barKey="count"
-                        title="Top 10 unidades de registraciÃ³n con mÃ¡s agentes"
+                        title="Top 10 unidades de registración con mÃ¡s agentes"
                         isDarkMode={isDarkMode}
                         height={400}
                     />
@@ -702,7 +702,7 @@ const DashboardPage = () => {
                             data={expTopInitiators}
                             xKey="initiator"
                             barKey="count"
-                            title="Top 10 Ã¡reas con mÃ¡s trÃ¡mites gestionados"
+                            title="Top 10 áreas con mÃ¡s trámites gestionados"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -716,7 +716,7 @@ const DashboardPage = () => {
                             data={expByTramite}
                             xKey="tramite"
                             barKey="count"
-                            title="Cantidad de expedientes segÃºn tipo de trÃ¡mite"
+                            title="Cantidad de expedientes según tipo de trÃ¡mite"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -738,12 +738,12 @@ const DashboardPage = () => {
             />
         )}
 
-            {/* Tab 1: AnÃ¡lisis de Edad */}
+            {/* Tab 1: Análisis de Edad */}
             {tabValue === 1 && (
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            AnÃ¡lisis de Edad de los Agentes Municipales
+                            Análisis de Edad de los Agentes Municipales
                         </Typography>
                         {ageDistribution?.note && (
                             <Alert severity="info" sx={{ mb: 2 }}>
@@ -759,23 +759,23 @@ const DashboardPage = () => {
                                 data={ageDistribution.rangeData}
                                 xKey="range"
                                 barKey="count"
-                                title="DistribuciÃ³n por Rangos de Edad - Planta y Contratos"
+                                title="Distribución por Rangos de Edad - Planta y Contratos"
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
                                 <CircularProgress size={40} />
-                                <Typography sx={{ ml: 2 }}>Cargando anÃ¡lisis de edad...</Typography>
+                                <Typography sx={{ ml: 2 }}>Cargando Análisis de edad...</Typography>
                             </Box>
                         )}
                     </Grid>
 
-                    {/* Rangos de edad con Ã¡rea chart */}
+                    {/* Rangos de edad con área chart */}
                     <Grid item xs={12} lg={6}>
                         {ageDistribution ? (
                             <CustomAreaChart
                                 data={ageDistribution.rangeData}
-                                title="DistribuciÃ³n por Rangos de Edad segÃºn el Ã¡rea - Planta y Contratos"
+                                title="Distribución por Rangos de Edad según el área - Planta y Contratos"
                                 isDarkMode={isDarkMode}
                                 xKey="range"
                                 yKey="count"
@@ -792,7 +792,7 @@ const DashboardPage = () => {
                                 data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
                                 xKey="function"
                                 barKey="avgAge"
-                                title="Edad Promedio por FunciÃ³n (Top 10) - Planta y Contratos"
+                                title="Edad Promedio por Función (Top 10) - Planta y Contratos"
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
@@ -804,22 +804,22 @@ const DashboardPage = () => {
                 </Grid>
             )}
 
-            {/* Tab 2: DistribuciÃ³n Organizacional */}
+            {/* Tab 2: Distribución Organizacional */}
             {tabValue === 2 && (
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-                            DistribuciÃ³n Organizacional
+                            Distribución Organizacional
                         </Typography>
                     </Grid>
 
                     <Grid item xs={12} md={6}>
                         <CustomDonutChart
-                            data={agentsBySecretaría.slice(0, 8)}
-                            title="Agentes por SecretarÃ­a (Top 8) - Planta y Contratos"
+                            data={agentsBySecretaria.slice(0, 8)}
+                            title="Agentes por Secretaría (Top 8) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
-                            nameKey="Secretaría"
+                            nameKey="secretaria"
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -834,10 +834,10 @@ const DashboardPage = () => {
 
                     <Grid item xs={12}>
                         <CustomBarChart
-                            data={filterValidData(agentsBySubSecretaría, 'subSecretaría').slice(0, 10)}
-                            xKey="subSecretaría"
+                            data={filterValidData(agentsBySubsecretaría, 'Subsecretaría').slice(0, 10)}
+                            xKey="Subsecretaría"
                             barKey="count"
-                            title="Agentes por SubsecretarÃ­a (Top 10) - Planta y Contratos"
+                            title="Agentes por Subsecretaría (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -845,26 +845,26 @@ const DashboardPage = () => {
 
                     <Grid item xs={12}>
                         <Typography variant="h6" sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
-                            Estructura JerÃ¡rquica Detallada
+                            Estructura Jerárquica Detallada
                         </Typography>
                     </Grid>
 
                     <Grid item xs={12} lg={6}>
                         <CustomBarChart
-                            data={filterValidData(agentsByDireccionGeneral, 'direccionGeneral').slice(0, 10)}
+                            data={filterValidData(agentsBydireccionGeneral, 'direccionGeneral').slice(0, 10)}
                             xKey="direccionGeneral"
                             barKey="count"
-                            title="Agentes por Dirección General (Top 10) - Planta y Contratos"
+                            title="Agentes por direccion general (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
                     </Grid>
                     <Grid item xs={12} lg={6}>
                         <CustomBarChart
-                            data={filterValidData(agentsByDireccion, 'direccion').slice(0, 10)}
+                            data={filterValidData(agentsBydireccion, 'direccion').slice(0, 10)}
                             xKey="direccion"
                             barKey="count"
-                            title="Agentes por Dirección (Top 10) - Planta y Contratos"
+                            title="Agentes por direccion (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -881,8 +881,8 @@ const DashboardPage = () => {
                     </Grid>
                     <Grid item xs={12} lg={6}>
                         <CustomDonutChart
-                            data={filterValidData(agentsByDivision, 'division').slice(0, 8)}
-                            title="Agentes por DivisiÃ³n (Top 8) - Planta y Contratos"
+                            data={filterValidData(agentsBydivision, 'division').slice(0, 8)}
+                            title="Agentes por division (Top 8) - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="division"
@@ -935,4 +935,21 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
