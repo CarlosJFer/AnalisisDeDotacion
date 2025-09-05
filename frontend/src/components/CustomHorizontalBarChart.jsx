@@ -15,18 +15,30 @@ const nf = new Intl.NumberFormat('es-AR');
 const formatMiles = (n) => nf.format(n);
 const formatPct = (p, digits = 1) => `${(p * 100).toFixed(digits).replace('.', ',')}%`;
 
-
 const truncate = (text, max = 30) => {
   if (!text) return '';
   return text.length > max ? text.slice(0, max - 1) + '…' : text;
 };
 
 const RIGHT_PAD = 8;
-const INSIDE_PAD = 6;
-const MARGIN_RIGHT = 72;
+const MARGIN_RIGHT = 96;
+
+const formatShort = (n) => {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.', ',') + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace('.', ',') + 'k';
+  return formatMiles(n);
+};
 
 const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, height }) => {
-  const chartData = useMemo(() => data, [data]);
+  const chartData = useMemo(
+    () =>
+      data.map((item) => ({
+        ...item,
+        [nameKey]: (item[nameKey] ?? '').toString().trim() || 'Sin categoría',
+        [valueKey]: Number.isFinite(item[valueKey]) ? item[valueKey] : 0,
+      })),
+    [data, nameKey, valueKey]
+  );
   const chartHeight = height || Math.max(420, chartData.length * 30);
   const total = useMemo(
     () => chartData.reduce((sum, item) => sum + (item[valueKey] || 0), 0),
@@ -59,22 +71,27 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
     const { x = 0, y = 0, width = 0, value = 0, viewBox } = props;
     const chartW = viewBox?.width ?? 0;
 
-    const labelText = `${formatMiles(value)} (${formatPct(total ? value / total : 0)})`;
-    const approxTextW = labelText.length * 7;
-
+    let text = `${formatMiles(value)} (${formatPct(total ? value / total : 0)})`;
     const barEndX = x + width;
-    const chartRightLimit = chartW - MARGIN_RIGHT;
-    const willOverflow = barEndX + RIGHT_PAD + approxTextW > chartRightLimit;
 
-    if (willOverflow && width < 24) return null;
+    if (barEndX + RIGHT_PAD + text.length * 7 > chartW - 4) {
+      text = `${formatShort(value)} (${formatPct(total ? value / total : 0)})`;
+    }
 
-    const textX = willOverflow ? barEndX - INSIDE_PAD : barEndX + RIGHT_PAD;
-    const textAnchor = willOverflow ? 'end' : 'start';
-    const fill = willOverflow ? '#0f172a' : '#cbd5e1';
+    const textX = barEndX + RIGHT_PAD;
+    const fill = isDarkMode ? '#ffffff' : '#0f172a';
 
     return (
-      <text x={textX} y={y} dy={4} fontSize={12} textAnchor={textAnchor} fill={fill}>
-        {labelText}
+      <text
+        x={textX}
+        y={y}
+        dy={4}
+        fontSize={12}
+        textAnchor="start"
+        fill={fill}
+        pointerEvents="none"
+      >
+        {text}
       </text>
     );
   };
@@ -141,12 +158,12 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
               data={chartData}
               layout="vertical"
               margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 240 }}
-              barCategoryGap={8}
+              barCategoryGap={10}
             >
               <CartesianGrid horizontal strokeDasharray="3 3" />
               <XAxis
                 type="number"
-                domain={[0, (dataMax) => Math.ceil(dataMax * 1.12)]}
+                domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
                 tickFormatter={formatMiles}
                 allowDecimals={false}
                 tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
