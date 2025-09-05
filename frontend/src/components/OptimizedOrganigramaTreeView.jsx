@@ -218,9 +218,9 @@ const TreeNode = memo(({
             </Box>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25 }}>
             {estado && tooltipContent && (
-              <Tooltip title={tooltipContent} placement="right" enterDelay={300}>
+              <Tooltip title={tooltipContent} placement="top" enterDelay={300}>
                 <Box sx={{ cursor: 'help', display: 'flex', alignItems: 'center' }}>
                   <EstadoIcon estado={estado} />
                 </Box>
@@ -248,8 +248,8 @@ const TreeNode = memo(({
                       size="small"
                       onClick={(e) => { e.stopPropagation(); onNodeSelect(node); }}
                       sx={{
-                        width: 24,
-                        height: 24,
+                        width: 20,
+                        height: 20,
                         p: 0,
                         display: 'flex',
                         alignItems: 'center',
@@ -277,10 +277,10 @@ const TreeNode = memo(({
                       size="small"
                       onClick={(e) => { e.stopPropagation(); onNodeSelectNeike(node); }}
                       sx={{
-                        width: 24,
-                        height: 24,
+                        width: 20,
+                        height: 20,
                         p: 0,
-                        ml: 0.75,
+                        ml: 0.25,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

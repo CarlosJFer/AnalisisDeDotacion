@@ -14,10 +14,12 @@ import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
+import { useLocation } from 'react-router-dom';
 
 const DashboardNeikeBeca = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
+    const location = useLocation();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [tabValue, setTabValue] = useState(0);
@@ -288,15 +290,17 @@ const DashboardNeikeBeca = () => {
         funcion: 'funcion'
     };
     const handleOrgNav = (nivel, valor) => {
-        const key = levelMap[
-            typeof nivel === 'string'
-                ? nivel
-                      .normalize('NFD')
-                      .replace(/[\u0300-\u036f]/g, '')
-                      .toLowerCase()
-                      .replace(/\s+/g, '')
-                : nivel
-        ];
+        const key = (typeof nivel === 'number' && nivel >= 2)
+            ? levelMap[nivel - 1]
+            : levelMap[
+                typeof nivel === 'string'
+                    ? nivel
+                          .normalize('NFD')
+                          .replace(/[\u0300-\u036f]/g, '')
+                          .toLowerCase()
+                          .replace(/\s+/g, '')
+                    : nivel
+              ];
         if (!key) return;
         const baseFilters = {
             secretaria: '',
@@ -312,8 +316,12 @@ const DashboardNeikeBeca = () => {
     };
 
     useEffect(() => {
-        fetchAllData(filters, false);
-    }, []);
+        if (location.state && location.state.nombre && location.state.nivel) {
+            handleOrgNav(location.state.nivel, location.state.nombre);
+        } else {
+            fetchAllData(filters, false);
+        }
+    }, [location.state]);
 
     const getTabButtonStyles = (value) => ({
         color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',

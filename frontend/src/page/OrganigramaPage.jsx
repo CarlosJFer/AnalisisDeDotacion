@@ -234,6 +234,7 @@ const OrganigramaPage = () => {
                   }} />
                 ),
               }}
+              {...{ label: 'Buscar dependencias o función' }}
             />
             <Button 
               onClick={() => setSearch("")} 

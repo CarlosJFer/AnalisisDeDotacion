@@ -310,15 +310,17 @@ const DashboardPage = () => {
 };
 
     const applyOrgNav = (nivel, valor) => {
-        const key = levelMap[
-            typeof nivel === 'string'
-                ? nivel
-                      .normalize('NFD')
-                      .replace(/[\u0300-\u036f]/g, '')
-                      .toLowerCase()
-                      .replace(/\s+/g, '')
-                : nivel
-        ];
+        const key = (typeof nivel === 'number' && nivel >= 2)
+            ? levelMap[nivel - 1]
+            : levelMap[
+                typeof nivel === 'string'
+                    ? nivel
+                          .normalize('NFD')
+                          .replace(/[\u0300-\u036f]/g, '')
+                          .toLowerCase()
+                          .replace(/\s+/g, '')
+                    : nivel
+              ];
         if (!key) return;
         const baseFilters = {
             secretaria: '',
