@@ -16,6 +16,7 @@ import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import CustomHorizontalBarChart from '../components/CustomHorizontalBarChart';
+import AverageAgeByFunctionChart from '../components/AverageAgeByFunctionChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import SacSection from '../components/SACSection';
@@ -775,8 +776,8 @@ const DashboardPage = () => {
                         )}
                     </Grid>
 
-                    {/* Rangos de edad con área chart */}
-                    <Grid item xs={12} lg={6}>
+                    {/* Distribución por Rangos de Edad según el área */}
+                    <Grid item xs={12}>
                         {ageDistribution ? (
                             <CustomAreaChart
                                 data={ageDistribution.rangeData}
@@ -791,13 +792,10 @@ const DashboardPage = () => {
                             </Box>
                         )}
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12}>
                         {ageByFunction.length > 0 ? (
-                            <CustomBarChart
-                                data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
-                                xKey="function"
-                                barKey="avgAge"
-                                title="Edad Promedio por Función (Top 10) - Planta y Contratos"
+                            <AverageAgeByFunctionChart
+                                data={ageByFunction}
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
