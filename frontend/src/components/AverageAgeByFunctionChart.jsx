@@ -20,9 +20,9 @@ const useIsDark = () =>
   document.documentElement.classList.contains('dark');
 
 const AgeAvgLabel = (props) => {
-  const { x = 0, y = 0, width = 0, viewBox, avg } = props;
+  const { x = 0, y = 0, width = 0, viewBox, avg = 0 } = props;
   const chartW = viewBox?.width ?? 0;
-  const text = `Edad promedio: ${Math.round(avg)} años`;
+  const text = `Edad promedio: ${Math.round(avg || 0)} años`;
   const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
   const fill = useIsDark() ? '#ffffff' : '#0f172a';
@@ -149,7 +149,11 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
               />
               <Tooltip content={<Tip grandTotal={grandTotal} />} wrapperStyle={{ outline: 'none' }} />
               <Bar dataKey="count" maxBarSize={22} fill="#00C49F">
-                <LabelList content={(p) => <AgeAvgLabel {...p} avg={p.payload.avgAge} />} />
+                <LabelList
+                  content={(p) => (
+                    <AgeAvgLabel {...p} avg={p?.payload?.avgAge ?? 0} />
+                  )}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
