@@ -9,7 +9,6 @@ import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   LabelList,
-  Brush,
 } from 'recharts';
 
 const nf = new Intl.NumberFormat('es-AR');
@@ -37,10 +36,7 @@ const CustomHorizontalBarChart = ({
   nameKey,
   valueKey,
   height,
-  enableBrush = false,
-  visibleCount = 20,
-  modeToggle = false,
-  pageSize = 10,
+  pageSize,
 }) => {
   const chartData = useMemo(
     () =>
@@ -53,23 +49,18 @@ const CustomHorizontalBarChart = ({
         .sort((a, b) => b[valueKey] - a[valueKey]),
     [data, nameKey, valueKey]
   );
-  const [mode, setMode] = useState(modeToggle ? 'paginate' : 'default');
   const [page, setPage] = useState(0);
-
-  const totalPages = Math.ceil(chartData.length / pageSize);
+  const effectivePageSize = pageSize ?? chartData.length;
+  const totalPages = Math.ceil(chartData.length / effectivePageSize);
   const paginatedData = useMemo(
-    () => chartData.slice(page * pageSize, (page + 1) * pageSize),
-    [chartData, page, pageSize]
+    () => chartData.slice(page * effectivePageSize, (page + 1) * effectivePageSize),
+    [chartData, page, effectivePageSize]
   );
+  const showPagination = pageSize && chartData.length > pageSize;
 
-  const plotData = modeToggle && mode === 'paginate' ? paginatedData : chartData;
+  const plotData = paginatedData;
 
-  const showBrush =
-    (modeToggle && mode === 'brush' && chartData.length > visibleCount) ||
-    (!modeToggle && enableBrush && chartData.length > visibleCount);
-
-  const chartHeight =
-    height || (showBrush ? 520 : Math.max(420, plotData.length * 30));
+  const chartHeight = height || Math.max(420, plotData.length * 30);
   const total = useMemo(
     () => chartData.reduce((sum, item) => sum + (item[valueKey] || 0), 0),
     [chartData, valueKey]
@@ -178,7 +169,7 @@ const CustomHorizontalBarChart = ({
             mb: 2,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: modeToggle ? 'space-between' : 'center',
+            justifyContent: 'center',
           }}
         >
           <Typography
@@ -190,25 +181,16 @@ const CustomHorizontalBarChart = ({
           >
             {title}
           </Typography>
-          {modeToggle && (
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => setMode((m) => (m === 'paginate' ? 'brush' : 'paginate'))}
-            >
-              {mode === 'paginate' ? 'Paginación 10×10' : 'Brush'}
-            </Button>
-          )}
         </Box>
         <Box sx={{ height: chartHeight }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={plotData}
               layout="vertical"
-              margin={{ top: 16, right: MARGIN_RIGHT, bottom: showBrush ? 56 : 16, left: 240 }}
+              margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 240 }}
               barCategoryGap={10}
             >
-              <CartesianGrid horizontal={false} strokeDasharray="3 3" />
+              <CartesianGrid horizontal={false} strokeDasharray="0 0" />
               <XAxis
                 type="number"
                 domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
@@ -235,19 +217,10 @@ const CustomHorizontalBarChart = ({
               <Bar dataKey={valueKey} maxBarSize={22} fill="#00C49F">
                 <LabelList content={<ValueLabel />} />
               </Bar>
-              {showBrush && (
-                <Brush
-                  dataKey={nameKey}
-                  travellerWidth={10}
-                  height={24}
-                  startIndex={0}
-                  endIndex={Math.min(visibleCount - 1, chartData.length - 1)}
-                />
-              )}
             </BarChart>
           </ResponsiveContainer>
         </Box>
-        {modeToggle && mode === 'paginate' && (
+        {showPagination && (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
             <Button
               variant="outlined"

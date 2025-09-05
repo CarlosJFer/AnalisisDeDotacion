@@ -550,8 +550,6 @@ const DashboardPage = () => {
                             isDarkMode={isDarkMode}
                             nameKey="function"
                             valueKey="count"
-                            modeToggle
-                            visibleCount={20}
                             pageSize={10}
                             height={520}
                         />
