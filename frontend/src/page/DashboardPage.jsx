@@ -15,6 +15,7 @@ import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
+import CustomHorizontalBarChart from '../components/CustomHorizontalBarChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import SacSection from '../components/SACSection';
@@ -541,8 +542,8 @@ const DashboardPage = () => {
                         />
                     </Grid>
                     
-                    {/* gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
-                    <Grid item xs={12} lg={8}>
+                    {/* gráficos principales */}
+                    <Grid item xs={12}>
                         <CustomDonutChart
                             data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
                             title="Distribución de Agentes por Función (Top 10) - Planta y Contratos"
@@ -551,13 +552,13 @@ const DashboardPage = () => {
                             nameKey="function"
                         />
                     </Grid>
-                    <Grid item xs={12} lg={4}>
-                        <CustomDonutChart
+                    <Grid item xs={12}>
+                        <CustomHorizontalBarChart
                             data={agentsByEmploymentType}
                             title="Agentes por Situación de Revista - Planta y Contratos"
                             isDarkMode={isDarkMode}
-                            dataKey="count"
                             nameKey="type"
+                            valueKey="count"
                         />
                     </Grid>
                 </Grid>
