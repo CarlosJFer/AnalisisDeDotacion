@@ -15,6 +15,9 @@ import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
+import CustomHorizontalBarChart from '../components/CustomHorizontalBarChart';
+import AgeRangeByAreaChart from '../components/AgeRangeByAreaChart';
+import AverageAgeByFunctionChart from '../components/AverageAgeByFunctionChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
 import SacSection from '../components/SACSection';
@@ -47,6 +50,7 @@ const DashboardPage = () => {
     const [totalAgents, setTotalAgents] = useState(0);
     const [ageDistribution, setAgeDistribution] = useState(null);
     const [ageByFunction, setAgeByFunction] = useState([]);
+    const [ageByArea, setAgeByArea] = useState([]);
     const [agentsByFunction, setAgentsByFunction] = useState([]);
     const [agentsByEmploymentType, setAgentsByEmploymentType] = useState([]);
     const [agentsByDependency, setAgentsByDependency] = useState([]);
@@ -170,6 +174,7 @@ const DashboardPage = () => {
                 totalData,
                 ageDistData,
                 ageFunctionData,
+                ageAreaData,
                 functionData,
                 employmentData,
                 dependencyData,
@@ -197,6 +202,7 @@ const DashboardPage = () => {
                 safeGet(funcMap.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.ageBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
@@ -228,6 +234,7 @@ const DashboardPage = () => {
             setTotalAgents(totalData.total);
             setAgeDistribution(ageDistData);
             setAgeByFunction(ageFunctionData);
+            setAgeByArea(ageAreaData);
             setAgentsByFunction(functionData);
             setAgentsByEmploymentType(employmentData);
             setAgentsByDependency(dependencyData);
@@ -513,51 +520,53 @@ const DashboardPage = () => {
                 <Grid container spacing={3}>
                     {/* EstadÃ­sticas principales */}
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Total de Agentes Municipales" 
-                            value={totalAgents.toLocaleString()} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Total de agentes municipales"
+                            value={totalAgents.toLocaleString()}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="funciones Únicas Registradas" 
-                            value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Funciones registradas"
+                            value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Tipos de Situación de Revista" 
-                            value={agentsByEmploymentType.length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Tipos de situación de revista"
+                            value={agentsByEmploymentType.length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Secretarías" 
-                            value={agentsBySecretaria.length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Cantidad de Secretarías"
+                            value={agentsBySecretaria.length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     
-                    {/* gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
-                    <Grid item xs={12} lg={8}>
-                        <CustomDonutChart
-                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
-                            title="Distribución de Agentes por Función (Top 10) - Planta y Contratos"
+                    {/* gráficos principales */}
+                    <Grid item xs={12}>
+                        <CustomHorizontalBarChart
+                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-')}
+                            title="Distribución de Agentes por Función - Planta y Contratos"
                             isDarkMode={isDarkMode}
-                            dataKey="count"
                             nameKey="function"
+                            valueKey="count"
+                            pageSize={10}
+                            height={520}
                         />
                     </Grid>
-                    <Grid item xs={12} lg={4}>
-                        <CustomDonutChart
+                    <Grid item xs={12}>
+                        <CustomHorizontalBarChart
                             data={agentsByEmploymentType}
                             title="Agentes por Situación de Revista - Planta y Contratos"
                             isDarkMode={isDarkMode}
-                            dataKey="count"
                             nameKey="type"
+                            valueKey="count"
                         />
                     </Grid>
                 </Grid>
@@ -772,29 +781,20 @@ const DashboardPage = () => {
                         )}
                     </Grid>
 
-                    {/* Rangos de edad con área chart */}
-                    <Grid item xs={12} lg={6}>
-                        {ageDistribution ? (
-                            <CustomAreaChart
-                                data={ageDistribution.rangeData}
-                                title="Distribución por Rangos de Edad según el área - Planta y Contratos"
-                                isDarkMode={isDarkMode}
-                                xKey="range"
-                                yKey="count"
-                            />
+                    {/* Distribución por Rangos de Edad según el área */}
+                    <Grid item xs={12}>
+                        {ageByArea.length ? (
+                            <AgeRangeByAreaChart rows={ageByArea} isDarkMode={isDarkMode} />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
                                 <CircularProgress size={30} />
                             </Box>
                         )}
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12}>
                         {ageByFunction.length > 0 ? (
-                            <CustomBarChart
-                                data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
-                                xKey="function"
-                                barKey="avgAge"
-                                title="Edad Promedio por Función (Top 10) - Planta y Contratos"
+                            <AverageAgeByFunctionChart
+                                data={ageByFunction}
                                 isDarkMode={isDarkMode}
                             />
                         ) : (
