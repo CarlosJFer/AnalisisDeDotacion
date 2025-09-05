@@ -15,6 +15,7 @@ const nf = new Intl.NumberFormat('es-AR');
 const formatMiles = (n) => nf.format(n);
 const formatPct = (p, digits = 1) => `${(p * 100).toFixed(digits).replace('.', ',')}%`;
 
+
 const truncate = (text, max = 30) => {
   if (!text) return '';
   return text.length > max ? text.slice(0, max - 1) + '…' : text;
