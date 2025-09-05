@@ -19,20 +19,26 @@ const MARGIN_RIGHT = 96;
 const useIsDark = () =>
   document.documentElement.classList.contains('dark');
 
+const INSIDE_PAD = 6;
 const AgeAvgLabel = (props) => {
-  const { x = 0, y = 0, width = 0, viewBox, avg = 0 } = props;
+  const { x = 0, y = 0, width = 0, viewBox, avg = 0, isDarkMode } = props;
+  if (!avg) return null;
   const chartW = viewBox?.width ?? 0;
-  const text = `Edad promedio: ${Math.round(avg || 0)} años`;
+  const text = `Edad promedio: ${Math.round(avg)} años`;
   const approx = text.length * 7;
-  const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
-  const fill = useIsDark() ? '#ffffff' : '#0f172a';
+  const barEnd = x + width;
+  const chartRight = chartW - MARGIN_RIGHT;
+  const willOverflow = barEnd + RIGHT_PAD + approx > chartRight;
+  const textX = willOverflow ? barEnd - INSIDE_PAD : barEnd + RIGHT_PAD;
+  const anchor = willOverflow ? 'end' : 'start';
+  const fill = willOverflow ? '#0f172a' : (isDarkMode ? '#ffffff' : '#0f172a');
   return (
     <text
-      x={xText}
+      x={textX}
       y={y}
       dy={4}
       fontSize={12}
-      textAnchor="start"
+      textAnchor={anchor}
       fill={fill}
       pointerEvents="none"
     >
@@ -41,15 +47,14 @@ const AgeAvgLabel = (props) => {
   );
 };
 
-const Tip = ({ active, payload, label, grandTotal }) => {
+const Tip = ({ active, payload, label, grandTotal, isDarkMode }) => {
   if (!active || !payload?.length) return null;
   const item = payload[0]?.payload || {};
   const cant = item.count || 0;
   const avg = Math.round(item.avgAge || 0);
-  const dark = useIsDark();
-  const bg = dark ? '#0b1220' : '#ffffff';
-  const fg = dark ? '#e2e8f0' : '#0f172a';
-  const bd = dark ? '#334155' : '#cbd5e1';
+  const bg = isDarkMode ? '#0b1220' : '#ffffff';
+  const fg = isDarkMode ? '#e2e8f0' : '#0f172a';
+  const bd = isDarkMode ? '#334155' : '#cbd5e1';
   return (
     <div
       style={{
@@ -147,11 +152,11 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                 interval={0}
                 tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', fontSize: 12 }}
               />
-              <Tooltip content={<Tip grandTotal={grandTotal} />} wrapperStyle={{ outline: 'none' }} />
+              <Tooltip content={<Tip grandTotal={grandTotal} isDarkMode={isDarkMode} />} wrapperStyle={{ outline: 'none' }} />
               <Bar dataKey="count" maxBarSize={22} fill="#00C49F">
                 <LabelList
                   content={(p) => (
-                    <AgeAvgLabel {...p} avg={p?.payload?.avgAge ?? 0} />
+                    <AgeAvgLabel {...p} avg={p?.payload?.avgAge ?? 0} isDarkMode={isDarkMode} />
                   )}
                 />
               </Bar>

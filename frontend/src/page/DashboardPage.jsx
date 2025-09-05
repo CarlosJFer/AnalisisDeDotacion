@@ -16,6 +16,7 @@ import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import CustomHorizontalBarChart from '../components/CustomHorizontalBarChart';
+import AgeRangeByAreaChart from '../components/AgeRangeByAreaChart';
 import AverageAgeByFunctionChart from '../components/AverageAgeByFunctionChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
@@ -49,6 +50,7 @@ const DashboardPage = () => {
     const [totalAgents, setTotalAgents] = useState(0);
     const [ageDistribution, setAgeDistribution] = useState(null);
     const [ageByFunction, setAgeByFunction] = useState([]);
+    const [ageByArea, setAgeByArea] = useState([]);
     const [agentsByFunction, setAgentsByFunction] = useState([]);
     const [agentsByEmploymentType, setAgentsByEmploymentType] = useState([]);
     const [agentsByDependency, setAgentsByDependency] = useState([]);
@@ -172,6 +174,7 @@ const DashboardPage = () => {
                 totalData,
                 ageDistData,
                 ageFunctionData,
+                ageAreaData,
                 functionData,
                 employmentData,
                 dependencyData,
@@ -199,6 +202,7 @@ const DashboardPage = () => {
                 safeGet(funcMap.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.ageDistribution, null, TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.ageByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
+                safeGet(funcMap.ageBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByFunction, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
@@ -230,6 +234,7 @@ const DashboardPage = () => {
             setTotalAgents(totalData.total);
             setAgeDistribution(ageDistData);
             setAgeByFunction(ageFunctionData);
+            setAgeByArea(ageAreaData);
             setAgentsByFunction(functionData);
             setAgentsByEmploymentType(employmentData);
             setAgentsByDependency(dependencyData);
@@ -778,14 +783,8 @@ const DashboardPage = () => {
 
                     {/* Distribución por Rangos de Edad según el área */}
                     <Grid item xs={12}>
-                        {ageDistribution ? (
-                            <CustomAreaChart
-                                data={ageDistribution.rangeData}
-                                title="Distribución por Rangos de Edad según el área - Planta y Contratos"
-                                isDarkMode={isDarkMode}
-                                xKey="range"
-                                yKey="count"
-                            />
+                        {ageByArea.length ? (
+                            <AgeRangeByAreaChart rows={ageByArea} isDarkMode={isDarkMode} />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
                                 <CircularProgress size={30} />

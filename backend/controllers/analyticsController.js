@@ -505,58 +505,55 @@ const getAgeBySecretaria = async (req, res) => {
     const match = buildMatchStage(req.query);
     const agents = await Agent.find({
       ...match,
-      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
       'Secretaria': { $exists: true, $ne: null, $ne: '' }
-    }).limit(2000);
-
-    const currentDate = new Date();
-    const secretariaAgeData = {};
-
-    agents.forEach(agent => {
-      try {
-        let birthDate = agent['Fecha de nacimiento'];
-        
-        if (typeof birthDate === 'string') {
-          birthDate = new Date(birthDate);
-        }
-        
-        if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
-          return;
-        }
-        
-        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        
-        if (age < 0 || age > 120) {
-          return;
-        }
-        
-        const secretaria = agent['Secretaria'] || 'Sin especificar';
-        
-        if (!secretariaAgeData[secretaria]) {
-          secretariaAgeData[secretaria] = { ages: [], count: 0 };
-        }
-        
-        secretariaAgeData[secretaria].ages.push(age);
-        secretariaAgeData[secretaria].count++;
-      } catch (agentError) {
-        // Silently skip invalid agents
-      }
     });
 
-    const result = Object.entries(secretariaAgeData).map(([secretaria, data]) => {
-      const avgAge = data.ages.reduce((sum, age) => sum + age, 0) / data.ages.length;
-      return {
-        secretaria: secretaria,
-        count: data.count,
-        avgAge: Math.round(avgAge * 100) / 100,
-        ages: data.ages
-      };
-    }).sort((a, b) => b.count - a.count).slice(0, 15);
+    const currentDate = new Date();
+    const buckets = ['18-25','26-35','36-45','46-55','56-65','65+','No tiene datos'];
+    const secretariaAgeData = {};
+
+    const bucketOf = (edad) => {
+      if (edad == null || Number.isNaN(edad)) return 'No tiene datos';
+      if (edad <= 25) return '18-25';
+      if (edad <= 35) return '26-35';
+      if (edad <= 45) return '36-45';
+      if (edad <= 55) return '46-55';
+      if (edad <= 65) return '56-65';
+      return '65+';
+    };
+
+    agents.forEach(agent => {
+      const secretaria = agent['Secretaria'] || 'Sin especificar';
+      let birthDate = agent['Fecha de nacimiento'];
+      if (typeof birthDate === 'string') {
+        birthDate = new Date(birthDate);
+      }
+      let age;
+      if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+        age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
+        if (age < 0 || age > 120) age = null;
+      } else {
+        age = null;
+      }
+      const bucket = bucketOf(age);
+      if (!secretariaAgeData[secretaria]) {
+        secretariaAgeData[secretaria] = {};
+        buckets.forEach(b => (secretariaAgeData[secretaria][b] = 0));
+      }
+      secretariaAgeData[secretaria][bucket]++;
+    });
+
+    const result = [];
+    Object.entries(secretariaAgeData).forEach(([dependencia, ranges]) => {
+      Object.entries(ranges).forEach(([range, count]) => {
+        result.push({ dependencia, range, count });
+      });
+    });
 
     res.json(result);
   } catch (err) {
     console.error('Error en análisis de edad por secretaría:', err.message);
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Error en análisis de edad por secretaría',
       message: err.message 
     });
