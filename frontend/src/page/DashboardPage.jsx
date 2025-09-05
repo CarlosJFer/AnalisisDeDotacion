@@ -550,8 +550,9 @@ const DashboardPage = () => {
                             isDarkMode={isDarkMode}
                             nameKey="function"
                             valueKey="count"
-                            enableBrush
+                            modeToggle
                             visibleCount={20}
+                            pageSize={10}
                             height={520}
                         />
                     </Grid>

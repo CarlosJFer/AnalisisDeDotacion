@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Card, CardContent, Typography, Box, Tooltip as MuiTooltip } from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import { Card, CardContent, Typography, Box, Tooltip as MuiTooltip, Button } from '@mui/material';
 import {
   BarChart,
   Bar,
@@ -39,6 +39,8 @@ const CustomHorizontalBarChart = ({
   height,
   enableBrush = false,
   visibleCount = 20,
+  modeToggle = false,
+  pageSize = 10,
 }) => {
   const chartData = useMemo(
     () =>
@@ -51,8 +53,23 @@ const CustomHorizontalBarChart = ({
         .sort((a, b) => b[valueKey] - a[valueKey]),
     [data, nameKey, valueKey]
   );
+  const [mode, setMode] = useState(modeToggle ? 'paginate' : 'default');
+  const [page, setPage] = useState(0);
+
+  const totalPages = Math.ceil(chartData.length / pageSize);
+  const paginatedData = useMemo(
+    () => chartData.slice(page * pageSize, (page + 1) * pageSize),
+    [chartData, page, pageSize]
+  );
+
+  const plotData = modeToggle && mode === 'paginate' ? paginatedData : chartData;
+
+  const showBrush =
+    (modeToggle && mode === 'brush' && chartData.length > visibleCount) ||
+    (!modeToggle && enableBrush && chartData.length > visibleCount);
+
   const chartHeight =
-    height || (enableBrush ? 520 : Math.max(420, chartData.length * 30));
+    height || (showBrush ? 520 : Math.max(420, plotData.length * 30));
   const total = useMemo(
     () => chartData.reduce((sum, item) => sum + (item[valueKey] || 0), 0),
     [chartData, valueKey]
@@ -109,15 +126,18 @@ const CustomHorizontalBarChart = ({
     );
   };
 
-  const CustomTooltip = ({ active, payload, label, total }) => {
+  const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || !payload.length) return null;
     const v = payload[0]?.value || 0;
+    const bg = isDarkMode ? '#0b1220' : '#ffffff';
+    const fg = isDarkMode ? '#e2e8f0' : '#0f172a';
+    const bd = isDarkMode ? '#334155' : '#cbd5e1';
     return (
       <div
         style={{
-          background: '#0b1220',
-          border: '1px solid #334155',
-          color: '#e2e8f0',
+          background: bg,
+          border: `1px solid ${bd}`,
+          color: fg,
           borderRadius: 10,
           padding: '10px 12px',
           boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
@@ -153,27 +173,42 @@ const CustomHorizontalBarChart = ({
       }}
     >
       <CardContent sx={{ p: 3 }}>
-        <Typography
-          variant="h6"
-          gutterBottom
-          align="center"
+        <Box
           sx={{
-            fontWeight: 600,
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
             mb: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: modeToggle ? 'space-between' : 'center',
           }}
         >
-          {title}
-        </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            {title}
+          </Typography>
+          {modeToggle && (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setMode((m) => (m === 'paginate' ? 'brush' : 'paginate'))}
+            >
+              {mode === 'paginate' ? 'Paginación 10×10' : 'Brush'}
+            </Button>
+          )}
+        </Box>
         <Box sx={{ height: chartHeight }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={chartData}
+              data={plotData}
               layout="vertical"
-              margin={{ top: 16, right: MARGIN_RIGHT, bottom: enableBrush ? 56 : 16, left: 240 }}
+              margin={{ top: 16, right: MARGIN_RIGHT, bottom: showBrush ? 56 : 16, left: 240 }}
               barCategoryGap={10}
             >
-              <CartesianGrid horizontal strokeDasharray="3 3" />
+              <CartesianGrid horizontal={false} strokeDasharray="3 3" />
               <XAxis
                 type="number"
                 domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
@@ -193,14 +228,14 @@ const CustomHorizontalBarChart = ({
                 interval={0}
               />
               <RechartsTooltip
-                content={<CustomTooltip total={total} />}
+                content={<CustomTooltip />}
                 cursor={{ fill: 'rgba(255,255,255,0.04)' }}
                 wrapperStyle={{ outline: 'none' }}
               />
               <Bar dataKey={valueKey} maxBarSize={22} fill="#00C49F">
                 <LabelList content={<ValueLabel />} />
               </Bar>
-              {enableBrush && chartData.length > visibleCount && (
+              {showBrush && (
                 <Brush
                   dataKey={nameKey}
                   travellerWidth={10}
@@ -212,6 +247,29 @@ const CustomHorizontalBarChart = ({
             </BarChart>
           </ResponsiveContainer>
         </Box>
+        {modeToggle && mode === 'paginate' && (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={page === 0}
+            >
+              ← Anterior
+            </Button>
+            <Typography variant="body2" sx={{ alignSelf: 'center' }}>
+              Página {page + 1} de {totalPages}
+            </Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={page === totalPages - 1}
+            >
+              Siguiente →
+            </Button>
+          </Box>
+        )}
       </CardContent>
     </Card>
   );
