@@ -542,7 +542,7 @@ const DashboardPage = () => {
                     </Grid>
                     
                     {/* gráficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
-                    <Grid item xs={12} lg={8}>
+                    <Grid item xs={12}>
                         <CustomDonutChart
                             data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
                             title="Distribución de Agentes por Función (Top 10) - Planta y Contratos"
@@ -551,7 +551,7 @@ const DashboardPage = () => {
                             nameKey="function"
                         />
                     </Grid>
-                    <Grid item xs={12} lg={4}>
+                    <Grid item xs={12}>
                         <CustomDonutChart
                             data={agentsByEmploymentType}
                             title="Agentes por Situación de Revista - Planta y Contratos"
