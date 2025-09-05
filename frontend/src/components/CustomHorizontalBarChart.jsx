@@ -9,6 +9,7 @@ import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   LabelList,
+  Brush,
 } from 'recharts';
 
 const nf = new Intl.NumberFormat('es-AR');
@@ -29,17 +30,29 @@ const formatShort = (n) => {
   return formatMiles(n);
 };
 
-const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, height }) => {
+const CustomHorizontalBarChart = ({
+  data,
+  title,
+  isDarkMode,
+  nameKey,
+  valueKey,
+  height,
+  enableBrush = false,
+  visibleCount = 20,
+}) => {
   const chartData = useMemo(
     () =>
-      data.map((item) => ({
-        ...item,
-        [nameKey]: (item[nameKey] ?? '').toString().trim() || 'Sin categoría',
-        [valueKey]: Number.isFinite(item[valueKey]) ? item[valueKey] : 0,
-      })),
+      data
+        .map((item) => ({
+          ...item,
+          [nameKey]: (item[nameKey] ?? '').toString().trim() || 'Sin categoría',
+          [valueKey]: Number.isFinite(item[valueKey]) ? item[valueKey] : 0,
+        }))
+        .sort((a, b) => b[valueKey] - a[valueKey]),
     [data, nameKey, valueKey]
   );
-  const chartHeight = height || Math.max(420, chartData.length * 30);
+  const chartHeight =
+    height || (enableBrush ? 520 : Math.max(420, chartData.length * 30));
   const total = useMemo(
     () => chartData.reduce((sum, item) => sum + (item[valueKey] || 0), 0),
     [chartData, valueKey]
@@ -157,7 +170,7 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
             <BarChart
               data={chartData}
               layout="vertical"
-              margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 240 }}
+              margin={{ top: 16, right: MARGIN_RIGHT, bottom: enableBrush ? 56 : 16, left: 240 }}
               barCategoryGap={10}
             >
               <CartesianGrid horizontal strokeDasharray="3 3" />
@@ -187,6 +200,15 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
               <Bar dataKey={valueKey} maxBarSize={22} fill="#00C49F">
                 <LabelList content={<ValueLabel />} />
               </Bar>
+              {enableBrush && chartData.length > visibleCount && (
+                <Brush
+                  dataKey={nameKey}
+                  travellerWidth={10}
+                  height={24}
+                  startIndex={0}
+                  endIndex={Math.min(visibleCount - 1, chartData.length - 1)}
+                />
+              )}
             </BarChart>
           </ResponsiveContainer>
         </Box>

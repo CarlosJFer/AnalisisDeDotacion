@@ -514,42 +514,45 @@ const DashboardPage = () => {
                 <Grid container spacing={3}>
                     {/* EstadÃ­sticas principales */}
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Total de Agentes Municipales" 
-                            value={totalAgents.toLocaleString()} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Total de agentes municipales"
+                            value={totalAgents.toLocaleString()}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="funciones Únicas Registradas" 
-                            value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Funciones registradas"
+                            value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Tipos de Situación de Revista" 
-                            value={agentsByEmploymentType.length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Tipos de situación de revista"
+                            value={agentsByEmploymentType.length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Secretarías" 
-                            value={agentsBySecretaria.length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Cantidad de Secretarías"
+                            value={agentsBySecretaria.length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     
                     {/* gráficos principales */}
                     <Grid item xs={12}>
-                        <CustomDonutChart
-                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
-                            title="Distribución de Agentes por Función (Top 10) - Planta y Contratos"
+                        <CustomHorizontalBarChart
+                            data={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-')}
+                            title="Distribución de Agentes por Función - Planta y Contratos"
                             isDarkMode={isDarkMode}
-                            dataKey="count"
                             nameKey="function"
+                            valueKey="count"
+                            enableBrush
+                            visibleCount={20}
+                            height={520}
                         />
                     </Grid>
                     <Grid item xs={12}>
