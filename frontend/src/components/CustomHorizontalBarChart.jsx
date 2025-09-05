@@ -11,14 +11,10 @@ import {
   LabelList,
 } from 'recharts';
 
-const formatNumber = (value) => new Intl.NumberFormat('es-AR').format(value);
+const nf = new Intl.NumberFormat('es-AR');
+const formatMiles = (n) => nf.format(n);
+const formatPct = (p, digits = 1) => `${(p * 100).toFixed(digits).replace('.', ',')}%`;
 
-const formatPercent = (value) =>
-  new Intl.NumberFormat('es-AR', {
-    style: 'percent',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(value);
 
 const truncate = (text, max = 30) => {
   if (!text) return '';
@@ -63,7 +59,7 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
     const { x = 0, y = 0, width = 0, value = 0, viewBox } = props;
     const chartW = viewBox?.width ?? 0;
 
-    const labelText = `${formatNumber(value)} (${formatPercent(total ? value / total : 0)})`;
+    const labelText = `${formatMiles(value)} (${formatPct(total ? value / total : 0)})`;
     const approxTextW = labelText.length * 7;
 
     const barEndX = x + width;
@@ -80,6 +76,32 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
       <text x={textX} y={y} dy={4} fontSize={12} textAnchor={textAnchor} fill={fill}>
         {labelText}
       </text>
+    );
+  };
+
+  const CustomTooltip = ({ active, payload, label, total }) => {
+    if (!active || !payload || !payload.length) return null;
+    const v = payload[0]?.value || 0;
+    return (
+      <div
+        style={{
+          background: '#0b1220',
+          border: '1px solid #334155',
+          color: '#e2e8f0',
+          borderRadius: 10,
+          padding: '10px 12px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
+          minWidth: 220,
+        }}
+      >
+        <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>
+        <div>
+          Porcentaje: <strong>{formatPct(total ? v / total : 0)}</strong>
+        </div>
+        <div>
+          Cantidad: <strong>{formatMiles(v)}</strong>
+        </div>
+      </div>
     );
   };
 
@@ -124,8 +146,8 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
               <CartesianGrid horizontal strokeDasharray="3 3" />
               <XAxis
                 type="number"
-                domain={[0, (dataMax) => Math.ceil(dataMax * 1.1)]}
-                tickFormatter={formatNumber}
+                domain={[0, (dataMax) => Math.ceil(dataMax * 1.12)]}
+                tickFormatter={formatMiles}
                 allowDecimals={false}
                 tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
                 axisLine={{
@@ -138,8 +160,13 @@ const CustomHorizontalBarChart = ({ data, title, isDarkMode, nameKey, valueKey, 
                 width={240}
                 tickLine={false}
                 tick={renderYAxisTick}
+                interval={0}
               />
-              <RechartsTooltip formatter={(value) => formatNumber(value)} />
+              <RechartsTooltip
+                content={<CustomTooltip total={total} />}
+                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
+                wrapperStyle={{ outline: 'none' }}
+              />
               <Bar dataKey={valueKey} maxBarSize={22} fill="#00C49F">
                 <LabelList content={<ValueLabel />} />
               </Bar>
