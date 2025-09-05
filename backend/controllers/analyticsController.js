@@ -367,36 +367,45 @@ const getAgeDistribution = async (req, res) => {
     const match = buildMatchStage(req.query);
     const agents = await Agent.find({
       ...match,
-      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' }
-    }).limit(1000);
+    });
 
     const currentDate = new Date();
     const ageRanges = {
-      '18-25': 0, '26-35': 0, '36-45': 0, '46-55': 0, '56-65': 0, '65+': 0
+      '18-25': 0,
+      '26-35': 0,
+      '36-45': 0,
+      '46-55': 0,
+      '56-65': 0,
+      '65+': 0,
+      'No tiene datos': 0,
     };
 
     const scatterData = [];
 
-    agents.forEach(agent => {
+    agents.forEach((agent) => {
       try {
         let birthDate = agent['Fecha de nacimiento'];
-        
+
         if (typeof birthDate === 'string') {
           birthDate = new Date(birthDate);
         }
-        
+
         if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+          ageRanges['No tiene datos']++;
           return;
         }
-        
-        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        
+
+        const age = Math.floor(
+          (currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000)
+        );
+
         if (age < 0 || age > 120) {
+          ageRanges['No tiene datos']++;
           return;
         }
-        
+
         const func = agent['Funcion'] || 'Sin especificar';
-        
+
         if (age >= 18 && age <= 25) ageRanges['18-25']++;
         else if (age >= 26 && age <= 35) ageRanges['26-35']++;
         else if (age >= 36 && age <= 45) ageRanges['36-45']++;
@@ -407,10 +416,10 @@ const getAgeDistribution = async (req, res) => {
         scatterData.push({
           age,
           function: func,
-          id: agent._id
+          id: agent._id,
         });
       } catch (agentError) {
-        // Silently skip invalid agents
+        ageRanges['No tiene datos']++;
       }
     });
 
@@ -422,8 +431,8 @@ const getAgeDistribution = async (req, res) => {
     res.json({
       scatterData,
       rangeData: ageRangeData,
-      totalAgents: scatterData.length,
-      note: scatterData.length === 1000 ? 'Mostrando muestra de 1000 agentes para mejor rendimiento' : null
+      totalAgents: agents.length,
+      note: null
     });
   } catch (err) {
     console.error('Error en análisis de edad:', err.message);
@@ -442,53 +451,41 @@ const getAgeByFunction = async (req, res) => {
     const match = buildMatchStage(req.query);
     const agents = await Agent.find({
       ...match,
-      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
       'Funcion': { $exists: true, $ne: null, $ne: '' }
-    }).limit(2000);
+    });
 
     const currentDate = new Date();
     const functionAgeData = {};
 
-    agents.forEach(agent => {
-      try {
-        let birthDate = agent['Fecha de nacimiento'];
-        
-        if (typeof birthDate === 'string') {
-          birthDate = new Date(birthDate);
+    agents.forEach((agent) => {
+      const func = agent['Funcion'] || 'Sin especificar';
+      if (!functionAgeData[func]) {
+        functionAgeData[func] = { count: 0, sum: 0, withAge: 0 };
+      }
+      functionAgeData[func].count++;
+
+      let birthDate = agent['Fecha de nacimiento'];
+      if (typeof birthDate === 'string') {
+        birthDate = new Date(birthDate);
+      }
+      if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+        const age = Math.floor(
+          (currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000)
+        );
+        if (age >= 0 && age <= 120) {
+          functionAgeData[func].sum += age;
+          functionAgeData[func].withAge++;
         }
-        
-        if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
-          return;
-        }
-        
-        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        
-        if (age < 0 || age > 120) {
-          return;
-        }
-        
-        const func = agent['Funcion'] || 'Sin especificar';
-        
-        if (!functionAgeData[func]) {
-          functionAgeData[func] = { ages: [], count: 0 };
-        }
-        
-        functionAgeData[func].ages.push(age);
-        functionAgeData[func].count++;
-      } catch (agentError) {
-        // Silently skip invalid agents
       }
     });
 
-    const result = Object.entries(functionAgeData).map(([func, data]) => {
-      const avgAge = data.ages.reduce((sum, age) => sum + age, 0) / data.ages.length;
-      return {
+    const result = Object.entries(functionAgeData)
+      .map(([func, data]) => ({
         function: func,
         count: data.count,
-        avgAge: Math.round(avgAge * 100) / 100,
-        ages: data.ages
-      };
-    }).sort((a, b) => b.count - a.count).slice(0, 20);
+        avgAge: data.withAge ? Math.round((data.sum / data.withAge) * 100) / 100 : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
 
     res.json(result);
   } catch (err) {
@@ -887,38 +884,47 @@ const getAgentsByEmploymentTypeNeikeBeca = async (req, res) => {
 // @access  Private/Admin
 const getAgeDistributionNeikeBeca = async (req, res) => {
   try {
-    const agents = await Agent.find({ 
-      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Neikes y Beca"
-    }).limit(1000);
+    const agents = await Agent.find({
+      plantilla: "Rama completa - Neikes y Beca",
+    });
 
     const currentDate = new Date();
     const ageRanges = {
-      '18-25': 0, '26-35': 0, '36-45': 0, '46-55': 0, '56-65': 0, '65+': 0
+      '18-25': 0,
+      '26-35': 0,
+      '36-45': 0,
+      '46-55': 0,
+      '56-65': 0,
+      '65+': 0,
+      'No tiene datos': 0,
     };
 
     const scatterData = [];
 
-    agents.forEach(agent => {
+    agents.forEach((agent) => {
       try {
         let birthDate = agent['Fecha de nacimiento'];
-        
+
         if (typeof birthDate === 'string') {
           birthDate = new Date(birthDate);
         }
-        
+
         if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
+          ageRanges['No tiene datos']++;
           return;
         }
-        
-        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        
+
+        const age = Math.floor(
+          (currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000)
+        );
+
         if (age < 0 || age > 120) {
+          ageRanges['No tiene datos']++;
           return;
         }
-        
+
         const func = agent['Funcion'] || 'Sin especificar';
-        
+
         if (age >= 18 && age <= 25) ageRanges['18-25']++;
         else if (age >= 26 && age <= 35) ageRanges['26-35']++;
         else if (age >= 36 && age <= 45) ageRanges['36-45']++;
@@ -929,10 +935,10 @@ const getAgeDistributionNeikeBeca = async (req, res) => {
         scatterData.push({
           age,
           function: func,
-          id: agent._id
+          id: agent._id,
         });
       } catch (agentError) {
-        // Silently skip invalid agents
+        ageRanges['No tiene datos']++;
       }
     });
 
@@ -944,8 +950,8 @@ const getAgeDistributionNeikeBeca = async (req, res) => {
     res.json({
       scatterData,
       rangeData: ageRangeData,
-      totalAgents: scatterData.length,
-      note: scatterData.length === 1000 ? 'Mostrando muestra de 1000 agentes para mejor rendimiento' : null
+      totalAgents: agents.length,
+      note: null
     });
   } catch (err) {
     console.error('Error en análisis de edad Neikes y Beca:', err.message);
@@ -961,55 +967,43 @@ const getAgeDistributionNeikeBeca = async (req, res) => {
 // @access  Private/Admin
 const getAgeByFunctionNeikeBeca = async (req, res) => {
   try {
-    const agents = await Agent.find({ 
-      'Fecha de nacimiento': { $exists: true, $ne: null, $ne: '' },
+    const agents = await Agent.find({
       'Funcion': { $exists: true, $ne: null, $ne: '' },
-      plantilla: "Rama completa - Neikes y Beca"
-    }).limit(2000);
+      plantilla: "Rama completa - Neikes y Beca",
+    });
 
     const currentDate = new Date();
     const functionAgeData = {};
 
-    agents.forEach(agent => {
-      try {
-        let birthDate = agent['Fecha de nacimiento'];
-        
-        if (typeof birthDate === 'string') {
-          birthDate = new Date(birthDate);
+    agents.forEach((agent) => {
+      const func = agent['Funcion'] || 'Sin especificar';
+      if (!functionAgeData[func]) {
+        functionAgeData[func] = { count: 0, sum: 0, withAge: 0 };
+      }
+      functionAgeData[func].count++;
+
+      let birthDate = agent['Fecha de nacimiento'];
+      if (typeof birthDate === 'string') {
+        birthDate = new Date(birthDate);
+      }
+      if (birthDate instanceof Date && !isNaN(birthDate.getTime())) {
+        const age = Math.floor(
+          (currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000)
+        );
+        if (age >= 0 && age <= 120) {
+          functionAgeData[func].sum += age;
+          functionAgeData[func].withAge++;
         }
-        
-        if (!(birthDate instanceof Date) || isNaN(birthDate.getTime())) {
-          return;
-        }
-        
-        const age = Math.floor((currentDate - birthDate) / (365.25 * 24 * 60 * 60 * 1000));
-        
-        if (age < 0 || age > 120) {
-          return;
-        }
-        
-        const func = agent['Funcion'] || 'Sin especificar';
-        
-        if (!functionAgeData[func]) {
-          functionAgeData[func] = { ages: [], count: 0 };
-        }
-        
-        functionAgeData[func].ages.push(age);
-        functionAgeData[func].count++;
-      } catch (agentError) {
-        // Silently skip invalid agents
       }
     });
 
-    const result = Object.entries(functionAgeData).map(([func, data]) => {
-      const avgAge = data.ages.reduce((sum, age) => sum + age, 0) / data.ages.length;
-      return {
+    const result = Object.entries(functionAgeData)
+      .map(([func, data]) => ({
         function: func,
         count: data.count,
-        avgAge: Math.round(avgAge * 100) / 100,
-        ages: data.ages
-      };
-    }).sort((a, b) => b.count - a.count).slice(0, 20);
+        avgAge: data.withAge ? Math.round((data.sum / data.withAge) * 100) / 100 : 0,
+      }))
+      .sort((a, b) => b.count - a.count);
 
     res.json(result);
   } catch (err) {
