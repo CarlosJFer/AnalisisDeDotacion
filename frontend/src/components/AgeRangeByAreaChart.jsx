@@ -64,7 +64,7 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
           <Typography variant="h6" sx={{fontWeight:600,color:isDarkMode?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)'}}>
             Distribución por Rangos de Edad según el área - Planta y Contratos
           </Typography>
-          {/* Replace basic <select> with Material UI Select for modern styling */}
+          {/* Material UI Select para un selector acorde al diseño */}
           <FormControl
             size="small"
             sx={{
