@@ -2,6 +2,7 @@ module.exports = [
   { name: 'totalAgents', description: 'Total de agentes', endpoint: '/analytics/agents/total' },
   { name: 'ageDistribution', description: 'Distribución de edades de agentes', endpoint: '/analytics/agents/age-distribution' },
   { name: 'ageByFunction', description: 'Edad promedio por función', endpoint: '/analytics/agents/age-by-function' },
+  { name: 'ageBySecretaria', description: 'Distribución de edades por área', endpoint: '/analytics/agents/age-by-secretaria' },
   { name: 'agentsByFunction', description: 'Cantidad de agentes por función', endpoint: '/analytics/agents/by-function' },
   { name: 'agentsByEmploymentType', description: 'Agentes por tipo de contratación', endpoint: '/analytics/agents/by-employment-type' },
   { name: 'agentsByDependency', description: 'Agentes por dependencia', endpoint: '/analytics/agents/by-dependency' },

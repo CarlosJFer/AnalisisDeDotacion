@@ -13,6 +13,8 @@ import StatCard from '../components/StatCard';
 import CustomBarChart from '../components/CustomBarChart';
 import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
+import AgeRangeByAreaChart from '../components/AgeRangeByAreaChart';
+import AverageAgeByFunctionChart from '../components/AverageAgeByFunctionChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import { useLocation } from 'react-router-dom';
 
@@ -41,6 +43,7 @@ const DashboardNeikeBeca = () => {
     const [totalAgents, setTotalAgents] = useState(0);
     const [ageDistribution, setAgeDistribution] = useState(null);
     const [ageByFunction, setAgeByFunction] = useState([]);
+    const [ageByArea, setAgeByArea] = useState([]);
     const [agentsByFunction, setAgentsByFunction] = useState([]);
     const [agentsByEmploymentType, setAgentsByEmploymentType] = useState([]);
     const [agentsByDependency, setAgentsByDependency] = useState([]);
@@ -163,6 +166,7 @@ const DashboardNeikeBeca = () => {
                 totalData,
                 ageDistData,
                 ageFunctionData,
+                ageAreaData,
                 functionData,
                 employmentData,
                 dependencyData,
@@ -187,6 +191,7 @@ const DashboardNeikeBeca = () => {
                 safeGet(funcs.totalAgents, { total: 0 }, TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.ageDistribution, null, TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.ageByFunction, [], TEMPLATE_NEIKES_BECAS),
+                safeGet(funcs.ageBySecretaria, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByFunction, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByEmploymentType, [], TEMPLATE_NEIKES_BECAS),
                 safeGet(funcs.agentsByDependency, [], TEMPLATE_NEIKES_BECAS),
@@ -213,6 +218,7 @@ const DashboardNeikeBeca = () => {
             setTotalAgents(totalData.total);
             setAgeDistribution(ageDistData);
             setAgeByFunction(ageFunctionData);
+            setAgeByArea(ageAreaData);
             setAgentsByFunction(functionData);
             setAgentsByEmploymentType(employmentData);
             setAgentsByDependency(dependencyData);
@@ -479,31 +485,31 @@ const DashboardNeikeBeca = () => {
                 <Grid container spacing={3}>
                     {/* EstadÃ­sticas principales */}
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Total de Agentes Municipales" 
-                            value={totalAgents.toLocaleString()} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Total de agentes municipales"
+                            value={totalAgents.toLocaleString()}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Funciones Únicas Registradas" 
-                            value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Funciones registradas"
+                            value={agentsByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Tipos de Situación de Revista" 
-                            value={agentsByEmploymentType.length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Tipos de situación de revista"
+                            value={agentsByEmploymentType.length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     <Grid item xs={12} md={3}>
-                        <StatCard 
-                            title="Secretarías" 
-                            value={agentsBySecretaria.length} 
-                            isDarkMode={isDarkMode} 
+                        <StatCard
+                            title="Cantidad de Secretarías"
+                            value={agentsBySecretaria.length}
+                            isDarkMode={isDarkMode}
                         />
                     </Grid>
                     
@@ -561,31 +567,19 @@ const DashboardNeikeBeca = () => {
                         )}
                     </Grid>
 
-                    {/* Rangos de edad con área chart */}
-                    <Grid item xs={12} lg={6}>
-                        {ageDistribution ? (
-                            <CustomAreaChart
-                                data={ageDistribution.rangeData}
-                                title="Distribución por Rangos de Edad según el área - Neikes y Beca"
-                                isDarkMode={isDarkMode}
-                                xKey="range"
-                                yKey="count"
-                            />
+                    {/* Distribución por Rangos de Edad según el área */}
+                    <Grid item xs={12}>
+                        {ageByArea.length ? (
+                            <AgeRangeByAreaChart rows={ageByArea} isDarkMode={isDarkMode} />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
                                 <CircularProgress size={30} />
                             </Box>
                         )}
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12}>
                         {ageByFunction.length > 0 ? (
-                            <CustomBarChart
-                                data={ageByFunction.filter(f => f.function && f.function.trim() !== '' && f.function.trim() !== '-').slice(0, 10)}
-                                xKey="function"
-                                barKey="avgAge"
-                                title="Edad Promedio por Función (Top 10) - Neikes y Beca"
-                                isDarkMode={isDarkMode}
-                            />
+                            <AverageAgeByFunctionChart data={ageByFunction} isDarkMode={isDarkMode} />
                         ) : (
                             <Box display="flex" justifyContent="center" alignItems="center" minHeight="300px">
                                 <CircularProgress size={30} />
