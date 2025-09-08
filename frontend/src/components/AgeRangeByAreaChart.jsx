@@ -10,8 +10,7 @@ import {
   Tooltip,
   LabelList
 } from 'recharts';
-import ModernSelect from './ModernSelect';
-import { ValueLabel, UnifiedTooltip, formatMiles, formatPct } from '../utils/chartUtils';
+import { ValueLabel, UnifiedTooltip, formatMiles, formatPct } from '../ui/chart-utils';
 
 const AGE_BUCKETS = ['18-25','26-35','36-45','46-55','56-65','65+','No tiene datos'];
 const MARGIN_RIGHT = 96;
@@ -47,9 +46,22 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
           <Typography variant="h6" sx={{fontWeight:600,color:isDarkMode?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)'}}>
             Distribución por Rangos de Edad según el área - Planta y Contratos
           </Typography>
-          <ModernSelect value={range} onChange={e=>setRange(e.target.value)} title="Seleccionar rango de edad">
-            {AGE_BUCKETS.map(b => <option key={b} value={b}>{b}</option>)}
-          </ModernSelect>
+          <select
+            value={range}
+            onChange={e => setRange(e.target.value)}
+            className={[
+              "px-3 py-2 rounded-lg border shadow-sm transition-colors",
+              "focus:outline-none focus:ring-2 focus:ring-emerald-500/70",
+              "bg-white text-slate-900 border-slate-300",
+              "dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600",
+            ].join(" ")}
+          >
+            {AGE_BUCKETS.map(b => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+          </select>
         </Box>
         <Box sx={{ height: 520 }}>
           <ResponsiveContainer width="100%" height="100%">
