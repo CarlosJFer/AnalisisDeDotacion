@@ -11,30 +11,34 @@ export const isDark = () =>
 const RIGHT_PAD = 8;
 
 /** Label “valor (porcentaje)” SIEMPRE afuera a la derecha */
-export const ValueLabel: React.FC<any> = (p) => {
-  const { x=0, y=0, width=0, value=0, viewBox, total=1 } = p;
+export const ValueLabel: React.FC<{ total: number }> = (p) => {
+  const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1 } = p;
   const chartW = viewBox?.width ?? 0;
-  const text = `${formatMiles(Number(value))} (${formatPct(Number(value)/Number(total || 1))})`;
-  const approx = text.length * 7; // ~12px
+  const text = `${formatMiles(Number(value))} (${formatPct(Number(value) / Number(total || 1))})`;
+  const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
+  const dark = isDark();
+  const color = dark ? '#ffffff' : '#0f172a';
   return (
-    <text x={xText} y={y} dy={4} fontSize={12} fill={isDark()? "#fff" : "#0f172a"}>
+    <text x={xText} y={y + 4} fill={color} fontWeight="600">
       {text}
     </text>
   );
 };
 
 /** Label “Edad promedio: X años” afuera a la derecha (lee avg del payload) */
-export const AvgAgeLabel: React.FC<any> = (p) => {
-  const { x=0, y=0, width=0, viewBox, payload } = p;
+export const AvgAgeLabel: React.FC = (p) => {
+  const { x = 0, y = 0, width = 0, viewBox, payload } = p;
   const avg = Math.round(Number(payload?.avg ?? payload?.promedio ?? 0));
   if (!avg) return null;
   const chartW = viewBox?.width ?? 0;
   const text = `Edad promedio: ${avg} años`;
   const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
+  const dark = isDark();
+  const color = dark ? '#ffffff' : '#0f172a';
   return (
-    <text x={xText} y={y} dy={4} fontSize={12} fill={isDark()? "#fff" : "#0f172a"}>
+    <text x={xText} y={y + 4} fill={color} fontWeight="600">
       {text}
     </text>
   );

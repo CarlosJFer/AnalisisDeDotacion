@@ -10,9 +10,15 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
-import { AvgAgeLabel, UnifiedTooltip, formatMiles, formatPct } from '../ui/chart-utils';
+import {
+  AvgAgeLabel,
+  UnifiedTooltip,
+  ValueLabel,
+  formatMiles,
+  formatPct,
+} from '../ui/chart-utils';
 
-const MARGIN_RIGHT = 96;
+const MARGIN_RIGHT = 120;
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const chartData = useMemo(
@@ -95,21 +101,35 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
               />
               <Tooltip
                 wrapperStyle={{ outline: 'none' }}
-                content={({ active, payload, label }) => {
-                  if (!active || !payload?.length) return null;
-                  const item = payload[0]?.payload ?? {};
-                  const cant = Number(item.cantidad || 0);
-                  const avg = Math.round(Number(item.promedio || item.avg || 0));
-                  return (
-                    <UnifiedTooltip active payload={payload} label={label}>
-                      <div>Edad promedio: <strong>{avg} años</strong></div>
-                      <div>Cantidad: <strong>{formatMiles(cant)}</strong> ({formatPct(cant / (grandTotal || 1))})</div>
-                    </UnifiedTooltip>
-                  );
-                }}
+                content={({ active, payload }) => (
+                  <UnifiedTooltip active={active} payload={payload} label={null}>
+                    {payload?.length && (
+                      <>
+                        <div>Edad promedio: {Math.round(payload[0].payload.avg)} años</div>
+                        <div>
+                          Cantidad: {formatMiles(payload[0].payload.cantidad)} (
+                          {formatPct(payload[0].payload.cantidad / (grandTotal || 1))})
+                        </div>
+                      </>
+                    )}
+                  </UnifiedTooltip>
+                )}
               />
-              <Bar dataKey="cantidad" maxBarSize={22} fill="#00C49F">
-                <LabelList content={(p) => <AvgAgeLabel {...p} />} />
+              <Bar
+                dataKey="avg"
+                maxBarSize={22}
+                fill={isDarkMode ? '#10b981' : '#059669'}
+              >
+                <LabelList
+                  dataKey="avg"
+                  content={(props) => <AvgAgeLabel {...props} />}
+                />
+                <LabelList
+                  dataKey="cantidad"
+                  content={(props) => (
+                    <ValueLabel {...props} total={grandTotal} />
+                  )}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
