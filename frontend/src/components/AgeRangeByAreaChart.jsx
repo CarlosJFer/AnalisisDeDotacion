@@ -10,49 +10,11 @@ import {
   Tooltip,
   LabelList
 } from 'recharts';
+import ModernSelect from './ModernSelect';
+import { ValueLabel, UnifiedTooltip, formatMiles, formatPct } from '../utils/chartUtils';
 
 const AGE_BUCKETS = ['18-25','26-35','36-45','46-55','56-65','65+','No tiene datos'];
-const nf = new Intl.NumberFormat('es-AR');
-const formatMiles = (n) => nf.format(n);
-const formatPct = (p, d=1) => `${(p*100).toFixed(d).replace('.', ',')}%`;
-const RIGHT_PAD = 8;
 const MARGIN_RIGHT = 96;
-const useIsDark = () => document.documentElement.classList.contains('dark');
-
-const ValueLabel = (p) => {
-  const { x=0, y=0, width=0, value=0, viewBox, total } = p;
-  const chartW = viewBox?.width ?? 0;
-  const text = `${formatMiles(value)} (${formatPct(value/total)})`;
-  const approx = text.length * 7;
-  const barEnd = x + width;
-  const chartRight = chartW - MARGIN_RIGHT;
-  const willOverflow = barEnd + RIGHT_PAD + approx > chartRight;
-  const textX = willOverflow ? barEnd - 6 : barEnd + RIGHT_PAD;
-  const anchor = willOverflow ? 'end' : 'start';
-  const fill = willOverflow ? '#0f172a' : (useIsDark()? '#fff' : '#0f172a');
-  return (
-    <text x={textX} y={y} dy={4} fontSize={12} textAnchor={anchor} fill={fill} pointerEvents="none">
-      {text}
-    </text>
-  );
-};
-
-const Tip = ({ active, payload, label, total, range }) => {
-  if (!active || !payload?.length) return null;
-  const v = Number(payload[0].value || 0);
-  const dark = useIsDark();
-  const bg = dark ? '#0b1220' : '#ffffff';
-  const fg = dark ? '#e2e8f0' : '#0f172a';
-  const bd = dark ? '#334155' : '#cbd5e1';
-  return (
-    <div style={{background:bg,color:fg,border:`1px solid ${bd}`,borderRadius:10,padding:'10px 12px',boxShadow:'0 4px 16px rgba(0,0,0,.25)',minWidth:240}}>
-      <div style={{fontWeight:600,marginBottom:6}}>{label}</div>
-      <div>Rango de edad: <strong>{range}</strong></div>
-      <div>Cantidad de agentes: <strong>{formatMiles(v)}</strong></div>
-      <div>Porcentaje: <strong>{formatPct(v/total)}</strong></div>
-    </div>
-  );
-};
 
 const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
   const [range, setRange] = useState('36-45');
@@ -85,9 +47,9 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
           <Typography variant="h6" sx={{fontWeight:600,color:isDarkMode?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)'}}>
             Distribución por Rangos de Edad según el área - Planta y Contratos
           </Typography>
-          <select value={range} onChange={e=>setRange(e.target.value)} className="px-3 py-1 rounded-lg border border-slate-500/50 bg-transparent" title="Seleccionar rango de edad">
+          <ModernSelect value={range} onChange={e=>setRange(e.target.value)} title="Seleccionar rango de edad">
             {AGE_BUCKETS.map(b => <option key={b} value={b}>{b}</option>)}
-          </select>
+          </ModernSelect>
         </Box>
         <Box sx={{ height: 520 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -95,7 +57,20 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
               <CartesianGrid horizontal={false} strokeDasharray="0 0" />
               <XAxis type="number" domain={[0, (max)=>Math.ceil(max*1.2)]} allowDecimals={false} tickFormatter={formatMiles} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }} />
               <YAxis type="category" dataKey="dependencia" width={260} tickLine={false} interval={0} tick={{ fontSize:12, fill: isDarkMode? 'rgba(255,255,255,0.7)': 'rgba(0,0,0,0.7)' }} tickFormatter={(v)=> v.length>32? v.slice(0,32)+'…':v} />
-              <Tooltip content={<Tip total={total} range={range} />} wrapperStyle={{ outline: 'none' }} />
+              <Tooltip
+                wrapperStyle={{ outline: 'none' }}
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  const value = payload[0]?.value || 0;
+                  return (
+                    <UnifiedTooltip active payload={payload} label={label}>
+                      <div>Rango de edad: <strong>{range}</strong></div>
+                      <div>Cantidad de agentes: <strong>{formatMiles(value)}</strong></div>
+                      <div>Porcentaje: <strong>{formatPct(value/(total || 1))}</strong></div>
+                    </UnifiedTooltip>
+                  );
+                }}
+              />
               <Bar dataKey="cantidad" maxBarSize={22} fill="#00C49F">
                 <LabelList content={(p)=><ValueLabel {...p} total={total} />} />
               </Bar>

@@ -10,69 +10,9 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
+import { AvgAgeLabel, UnifiedTooltip, formatMiles, formatPct } from '../utils/chartUtils';
 
-const nf = new Intl.NumberFormat('es-AR');
-const formatMiles = (n) => nf.format(n);
-const formatPct = (p, d = 1) => `${(p * 100).toFixed(d).replace('.', ',')}%`;
-const RIGHT_PAD = 8;
 const MARGIN_RIGHT = 96;
-const useIsDark = () =>
-  document.documentElement.classList.contains('dark');
-
-const INSIDE_PAD = 6;
-const AgeAvgLabel = (props) => {
-  const { x = 0, y = 0, width = 0, viewBox, avg = 0, isDarkMode } = props;
-  if (!avg) return null;
-  const chartW = viewBox?.width ?? 0;
-  const text = `Edad promedio: ${Math.round(avg)} años`;
-  const approx = text.length * 7;
-  const barEnd = x + width;
-  const chartRight = chartW - MARGIN_RIGHT;
-  const willOverflow = barEnd + RIGHT_PAD + approx > chartRight;
-  const textX = willOverflow ? barEnd - INSIDE_PAD : barEnd + RIGHT_PAD;
-  const anchor = willOverflow ? 'end' : 'start';
-  const fill = willOverflow ? '#0f172a' : (isDarkMode ? '#ffffff' : '#0f172a');
-  return (
-    <text
-      x={textX}
-      y={y}
-      dy={4}
-      fontSize={12}
-      textAnchor={anchor}
-      fill={fill}
-      pointerEvents="none"
-    >
-      {text}
-    </text>
-  );
-};
-
-const Tip = ({ active, payload, label, grandTotal, isDarkMode }) => {
-  if (!active || !payload?.length) return null;
-  const item = payload[0]?.payload || {};
-  const cant = item.count || 0;
-  const avg = Math.round(item.avgAge || 0);
-  const bg = isDarkMode ? '#0b1220' : '#ffffff';
-  const fg = isDarkMode ? '#e2e8f0' : '#0f172a';
-  const bd = isDarkMode ? '#334155' : '#cbd5e1';
-  return (
-    <div
-      style={{
-        background: bg,
-        color: fg,
-        border: `1px solid ${bd}`,
-        borderRadius: 10,
-        padding: '10px 12px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
-        minWidth: 220,
-      }}
-    >
-      <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>
-      <div>Edad promedio: <strong>{avg} años</strong></div>
-      <div>Cantidad: <strong>{formatMiles(cant)}</strong> ({formatPct(cant / grandTotal)})</div>
-    </div>
-  );
-};
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const chartData = useMemo(
@@ -152,13 +92,23 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                 interval={0}
                 tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', fontSize: 12 }}
               />
-              <Tooltip content={<Tip grandTotal={grandTotal} isDarkMode={isDarkMode} />} wrapperStyle={{ outline: 'none' }} />
+              <Tooltip
+                wrapperStyle={{ outline: 'none' }}
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  const item = payload[0]?.payload || {};
+                  const cant = item.count || 0;
+                  const avg = Math.round(item.avgAge || 0);
+                  return (
+                    <UnifiedTooltip active payload={payload} label={label}>
+                      <div>Edad promedio: <strong>{avg} años</strong></div>
+                      <div>Cantidad: <strong>{formatMiles(cant)}</strong> ({formatPct(cant / (grandTotal || 1))})</div>
+                    </UnifiedTooltip>
+                  );
+                }}
+              />
               <Bar dataKey="count" maxBarSize={22} fill="#00C49F">
-                <LabelList
-                  content={(p) => (
-                    <AgeAvgLabel {...p} avg={p?.payload?.avgAge ?? 0} isDarkMode={isDarkMode} />
-                  )}
-                />
+                <LabelList content={(p) => <AvgAgeLabel {...p} avg={p?.payload?.avgAge ?? 0} />} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
