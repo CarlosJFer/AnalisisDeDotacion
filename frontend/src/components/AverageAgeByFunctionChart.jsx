@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
-import { AvgAgeLabel, UnifiedTooltip, formatMiles, formatPct } from '../utils/chartUtils';
+import { AvgAgeLabel, UnifiedTooltip, formatMiles, formatPct } from '../ui/chart-utils';
 
 const MARGIN_RIGHT = 96;
 
@@ -20,10 +20,11 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
       data
         .map((d) => ({
           funcion: (d.function ?? '').toString().trim() || 'Sin función',
-          count: d.count || 0,
-          avgAge: d.avgAge || 0,
+          cantidad: Number(d.count || 0),
+          promedio: Number(d.avgAge || 0),
+          avg: Number(d.avgAge || 0),
         }))
-        .sort((a, b) => b.count - a.count),
+        .sort((a, b) => b.cantidad - a.cantidad),
     [data]
   );
 
@@ -35,7 +36,7 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
     [chartData, page]
   );
   const grandTotal = useMemo(
-    () => chartData.reduce((sum, d) => sum + d.count, 0),
+    () => chartData.reduce((sum, d) => sum + d.cantidad, 0),
     [chartData]
   );
 
@@ -96,9 +97,9 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                 wrapperStyle={{ outline: 'none' }}
                 content={({ active, payload, label }) => {
                   if (!active || !payload?.length) return null;
-                  const item = payload[0]?.payload || {};
-                  const cant = item.count || 0;
-                  const avg = Math.round(item.avgAge || 0);
+                  const item = payload[0]?.payload ?? {};
+                  const cant = Number(item.cantidad || 0);
+                  const avg = Math.round(Number(item.promedio || item.avg || 0));
                   return (
                     <UnifiedTooltip active payload={payload} label={label}>
                       <div>Edad promedio: <strong>{avg} años</strong></div>
@@ -107,8 +108,8 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                   );
                 }}
               />
-              <Bar dataKey="count" maxBarSize={22} fill="#00C49F">
-                <LabelList content={(p) => <AvgAgeLabel {...p} avg={p?.payload?.avgAge ?? 0} />} />
+              <Bar dataKey="cantidad" maxBarSize={22} fill="#00C49F">
+                <LabelList content={(p) => <AvgAgeLabel {...p} />} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
