@@ -120,15 +120,14 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                 maxBarSize={22}
                 fill={isDarkMode ? '#10b981' : '#059669'}
               >
+                {/* Ensure that Recharts passes positioning props to the label components */}
                 <LabelList
                   dataKey="avg"
                   content={(props) => <AvgAgeLabel {...props} />}
                 />
                 <LabelList
                   dataKey="cantidad"
-                  content={(props) => (
-                    <ValueLabel {...props} total={grandTotal} />
-                  )}
+                  content={(props) => <ValueLabel {...props} total={grandTotal} />}
                 />
               </Bar>
             </BarChart>
