@@ -1,5 +1,15 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import {
   ResponsiveContainer,
   BarChart,
@@ -12,8 +22,16 @@ import {
 } from 'recharts';
 import { ValueLabel, UnifiedTooltip, formatMiles, formatPct } from '../ui/chart-utils';
 
-const AGE_BUCKETS = ['18-25','26-35','36-45','46-55','56-65','65+','No tiene datos'];
-const MARGIN_RIGHT = 96;
+const AGE_BUCKETS = [
+  '18-25',
+  '26-35',
+  '36-45',
+  '46-55',
+  '56-65',
+  '65+',
+  'No tiene datos',
+];
+const MARGIN_RIGHT = 120;
 
 const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
   const [range, setRange] = useState('36-45');
@@ -46,7 +64,27 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
           <Typography variant="h6" sx={{fontWeight:600,color:isDarkMode?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)'}}>
             Distribución por Rangos de Edad según el área - Planta y Contratos
           </Typography>
-          <FormControl size="small" sx={{ minWidth: 120, mt: 1 }}>
+          <FormControl
+            size="small"
+            sx={{
+              minWidth: 140,
+              mt: 1,
+              color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)',
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: isDarkMode
+                  ? 'rgba(255,255,255,0.2)'
+                  : 'rgba(0,0,0,0.3)',
+              },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: isDarkMode ? '#4ade80' : '#059669',
+              },
+              '& .MuiSvgIcon-root': {
+                color: isDarkMode
+                  ? 'rgba(255,255,255,0.9)'
+                  : 'rgba(0,0,0,0.6)',
+              },
+            }}
+          >
             <InputLabel id="range-label">Rango de edad</InputLabel>
             <Select
               labelId="range-label"
@@ -83,8 +121,15 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
                   </UnifiedTooltip>
                 )}
               />
-              <Bar dataKey="cantidad" maxBarSize={22} fill={isDarkMode ? '#0ea5e9' : '#06b6d4'}>
-                <LabelList dataKey="cantidad" content={<ValueLabel total={total} />} />
+              <Bar
+                dataKey="cantidad"
+                maxBarSize={22}
+                fill={isDarkMode ? '#0ea5e9' : '#06b6d4'}
+              >
+                <LabelList
+                  dataKey="cantidad"
+                  content={(props) => <ValueLabel {...props} total={total} />}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
