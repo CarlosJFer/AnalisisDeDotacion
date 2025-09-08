@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button } from '@mui/material';
+import { Card, CardContent, Typography, Box, Button, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import {
   ResponsiveContainer,
   BarChart,
@@ -46,22 +46,22 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
           <Typography variant="h6" sx={{fontWeight:600,color:isDarkMode?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)'}}>
             Distribución por Rangos de Edad según el área - Planta y Contratos
           </Typography>
-          <select
-            value={range}
-            onChange={e => setRange(e.target.value)}
-            className={[
-              "px-3 py-2 rounded-lg border shadow-sm transition-colors",
-              "focus:outline-none focus:ring-2 focus:ring-emerald-500/70",
-              "bg-white text-slate-900 border-slate-300",
-              "dark:bg-slate-800 dark:text-slate-100 dark:border-slate-600",
-            ].join(" ")}
-          >
-            {AGE_BUCKETS.map(b => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
+          <FormControl size="small" sx={{ minWidth: 120, mt: 1 }}>
+            <InputLabel id="range-label">Rango de edad</InputLabel>
+            <Select
+              labelId="range-label"
+              id="range-select"
+              value={range}
+              label="Rango de edad"
+              onChange={(e) => setRange(e.target.value)}
+            >
+              {AGE_BUCKETS.map((b) => (
+                <MenuItem key={b} value={b}>
+                  {b}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Box>
         <Box sx={{ height: 520 }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -71,20 +71,20 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
               <YAxis type="category" dataKey="dependencia" width={260} tickLine={false} interval={0} tick={{ fontSize:12, fill: isDarkMode? 'rgba(255,255,255,0.7)': 'rgba(0,0,0,0.7)' }} tickFormatter={(v)=> v.length>32? v.slice(0,32)+'…':v} />
               <Tooltip
                 wrapperStyle={{ outline: 'none' }}
-                content={({ active, payload, label }) => {
-                  if (!active || !payload?.length) return null;
-                  const value = payload[0]?.value || 0;
-                  return (
-                    <UnifiedTooltip active payload={payload} label={label}>
-                      <div>Rango de edad: <strong>{range}</strong></div>
-                      <div>Cantidad de agentes: <strong>{formatMiles(value)}</strong></div>
-                      <div>Porcentaje: <strong>{formatPct(value/(total || 1))}</strong></div>
-                    </UnifiedTooltip>
-                  );
-                }}
+                content={({ active, payload }) => (
+                  <UnifiedTooltip active={active} payload={payload} label={null}>
+                    {payload?.length && (
+                      <>
+                        <div>Rango de edad: {range}</div>
+                        <div>Cantidad de agentes: {formatMiles(payload[0].value)}</div>
+                        <div>Porcentaje: {formatPct(payload[0].value / (total || 1))}</div>
+                      </>
+                    )}
+                  </UnifiedTooltip>
+                )}
               />
-              <Bar dataKey="cantidad" maxBarSize={22} fill="#00C49F">
-                <LabelList content={(p)=><ValueLabel {...p} total={total} />} />
+              <Bar dataKey="cantidad" maxBarSize={22} fill={isDarkMode ? '#0ea5e9' : '#06b6d4'}>
+                <LabelList dataKey="cantidad" content={<ValueLabel total={total} />} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
