@@ -40,6 +40,20 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
     [chartData]
   );
 
+  // Ticks del eje X controlados para evitar marcas no deseadas (ej. 63)
+  const maxAvgPage = useMemo(
+    () => (pageData?.length ? Math.max(...pageData.map((d) => Number(d.avg ?? d.promedio ?? 0) || 0)) : 0),
+    [pageData]
+  );
+  const xTicks = useMemo(() => {
+    const step = maxAvgPage > 80 ? 20 : 10; // pasos "redondos" para edades
+    const end = Math.ceil((maxAvgPage || 0) / step) * step;
+    const arr = [];
+    // Incluir el valor 'end' para dibujar la última línea y etiqueta
+    for (let v = 0; v <= end; v += step) arr.push(v);
+    return arr;
+  }, [maxAvgPage]);
+
   // Margen derecho dinámico en base al largo de las etiquetas fuera de la barra
   const MIN_RIGHT = 160;
   const MAX_RIGHT = 260;
@@ -118,11 +132,16 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
               margin={{ top: 16, right: dynamicRight, bottom: 16, left: 260 }}
               barCategoryGap={10}
             >
-              <CartesianGrid horizontal={false} strokeDasharray="0 0" />
+              <CartesianGrid
+                horizontal={false}
+                strokeDasharray="0 0"
+                stroke={isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}
+              />
               <XAxis
                 type="number"
                 domain={[0, (max) => Math.ceil(max * 1.2)]}
                 allowDecimals={false}
+                ticks={xTicks}
                 tickFormatter={formatMiles}
                 tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }}
               />

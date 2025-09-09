@@ -214,7 +214,11 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
         <Box sx={{ height: 520 }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={pageData} layout="vertical" margin={{ top: 16, right: dynamicRight, bottom: 16, left: 260 }} barCategoryGap={10}>
-              <CartesianGrid horizontal={false} strokeDasharray="0 0" />
+              <CartesianGrid
+                horizontal={false}
+                strokeDasharray="0 0"
+                stroke={isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}
+              />
               <XAxis type="number" domain={[0, (max)=>Math.ceil(max*1.2)]} allowDecimals={false} tickFormatter={formatMiles} tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }} />
               <YAxis type="category" dataKey="dependencia" width={260} tickLine={false} interval={0} tick={{ fontSize:12, fill: isDarkMode? 'rgba(255,255,255,0.7)': 'rgba(0,0,0,0.7)' }} tickFormatter={(v)=> v.length>32? v.slice(0,32)+'…':v} />
               <Tooltip
