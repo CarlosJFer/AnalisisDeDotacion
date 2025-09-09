@@ -11,7 +11,19 @@ export const isDark = () =>
 const RIGHT_PAD = 8;
 
 /** Label “valor (porcentaje)” SIEMPRE afuera a la derecha */
-export const ValueLabel: React.FC<{ total: number }> = (p) => {
+// Props laxas para renderers de Recharts (labels/tooltips)
+type RechartsLabelProps = {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  value?: number | string;
+  viewBox?: { width?: number; height?: number; x?: number; y?: number };
+  payload?: any;
+  total?: number;
+};
+
+export const ValueLabel: React.FC<RechartsLabelProps> = (p) => {
   const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1 } = p;
   const chartW = viewBox?.width ?? 0;
   const text = `${formatMiles(Number(value))} (${formatPct(Number(value) / Number(total || 1))})`;
@@ -27,7 +39,7 @@ export const ValueLabel: React.FC<{ total: number }> = (p) => {
 };
 
 /** Label “Edad promedio: X años” afuera a la derecha (lee avg del payload) */
-export const AvgAgeLabel: React.FC = (p) => {
+export const AvgAgeLabel: React.FC<RechartsLabelProps> = (p) => {
   const { x = 0, y = 0, width = 0, viewBox, payload } = p;
   const avg = Math.round(Number(payload?.avg ?? payload?.promedio ?? 0));
   if (!avg) return null;

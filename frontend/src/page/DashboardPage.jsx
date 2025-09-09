@@ -207,11 +207,36 @@ const DashboardPage = () => {
                 safeGet(funcMap.agentsByEmploymentType, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
                 safeGet(funcMap.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsBySubsecretaría, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsBydireccionGeneral, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsBydireccion, [], TEMPLATE_PLANTA_CONTRATOS),
+
+                // Arreglos de nombres: algunas claves de funcMap pueden variar entre mayúsculas,
+                // minúsculas o acentos según cómo estén registradas en el backend. Para evitar que
+                // queden undefined y los gráficos desaparezcan, intentamos ambas variantes. Si la
+                // primera es undefined, usamos la segunda.
+                safeGet(
+                    funcMap.agentsBySubsecretaria ?? funcMap.agentsBySubsecretaría,
+                    [],
+                    TEMPLATE_PLANTA_CONTRATOS
+                ),
+
+                safeGet(
+                    funcMap.agentsByDireccionGeneral ?? funcMap.agentsBydireccionGeneral,
+                    [],
+                    TEMPLATE_PLANTA_CONTRATOS
+                ),
+
+                safeGet(
+                    funcMap.agentsByDireccion ?? funcMap.agentsBydireccion,
+                    [],
+                    TEMPLATE_PLANTA_CONTRATOS
+                ),
+
                 safeGet(funcMap.agentsByDepartamento, [], TEMPLATE_PLANTA_CONTRATOS),
-                safeGet(funcMap.agentsBydivision, [], TEMPLATE_PLANTA_CONTRATOS),
+
+                safeGet(
+                    funcMap.agentsByDivision ?? funcMap.agentsBydivision,
+                    [],
+                    TEMPLATE_PLANTA_CONTRATOS
+                ),
                 // Datos para Antigüedad y estudios
                 safeGet(funcMap.agentsBySeniority, [], TEMPLATE_DATOS_CONCURSO),
                 safeGet(funcMap.agentsBySecondaryStudies, { conTitulo: 0, otros: 0 }, TEMPLATE_DATOS_CONCURSO),
@@ -836,8 +861,8 @@ const DashboardPage = () => {
 
                     <Grid item xs={12}>
                         <CustomBarChart
-                            data={filterValidData(agentsBySubsecretaría, 'Subsecretaría').slice(0, 10)}
-                            xKey="Subsecretaría"
+                            data={filterValidData(agentsBySubsecretaría, 'subsecretaria').slice(0, 10)}
+                            xKey="subsecretaria"
                             barKey="count"
                             title="Agentes por Subsecretaría (Top 10) - Planta y Contratos"
                             isDarkMode={isDarkMode}
