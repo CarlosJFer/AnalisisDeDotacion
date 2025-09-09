@@ -48,7 +48,7 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
     const labels = pageData.map((d) => {
       const avg = Math.round(Number(d.avg || d.promedio || 0));
       const cnt = Number(d.cantidad || 0);
-      return `Edad promedio: ${avg} años — ${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
+      return `${avg} años — ${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
     });
     const maxChars = Math.max(...labels.map((t) => t.length));
     const approxWidth = maxChars * 7 + 20; // 7px por carácter + padding
@@ -61,7 +61,7 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
     const row = pageData?.[index] || {};
     const avg = Math.round(Number((row.avg ?? row.promedio ?? value ?? 0)));
     const cnt = Number(row.cantidad ?? 0);
-    const label = `Edad promedio: ${avg} años — ${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
+    const label = `${avg} años — ${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
     const xText = x + width + 8;
     const yText = y + (height || 0) / 2;
     const color = isDarkMode ? '#ffffff' : '#0f172a';
@@ -139,7 +139,7 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                 content={({ active, payload }) => (
                   <UnifiedTooltip
                     active={active}
-                    payload={payload}
+                    payload={payload} dark={isDarkMode}
                     label={`Función: ${payload?.[0]?.payload?.funcion || 'Sin función'}`}
                   >
                     {payload?.length && (

@@ -45,13 +45,14 @@ export const AvgAgeLabel: React.FC = (p) => {
 };
 
 /** Tooltip unificado (oscuro/claro) */
-export const UnifiedTooltip: React.FC<{active?:boolean; payload?:any[]; label?:string; children?:React.ReactNode}> =
-({ active, payload, label, children }) => {
+export const UnifiedTooltip: React.FC<{active?:boolean; payload?:any[]; label?:string; children?:React.ReactNode; dark?: boolean}> =
+({ active, payload, label, children, dark }) => {
   if (!active || !payload?.length) return null;
-  const bg = isDark() ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)';
-  const fg = isDark() ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)';
-  const bd = isDark() ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)';
-  const shadow = isDark() ? '0 12px 40px rgba(0,0,0,0.4)' : '0 12px 40px rgba(0,0,0,0.15)';
+  const isDarkTheme = typeof dark === 'boolean' ? dark : isDark();
+  const bg = isDarkTheme ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+  const fg = isDarkTheme ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)';
+  const bd = isDarkTheme ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)';
+  const shadow = isDarkTheme ? '0 12px 40px rgba(0,0,0,0.4)' : '0 12px 40px rgba(0,0,0,0.15)';
   return (
     <div
       style={{
