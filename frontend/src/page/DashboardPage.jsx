@@ -17,6 +17,13 @@ import CustomDonutChart from '../components/CustomDonutChart';
 import CustomAreaChart from '../components/CustomAreaChart';
 import CustomHorizontalBarChart from '../components/CustomHorizontalBarChart';
 import AgeRangeByAreaChart from '../components/AgeRangeByAreaChart';
+import AgentsBySecretariaBarChart from '../components/AgentsBySecretariaBarChart.jsx';
+import AgentsByDependencyBarChart from '../components/AgentsByDependencyBarChart.jsx';
+import AgentsBySubsecretariaBarChart from '../components/AgentsBySubsecretariaBarChart.jsx';
+import AgentsByDireccionGeneralBarChart from '../components/AgentsByDireccionGeneralBarChart.jsx';
+import AgentsByDireccionBarChart from '../components/AgentsByDireccionBarChart.jsx';
+import AgentsByDepartamentoBarChart from '../components/AgentsByDepartamentoBarChart.jsx';
+import AgentsByDivisionBarChart from '../components/AgentsByDivisionBarChart.jsx';
 import AverageAgeByFunctionChart from '../components/AverageAgeByFunctionChart';
 import DependencyFilter from '../components/DependencyFilter.jsx';
 import MonthCutoffAlert from '../components/MonthCutoffAlert';
@@ -841,32 +848,22 @@ const DashboardPage = () => {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <CustomDonutChart
-                            data={agentsBySecretaria.slice(0, 8)}
-                            title="Agentes por Secretaría - Planta y Contratos"
+                        <AgentsBySecretariaBarChart
+                            data={agentsBySecretaria}
                             isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="secretaria"
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <CustomDonutChart
-                            data={agentsByDependency.slice(0, 8)}
-                            title="Agentes por Dependencia - Planta y Contratos"
+                        <AgentsByDependencyBarChart
+                            data={agentsByDependency}
                             isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="dependency"
                         />
                     </Grid>
 
                     <Grid item xs={12}>
-                        <CustomBarChart
-                            data={filterValidData(agentsBySubsecretaría, 'subsecretaria').slice(0, 10)}
-                            xKey="subsecretaria"
-                            barKey="count"
-                            title="Agentes por Subsecretaría - Planta y Contratos"
+                        <AgentsBySubsecretariaBarChart
+                            data={filterValidData(agentsBySubsecretaría, 'subsecretaria')}
                             isDarkMode={isDarkMode}
-                            height={400}
                         />
                     </Grid>
 
@@ -877,42 +874,28 @@ const DashboardPage = () => {
                     </Grid>
 
                     <Grid item xs={12}>
-                        <CustomBarChart
-                            data={filterValidData(agentsBydireccionGeneral, 'direccionGeneral').slice(0, 10)}
-                            xKey="direccionGeneral"
-                            barKey="count"
-                            title="Agentes por direccion general - Planta y Contratos"
+                        <AgentsByDireccionGeneralBarChart
+                            data={filterValidData(agentsBydireccionGeneral, 'direccionGeneral')}
                             isDarkMode={isDarkMode}
-                            height={400}
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <CustomBarChart
-                            data={filterValidData(agentsBydireccion, 'direccion').slice(0, 10)}
-                            xKey="direccion"
-                            barKey="count"
-                            title="Agentes por direccion - Planta y Contratos"
+                        <AgentsByDireccionBarChart
+                            data={filterValidData(agentsBydireccion, 'direccion')}
                             isDarkMode={isDarkMode}
-                            height={400}
                         />
                     </Grid>
 
                     <Grid item xs={12}>
-                        <CustomDonutChart
-                            data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)}
-                            title="Agentes por Departamento - Planta y Contratos"
+                        <AgentsByDepartamentoBarChart
+                            data={filterValidData(agentsByDepartamento, 'departamento')}
                             isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="departamento"
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <CustomDonutChart
-                            data={filterValidData(agentsBydivision, 'division').slice(0, 8)}
-                            title="Agentes por division - Planta y Contratos"
+                        <AgentsByDivisionBarChart
+                            data={filterValidData(agentsBydivision, 'division')}
                             isDarkMode={isDarkMode}
-                            dataKey="count"
-                            nameKey="division"
                         />
                     </Grid>
                 </Grid>
