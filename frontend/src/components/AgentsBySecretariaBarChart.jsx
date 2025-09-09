@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button } from '@mui/material';
+import { Card, CardContent, Typography, Box, Button, Chip } from '@mui/material';
+import BusinessIcon from '@mui/icons-material/Business';
 import {
   BarChart,
   Bar,
@@ -11,6 +12,8 @@ import {
   LabelList,
 } from 'recharts';
 import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
+
+const COLOR = '#14b8a6';
 
 const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
   // Normalizar y ordenar datos por cantidad desc
@@ -81,6 +84,7 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
         background: isDarkMode ? 'rgba(45, 55, 72, 0.8)' : 'rgba(255, 255, 255, 0.9)',
         backdropFilter: 'blur(20px)',
         border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
+        borderLeft: `6px solid ${COLOR}`,
         borderRadius: 3,
         transition: 'all 0.3s ease',
         '&:hover': {
@@ -92,16 +96,22 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
       }}
     >
       <CardContent sx={{ p: 3 }}>
-        <Typography
-          variant="h6"
-          align="center"
-          sx={{
-            fontWeight: 600,
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            mb: 2,
-          }}
-        >
-          Agentes por Secretaría - Planta y Contratos
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25 }}>
+          <BusinessIcon sx={{ color: COLOR }} />
+          <Typography
+            variant="h6"
+            align="center"
+            sx={{
+              fontWeight: 600,
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            Agentes por Secretaría - Planta y Contratos
+          </Typography>
+          <Chip label="Secretaría" size="small" variant="outlined" sx={{ borderColor: COLOR, color: COLOR }} />
+        </Box>
+        <Typography variant="body2" align="center" sx={{ mb: 2, color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }}>
+          {chartData.length} categorías • {formatMiles(grandTotal)} agentes
         </Typography>
         <Box sx={{ height: Math.max(320, pageData.length * 40) }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -149,7 +159,7 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
                   </UnifiedTooltip>
                 )}
               />
-              <Bar dataKey="cantidad" maxBarSize={22} fill={isDarkMode ? '#10b981' : '#059669'}>
+              <Bar dataKey="cantidad" maxBarSize={22} fill={COLOR}>
                 <LabelList dataKey="cantidad" content={(props) => <EndOutsideLabel {...props} />} />
               </Bar>
             </BarChart>
@@ -160,6 +170,7 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
             <Button
               variant="outlined"
               size="small"
+              sx={{ borderColor: COLOR, color: COLOR, '&:hover': { borderColor: COLOR, backgroundColor: 'rgba(20,184,166,0.08)' } }}
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
             >
@@ -171,6 +182,7 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
             <Button
               variant="outlined"
               size="small"
+              sx={{ borderColor: COLOR, color: COLOR, '&:hover': { borderColor: COLOR, backgroundColor: 'rgba(20,184,166,0.08)' } }}
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page === totalPages - 1}
             >
@@ -184,4 +196,3 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
 };
 
 export default AgentsBySecretariaBarChart;
-

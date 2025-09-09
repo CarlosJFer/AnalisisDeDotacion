@@ -1,7 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button } from '@mui/material';
+import { Card, CardContent, Typography, Box, Button, Chip } from '@mui/material';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
+
+const COLOR = '#84cc16';
 
 const AgentsByDivisionBarChart = ({ data, isDarkMode }) => {
   const chartData = useMemo(() => {
@@ -39,10 +42,17 @@ const AgentsByDivisionBarChart = ({ data, isDarkMode }) => {
   };
 
   return (
-    <Card sx={{ height: '100%', background: isDarkMode ? 'rgba(45, 55, 72, 0.8)' : 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(20px)', border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)', borderRadius: 3, transition: 'all 0.3s ease', '&:hover': { transform: 'translateY(-4px)', boxShadow: isDarkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)' } }}>
+    <Card sx={{ height: '100%', background: isDarkMode ? 'rgba(45, 55, 72, 0.8)' : 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(20px)', border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)', borderLeft: `6px solid ${COLOR}`, borderRadius: 3, transition: 'all 0.3s ease', '&:hover': { transform: 'translateY(-4px)', boxShadow: isDarkMode ? '0 12px 40px rgba(0, 0, 0, 0.4)' : '0 12px 40px rgba(0, 0, 0, 0.15)' } }}>
       <CardContent sx={{ p: 3 }}>
-        <Typography variant="h6" align="center" sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)', mb: 2 }}>
-          Agentes por division - Planta y Contratos
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25 }}>
+          <DeviceHubIcon sx={{ color: COLOR }} />
+          <Typography variant="h6" align="center" sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+            Agentes por division - Planta y Contratos
+          </Typography>
+          <Chip label="División" size="small" variant="outlined" sx={{ borderColor: COLOR, color: COLOR }} />
+        </Box>
+        <Typography variant="body2" align="center" sx={{ mb: 2, color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }}>
+          {chartData.length} categorías • {formatMiles(grandTotal)} agentes
         </Typography>
         <Box sx={{ height: Math.max(320, pageData.length * 40) }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -60,7 +70,7 @@ const AgentsByDivisionBarChart = ({ data, isDarkMode }) => {
                   )}
                 </UnifiedTooltip>
               )} />
-              <Bar dataKey="cantidad" maxBarSize={22} fill={isDarkMode ? '#10b981' : '#059669'}>
+              <Bar dataKey="cantidad" maxBarSize={22} fill={COLOR}>
                 <LabelList dataKey="cantidad" content={(p) => <EndOutsideLabel {...p} />} />
               </Bar>
             </BarChart>
@@ -68,9 +78,9 @@ const AgentsByDivisionBarChart = ({ data, isDarkMode }) => {
         </Box>
         {chartData.length > PAGE && (
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-            <Button variant="outlined" size="small" onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}>« Anterior</Button>
+            <Button variant="outlined" size="small" sx={{ borderColor: COLOR, color: COLOR, '&:hover': { borderColor: COLOR, backgroundColor: 'rgba(132,204,22,0.08)' } }} onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0}>« Anterior</Button>
             <Typography variant="body2" sx={{ alignSelf: 'center' }}>Página {page + 1} de {totalPages}</Typography>
-            <Button variant="outlined" size="small" onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}>Siguiente »</Button>
+            <Button variant="outlined" size="small" sx={{ borderColor: COLOR, color: COLOR, '&:hover': { borderColor: COLOR, backgroundColor: 'rgba(132,204,22,0.08)' } }} onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={page === totalPages - 1}>Siguiente »</Button>
           </Box>
         )}
       </CardContent>
@@ -79,4 +89,3 @@ const AgentsByDivisionBarChart = ({ data, isDarkMode }) => {
 };
 
 export default AgentsByDivisionBarChart;
-
