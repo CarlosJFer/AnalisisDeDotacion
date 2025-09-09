@@ -840,7 +840,7 @@ const DashboardPage = () => {
                         </Typography>
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12}>
                         <CustomDonutChart
                             data={agentsBySecretaria.slice(0, 8)}
                             title="Agentes por Secretaría (Top 8) - Planta y Contratos"
@@ -849,7 +849,7 @@ const DashboardPage = () => {
                             nameKey="secretaria"
                         />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid item xs={12}>
                         <CustomDonutChart
                             data={agentsByDependency.slice(0, 8)}
                             title="Agentes por Dependencia (Top 8) - Planta y Contratos"
@@ -870,13 +870,13 @@ const DashboardPage = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{ display: 'none' }}>
                         <Typography variant="h6" sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
                             Estructura Jerárquica Detallada
                         </Typography>
                     </Grid>
 
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12}>
                         <CustomBarChart
                             data={filterValidData(agentsBydireccionGeneral, 'direccionGeneral').slice(0, 10)}
                             xKey="direccionGeneral"
@@ -886,7 +886,7 @@ const DashboardPage = () => {
                             height={400}
                         />
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12}>
                         <CustomBarChart
                             data={filterValidData(agentsBydireccion, 'direccion').slice(0, 10)}
                             xKey="direccion"
@@ -897,7 +897,7 @@ const DashboardPage = () => {
                         />
                     </Grid>
 
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)}
                             title="Agentes por Departamento (Top 8) - Planta y Contratos"
@@ -906,7 +906,7 @@ const DashboardPage = () => {
                             nameKey="departamento"
                         />
                     </Grid>
-                    <Grid item xs={12} lg={6}>
+                    <Grid item xs={12}>
                         <CustomDonutChart
                             data={filterValidData(agentsBydivision, 'division').slice(0, 8)}
                             title="Agentes por division (Top 8) - Planta y Contratos"
