@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button } from '@mui/material';
+import { Card, CardContent, Typography, Box, Button, Chip } from '@mui/material';\nimport QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
   BarChart,
   Bar,
@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
 
-const MARGIN_RIGHT = 120;
+const MARGIN_RIGHT = 120;\nconst COLOR = '#3b82f6';
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const chartData = useMemo(
@@ -206,3 +206,5 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
 };
 
 export default AverageAgeByFunctionChart;
+
+
