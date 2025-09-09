@@ -843,7 +843,7 @@ const DashboardPage = () => {
                     <Grid item xs={12}>
                         <CustomDonutChart
                             data={agentsBySecretaria.slice(0, 8)}
-                            title="Agentes por Secretaría (Top 8) - Planta y Contratos"
+                            title="Agentes por Secretaría - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="secretaria"
@@ -852,7 +852,7 @@ const DashboardPage = () => {
                     <Grid item xs={12}>
                         <CustomDonutChart
                             data={agentsByDependency.slice(0, 8)}
-                            title="Agentes por Dependencia (Top 8) - Planta y Contratos"
+                            title="Agentes por Dependencia - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="dependency"
@@ -864,7 +864,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsBySubsecretaría, 'subsecretaria').slice(0, 10)}
                             xKey="subsecretaria"
                             barKey="count"
-                            title="Agentes por Subsecretaría (Top 10) - Planta y Contratos"
+                            title="Agentes por Subsecretaría - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -881,7 +881,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsBydireccionGeneral, 'direccionGeneral').slice(0, 10)}
                             xKey="direccionGeneral"
                             barKey="count"
-                            title="Agentes por direccion general (Top 10) - Planta y Contratos"
+                            title="Agentes por direccion general - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -891,7 +891,7 @@ const DashboardPage = () => {
                             data={filterValidData(agentsBydireccion, 'direccion').slice(0, 10)}
                             xKey="direccion"
                             barKey="count"
-                            title="Agentes por direccion (Top 10) - Planta y Contratos"
+                            title="Agentes por direccion - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             height={400}
                         />
@@ -900,7 +900,7 @@ const DashboardPage = () => {
                     <Grid item xs={12}>
                         <CustomDonutChart
                             data={filterValidData(agentsByDepartamento, 'departamento').slice(0, 8)}
-                            title="Agentes por Departamento (Top 8) - Planta y Contratos"
+                            title="Agentes por Departamento - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="departamento"
@@ -909,7 +909,7 @@ const DashboardPage = () => {
                     <Grid item xs={12}>
                         <CustomDonutChart
                             data={filterValidData(agentsBydivision, 'division').slice(0, 8)}
-                            title="Agentes por division (Top 8) - Planta y Contratos"
+                            title="Agentes por division - Planta y Contratos"
                             isDarkMode={isDarkMode}
                             dataKey="count"
                             nameKey="division"
