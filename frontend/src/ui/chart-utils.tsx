@@ -48,16 +48,23 @@ export const AvgAgeLabel: React.FC = (p) => {
 export const UnifiedTooltip: React.FC<{active?:boolean; payload?:any[]; label?:string; children?:React.ReactNode}> =
 ({ active, payload, label, children }) => {
   if (!active || !payload?.length) return null;
-  const bg = isDark()? "#0b1220" : "#ffffff";
-  const fg = isDark()? "#e2e8f0" : "#0f172a";
-  const bd = isDark()? "#334155" : "#cbd5e1";
+  const bg = isDark() ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)';
+  const fg = isDark() ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)';
+  const bd = isDark() ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)';
+  const shadow = isDark() ? '0 12px 40px rgba(0,0,0,0.4)' : '0 12px 40px rgba(0,0,0,0.15)';
   return (
-    <div style={{
-      background:bg, color:fg, border:`1px solid ${bd}`,
-      borderRadius:10, padding:"10px 12px",
-      boxShadow:"0 4px 16px rgba(0,0,0,.25)", minWidth:240
-    }}>
-      {label && <div style={{ fontWeight:600, marginBottom:6 }}>{label}</div>}
+    <div
+      style={{
+        background: bg,
+        border: bd,
+        color: fg,
+        borderRadius: 8,
+        padding: '10px 12px',
+        boxShadow: shadow,
+        minWidth: 240,
+      }}
+    >
+      {label && <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>}
       {children}
     </div>
   );

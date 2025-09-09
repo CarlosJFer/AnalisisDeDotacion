@@ -10,13 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
-import {
-  AvgAgeLabel,
-  UnifiedTooltip,
-  ValueLabel,
-  formatMiles,
-  formatPct,
-} from '../ui/chart-utils';
+import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
 
 const MARGIN_RIGHT = 120;
 
@@ -45,6 +39,46 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
     () => chartData.reduce((sum, d) => sum + d.cantidad, 0),
     [chartData]
   );
+
+  // Margen derecho dinámico en base al largo de las etiquetas fuera de la barra
+  const MIN_RIGHT = 160;
+  const MAX_RIGHT = 260;
+  const dynamicRight = React.useMemo(() => {
+    if (!pageData?.length) return MIN_RIGHT;
+    const labels = pageData.map((d) => {
+      const avg = Math.round(Number(d.avg || d.promedio || 0));
+      const cnt = Number(d.cantidad || 0);
+      return `Edad promedio: ${avg} años — ${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
+    });
+    const maxChars = Math.max(...labels.map((t) => t.length));
+    const approxWidth = maxChars * 7 + 20; // 7px por carácter + padding
+    return Math.max(MIN_RIGHT, Math.min(MAX_RIGHT, approxWidth));
+  }, [pageData, grandTotal]);
+
+  // Etiqueta personalizada: afuera a la derecha, combinando promedio + cantidad
+  const EndOutsideLabel = (props) => {
+    const { x = 0, y = 0, width = 0, height = 0, value = 0, payload } = props;
+    const avg = Math.round(Number(value || payload?.avg || payload?.promedio || 0));
+    const cnt = Number(payload?.cantidad || 0);
+    const label = `Edad promedio: ${avg} años — ${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
+    const xText = x + width + 8;
+    const yText = y + (height || 0) / 2;
+    const color = isDarkMode ? '#ffffff' : '#0f172a';
+    return (
+      <text
+        x={xText}
+        y={yText}
+        fontSize={12}
+        textAnchor="start"
+        dominantBaseline="central"
+        fill={color}
+        fontWeight="600"
+        pointerEvents="none"
+      >
+        {label}
+      </text>
+    );
+  };
 
   return (
     <Card
@@ -80,7 +114,7 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
             <BarChart
               data={pageData}
               layout="vertical"
-              margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 260 }}
+              margin={{ top: 16, right: dynamicRight, bottom: 16, left: 260 }}
               barCategoryGap={10}
             >
               <CartesianGrid horizontal={false} strokeDasharray="0 0" />
@@ -115,19 +149,8 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                   </UnifiedTooltip>
                 )}
               />
-              <Bar
-                dataKey="avg"
-                maxBarSize={22}
-                fill={isDarkMode ? '#10b981' : '#059669'}
-              >
-                <LabelList
-                  dataKey="avg"
-                  content={(props) => <AvgAgeLabel {...props} />}
-                />
-                <LabelList
-                  dataKey="cantidad"
-                  content={(props) => <ValueLabel {...props} total={grandTotal} />}
-                />
+              <Bar dataKey="avg" maxBarSize={22} fill={isDarkMode ? '#10b981' : '#059669'}>
+                <LabelList dataKey="avg" content={(props) => <EndOutsideLabel {...props} />} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
