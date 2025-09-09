@@ -57,9 +57,10 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
 
   // Etiqueta personalizada: afuera a la derecha, combinando promedio + cantidad
   const EndOutsideLabel = (props) => {
-    const { x = 0, y = 0, width = 0, height = 0, value = 0, payload } = props;
-    const avg = Math.round(Number(value || payload?.avg || payload?.promedio || 0));
-    const cnt = Number(payload?.cantidad || 0);
+    const { x = 0, y = 0, width = 0, height = 0, value = 0, index = 0 } = props;
+    const row = pageData?.[index] || {};
+    const avg = Math.round(Number((row.avg ?? row.promedio ?? value ?? 0)));
+    const cnt = Number(row.cantidad ?? 0);
     const label = `Edad promedio: ${avg} años — ${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
     const xText = x + width + 8;
     const yText = y + (height || 0) / 2;
@@ -136,14 +137,16 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
               <Tooltip
                 wrapperStyle={{ outline: 'none' }}
                 content={({ active, payload }) => (
-                  <UnifiedTooltip active={active} payload={payload} label={null}>
+                  <UnifiedTooltip
+                    active={active}
+                    payload={payload}
+                    label={`Función: ${payload?.[0]?.payload?.funcion || 'Sin función'}`}
+                  >
                     {payload?.length && (
                       <>
                         <div>Edad promedio: {Math.round(payload[0].payload.avg)} años</div>
-                        <div>
-                          Cantidad: {formatMiles(payload[0].payload.cantidad)} (
-                          {formatPct(payload[0].payload.cantidad / (grandTotal || 1))})
-                        </div>
+                        <div>Cantidad de agentes: {formatMiles(payload[0].payload.cantidad)}</div>
+                        <div>Porcentaje: {formatPct(payload[0].payload.cantidad / (grandTotal || 1))}</div>
                       </>
                     )}
                   </UnifiedTooltip>

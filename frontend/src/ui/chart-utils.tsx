@@ -61,7 +61,7 @@ export const UnifiedTooltip: React.FC<{active?:boolean; payload?:any[]; label?:s
         borderRadius: 8,
         padding: '10px 12px',
         boxShadow: shadow,
-        minWidth: 240,
+        minWidth: 220,
       }}
     >
       {label && <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>}
