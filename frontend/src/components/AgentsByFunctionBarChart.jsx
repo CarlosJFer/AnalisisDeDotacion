@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Typography, Box, Chip } from '@mui/material';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList } from 'recharts';
 import DashboardCard from './ui/DashboardCard.jsx';
-import PaginationControls from '../ui/PaginationControls';
+import PaginationControls from './ui/PaginationControls.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { formatMiles, formatPct, UnifiedTooltip, axisStyle, gridStyle } from '../ui/chart-utils';
 

@@ -4,7 +4,6 @@ import {
   CardContent,
   Typography,
   Box,
-  Button,
   Chip,
 } from "@mui/material";
 import HubIcon from "@mui/icons-material/Hub";
@@ -19,6 +18,7 @@ import {
   LabelList,
 } from "recharts";
 import { formatMiles, formatPct, UnifiedTooltip } from "../ui/chart-utils";
+import PaginationControls from "./ui/PaginationControls.jsx";
 
 const COLOR = "#6366f1";
 
@@ -214,45 +214,12 @@ const AgentsByDependencyBarChart = ({ data, isDarkMode }) => {
           </ResponsiveContainer>
         </Box>
         {chartData.length > PAGE && (
-          <Box
-            sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}
-          >
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                borderColor: COLOR,
-                color: COLOR,
-                "&:hover": {
-                  borderColor: COLOR,
-                  backgroundColor: "rgba(99,102,241,0.08)",
-                },
-              }}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-            >
-              « Anterior
-            </Button>
-            <Typography variant="body2" sx={{ alignSelf: "center" }}>
-              Página {page + 1} de {totalPages}
-            </Typography>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                borderColor: COLOR,
-                color: COLOR,
-                "&:hover": {
-                  borderColor: COLOR,
-                  backgroundColor: "rgba(99,102,241,0.08)",
-                },
-              }}
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page === totalPages - 1}
-            >
-              Siguiente »
-            </Button>
-          </Box>
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => Math.max(0, p - 1))}
+            onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          />
         )}
       </CardContent>
     </Card>
