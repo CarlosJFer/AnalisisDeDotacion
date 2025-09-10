@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Grid,
   Switch,
@@ -10,19 +10,20 @@ import {
   MenuItem,
   FormHelperText,
   Tooltip,
-  InputAdornment
-} from '@mui/material';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+  InputAdornment,
+} from "@mui/material";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 
 const VariableForm = ({
   values,
   onChange,
-  type = 'global',
+  type = "global",
   unidadOptions = [],
-  secretariaOptions = []
+  secretariaOptions = [],
 }) => {
   const handleChange = (name) => (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
     onChange(name, value);
   };
 
@@ -39,8 +40,8 @@ const VariableForm = ({
       <Grid item xs={12} sm={6}>
         <TextField
           label="Nombre"
-          value={values.nombre || ''}
-          onChange={handleChange('nombre')}
+          value={values.nombre || ""}
+          onChange={handleChange("nombre")}
           fullWidth
         />
       </Grid>
@@ -48,9 +49,9 @@ const VariableForm = ({
         <FormControl fullWidth>
           <InputLabel>Unidad de medida</InputLabel>
           <Select
-            value={values.unidad_medida || ''}
+            value={values.unidad_medida || ""}
             label="Unidad de medida"
-            onChange={handleChange('unidad_medida')}
+            onChange={handleChange("unidad_medida")}
           >
             {unidadOptions.map((opt) => (
               <MenuItem key={opt.value} value={opt.value}>
@@ -64,20 +65,20 @@ const VariableForm = ({
         <TextField
           label="Valor mínimo"
           type="number"
-          value={values.valor_minimo || ''}
-          onChange={handleChange('valor_minimo')}
+          value={values.valor_minimo || ""}
+          onChange={handleChange("valor_minimo")}
           fullWidth
-          InputProps={{ endAdornment: infoAdornment('Valor mínimo permitido') }}
+          InputProps={{ endAdornment: infoAdornment("Valor mínimo permitido") }}
         />
       </Grid>
       <Grid item xs={12} sm={6}>
         <TextField
           label="Valor máximo"
           type="number"
-          value={values.valor_maximo || ''}
-          onChange={handleChange('valor_maximo')}
+          value={values.valor_maximo || ""}
+          onChange={handleChange("valor_maximo")}
           fullWidth
-          InputProps={{ endAdornment: infoAdornment('Valor máximo permitido') }}
+          InputProps={{ endAdornment: infoAdornment("Valor máximo permitido") }}
         />
       </Grid>
 
@@ -86,7 +87,7 @@ const VariableForm = ({
           control={
             <Switch
               checked={Boolean(values.flexible)}
-              onChange={handleChange('flexible')}
+              onChange={handleChange("flexible")}
               color="primary"
             />
           }
@@ -100,22 +101,26 @@ const VariableForm = ({
             <TextField
               label="Umbral crítico"
               type="number"
-              value={values.umbral_critico || ''}
-              onChange={handleChange('umbral_critico')}
+              value={values.umbral_critico || ""}
+              onChange={handleChange("umbral_critico")}
               fullWidth
               helperText="Valor a partir del cual se considera saturado"
-              InputProps={{ endAdornment: infoAdornment('Señala el límite crítico') }}
+              InputProps={{
+                endAdornment: infoAdornment("Señala el límite crítico"),
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Umbral preventivo"
               type="number"
-              value={values.umbral_preventivo || ''}
-              onChange={handleChange('umbral_preventivo')}
+              value={values.umbral_preventivo || ""}
+              onChange={handleChange("umbral_preventivo")}
               fullWidth
               helperText="Valor a partir del cual se activa la alerta"
-              InputProps={{ endAdornment: infoAdornment('Umbral antes del crítico') }}
+              InputProps={{
+                endAdornment: infoAdornment("Umbral antes del crítico"),
+              }}
             />
           </Grid>
         </>
@@ -127,57 +132,65 @@ const VariableForm = ({
             <TextField
               label="Umbral crítico inferior"
               type="number"
-              value={values.umbral_critico_inferior || ''}
-              onChange={handleChange('umbral_critico_inferior')}
+              value={values.umbral_critico_inferior || ""}
+              onChange={handleChange("umbral_critico_inferior")}
               fullWidth
               helperText="Por debajo del valor ideal"
-              InputProps={{ endAdornment: infoAdornment('Límite crítico inferior') }}
+              InputProps={{
+                endAdornment: infoAdornment("Límite crítico inferior"),
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Umbral preventivo inferior"
               type="number"
-              value={values.umbral_preventivo_inferior || ''}
-              onChange={handleChange('umbral_preventivo_inferior')}
+              value={values.umbral_preventivo_inferior || ""}
+              onChange={handleChange("umbral_preventivo_inferior")}
               fullWidth
               helperText="Por debajo del valor ideal"
-              InputProps={{ endAdornment: infoAdornment('Límite preventivo inferior') }}
+              InputProps={{
+                endAdornment: infoAdornment("Límite preventivo inferior"),
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Umbral preventivo superior"
               type="number"
-              value={values.umbral_preventivo_superior || ''}
-              onChange={handleChange('umbral_preventivo_superior')}
+              value={values.umbral_preventivo_superior || ""}
+              onChange={handleChange("umbral_preventivo_superior")}
               fullWidth
               helperText="Por encima del valor ideal"
-              InputProps={{ endAdornment: infoAdornment('Límite preventivo superior') }}
+              InputProps={{
+                endAdornment: infoAdornment("Límite preventivo superior"),
+              }}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
               label="Umbral crítico superior"
               type="number"
-              value={values.umbral_critico_superior || ''}
-              onChange={handleChange('umbral_critico_superior')}
+              value={values.umbral_critico_superior || ""}
+              onChange={handleChange("umbral_critico_superior")}
               fullWidth
               helperText="Por encima del valor ideal"
-              InputProps={{ endAdornment: infoAdornment('Límite crítico superior') }}
+              InputProps={{
+                endAdornment: infoAdornment("Límite crítico superior"),
+              }}
             />
           </Grid>
         </>
       )}
 
-      {type === 'especifica' && (
+      {type === "especifica" && (
         <Grid item xs={12}>
           <FormControl fullWidth>
             <InputLabel>Secretaría</InputLabel>
             <Select
-              value={values.secretaria || ''}
+              value={values.secretaria || ""}
               label="Secretaría"
-              onChange={handleChange('secretaria')}
+              onChange={handleChange("secretaria")}
             >
               {secretariaOptions.map((opt) => (
                 <MenuItem key={opt.value} value={opt.value}>
@@ -194,4 +207,3 @@ const VariableForm = ({
 };
 
 export default VariableForm;
-

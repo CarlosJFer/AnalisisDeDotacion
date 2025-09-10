@@ -8,7 +8,7 @@ import {
   Percent as PercentIcon,
   AttachMoney as AttachMoneyIcon,
   Assessment as AssessmentIcon,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 const icons = {
   personas: GroupIcon,
@@ -23,4 +23,3 @@ const icons = {
 };
 
 export default icons;
-

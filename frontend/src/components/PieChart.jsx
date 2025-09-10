@@ -1,20 +1,27 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { useTheme as useAppTheme } from '../context/ThemeContext';
-import { getPalette } from '../theme.js';
+import React from "react";
+import { Card, CardContent, Typography, Box } from "@mui/material";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+import { useTheme as useAppTheme } from "../context/ThemeContext";
+import { getPalette } from "../theme.js";
 
 const CustomPieChart = ({ data, dataKey, nameKey, title }) => {
   const { isDarkMode } = useAppTheme();
   const colors = getPalette(isDarkMode);
 
   return (
-    <Card sx={{ width: '100%', height: 300, my: 3 }}>
-      <CardContent sx={{ height: '100%' }}>
+    <Card sx={{ width: "100%", height: 300, my: 3 }}>
+      <CardContent sx={{ height: "100%" }}>
         <Typography variant="h6" align="center" gutterBottom>
           {title}
         </Typography>
-        <Box sx={{ width: '100%', height: '100%' }}>
+        <Box sx={{ width: "100%", height: "100%" }}>
           <ResponsiveContainer>
             <PieChart>
               <Pie
@@ -27,7 +34,10 @@ const CustomPieChart = ({ data, dataKey, nameKey, title }) => {
                 label
               >
                 {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colors.palette[index % colors.palette.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={colors.palette[index % colors.palette.length]}
+                  />
                 ))}
               </Pie>
               <Tooltip

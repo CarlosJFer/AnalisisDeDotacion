@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback } from 'react';
-import { useDebounce } from '../utils/performance.js';
+import { useState, useMemo, useCallback } from "react";
+import { useDebounce } from "../utils/performance.js";
 
 // Hook optimizado para búsquedas en grandes datasets
 export const useOptimizedSearch = (data, searchFields, options = {}) => {
@@ -10,7 +10,7 @@ export const useOptimizedSearch = (data, searchFields, options = {}) => {
     exactMatch = false,
   } = options;
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, debounceDelay);
 
   // Función de búsqueda optimizada
@@ -19,30 +19,41 @@ export const useOptimizedSearch = (data, searchFields, options = {}) => {
       return data;
     }
 
-    const searchValue = caseSensitive ? debouncedSearchTerm : debouncedSearchTerm.toLowerCase();
-    
-    return data.filter(item => {
-      return searchFields.some(field => {
+    const searchValue = caseSensitive
+      ? debouncedSearchTerm
+      : debouncedSearchTerm.toLowerCase();
+
+    return data.filter((item) => {
+      return searchFields.some((field) => {
         const fieldValue = getNestedValue(item, field);
         if (!fieldValue) return false;
-        
-        const stringValue = caseSensitive ? String(fieldValue) : String(fieldValue).toLowerCase();
-        
-        return exactMatch 
+
+        const stringValue = caseSensitive
+          ? String(fieldValue)
+          : String(fieldValue).toLowerCase();
+
+        return exactMatch
           ? stringValue === searchValue
           : stringValue.includes(searchValue);
       });
     });
-  }, [data, debouncedSearchTerm, searchFields, caseSensitive, exactMatch, minSearchLength]);
+  }, [
+    data,
+    debouncedSearchTerm,
+    searchFields,
+    caseSensitive,
+    exactMatch,
+    minSearchLength,
+  ]);
 
   // Función para obtener valores anidados (ej: "user.profile.name")
   const getNestedValue = useCallback((obj, path) => {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
+    return path.split(".").reduce((current, key) => current?.[key], obj);
   }, []);
 
   // Función para limpiar búsqueda
   const clearSearch = useCallback(() => {
-    setSearchTerm('');
+    setSearchTerm("");
   }, []);
 
   // Función para establecer búsqueda
@@ -71,36 +82,36 @@ export const useOptimizedFilters = (data, filterConfig = {}) => {
   const filteredData = useMemo(() => {
     if (Object.keys(filters).length === 0) return data;
 
-    return data.filter(item => {
+    return data.filter((item) => {
       return Object.entries(filters).every(([key, filterValue]) => {
-        if (!filterValue || filterValue === 'all') return true;
-        
+        if (!filterValue || filterValue === "all") return true;
+
         const config = filterConfig[key];
         const itemValue = getNestedValue(item, key);
-        
-        if (config?.type === 'array') {
+
+        if (config?.type === "array") {
           return Array.isArray(itemValue) && itemValue.includes(filterValue);
         }
-        
-        if (config?.type === 'range') {
+
+        if (config?.type === "range") {
           const numValue = Number(itemValue);
           return numValue >= filterValue.min && numValue <= filterValue.max;
         }
-        
+
         return itemValue === filterValue;
       });
     });
   }, [data, filters, filterConfig]);
 
   const setFilter = useCallback((key, value) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [key]: value
+      [key]: value,
     }));
   }, []);
 
   const clearFilter = useCallback((key) => {
-    setFilters(prev => {
+    setFilters((prev) => {
       const newFilters = { ...prev };
       delete newFilters[key];
       return newFilters;
@@ -112,7 +123,7 @@ export const useOptimizedFilters = (data, filterConfig = {}) => {
   }, []);
 
   const getNestedValue = useCallback((obj, path) => {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
+    return path.split(".").reduce((current, key) => current?.[key], obj);
   }, []);
 
   return {
@@ -134,42 +145,42 @@ export const useOptimizedSort = (data, defaultSort = null) => {
     if (!sortConfig) return data;
 
     const { key, direction } = sortConfig;
-    
+
     return [...data].sort((a, b) => {
       const aValue = getNestedValue(a, key);
       const bValue = getNestedValue(b, key);
-      
+
       // Manejo de valores null/undefined
       if (aValue == null && bValue == null) return 0;
-      if (aValue == null) return direction === 'asc' ? -1 : 1;
-      if (bValue == null) return direction === 'asc' ? 1 : -1;
-      
+      if (aValue == null) return direction === "asc" ? -1 : 1;
+      if (bValue == null) return direction === "asc" ? 1 : -1;
+
       // Comparación de números
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return direction === 'asc' ? aValue - bValue : bValue - aValue;
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return direction === "asc" ? aValue - bValue : bValue - aValue;
       }
-      
+
       // Comparación de strings
       const aString = String(aValue).toLowerCase();
       const bString = String(bValue).toLowerCase();
-      
-      if (aString < bString) return direction === 'asc' ? -1 : 1;
-      if (aString > bString) return direction === 'asc' ? 1 : -1;
+
+      if (aString < bString) return direction === "asc" ? -1 : 1;
+      if (aString > bString) return direction === "asc" ? 1 : -1;
       return 0;
     });
   }, [data, sortConfig]);
 
   const handleSort = useCallback((key) => {
-    setSortConfig(prevConfig => {
+    setSortConfig((prevConfig) => {
       if (prevConfig?.key === key) {
         // Cambiar dirección si es la misma columna
         return {
           key,
-          direction: prevConfig.direction === 'asc' ? 'desc' : 'asc'
+          direction: prevConfig.direction === "asc" ? "desc" : "asc",
         };
       }
       // Nueva columna, empezar con ascendente
-      return { key, direction: 'asc' };
+      return { key, direction: "asc" };
     });
   }, []);
 
@@ -178,7 +189,7 @@ export const useOptimizedSort = (data, defaultSort = null) => {
   }, []);
 
   const getNestedValue = useCallback((obj, path) => {
-    return path.split('.').reduce((current, key) => current?.[key], obj);
+    return path.split(".").reduce((current, key) => current?.[key], obj);
   }, []);
 
   return {
@@ -239,7 +250,7 @@ export const useOptimizedDataTable = (data, config = {}) => {
   return {
     // Datos finales
     data: finalData,
-    
+
     // Búsqueda
     searchTerm,
     debouncedSearchTerm,
@@ -247,20 +258,20 @@ export const useOptimizedDataTable = (data, config = {}) => {
     clearSearch,
     handleSearchChange,
     isSearching,
-    
+
     // Filtros
     filters,
     setFilter,
     clearFilter,
     clearAllFilters,
     hasActiveFilters,
-    
+
     // Ordenamiento
     sortConfig,
     handleSort,
     clearSort,
     isSorted,
-    
+
     // Utilidades
     resetAll,
     totalCount: data.length,

@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useCallback } from 'react';
-import { Typography, Box, Chip } from '@mui/material';
+import React, { useMemo, useState, useCallback } from "react";
+import { Typography, Box, Chip } from "@mui/material";
 import {
   BarChart,
   Bar,
@@ -9,18 +9,18 @@ import {
   Tooltip,
   ResponsiveContainer,
   LabelList,
-} from 'recharts';
+} from "recharts";
 import {
   formatMiles,
   formatPct,
   rechartsCommon,
   UnifiedTooltip,
   AvgAgeLabel,
-} from '../ui/chart-utils';
-import PaginationControls from './ui/PaginationControls.jsx';
-import DashboardCard from './ui/DashboardCard.jsx';
-import icons from '../ui/icons.js';
-import { useTheme } from '../context/ThemeContext.jsx';
+} from "./ui/chart-utils";
+import PaginationControls from "./ui/PaginationControls.jsx";
+import DashboardCard from "./ui/DashboardCard.jsx";
+import icons from "./ui/icons.js";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const { theme } = useTheme();
@@ -30,13 +30,13 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
     () =>
       data
         .map((d) => ({
-          funcion: (d.function ?? '').toString().trim() || 'Sin función',
+          funcion: (d.function ?? "").toString().trim() || "Sin función",
           cantidad: Number(d.count || 0),
           promedio: Number(d.avgAge || 0),
           avg: Number(d.avgAge || 0),
         }))
         .sort((a, b) => b.cantidad - a.cantidad),
-    [data]
+    [data],
   );
 
   const [page, setPage] = useState(0);
@@ -44,17 +44,22 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const totalPages = Math.ceil(chartData.length / PAGE) || 1;
   const pageData = useMemo(
     () => chartData.slice(page * PAGE, (page + 1) * PAGE),
-    [chartData, page]
+    [chartData, page],
   );
   const grandTotal = useMemo(
     () => chartData.reduce((sum, d) => sum + d.cantidad, 0),
-    [chartData]
+    [chartData],
   );
 
   // Ticks del eje X controlados para evitar marcas no deseadas (ej. 63)
   const maxAvgPage = useMemo(
-    () => (pageData?.length ? Math.max(...pageData.map((d) => Number(d.avg ?? d.promedio ?? 0) || 0)) : 0),
-    [pageData]
+    () =>
+      pageData?.length
+        ? Math.max(
+            ...pageData.map((d) => Number(d.avg ?? d.promedio ?? 0) || 0),
+          )
+        : 0,
+    [pageData],
   );
   const xTicks = useMemo(() => {
     const step = maxAvgPage > 80 ? 20 : 10; // pasos "redondos" para edades
@@ -71,20 +76,17 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const dynamicRight = useMemo(() => {
     if (!pageData?.length) return MIN_RIGHT;
     const maxAvg = Math.max(
-      ...pageData.map((d) => Math.round(Number(d.avg ?? d.promedio ?? 0)))
+      ...pageData.map((d) => Math.round(Number(d.avg ?? d.promedio ?? 0))),
     );
     const label = `Edad promedio: ${maxAvg} años`;
     const approxWidth = label.length * 7 + 20;
     return Math.max(MIN_RIGHT, Math.min(MAX_RIGHT, approxWidth));
   }, [pageData]);
 
-  const handlePrev = useCallback(
-    () => setPage((p) => Math.max(0, p - 1)),
-    []
-  );
+  const handlePrev = useCallback(() => setPage((p) => Math.max(0, p - 1)), []);
   const handleNext = useCallback(
     () => setPage((p) => Math.min(totalPages - 1, p + 1)),
-    [totalPages]
+    [totalPages],
   );
 
   return (
@@ -104,7 +106,10 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
       <Typography
         variant="body2"
         align="center"
-        sx={{ mb: 2, color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }}
+        sx={{
+          mb: 2,
+          color: isDarkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+        }}
       >
         {chartData.length} categorías • {formatMiles(grandTotal)} agentes
       </Typography>
@@ -116,7 +121,11 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
             margin={{ top: 16, right: dynamicRight, bottom: 16, left: 260 }}
             barCategoryGap={10}
           >
-            <CartesianGrid {...gridProps} horizontal={false} strokeDasharray="0 0" />
+            <CartesianGrid
+              {...gridProps}
+              horizontal={false}
+              strokeDasharray="0 0"
+            />
             <XAxis
               {...axisProps}
               type="number"
@@ -139,15 +148,23 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
                 <UnifiedTooltip
                   active={active}
                   payload={payload}
-                  label={`Función: ${payload?.[0]?.payload?.funcion || 'Sin función'}`}
+                  label={`Función: ${payload?.[0]?.payload?.funcion || "Sin función"}`}
                   dark={isDarkMode}
                 >
                   {payload?.length && (
                     <>
-                      <div>Edad promedio: {Math.round(payload[0].payload.avg)} años</div>
-                      <div>Cantidad de agentes: {formatMiles(payload[0].payload.cantidad)}</div>
                       <div>
-                        Porcentaje: {formatPct(payload[0].payload.cantidad / (grandTotal || 1))}
+                        Edad promedio: {Math.round(payload[0].payload.avg)} años
+                      </div>
+                      <div>
+                        Cantidad de agentes:{" "}
+                        {formatMiles(payload[0].payload.cantidad)}
+                      </div>
+                      <div>
+                        Porcentaje:{" "}
+                        {formatPct(
+                          payload[0].payload.cantidad / (grandTotal || 1),
+                        )}
                       </div>
                     </>
                   )}
@@ -155,7 +172,10 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
               )}
             />
             <Bar dataKey="avg" maxBarSize={22} fill={COLOR}>
-              <LabelList dataKey="avg" content={(p) => <AvgAgeLabel {...p} />} />
+              <LabelList
+                dataKey="avg"
+                content={(p) => <AvgAgeLabel {...p} />}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -173,5 +193,3 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
 };
 
 export default AverageAgeByFunctionChart;
-
-

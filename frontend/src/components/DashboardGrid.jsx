@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { Responsive, WidthProvider } from 'react-grid-layout';
+import React, { useState, useCallback } from "react";
+import { Responsive, WidthProvider } from "react-grid-layout";
 import {
   Box,
   Card,
@@ -12,24 +12,24 @@ import {
   Switch,
   FormControlLabel,
   Tooltip,
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import {
   MoreVert as MoreVertIcon,
   Settings as SettingsIcon,
   Close as CloseIcon,
   Fullscreen as FullscreenIcon,
   Download as DownloadIcon,
-} from '@mui/icons-material';
-import { useDashboard } from '../context/DashboardContext';
-import { useNotifications } from '../context/NotificationContext';
-import CustomBarChart from './BarChart';
-import CustomPieChart from './PieChart';
-import StatsWidget from './StatsWidget';
-import HistogramWidget from './HistogramWidget';
-import TreemapWidget from './TreemapWidget';
-import 'react-grid-layout/css/styles.css';
-import 'react-resizable/css/styles.css';
+} from "@mui/icons-material";
+import { useDashboard } from "../context/DashboardContext";
+import { useNotifications } from "../context/NotificationContext";
+import CustomBarChart from "./BarChart";
+import CustomPieChart from "./PieChart";
+import StatsWidget from "./StatsWidget";
+import HistogramWidget from "./HistogramWidget";
+import TreemapWidget from "./TreemapWidget";
+import "react-grid-layout/css/styles.css";
+import "react-resizable/css/styles.css";
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -45,7 +45,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
 
   const { showToast } = useNotifications();
   const theme = useTheme();
-  const isDarkMode = theme.palette.mode === 'dark';
+  const isDarkMode = theme.palette.mode === "dark";
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedWidget, setSelectedWidget] = useState(null);
 
@@ -61,16 +61,19 @@ const DashboardGrid = ({ data, secretariaId }) => {
     setSelectedWidget(null);
   };
 
-  const handleLayoutChange = useCallback((layout, layouts) => {
-    Object.keys(layouts).forEach(breakpoint => {
-      updateLayout(breakpoint, layouts[breakpoint]);
-    });
-  }, [updateLayout]);
+  const handleLayoutChange = useCallback(
+    (layout, layouts) => {
+      Object.keys(layouts).forEach((breakpoint) => {
+        updateLayout(breakpoint, layouts[breakpoint]);
+      });
+    },
+    [updateLayout],
+  );
 
   const handleRemoveWidget = () => {
     if (selectedWidget) {
       removeWidget(selectedWidget.id);
-      showToast(`Widget "${selectedWidget.title}" eliminado`, 'info');
+      showToast(`Widget "${selectedWidget.title}" eliminado`, "info");
     }
     handleMenuClose();
   };
@@ -78,14 +81,14 @@ const DashboardGrid = ({ data, secretariaId }) => {
   const handleConfigureWidget = () => {
     // Aquí se abriría un modal de configuración
     if (selectedWidget) {
-      showToast(`Configuración de "${selectedWidget.title}"`, 'info');
+      showToast(`Configuración de "${selectedWidget.title}"`, "info");
     }
     handleMenuClose();
   };
 
   const handleExportWidget = () => {
     if (selectedWidget) {
-      showToast(`Exportando "${selectedWidget.title}"...`, 'loading');
+      showToast(`Exportando "${selectedWidget.title}"...`, "loading");
       // Lógica de exportación
     }
     handleMenuClose();
@@ -94,9 +97,17 @@ const DashboardGrid = ({ data, secretariaId }) => {
   const renderWidget = (widget) => {
     const widgetData = data?.[widget.dataKey];
 
-    if (!widgetData && widget.dataKey !== 'resumen') {
+    if (!widgetData && widget.dataKey !== "resumen") {
       return (
-        <Card elevation={2} sx={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Card
+          elevation={2}
+          sx={{
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
           <Typography variant="body2" color="text.secondary">
             No hay datos disponibles
           </Typography>
@@ -106,7 +117,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
 
     let content;
     switch (widget.type) {
-      case 'bar':
+      case "bar":
         content = (
           <CustomBarChart
             data={widgetData}
@@ -117,7 +128,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
           />
         );
         break;
-      case 'pie':
+      case "pie":
         content = (
           <CustomPieChart
             data={widgetData}
@@ -127,10 +138,10 @@ const DashboardGrid = ({ data, secretariaId }) => {
           />
         );
         break;
-      case 'stats':
+      case "stats":
         content = <StatsWidget data={data?.resumen} isDarkMode={isDarkMode} />;
         break;
-      case 'histogram':
+      case "histogram":
         content = (
           <HistogramWidget
             data={widgetData}
@@ -140,7 +151,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
           />
         );
         break;
-      case 'treemap':
+      case "treemap":
         content = <TreemapWidget data={widgetData} />;
         break;
       default:
@@ -154,21 +165,24 @@ const DashboardGrid = ({ data, secretariaId }) => {
     return (
       <Card
         elevation={dashboardSettings.compactMode ? 1 : 2}
-        sx={{ 
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          '&:hover .widget-actions': { opacity: 1 },
+        sx={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          "&:hover .widget-actions": { opacity: 1 },
         }}
       >
         <CardHeader
           title={widget.title}
           titleTypographyProps={{
-            variant: dashboardSettings.compactMode ? 'subtitle1' : 'h6',
+            variant: dashboardSettings.compactMode ? "subtitle1" : "h6",
             noWrap: true,
           }}
           action={
-            <Box className="widget-actions" sx={{ opacity: 0, transition: 'opacity 0.2s' }}>
+            <Box
+              className="widget-actions"
+              sx={{ opacity: 0, transition: "opacity 0.2s" }}
+            >
               <Tooltip title="Opciones">
                 <IconButton
                   size="small"
@@ -184,7 +198,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
             pb: dashboardSettings.compactMode ? 1 : 2,
           }}
         />
-        <CardContent sx={{ flexGrow: 1, pt: 0, '&:last-child': { pb: 2 } }}>
+        <CardContent sx={{ flexGrow: 1, pt: 0, "&:last-child": { pb: 2 } }}>
           {content}
         </CardContent>
       </Card>
@@ -192,7 +206,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
   };
 
   return (
-    <Box sx={{ width: '100%', minHeight: '400px' }}>
+    <Box sx={{ width: "100%", minHeight: "400px" }}>
       <ResponsiveGridLayout
         className="layout"
         layouts={layouts}
@@ -220,12 +234,12 @@ const DashboardGrid = ({ data, secretariaId }) => {
         open={Boolean(menuAnchor)}
         onClose={handleMenuClose}
         anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
         transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+          vertical: "top",
+          horizontal: "right",
         }}
       >
         <MenuItem onClick={handleConfigureWidget}>
@@ -236,7 +250,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
           <DownloadIcon sx={{ mr: 1 }} fontSize="small" />
           Exportar
         </MenuItem>
-        <MenuItem onClick={handleRemoveWidget} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={handleRemoveWidget} sx={{ color: "error.main" }}>
           <CloseIcon sx={{ mr: 1 }} fontSize="small" />
           Eliminar
         </MenuItem>

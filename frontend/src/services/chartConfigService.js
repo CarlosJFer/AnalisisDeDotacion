@@ -1,6 +1,6 @@
-import apiClient from './api';
+import apiClient from "./api";
 
-const API_URL = '/chart-configs';
+const API_URL = "/chart-configs";
 
 const getChartConfigOptions = () => apiClient.get(`${API_URL}/options`);
 const getAllChartConfigs = () => apiClient.get(API_URL);
