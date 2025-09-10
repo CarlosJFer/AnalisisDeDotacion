@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import {
   Card,
   CardContent,
@@ -28,18 +34,36 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
     [filters],
   );
   const [localFilters, setLocalFilters] = useState(initial);
+  const debounceRef = useRef(null);
+  const pendingRef = useRef(null);
 
   useEffect(() => {
     setLocalFilters(initial);
   }, [initial]);
 
-  const handleChange = (name, value) => {
-    setLocalFilters((prev) => ({ ...prev, [name]: value }));
-  };
+  const handleChange = useCallback(
+    (name, value) => {
+      pendingRef.current = { name, value };
+      clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        setLocalFilters((prev) => ({ ...prev, [name]: value }));
+        pendingRef.current = null;
+      }, 200);
+    },
+    [localFilters],
+  );
 
-  const handleSubmit = () => {
-    onFilter && onFilter(localFilters);
-  };
+  const handleSubmit = useCallback(() => {
+    clearTimeout(debounceRef.current);
+    let latest = localFilters;
+    if (pendingRef.current) {
+      const { name, value } = pendingRef.current;
+      latest = { ...localFilters, [name]: value };
+      pendingRef.current = null;
+      setLocalFilters(latest);
+    }
+    onFilter && onFilter(latest);
+  }, [localFilters, onFilter]);
 
   return (
     <Card
