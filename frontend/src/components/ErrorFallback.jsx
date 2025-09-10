@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Card,
@@ -20,6 +21,7 @@ import {
 } from "@mui/icons-material";
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
+  const navigate = useNavigate();
   const handleReportError = () => {
     // Aquí se podría enviar el error a un servicio de logging
     console.error("Error reportado:", error);
@@ -40,7 +42,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
   };
 
   const handleGoHome = () => {
-    window.location.href = "/";
+    navigate("/", { replace: true });
   };
 
   return (
