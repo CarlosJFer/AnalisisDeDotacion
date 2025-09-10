@@ -1,23 +1,31 @@
 import React, { useMemo } from 'react';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Chip } from '@mui/material';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList } from 'recharts';
-import DashboardCard from './DashboardCard.jsx';
+import DashboardCard from './ui/DashboardCard.jsx';
 import { formatMiles, ValueLabel, axisProps, gridProps, defaultTooltip } from '../ui/chart-utils';
 import { useTheme } from '../context/ThemeContext.jsx';
 
 const AgeDistributionBarChart = ({ data, isDarkMode }) => {
   const { theme } = useTheme();
   const COLOR = theme.palette.primary.main;
-  const chartData = useMemo(() => (data || []).map(d => ({ range: d.range, cantidad: Number(d.count || 0) })), [data]);
-  const total = useMemo(() => chartData.reduce((s,d)=> s + (d.cantidad||0), 0), [chartData]);
+  const chartData = useMemo(
+    () => (data || []).map(d => ({ range: d.range, cantidad: Number(d.count || 0) })),
+    [data]
+  );
+  const total = useMemo(() => chartData.reduce((s, d) => s + (d.cantidad || 0), 0), [chartData]);
 
   return (
     <DashboardCard
       title="Distribución por Rangos de Edad - Planta y Contratos"
       icon="timeline"
-      chipLabel="Rangos de edad"
+      isDarkMode={isDarkMode}
+      headerRight={<Chip label="Rangos de edad" size="small" variant="outlined" />}
     >
-      <Typography variant="body2" align="center" sx={{ mb: 2, color: isDarkMode ? 'rgba(255,255,255,0.7)': 'rgba(0,0,0,0.6)' }}>
+      <Typography
+        variant="body2"
+        align="center"
+        sx={{ mb: 2, color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }}
+      >
         {chartData.length} rangos • {formatMiles(total)} agentes
       </Typography>
       <Box sx={{ height: 360 }}>

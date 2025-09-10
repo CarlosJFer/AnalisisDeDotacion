@@ -19,11 +19,13 @@ const shadows = {
   sm: '0 1px 2px rgba(0,0,0,0.05)',
   md: '0 4px 6px rgba(0,0,0,0.1)',
   lg: '0 10px 15px rgba(0,0,0,0.15)',
+  dashboard: '0 4px 8px rgba(0,0,0,0.1)',
 };
 
 const typography = {
   fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
   fontSize: {
+    xs: '0.75rem',
     sm: '0.875rem',
     md: '1rem',
     lg: '1.125rem',

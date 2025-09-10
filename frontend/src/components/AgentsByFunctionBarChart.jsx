@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Typography, Box, Chip } from '@mui/material';
-import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList } from 'recharts';
-import DashboardCard from '../ui/DashboardCard';
+import DashboardCard from './ui/DashboardCard.jsx';
 import PaginationControls from '../ui/PaginationControls';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { formatMiles, formatPct, UnifiedTooltip, axisStyle, gridStyle } from '../ui/chart-utils';
@@ -31,14 +30,12 @@ const AgentsByFunctionBarChart = ({ data }) => {
   };
 
   return (
-    <DashboardCard icon="query_stats">
-      <Box sx={{ display:'flex', alignItems:'center', justifyContent:'center', gap:1.25 }}>
-        <WorkOutlineIcon sx={{ color: primary }} />
-        <Typography variant="h6" sx={{ fontWeight:600, color:isDarkMode?'rgba(255,255,255,0.9)':'rgba(0,0,0,0.8)' }}>
-          Distribución de Agentes por Función - Planta y Contratos
-        </Typography>
-        <Chip label="Función" size="small" variant="outlined" sx={{ borderColor: primary, color: primary }} />
-      </Box>
+    <DashboardCard
+      icon="work_outline"
+      title="Distribución de Agentes por Función - Planta y Contratos"
+      isDarkMode={isDarkMode}
+      headerRight={<Chip label="Función" size="small" variant="outlined" sx={{ borderColor: primary, color: primary }} />}
+    >
       <Typography variant="body2" align="center" sx={{ mb:2, color:isDarkMode?'rgba(255,255,255,0.7)':'rgba(0,0,0,0.6)' }}>
         {chartData.length} funciones • {formatMiles(total)} agentes
       </Typography>
