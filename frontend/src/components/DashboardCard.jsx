@@ -1,9 +1,14 @@
 import React from 'react';
 import { Card, CardContent, Box, Typography, Icon } from '@mui/material';
-import theme from '../theme.js';
+import { useTheme } from '../context/ThemeContext.jsx';
 
 const DashboardCard = ({ title, icon, action, isDarkMode, children }) => {
-  const colors = isDarkMode ? theme.dark : theme.light;
+  const { theme } = useTheme();
+  const colors = {
+    button: {
+      border: theme.palette.primary.main,
+    },
+  };
   return (
     <Card
       sx={{

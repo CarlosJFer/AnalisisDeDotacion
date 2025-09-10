@@ -1,9 +1,16 @@
 import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import theme from '../theme.js';
+import { useTheme } from '../context/ThemeContext.jsx';
 
 const PaginationControls = ({ page, totalPages, onChange, isDarkMode }) => {
-  const colors = isDarkMode ? theme.dark : theme.light;
+  const { theme } = useTheme();
+  const colors = {
+    button: {
+      border: theme.palette.primary.main,
+      color: theme.palette.primary.main,
+      hoverBg: theme.palette.action.hover,
+    },
+  };
   const handlePrev = () => onChange(p => Math.max(0, p - 1));
   const handleNext = () => onChange(p => Math.min(totalPages - 1, p + 1));
 
