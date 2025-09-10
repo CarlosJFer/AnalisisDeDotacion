@@ -140,10 +140,10 @@ const AppLayout = () => {
 
 function App() {
   return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <HelmetProvider>
-        <QueryClientProvider client={queryClient}>
-          <Router>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <ErrorBoundary FallbackComponent={ErrorFallback}>
             <CustomThemeProvider>
               <AuthProvider>
                 <NotificationProvider>
@@ -153,10 +153,10 @@ function App() {
                 </NotificationProvider>
               </AuthProvider>
             </CustomThemeProvider>
-          </Router>
-        </QueryClientProvider>
-      </HelmetProvider>
-    </ErrorBoundary>
+          </ErrorBoundary>
+        </Router>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 
