@@ -132,3 +132,13 @@ export const UnifiedTooltip: React.FC<{
     </div>
   );
 };
+
+export const gridStyle = (dark: boolean) => ({
+  stroke: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+  strokeDasharray: '0 0',
+});
+
+export const axisStyle = (dark: boolean) => ({
+  tick: { fill: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' },
+  axisLine: { stroke: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' },
+});
