@@ -111,10 +111,13 @@ const DashboardPage = () => {
     () => setOpenDeleteDialog(false),
     [],
   );
-  const handleDeleted = useCallback((msg) => {
-    setDeleteMsg(msg);
-    window.location.reload();
-  }, []);
+  const handleDeleted = useCallback(
+    (msg) => {
+      setDeleteMsg(msg);
+      fetchAllData(filters, false);
+    },
+    [fetchAllData, filters],
+  );
 
   // Función para filtrar datos que no sean "-" o vacÃ­os
   const filterValidData = (data, nameKey) => {
