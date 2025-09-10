@@ -1,6 +1,7 @@
 const palette = {
   primary: "#3b82f6",
   primaryLight: "#60a5fa",
+  primaryHover: "rgba(59,130,246,0.15)",
   backgroundLight: "#ffffff",
   backgroundDark: "#1e293b",
   textLight: "#0f172a",
@@ -12,14 +13,14 @@ const palette = {
 const radii = {
   sm: 4,
   md: 8,
-  lg: 12,
+  lg: 16,
 };
 
 const shadows = {
   sm: "0 1px 2px rgba(0,0,0,0.05)",
   md: "0 4px 6px rgba(0,0,0,0.1)",
   lg: "0 10px 15px rgba(0,0,0,0.15)",
-  dashboard: "0 4px 8px rgba(0,0,0,0.1)",
+  dashboard: "0 6px 18px rgba(2,6,23,0.12)",
 };
 
 const typography = {
