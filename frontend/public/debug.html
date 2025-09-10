@@ -76,7 +76,6 @@
         <button class="button" onclick="checkHealth()">Verificar Estado</button>
         <button class="button" onclick="clearUserData()">Limpiar Datos de Usuario</button>
         <button class="button danger" onclick="clearAll()">Limpiar Todo</button>
-        <button class="button" onclick="goToApp()">Ir a la Aplicación</button>
         
         <h2>Información del Sistema</h2>
         <div id="systemInfo"></div>
@@ -156,9 +155,7 @@
             }
         }
 
-        function goToApp() {
-            window.location.href = '/';
-        }
+        // Función de navegación eliminada para evitar recargas inesperadas.
 
         function showSystemInfo() {
             const systemInfo = document.getElementById('systemInfo');
