@@ -19,11 +19,19 @@ const DebugComponent = () => {
     }
   }, []);
 
+  const refreshDebugInfo = () => {
+    try {
+      const updatedInfo = checkLocalStorageHealth();
+      setDebugInfo(updatedInfo);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleClearAll = () => {
     try {
       clearLocalStorage();
-      const updatedInfo = checkLocalStorageHealth();
-      setDebugInfo(updatedInfo);
+      refreshDebugInfo();
     } catch (err) {
       setError(err.message);
     }
@@ -32,8 +40,7 @@ const DebugComponent = () => {
   const handleClearUserData = () => {
     try {
       clearUserData();
-      const updatedInfo = checkLocalStorageHealth();
-      setDebugInfo(updatedInfo);
+      refreshDebugInfo();
     } catch (err) {
       setError(err.message);
     }
