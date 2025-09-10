@@ -30,19 +30,6 @@ import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import FolderOpenIcon from "@mui/icons-material/FolderOpen";
 import PhoneIcon from "@mui/icons-material/Phone";
 import StatCard from "../components/StatCard";
-import CustomBarChart from "../components/CustomBarChart";
-import CustomDonutChart from "../components/CustomDonutChart";
-import CustomAreaChart from "../components/CustomAreaChart";
-import CustomHorizontalBarChart from "../components/CustomHorizontalBarChart";
-import AgeRangeByAreaChart from "../components/AgeRangeByAreaChart";
-import AgentsBySecretariaBarChart from "../components/AgentsBySecretariaBarChart.jsx";
-import AgentsByDependencyBarChart from "../components/AgentsByDependencyBarChart.jsx";
-import AgentsBySubsecretariaBarChart from "../components/AgentsBySubsecretariaBarChart.jsx";
-import AgentsByDireccionGeneralBarChart from "../components/AgentsByDireccionGeneralBarChart.jsx";
-import AgentsByDireccionBarChart from "../components/AgentsByDireccionBarChart.jsx";
-import AgentsByDepartamentoBarChart from "../components/AgentsByDepartamentoBarChart.jsx";
-import AgentsByDivisionBarChart from "../components/AgentsByDivisionBarChart.jsx";
-import AverageAgeByFunctionChart from "../components/AverageAgeByFunctionChart";
 import DependencyFilter from "../components/DependencyFilter.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
 import SacSection from "../components/SACSection";
@@ -50,6 +37,40 @@ import { useLocation } from "react-router-dom";
 import { getPreviousMonthRange } from "../utils/dateUtils.js";
 const DeleteDashboardDialog = lazy(
   () => import("../components/DeleteDashboardDialog"),
+);
+
+const CustomBarChart = lazy(() => import("../components/CustomBarChart"));
+const CustomDonutChart = lazy(() => import("../components/CustomDonutChart"));
+const CustomAreaChart = lazy(() => import("../components/CustomAreaChart"));
+const CustomHorizontalBarChart = lazy(
+  () => import("../components/CustomHorizontalBarChart"),
+);
+const AgeRangeByAreaChart = lazy(
+  () => import("../components/AgeRangeByAreaChart"),
+);
+const AgentsBySecretariaBarChart = lazy(
+  () => import("../components/AgentsBySecretariaBarChart.jsx"),
+);
+const AgentsByDependencyBarChart = lazy(
+  () => import("../components/AgentsByDependencyBarChart.jsx"),
+);
+const AgentsBySubsecretariaBarChart = lazy(
+  () => import("../components/AgentsBySubsecretariaBarChart.jsx"),
+);
+const AgentsByDireccionGeneralBarChart = lazy(
+  () => import("../components/AgentsByDireccionGeneralBarChart.jsx"),
+);
+const AgentsByDireccionBarChart = lazy(
+  () => import("../components/AgentsByDireccionBarChart.jsx"),
+);
+const AgentsByDepartamentoBarChart = lazy(
+  () => import("../components/AgentsByDepartamentoBarChart.jsx"),
+);
+const AgentsByDivisionBarChart = lazy(
+  () => import("../components/AgentsByDivisionBarChart.jsx"),
+);
+const AverageAgeByFunctionChart = lazy(
+  () => import("../components/AverageAgeByFunctionChart"),
 );
 
 const setsAreEqual = (a, b) => {
@@ -759,29 +780,33 @@ const DashboardPage = () => {
 
           {/* gráficos principales */}
           <Grid item xs={12}>
-            <CustomHorizontalBarChart
-              data={agentsByFunction.filter(
-                (f) =>
-                  f.function &&
-                  f.function.trim() !== "" &&
-                  f.function.trim() !== "-",
-              )}
-              title="Distribución de Agentes por Función - Planta y Contratos"
-              isDarkMode={isDarkMode}
-              nameKey="function"
-              valueKey="count"
-              pageSize={10}
-              height={520}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomHorizontalBarChart
+                data={agentsByFunction.filter(
+                  (f) =>
+                    f.function &&
+                    f.function.trim() !== "" &&
+                    f.function.trim() !== "-",
+                )}
+                title="Distribución de Agentes por Función - Planta y Contratos"
+                isDarkMode={isDarkMode}
+                nameKey="function"
+                valueKey="count"
+                pageSize={10}
+                height={520}
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12}>
-            <CustomHorizontalBarChart
-              data={agentsByEmploymentType}
-              title="Agentes por Situación de Revista - Planta y Contratos"
-              isDarkMode={isDarkMode}
-              nameKey="type"
-              valueKey="count"
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomHorizontalBarChart
+                data={agentsByEmploymentType}
+                title="Agentes por Situación de Revista - Planta y Contratos"
+                isDarkMode={isDarkMode}
+                nameKey="type"
+                valueKey="count"
+              />
+            </Suspense>
           </Grid>
         </Grid>
       )}
@@ -795,79 +820,91 @@ const DashboardPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomBarChart
-              data={seniorityData}
-              xKey="range"
-              barKey="count"
-              title="Cantidad de agentes según Antigüedad municipal"
-              isDarkMode={isDarkMode}
-              height={400}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomBarChart
+                data={seniorityData}
+                xKey="range"
+                barKey="count"
+                title="Cantidad de agentes según Antigüedad municipal"
+                isDarkMode={isDarkMode}
+                height={400}
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomDonutChart
-              data={[
+            <Suspense fallback={<CircularProgress />}>
+              <CustomDonutChart
+                data={[
                 {
                   category: "Con título secundario",
                   count: secondaryData?.conTitulo || 0,
                 },
                 { category: "Otros", count: secondaryData?.otros || 0 },
               ]}
-              title="Agentes según estudios secundarios"
-              isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="category"
-            />
+                title="Agentes según estudios secundarios"
+                isDarkMode={isDarkMode}
+                dataKey="count"
+                nameKey="category"
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomDonutChart
-              data={[
+            <Suspense fallback={<CircularProgress />}>
+              <CustomDonutChart
+                data={[
                 {
                   category: "Con título terciario",
                   count: tertiaryData?.conTitulo || 0,
                 },
                 { category: "Otros", count: tertiaryData?.otros || 0 },
               ]}
-              title="Agentes según estudios terciarios"
-              isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="category"
-            />
+                title="Agentes según estudios terciarios"
+                isDarkMode={isDarkMode}
+                dataKey="count"
+                nameKey="category"
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomDonutChart
-              data={[
+            <Suspense fallback={<CircularProgress />}>
+              <CustomDonutChart
+                data={[
                 {
                   category: "Con título universitario",
                   count: universityData?.conTitulo || 0,
                 },
                 { category: "Otros", count: universityData?.otros || 0 },
               ]}
-              title="Agentes según estudios universitarios"
-              isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="category"
-            />
+                title="Agentes según estudios universitarios"
+                isDarkMode={isDarkMode}
+                dataKey="count"
+                nameKey="category"
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomBarChart
-              data={topUniSecretariasData}
-              xKey="secretaria"
-              barKey="count"
-              title="Top 10 Secretarías con mÃ¡s agentes con título universitario"
-              isDarkMode={isDarkMode}
-              height={400}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomBarChart
+                data={topUniSecretariasData}
+                xKey="secretaria"
+                barKey="count"
+                title="Top 10 Secretarías con mÃ¡s agentes con título universitario"
+                isDarkMode={isDarkMode}
+                height={400}
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomBarChart
-              data={topTerSecretariasData}
-              xKey="secretaria"
-              barKey="count"
-              title="Top 10 Secretarías con mÃ¡s agentes con título terciario"
-              isDarkMode={isDarkMode}
-              height={400}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomBarChart
+                data={topTerSecretariasData}
+                xKey="secretaria"
+                barKey="count"
+                title="Top 10 Secretarías con mÃ¡s agentes con título terciario"
+                isDarkMode={isDarkMode}
+                height={400}
+              />
+            </Suspense>
           </Grid>
         </Grid>
       )}
@@ -881,42 +918,50 @@ const DashboardPage = () => {
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomBarChart
-              data={registrationTypeData}
-              xKey="tipo"
-              barKey="count"
-              title="Cantidad de agentes según tipo de registración"
-              isDarkMode={isDarkMode}
-              height={400}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomBarChart
+                data={registrationTypeData}
+                xKey="tipo"
+                barKey="count"
+                title="Cantidad de agentes según tipo de registración"
+                isDarkMode={isDarkMode}
+                height={400}
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12} md={3}>
-            <CustomDonutChart
-              data={entryTimeData}
-              title="Agentes según horario de entrada"
-              isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="time"
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomDonutChart
+                data={entryTimeData}
+                title="Agentes según horario de entrada"
+                isDarkMode={isDarkMode}
+                dataKey="count"
+                nameKey="time"
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12} md={3}>
-            <CustomDonutChart
-              data={exitTimeData}
-              title="Agentes según horario de salida"
-              isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="time"
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomDonutChart
+                data={exitTimeData}
+                title="Agentes según horario de salida"
+                isDarkMode={isDarkMode}
+                dataKey="count"
+                nameKey="time"
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12}>
-            <CustomBarChart
-              data={topUnitsData}
-              xKey="unidad"
-              barKey="count"
-              title="Top 10 unidades de registración con mÃ¡s agentes"
-              isDarkMode={isDarkMode}
-              height={400}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <CustomBarChart
+                data={topUnitsData}
+                xKey="unidad"
+                barKey="count"
+                title="Top 10 unidades de registración con mÃ¡s agentes"
+                isDarkMode={isDarkMode}
+                height={400}
+              />
+            </Suspense>
           </Grid>
         </Grid>
       )}
@@ -936,28 +981,32 @@ const DashboardPage = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             {expTopInitiators.length > 0 ? (
-              <CustomBarChart
-                data={expTopInitiators}
-                xKey="initiator"
-                barKey="count"
-                title="Top 10 áreas con mÃ¡s trámites gestionados"
-                isDarkMode={isDarkMode}
-                height={400}
-              />
+              <Suspense fallback={<CircularProgress />}>
+                <CustomBarChart
+                  data={expTopInitiators}
+                  xKey="initiator"
+                  barKey="count"
+                  title="Top 10 áreas con mÃ¡s trámites gestionados"
+                  isDarkMode={isDarkMode}
+                  height={400}
+                />
+              </Suspense>
             ) : (
               <Typography align="center">Sin datos</Typography>
             )}
           </Grid>
           <Grid item xs={12} md={6}>
             {expByTramite.length > 0 ? (
-              <CustomBarChart
-                data={expByTramite}
-                xKey="tramite"
-                barKey="count"
-                title="Cantidad de expedientes según tipo de trÃ¡mite"
-                isDarkMode={isDarkMode}
-                height={400}
-              />
+              <Suspense fallback={<CircularProgress />}>
+                <CustomBarChart
+                  data={expByTramite}
+                  xKey="tramite"
+                  barKey="count"
+                  title="Cantidad de expedientes según tipo de trÃ¡mite"
+                  isDarkMode={isDarkMode}
+                  height={400}
+                />
+              </Suspense>
             ) : (
               <Typography align="center">Sin datos</Typography>
             )}
@@ -993,13 +1042,15 @@ const DashboardPage = () => {
           {/* GrÃ¡fico de rangos de edad principal */}
           <Grid item xs={12}>
             {ageDistribution ? (
-              <CustomBarChart
-                data={ageDistribution.rangeData}
-                xKey="range"
-                barKey="count"
-                title="Distribución por Rangos de Edad - Planta y Contratos"
-                isDarkMode={isDarkMode}
-              />
+              <Suspense fallback={<CircularProgress />}>
+                <CustomBarChart
+                  data={ageDistribution.rangeData}
+                  xKey="range"
+                  barKey="count"
+                  title="Distribución por Rangos de Edad - Planta y Contratos"
+                  isDarkMode={isDarkMode}
+                />
+              </Suspense>
             ) : (
               <Box
                 display="flex"
@@ -1018,7 +1069,12 @@ const DashboardPage = () => {
           {/* Distribución por Rangos de Edad según el área */}
           <Grid item xs={12}>
             {ageByArea.length ? (
-              <AgeRangeByAreaChart rows={ageByArea} isDarkMode={isDarkMode} />
+              <Suspense fallback={<CircularProgress />}>
+                <AgeRangeByAreaChart
+                  rows={ageByArea}
+                  isDarkMode={isDarkMode}
+                />
+              </Suspense>
             ) : (
               <Box
                 display="flex"
@@ -1032,10 +1088,12 @@ const DashboardPage = () => {
           </Grid>
           <Grid item xs={12}>
             {ageByFunction.length > 0 ? (
-              <AverageAgeByFunctionChart
-                data={ageByFunction}
-                isDarkMode={isDarkMode}
-              />
+              <Suspense fallback={<CircularProgress />}>
+                <AverageAgeByFunctionChart
+                  data={ageByFunction}
+                  isDarkMode={isDarkMode}
+                />
+              </Suspense>
             ) : (
               <Box
                 display="flex"
@@ -1060,23 +1118,29 @@ const DashboardPage = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <AgentsBySecretariaBarChart
-              data={agentsBySecretaria}
-              isDarkMode={isDarkMode}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <AgentsBySecretariaBarChart
+                data={agentsBySecretaria}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12}>
-            <AgentsByDependencyBarChart
-              data={agentsByDependency}
-              isDarkMode={isDarkMode}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <AgentsByDependencyBarChart
+                data={agentsByDependency}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
           </Grid>
 
           <Grid item xs={12}>
-            <AgentsBySubsecretariaBarChart
-              data={filterValidData(agentsBySubsecretaría, "subsecretaria")}
-              isDarkMode={isDarkMode}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <AgentsBySubsecretariaBarChart
+                data={filterValidData(agentsBySubsecretaría, "subsecretaria")}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
           </Grid>
 
           <Grid item xs={12} sx={{ display: "none" }}>
@@ -1086,32 +1150,40 @@ const DashboardPage = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <AgentsByDireccionGeneralBarChart
-              data={filterValidData(
-                agentsBydireccionGeneral,
-                "direccionGeneral",
-              )}
-              isDarkMode={isDarkMode}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <AgentsByDireccionGeneralBarChart
+                data={filterValidData(
+                  agentsBydireccionGeneral,
+                  "direccionGeneral",
+                )}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12}>
-            <AgentsByDireccionBarChart
-              data={filterValidData(agentsBydireccion, "direccion")}
-              isDarkMode={isDarkMode}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <AgentsByDireccionBarChart
+                data={filterValidData(agentsBydireccion, "direccion")}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
           </Grid>
 
           <Grid item xs={12}>
-            <AgentsByDepartamentoBarChart
-              data={filterValidData(agentsByDepartamento, "departamento")}
-              isDarkMode={isDarkMode}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <AgentsByDepartamentoBarChart
+                data={filterValidData(agentsByDepartamento, "departamento")}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
           </Grid>
           <Grid item xs={12}>
-            <AgentsByDivisionBarChart
-              data={filterValidData(agentsBydivision, "division")}
-              isDarkMode={isDarkMode}
-            />
+            <Suspense fallback={<CircularProgress />}>
+              <AgentsByDivisionBarChart
+                data={filterValidData(agentsBydivision, "division")}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
           </Grid>
         </Grid>
       )}
