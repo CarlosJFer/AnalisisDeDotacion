@@ -82,3 +82,38 @@ export const UnifiedTooltip: React.FC<{active?:boolean; payload?:any[]; label?:s
     </div>
   );
 };
+
+/** Props básicos para ejes X/Y según tema */
+export const axisProps = (dark: boolean) => ({
+  tick: { fill: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' },
+  axisLine: { stroke: dark ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)' },
+});
+
+/** Props base para rejilla cartesiana */
+export const gridProps = (dark: boolean) => ({
+  horizontal: false,
+  strokeDasharray: '0 0',
+  stroke: dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+});
+
+/** Tooltip estándar con cantidad y porcentaje */
+export const defaultTooltip = (
+  dark: boolean,
+  total: number,
+  labelFormatter: (label: any) => string
+) =>
+  ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: any }) => (
+    <UnifiedTooltip
+      active={active}
+      payload={payload}
+      dark={dark}
+      label={labelFormatter(label)}
+    >
+      {payload?.length && (
+        <>
+          <div>Cantidad de agentes: {formatMiles(payload[0].value)}</div>
+          <div>Porcentaje: {formatPct(total ? payload[0].value / total : 0)}</div>
+        </>
+      )}
+    </UnifiedTooltip>
+  );
