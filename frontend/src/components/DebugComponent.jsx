@@ -22,7 +22,8 @@ const DebugComponent = () => {
   const handleClearAll = () => {
     try {
       clearLocalStorage();
-      window.location.reload();
+      const updatedInfo = checkLocalStorageHealth();
+      setDebugInfo(updatedInfo);
     } catch (err) {
       setError(err.message);
     }
@@ -31,7 +32,8 @@ const DebugComponent = () => {
   const handleClearUserData = () => {
     try {
       clearUserData();
-      window.location.reload();
+      const updatedInfo = checkLocalStorageHealth();
+      setDebugInfo(updatedInfo);
     } catch (err) {
       setError(err.message);
     }
