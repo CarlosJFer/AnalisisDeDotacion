@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Tooltip as MuiTooltip, Button, Chip } from '@mui/material';
+import { Card, CardContent, Typography, Box, Tooltip as MuiTooltip, Chip } from '@mui/material';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import {
   BarChart,
@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
+import PaginationControls from './ui/PaginationControls.jsx';
 
 const nf = new Intl.NumberFormat('es-AR');
 const formatMiles = (n) => nf.format(n);
@@ -230,43 +231,12 @@ const CustomHorizontalBarChart = ({
           </ResponsiveContainer>
         </Box>
         {showPagination && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                borderColor: COLOR,
-                color: COLOR,
-                '&:hover': {
-                  borderColor: COLOR,
-                  backgroundColor: 'rgba(0,196,159,0.08)',
-                },
-              }}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-            >
-              « Anterior
-            </Button>
-            <Typography variant="body2" sx={{ alignSelf: 'center' }}>
-              Página {page + 1} de {totalPages}
-            </Typography>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                borderColor: COLOR,
-                color: COLOR,
-                '&:hover': {
-                  borderColor: COLOR,
-                  backgroundColor: 'rgba(0,196,159,0.08)',
-                },
-              }}
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page === totalPages - 1}
-            >
-              Siguiente »
-            </Button>
-          </Box>
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => Math.max(0, p - 1))}
+            onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          />
         )}
       </CardContent>
     </Card>

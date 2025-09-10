@@ -1,15 +1,8 @@
 import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { useTheme } from '../context/ThemeContext.jsx';
+import { useTheme } from '../../context/ThemeContext.jsx';
 
-interface Props {
-  page: number;
-  totalPages: number;
-  onPrev: () => void;
-  onNext: () => void;
-}
-
-const PaginationControls: React.FC<Props> = ({ page, totalPages, onPrev, onNext }) => {
+const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
   const { theme } = useTheme();
   const primary = theme.palette.primary.main;
   const secondary = theme.palette.secondary.light;
@@ -25,7 +18,14 @@ const PaginationControls: React.FC<Props> = ({ page, totalPages, onPrev, onNext 
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-      <Button variant="outlined" size="small" sx={btnSx} onClick={onPrev} disabled={page === 0}>
+      <Button
+        variant="outlined"
+        size="small"
+        sx={btnSx}
+        onClick={onPrev}
+        disabled={page === 0}
+        aria-label="Página anterior"
+      >
         « Anterior
       </Button>
       <Typography variant="body2" sx={{ alignSelf: 'center' }}>
@@ -37,6 +37,7 @@ const PaginationControls: React.FC<Props> = ({ page, totalPages, onPrev, onNext 
         sx={btnSx}
         onClick={onNext}
         disabled={page === totalPages - 1}
+        aria-label="Página siguiente"
       >
         Siguiente »
       </Button>

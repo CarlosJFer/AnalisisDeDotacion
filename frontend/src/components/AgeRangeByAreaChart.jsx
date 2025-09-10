@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Button,
   Chip,
 } from '@mui/material';
 import {
@@ -26,6 +25,7 @@ import CheckRounded from '@mui/icons-material/CheckRounded';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
+import PaginationControls from './ui/PaginationControls.jsx';
 
 const AGE_BUCKETS = [
   '18-25',
@@ -315,43 +315,12 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
         </ResponsiveContainer>
       </Box>
       {ordenados.length > PAGE && (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                borderColor: COLOR,
-                color: COLOR,
-                '&:hover': {
-                  borderColor: COLOR,
-                  backgroundColor: `rgba(0,196,159,0.08)`,
-                },
-              }}
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
-            >
-              « Anterior
-            </Button>
-            <Typography variant="body2" sx={{ alignSelf: 'center' }}>
-              Página {page + 1} de {totalPages}
-            </Typography>
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                borderColor: COLOR,
-                color: COLOR,
-                '&:hover': {
-                  borderColor: COLOR,
-                  backgroundColor: `rgba(0,196,159,0.08)`,
-                },
-              }}
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page === totalPages - 1}
-            >
-              Siguiente »
-            </Button>
-          </Box>
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => Math.max(0, p - 1))}
+            onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          />
         )}
       </CardContent>
     </Card>
