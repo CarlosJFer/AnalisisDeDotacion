@@ -20,7 +20,7 @@ import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRound
 import CheckRounded from '@mui/icons-material/CheckRounded';
 import DashboardCard from './DashboardCard.jsx';
 import PaginationControls from './PaginationControls.jsx';
-import theme from '../theme.js';
+import { useTheme } from '../context/ThemeContext.jsx';
 import { formatMiles, formatPct, axisStyle, gridStyle } from '../ui/chart-utils';
 
 const AGE_BUCKETS = [
@@ -37,7 +37,21 @@ const MAX_RIGHT = 240;
 
 const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
   const [range, setRange] = useState('36-45');
-  const colors = isDarkMode ? theme.dark : theme.light;
+  const { theme } = useTheme();
+  const colors = {
+    select: {
+      text: theme.palette.text.primary,
+      focusBorder: theme.palette.primary.main,
+      border: theme.palette.divider,
+      borderHover: theme.palette.primary.main,
+      bg: theme.palette.background.paper,
+      icon: theme.palette.text.primary,
+      focusShadow: `0 0 0 2px ${theme.palette.primary.main}33`,
+      selectedBg: theme.palette.action.selected,
+      selectedColor: theme.palette.text.primary,
+      selectedHoverBg: theme.palette.action.hover,
+    },
+  };
 
   const agregados = useMemo(() => {
     const acc = new Map();
