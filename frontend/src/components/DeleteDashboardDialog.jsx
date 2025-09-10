@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -12,17 +12,17 @@ import {
   CircularProgress,
   Divider,
   DialogContentText,
-  Typography
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useTheme } from '../context/ThemeContext.jsx';
-import apiClient from '../services/api';
+  Typography,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useTheme } from "../context/ThemeContext.jsx";
+import apiClient from "../services/api";
 
 const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
   const { isDarkMode } = useTheme();
   const modules = useMemo(
-    () => ['Planta y Contratos', 'Neikes y Becas', 'Expedientes', 'SAC'],
-    []
+    () => ["Planta y Contratos", "Neikes y Becas", "Expedientes", "SAC"],
+    [],
   );
   const [selected, setSelected] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -36,20 +36,22 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
       setSelected((prev) =>
         prev.includes(module)
           ? prev.filter((m) => m !== module)
-          : [...prev, module]
+          : [...prev, module],
       );
     },
-    []
+    [],
   );
 
   const handleConfirm = useCallback(async () => {
     if (selected.length === 0) return;
     setLoading(true);
     try {
-      await apiClient.delete('/admin/dashboard', { data: { modules: selected } });
-      onDelete && onDelete('Módulos eliminados correctamente');
+      await apiClient.delete("/admin/dashboard", {
+        data: { modules: selected },
+      });
+      onDelete && onDelete("Módulos eliminados correctamente");
     } catch {
-      onDelete && onDelete('Error al eliminar datos');
+      onDelete && onDelete("Error al eliminar datos");
     } finally {
       setLoading(false);
       onClose();
@@ -63,16 +65,18 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
       fullWidth
       maxWidth="sm"
       PaperProps={{
-        sx: { borderRadius: 3, bgcolor: isDarkMode ? '#1e293b' : '#f8fafc' }
+        sx: { borderRadius: 3, bgcolor: isDarkMode ? "#1e293b" : "#f8fafc" },
       }}
     >
-      <DialogTitle sx={{ fontWeight: 600 }}>Borrar datos del dashboard</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 600 }}>
+        Borrar datos del dashboard
+      </DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ mb: 2 }}>
           Selecciona los módulos cuyos datos deseas eliminar.
         </DialogContentText>
         <Divider sx={{ mb: 2 }} />
-        <List sx={{ bgcolor: 'transparent' }}>
+        <List sx={{ bgcolor: "transparent" }}>
           {modules.map((module) => (
             <ListItem key={module} disablePadding>
               <FormControlLabel
@@ -99,7 +103,7 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
           disabled={loading || selected.length === 0}
         >
           {loading ? <CircularProgress size={24} /> : <DeleteIcon />}
-          {loading ? ' Borrando...' : ' Borrar datos'}
+          {loading ? " Borrando..." : " Borrar datos"}
         </Button>
       </DialogActions>
     </Dialog>
@@ -107,4 +111,3 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
 };
 
 export default DeleteDashboardDialog;
-

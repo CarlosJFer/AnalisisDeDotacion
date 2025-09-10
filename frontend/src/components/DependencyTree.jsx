@@ -21,8 +21,14 @@ const DependencyNode = ({ node, level = 0 }) => {
             {open ? <ExpandMoreIcon /> : <ChevronRightIcon />}
           </IconButton>
         )}
-        <Typography variant="body1" sx={{ fontWeight: level === 0 ? 700 : 400 }}>
-          {node.nombre} {node.codigo ? <span style={{ color: '#888', fontSize: 12 }}>({node.codigo})</span> : null}
+        <Typography
+          variant="body1"
+          sx={{ fontWeight: level === 0 ? 700 : 400 }}
+        >
+          {node.nombre}{" "}
+          {node.codigo ? (
+            <span style={{ color: "#888", fontSize: 12 }}>({node.codigo})</span>
+          ) : null}
         </Typography>
       </Box>
       {hasChildren && (
@@ -40,7 +46,11 @@ const DependencyNode = ({ node, level = 0 }) => {
 
 const DependencyTree = ({ tree }) => {
   if (!tree || tree.length === 0) {
-    return <Typography color="text.secondary">No hay dependencias para mostrar.</Typography>;
+    return (
+      <Typography color="text.secondary">
+        No hay dependencias para mostrar.
+      </Typography>
+    );
   }
   return (
     <Paper sx={{ p: 2, mt: 2 }} elevation={2}>
@@ -51,4 +61,4 @@ const DependencyTree = ({ tree }) => {
   );
 };
 
-export default DependencyTree; 
+export default DependencyTree;

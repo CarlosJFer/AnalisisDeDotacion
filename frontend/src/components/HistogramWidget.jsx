@@ -1,8 +1,16 @@
-import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Box, Typography } from '@mui/material';
-import { useTheme as useAppTheme } from '../context/ThemeContext';
-import { getPalette } from '../theme.js';
+import React from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { Box, Typography } from "@mui/material";
+import { useTheme as useAppTheme } from "../context/ThemeContext";
+import { getPalette } from "../theme.js";
 
 const HistogramWidget = ({ data, xKey, barKey, color }) => {
   const { isDarkMode } = useAppTheme();
@@ -10,7 +18,12 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
   const barColor = color || colors.palette[0];
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
-      <Box display="flex" alignItems="center" justifyContent="center" height="100%">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+      >
         <Typography variant="body2" color="text.secondary">
           No hay datos de histograma disponibles
         </Typography>
@@ -19,9 +32,9 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat('es-AR', {
-      style: 'currency',
-      currency: 'ARS',
+    return new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
@@ -53,7 +66,7 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
   };
 
   return (
-    <Box sx={{ width: '100%', height: '100%', minHeight: 200 }}>
+    <Box sx={{ width: "100%", height: "100%", minHeight: 200 }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}
@@ -75,15 +88,16 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
           />
           <YAxis
             tick={{ fontSize: 12, fill: colors.text }}
-            label={{ value: 'Frecuencia', angle: -90, position: 'insideLeft', fill: colors.text }}
+            label={{
+              value: "Frecuencia",
+              angle: -90,
+              position: "insideLeft",
+              fill: colors.text,
+            }}
             axisLine={{ stroke: colors.axis }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Bar
-            dataKey={barKey}
-            fill={barColor}
-            radius={[2, 2, 0, 0]}
-          />
+          <Bar dataKey={barKey} fill={barColor} radius={[2, 2, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </Box>

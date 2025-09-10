@@ -3,10 +3,10 @@ export const clearLocalStorage = () => {
   try {
     // Limpiar todos los datos del localStorage
     localStorage.clear();
-    console.log('LocalStorage limpiado exitosamente');
+    console.log("LocalStorage limpiado exitosamente");
     return true;
   } catch (error) {
-    console.error('Error al limpiar localStorage:', error);
+    console.error("Error al limpiar localStorage:", error);
     return false;
   }
 };
@@ -14,13 +14,13 @@ export const clearLocalStorage = () => {
 export const clearUserData = () => {
   try {
     // Limpiar solo datos del usuario
-    localStorage.removeItem('userInfo');
-    localStorage.removeItem('theme-mode');
-    localStorage.removeItem('accessibility-settings');
-    console.log('Datos de usuario limpiados exitosamente');
+    localStorage.removeItem("userInfo");
+    localStorage.removeItem("theme-mode");
+    localStorage.removeItem("accessibility-settings");
+    console.log("Datos de usuario limpiados exitosamente");
     return true;
   } catch (error) {
-    console.error('Error al limpiar datos de usuario:', error);
+    console.error("Error al limpiar datos de usuario:", error);
     return false;
   }
 };
@@ -31,15 +31,15 @@ export const checkLocalStorageHealth = () => {
     const health = {
       totalKeys: keys.length,
       corruptedKeys: [],
-      healthy: true
+      healthy: true,
     };
 
-    keys.forEach(key => {
+    keys.forEach((key) => {
       try {
         const value = localStorage.getItem(key);
         if (value) {
           // Intentar parsear si es JSON
-          if (value.startsWith('{') || value.startsWith('[')) {
+          if (value.startsWith("{") || value.startsWith("[")) {
             JSON.parse(value);
           }
         }
@@ -51,7 +51,7 @@ export const checkLocalStorageHealth = () => {
 
     return health;
   } catch (error) {
-    console.error('Error al verificar salud del localStorage:', error);
+    console.error("Error al verificar salud del localStorage:", error);
     return { healthy: false, error: error.message };
   }
-}; 
+};

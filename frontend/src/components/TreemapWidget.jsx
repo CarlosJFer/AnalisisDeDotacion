@@ -1,15 +1,20 @@
-import React from 'react';
-import { Treemap, ResponsiveContainer, Tooltip } from 'recharts';
-import { Box, Typography } from '@mui/material';
-import { useTheme as useAppTheme } from '../context/ThemeContext';
-import { getPalette } from '../theme.js';
+import React from "react";
+import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
+import { Box, Typography } from "@mui/material";
+import { useTheme as useAppTheme } from "../context/ThemeContext";
+import { getPalette } from "../theme.js";
 
 const TreemapWidget = ({ data }) => {
   const { isDarkMode } = useAppTheme();
   const colors = getPalette(isDarkMode);
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
-      <Box display="flex" alignItems="center" justifyContent="center" height="100%">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height="100%"
+      >
         <Typography variant="body2" color="text.secondary">
           No hay datos de estructura disponibles
         </Typography>
@@ -50,7 +55,7 @@ const TreemapWidget = ({ data }) => {
           )}
           {data.presupuesto && (
             <Typography variant="body2">
-              Presupuesto: ${data.presupuesto.toLocaleString('es-AR')}
+              Presupuesto: ${data.presupuesto.toLocaleString("es-AR")}
             </Typography>
           )}
         </Box>
@@ -59,7 +64,17 @@ const TreemapWidget = ({ data }) => {
     return null;
   };
 
-  const CustomContent = ({ root, depth, x, y, width, height, index, name, value }) => {
+  const CustomContent = ({
+    root,
+    depth,
+    x,
+    y,
+    width,
+    height,
+    index,
+    name,
+    value,
+  }) => {
     if (depth === 1) {
       return (
         <g>
@@ -70,7 +85,7 @@ const TreemapWidget = ({ data }) => {
             height={height}
             style={{
               fill: colors.palette[index % colors.palette.length],
-              stroke: '#fff',
+              stroke: "#fff",
               strokeWidth: 2,
               strokeOpacity: 1,
             }}
@@ -105,12 +120,12 @@ const TreemapWidget = ({ data }) => {
   };
 
   return (
-    <Box sx={{ width: '100%', height: '100%', minHeight: 200 }}>
+    <Box sx={{ width: "100%", height: "100%", minHeight: 200 }}>
       <ResponsiveContainer width="100%" height="100%">
         <Treemap
           data={processedData}
           dataKey="value"
-          ratio={4/3}
+          ratio={4 / 3}
           stroke="#fff"
           content={<CustomContent />}
         >

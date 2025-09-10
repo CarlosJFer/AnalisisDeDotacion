@@ -1,7 +1,7 @@
-import React from 'react';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import AdminSectionLayout from '../components/AdminSectionLayout.jsx';
-import UploadSection from '../components/UploadSection.jsx';
+import React from "react";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import AdminSectionLayout from "../components/AdminSectionLayout.jsx";
+import UploadSection from "../components/UploadSection.jsx";
 
 const UploadPage = () => (
   <AdminSectionLayout

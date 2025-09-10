@@ -1,11 +1,11 @@
-import React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import EnhancedAlert from './EnhancedAlert.jsx';
+import React from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import EnhancedAlert from "./EnhancedAlert.jsx";
 
 export const EmailDialog = ({
   open,
@@ -25,18 +25,22 @@ export const EmailDialog = ({
     PaperProps={{
       sx: {
         background: isDarkMode
-          ? 'rgba(45, 55, 72, 0.95)'
-          : 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(20px)',
+          ? "rgba(45, 55, 72, 0.95)"
+          : "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(20px)",
         border: isDarkMode
-          ? '1px solid rgba(255, 255, 255, 0.1)'
-          : '1px solid rgba(0, 0, 0, 0.08)',
+          ? "1px solid rgba(255, 255, 255, 0.1)"
+          : "1px solid rgba(0, 0, 0, 0.08)",
         borderRadius: 3,
-      }
+      },
     }}
   >
-    <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
-      {email ? 'Editar Correo Electrónico' : 'Agregar Correo Electrónico'}
+    <DialogTitle
+      sx={{
+        color: isDarkMode ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)",
+      }}
+    >
+      {email ? "Editar Correo Electrónico" : "Agregar Correo Electrónico"}
     </DialogTitle>
     <DialogContent>
       {profileError && (
@@ -57,20 +61,28 @@ export const EmailDialog = ({
         value={newEmail}
         onChange={(e) => setNewEmail(e.target.value)}
         sx={{
-          '& .MuiOutlinedInput-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            '& fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+          "& .MuiOutlinedInput-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.9)"
+              : "rgba(0, 0, 0, 0.8)",
+            "& fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.2)"
+                : "rgba(0, 0, 0, 0.2)",
             },
-            '&:hover fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+            "&:hover fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.3)"
+                : "rgba(0, 0, 0, 0.3)",
             },
-            '&.Mui-focused fieldset': {
-              borderColor: isDarkMode ? '#81c784' : '#2e7d32',
+            "&.Mui-focused fieldset": {
+              borderColor: isDarkMode ? "#81c784" : "#2e7d32",
             },
           },
-          '& .MuiInputLabel-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+          "& .MuiInputLabel-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.7)"
+              : "rgba(0, 0, 0, 0.6)",
           },
         }}
       />
@@ -82,11 +94,15 @@ export const EmailDialog = ({
           color="error"
           variant="outlined"
           sx={{
-            borderColor: isDarkMode ? 'rgba(244, 67, 54, 0.5)' : 'rgba(244, 67, 54, 0.5)',
-            color: isDarkMode ? '#ef5350' : '#d32f2f',
-            '&:hover': {
-              borderColor: isDarkMode ? '#ef5350' : '#d32f2f',
-              background: isDarkMode ? 'rgba(244, 67, 54, 0.1)' : 'rgba(244, 67, 54, 0.1)',
+            borderColor: isDarkMode
+              ? "rgba(244, 67, 54, 0.5)"
+              : "rgba(244, 67, 54, 0.5)",
+            color: isDarkMode ? "#ef5350" : "#d32f2f",
+            "&:hover": {
+              borderColor: isDarkMode ? "#ef5350" : "#d32f2f",
+              background: isDarkMode
+                ? "rgba(244, 67, 54, 0.1)"
+                : "rgba(244, 67, 54, 0.1)",
             },
           }}
         >
@@ -95,7 +111,9 @@ export const EmailDialog = ({
       )}
       <Button
         onClick={onClose}
-        sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
+        sx={{
+          color: isDarkMode ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.6)",
+        }}
       >
         Cancelar
       </Button>
@@ -103,13 +121,13 @@ export const EmailDialog = ({
         onClick={handleEmailChange}
         variant="contained"
         sx={{
-          background: isDarkMode ? '#81c784' : '#2e7d32',
-          '&:hover': {
-            background: isDarkMode ? '#66bb6a' : '#1b5e20',
+          background: isDarkMode ? "#81c784" : "#2e7d32",
+          "&:hover": {
+            background: isDarkMode ? "#66bb6a" : "#1b5e20",
           },
         }}
       >
-        {email ? 'Actualizar' : 'Agregar'}
+        {email ? "Actualizar" : "Agregar"}
       </Button>
     </DialogActions>
   </Dialog>
@@ -135,17 +153,21 @@ export const PasswordDialog = ({
     PaperProps={{
       sx: {
         background: isDarkMode
-          ? 'rgba(45, 55, 72, 0.95)'
-          : 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(20px)',
+          ? "rgba(45, 55, 72, 0.95)"
+          : "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(20px)",
         border: isDarkMode
-          ? '1px solid rgba(255, 255, 255, 0.1)'
-          : '1px solid rgba(0, 0, 0, 0.08)',
+          ? "1px solid rgba(255, 255, 255, 0.1)"
+          : "1px solid rgba(0, 0, 0, 0.08)",
         borderRadius: 3,
-      }
+      },
     }}
   >
-    <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+    <DialogTitle
+      sx={{
+        color: isDarkMode ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)",
+      }}
+    >
       Cambiar Contraseña
     </DialogTitle>
     <DialogContent>
@@ -167,20 +189,28 @@ export const PasswordDialog = ({
         value={currentPassword}
         onChange={(e) => setCurrentPassword(e.target.value)}
         sx={{
-          '& .MuiOutlinedInput-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            '& fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+          "& .MuiOutlinedInput-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.9)"
+              : "rgba(0, 0, 0, 0.8)",
+            "& fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.2)"
+                : "rgba(0, 0, 0, 0.2)",
             },
-            '&:hover fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+            "&:hover fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.3)"
+                : "rgba(0, 0, 0, 0.3)",
             },
-            '&.Mui-focused fieldset': {
-              borderColor: isDarkMode ? '#81c784' : '#2e7d32',
+            "&.Mui-focused fieldset": {
+              borderColor: isDarkMode ? "#81c784" : "#2e7d32",
             },
           },
-          '& .MuiInputLabel-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+          "& .MuiInputLabel-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.7)"
+              : "rgba(0, 0, 0, 0.6)",
           },
         }}
       />
@@ -195,20 +225,28 @@ export const PasswordDialog = ({
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
         sx={{
-          '& .MuiOutlinedInput-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            '& fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+          "& .MuiOutlinedInput-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.9)"
+              : "rgba(0, 0, 0, 0.8)",
+            "& fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.2)"
+                : "rgba(0, 0, 0, 0.2)",
             },
-            '&:hover fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+            "&:hover fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.3)"
+                : "rgba(0, 0, 0, 0.3)",
             },
-            '&.Mui-focused fieldset': {
-              borderColor: isDarkMode ? '#81c784' : '#2e7d32',
+            "&.Mui-focused fieldset": {
+              borderColor: isDarkMode ? "#81c784" : "#2e7d32",
             },
           },
-          '& .MuiInputLabel-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+          "& .MuiInputLabel-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.7)"
+              : "rgba(0, 0, 0, 0.6)",
           },
         }}
       />
@@ -223,20 +261,28 @@ export const PasswordDialog = ({
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         sx={{
-          '& .MuiOutlinedInput-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            '& fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+          "& .MuiOutlinedInput-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.9)"
+              : "rgba(0, 0, 0, 0.8)",
+            "& fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.2)"
+                : "rgba(0, 0, 0, 0.2)",
             },
-            '&:hover fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+            "&:hover fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.3)"
+                : "rgba(0, 0, 0, 0.3)",
             },
-            '&.Mui-focused fieldset': {
-              borderColor: isDarkMode ? '#81c784' : '#2e7d32',
+            "&.Mui-focused fieldset": {
+              borderColor: isDarkMode ? "#81c784" : "#2e7d32",
             },
           },
-          '& .MuiInputLabel-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+          "& .MuiInputLabel-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.7)"
+              : "rgba(0, 0, 0, 0.6)",
           },
         }}
       />
@@ -244,7 +290,9 @@ export const PasswordDialog = ({
     <DialogActions sx={{ p: 2 }}>
       <Button
         onClick={onClose}
-        sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
+        sx={{
+          color: isDarkMode ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.6)",
+        }}
       >
         Cancelar
       </Button>
@@ -252,9 +300,9 @@ export const PasswordDialog = ({
         onClick={handlePasswordChange}
         variant="contained"
         sx={{
-          background: isDarkMode ? '#81c784' : '#2e7d32',
-          '&:hover': {
-            background: isDarkMode ? '#66bb6a' : '#1b5e20',
+          background: isDarkMode ? "#81c784" : "#2e7d32",
+          "&:hover": {
+            background: isDarkMode ? "#66bb6a" : "#1b5e20",
           },
         }}
       >
@@ -280,17 +328,21 @@ export const UsernameDialog = ({
     PaperProps={{
       sx: {
         background: isDarkMode
-          ? 'rgba(45, 55, 72, 0.95)'
-          : 'rgba(255, 255, 255, 0.95)',
-        backdropFilter: 'blur(20px)',
+          ? "rgba(45, 55, 72, 0.95)"
+          : "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(20px)",
         border: isDarkMode
-          ? '1px solid rgba(255, 255, 255, 0.1)'
-          : '1px solid rgba(0, 0, 0, 0.08)',
+          ? "1px solid rgba(255, 255, 255, 0.1)"
+          : "1px solid rgba(0, 0, 0, 0.08)",
         borderRadius: 3,
-      }
+      },
     }}
   >
-    <DialogTitle sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)' }}>
+    <DialogTitle
+      sx={{
+        color: isDarkMode ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)",
+      }}
+    >
       Cambiar Nombre de Usuario
     </DialogTitle>
     <DialogContent>
@@ -312,20 +364,28 @@ export const UsernameDialog = ({
         value={newUsername}
         onChange={(e) => setNewUsername(e.target.value)}
         sx={{
-          '& .MuiOutlinedInput-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-            '& fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)',
+          "& .MuiOutlinedInput-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.9)"
+              : "rgba(0, 0, 0, 0.8)",
+            "& fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.2)"
+                : "rgba(0, 0, 0, 0.2)",
             },
-            '&:hover fieldset': {
-              borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+            "&:hover fieldset": {
+              borderColor: isDarkMode
+                ? "rgba(255, 255, 255, 0.3)"
+                : "rgba(0, 0, 0, 0.3)",
             },
-            '&.Mui-focused fieldset': {
-              borderColor: isDarkMode ? '#81c784' : '#2e7d32',
+            "&.Mui-focused fieldset": {
+              borderColor: isDarkMode ? "#81c784" : "#2e7d32",
             },
           },
-          '& .MuiInputLabel-root': {
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+          "& .MuiInputLabel-root": {
+            color: isDarkMode
+              ? "rgba(255, 255, 255, 0.7)"
+              : "rgba(0, 0, 0, 0.6)",
           },
         }}
       />
@@ -333,7 +393,9 @@ export const UsernameDialog = ({
     <DialogActions sx={{ p: 2 }}>
       <Button
         onClick={onClose}
-        sx={{ color: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)' }}
+        sx={{
+          color: isDarkMode ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.6)",
+        }}
       >
         Cancelar
       </Button>
@@ -341,9 +403,9 @@ export const UsernameDialog = ({
         onClick={handleUsernameChange}
         variant="contained"
         sx={{
-          background: isDarkMode ? '#81c784' : '#2e7d32',
-          '&:hover': {
-            background: isDarkMode ? '#66bb6a' : '#1b5e20',
+          background: isDarkMode ? "#81c784" : "#2e7d32",
+          "&:hover": {
+            background: isDarkMode ? "#66bb6a" : "#1b5e20",
           },
         }}
       >
@@ -352,4 +414,3 @@ export const UsernameDialog = ({
     </DialogActions>
   </Dialog>
 );
-

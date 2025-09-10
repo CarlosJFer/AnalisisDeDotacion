@@ -25,17 +25,12 @@ const formatMiles = (n: number): string => nf.format(n);
 const formatPct = (p: number, d = 1): string =>
   `${(p * 100).toFixed(d).replace(".", ",")}%`;
 
-export const isDark = () =>
-  document.documentElement.classList.contains("dark");
+export const isDark = () => document.documentElement.classList.contains("dark");
 
 export const axisStyle = (dark?: boolean) => {
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
-  const tickColor = isDarkTheme
-    ? "rgba(255,255,255,0.7)"
-    : "rgba(0,0,0,0.7)";
-  const lineColor = isDarkTheme
-    ? "rgba(255,255,255,0.3)"
-    : "rgba(0,0,0,0.3)";
+  const tickColor = isDarkTheme ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.7)";
+  const lineColor = isDarkTheme ? "rgba(255,255,255,0.3)" : "rgba(0,0,0,0.3)";
   return {
     axisLine: { stroke: lineColor },
     tick: { fill: tickColor, fontSize: 12 },
@@ -45,9 +40,7 @@ export const axisStyle = (dark?: boolean) => {
 export const gridStyle = (dark?: boolean) => {
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
   return {
-    stroke: isDarkTheme
-      ? "rgba(255,255,255,0.1)"
-      : "rgba(0,0,0,0.1)",
+    stroke: isDarkTheme ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)",
   };
 };
 
@@ -57,9 +50,7 @@ export const tooltipStyle = (dark?: boolean) => {
     background: isDarkTheme
       ? "rgba(45, 55, 72, 0.95)"
       : "rgba(255, 255, 255, 0.95)",
-    color: isDarkTheme
-      ? "rgba(255, 255, 255, 0.9)"
-      : "rgba(0, 0, 0, 0.8)",
+    color: isDarkTheme ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)",
     border: isDarkTheme
       ? "1px solid rgba(255, 255, 255, 0.1)"
       : "1px solid rgba(0, 0, 0, 0.1)",
@@ -76,7 +67,9 @@ export const tooltipStyle = (dark?: boolean) => {
 /**
  * Propiedades comunes para Recharts y paleta de colores derivada.
  */
-const rechartsCommon = (dark?: boolean): {
+const rechartsCommon = (
+  dark?: boolean,
+): {
   axisProps: ReturnType<typeof axisStyle>;
   gridProps: ReturnType<typeof gridStyle>;
   tooltipProps: { wrapperStyle: React.CSSProperties };
@@ -123,8 +116,8 @@ export const ValueLabel: React.FC<RechartsLabelProps> = (p) => {
   const text = `${formatMiles(Number(value))} (${formatPct(Number(value) / Number(total || 1))})`;
   const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
-  const isDarkTheme = typeof dark === 'boolean' ? dark : isDark();
-  const color = isDarkTheme ? '#ffffff' : '#0f172a';
+  const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
+  const color = isDarkTheme ? "#ffffff" : "#0f172a";
   return (
     <text x={xText} y={y + 4} fill={color} fontWeight="600">
       {text}
@@ -141,8 +134,8 @@ export const AvgAgeLabel: React.FC<RechartsLabelProps> = (p) => {
   const text = `Edad promedio: ${avg} años`;
   const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
-  const isDarkTheme = typeof dark === 'boolean' ? dark : isDark();
-  const color = isDarkTheme ? '#ffffff' : '#0f172a';
+  const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
+  const color = isDarkTheme ? "#ffffff" : "#0f172a";
   return (
     <text x={xText} y={y + 4} fill={color} fontWeight="600">
       {text}

@@ -1,6 +1,6 @@
-import React, { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import AuthContext from '../context/AuthContext.jsx';
+import React, { useContext } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import AuthContext from "../context/AuthContext.jsx";
 
 const ProtectedRoute = ({ adminOnly = false }) => {
   const { user } = useContext(AuthContext);
@@ -10,7 +10,7 @@ const ProtectedRoute = ({ adminOnly = false }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (adminOnly && user.role !== 'admin') {
+  if (adminOnly && user.role !== "admin") {
     // Si la ruta es solo para admin y el usuario no lo es, redirige
     return <Navigate to="/organigrama" replace />;
   }
