@@ -1,51 +1,33 @@
 import React from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
-import icons from '../icons.js';
-import { COLORS, RADII, SHADOWS } from '../theme.js';
+import { CardContent, Typography, Box, Chip } from '@mui/material';
+import * as Icons from '@mui/icons-material';
+import GlassCard from './GlassCard.jsx';
+import { useTheme } from '../context/ThemeContext.jsx';
 
-const DashboardCard = React.memo(({ title, icon, children, isDarkMode }) => {
-  const IconComponent = icons[icon];
+const DashboardCard = ({ title, icon, chipLabel, children }) => {
+  const { isDarkMode, theme } = useTheme();
+  const IconComponent = Icons[icon.charAt(0).toUpperCase() + icon.slice(1)];
+  const color = theme.palette.primary.main;
 
   return (
-    <Card
-      sx={{
-        height: '100%',
-        background: isDarkMode ? COLORS.darkBackground : COLORS.lightBackground,
-        backdropFilter: 'blur(20px)',
-        border: `1px solid ${isDarkMode ? COLORS.darkBorder : COLORS.lightBorder}`,
-        borderRadius: RADII.card,
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: isDarkMode ? SHADOWS.dark : SHADOWS.light,
-        },
-      }}
-    >
+    <GlassCard isDarkMode={isDarkMode} sx={{ borderLeft: `6px solid ${color}` }}>
       <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          {IconComponent && (
-            <IconComponent
-              sx={{
-                fontSize: 32,
-                mr: 1.5,
-                color: isDarkMode ? COLORS.darkText : COLORS.lightText,
-              }}
-            />
-          )}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25 }}>
+          {IconComponent && <IconComponent sx={{ color }} />}
           <Typography
             variant="h6"
-            sx={{
-              fontWeight: 600,
-              color: isDarkMode ? COLORS.darkText : COLORS.lightText,
-            }}
+            sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.8)' }}
           >
             {title}
           </Typography>
+          {chipLabel && (
+            <Chip label={chipLabel} size="small" variant="outlined" sx={{ borderColor: color, color }} />
+          )}
         </Box>
         {children}
       </CardContent>
-    </Card>
+    </GlassCard>
   );
-});
+};
 
 export default DashboardCard;
