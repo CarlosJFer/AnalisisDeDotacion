@@ -5,6 +5,7 @@ import axios from 'axios';
 // 1. Creamos una instancia de Axios con la URL base de nuestro backend.
 const apiClient = axios.create({
   baseURL: 'http://localhost:5001/api', // La base de todas tus rutas de la API
+  timeout: 30000, // 30 segundos timeout
 });
 
 // 2. Usamos un interceptor para añadir el token de autenticación a cada petición.
@@ -29,6 +30,34 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// 3. Interceptor de respuesta para manejar errores globalmente
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    // Ignorar errores de extensiones del navegador
+    if (error.message?.includes('message channel closed') || 
+        error.message?.includes('Extension context invalidated')) {
+      console.warn('Browser extension error (ignored):', error.message);
+      return Promise.resolve({ data: null }); // Return empty response instead of error
+    }
+
+    // Manejar errores de red
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout');
+    } else if (error.response?.status === 401) {
+      console.warn('Unauthorized access - redirecting to login');
+      localStorage.removeItem('userInfo');
+      window.location.href = '/login';
+    } else if (error.response?.status >= 500) {
+      console.error('Server error:', error.response.status);
+    }
+
     return Promise.reject(error);
   }
 );

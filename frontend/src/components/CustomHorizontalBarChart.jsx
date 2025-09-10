@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Tooltip as MuiTooltip, Button } from '@mui/material';
+import { Card, CardContent, Typography, Box, Tooltip as MuiTooltip, Button, Chip } from '@mui/material';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import {
   BarChart,
   Bar,
@@ -22,6 +23,7 @@ const truncate = (text, max = 30) => {
 
 const RIGHT_PAD = 8;
 const MARGIN_RIGHT = 96;
+const COLOR = '#00C49F';
 
 const formatShort = (n) => {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.', ',') + 'M';
@@ -153,6 +155,7 @@ const CustomHorizontalBarChart = ({
         background: isDarkMode ? 'rgba(45, 55, 72, 0.8)' : 'rgba(255, 255, 255, 0.9)',
         backdropFilter: 'blur(20px)',
         border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
+        borderLeft: `6px solid ${COLOR}`,
         borderRadius: 3,
         transition: 'all 0.3s ease',
         '&:hover': {
@@ -164,14 +167,8 @@ const CustomHorizontalBarChart = ({
       }}
     >
       <CardContent sx={{ p: 3 }}>
-        <Box
-          sx={{
-            mb: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25, mb: 2 }}>
+          <DashboardIcon sx={{ color: COLOR }} />
           <Typography
             variant="h6"
             sx={{
@@ -181,7 +178,18 @@ const CustomHorizontalBarChart = ({
           >
             {title}
           </Typography>
+          <Chip label="Resumen General" size="small" variant="outlined" sx={{ borderColor: COLOR, color: COLOR }} />
         </Box>
+        <Typography
+          variant="body2"
+          align="center"
+          sx={{
+            mb: 2,
+            color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+          }}
+        >
+          {chartData.length} categorías • {formatMiles(total)} agentes
+        </Typography>
         <Box sx={{ height: chartHeight }}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -190,16 +198,17 @@ const CustomHorizontalBarChart = ({
               margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 240 }}
               barCategoryGap={10}
             >
-              <CartesianGrid horizontal={false} strokeDasharray="0 0" />
+              <CartesianGrid
+                horizontal={false}
+                strokeDasharray="0 0"
+                stroke={isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}
+              />
               <XAxis
                 type="number"
                 domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
                 tickFormatter={formatMiles}
                 allowDecimals={false}
                 tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
-                axisLine={{
-                  stroke: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                }}
               />
               <YAxis
                 type="category"
@@ -225,10 +234,18 @@ const CustomHorizontalBarChart = ({
             <Button
               variant="outlined"
               size="small"
+              sx={{
+                borderColor: COLOR,
+                color: COLOR,
+                '&:hover': {
+                  borderColor: COLOR,
+                  backgroundColor: 'rgba(0,196,159,0.08)',
+                },
+              }}
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
             >
-              ← Anterior
+              « Anterior
             </Button>
             <Typography variant="body2" sx={{ alignSelf: 'center' }}>
               Página {page + 1} de {totalPages}
@@ -236,10 +253,18 @@ const CustomHorizontalBarChart = ({
             <Button
               variant="outlined"
               size="small"
+              sx={{
+                borderColor: COLOR,
+                color: COLOR,
+                '&:hover': {
+                  borderColor: COLOR,
+                  backgroundColor: 'rgba(0,196,159,0.08)',
+                },
+              }}
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page === totalPages - 1}
             >
-              Siguiente →
+              Siguiente »
             </Button>
           </Box>
         )}

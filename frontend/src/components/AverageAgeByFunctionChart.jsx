@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button } from '@mui/material';
+import { Card, CardContent, Typography, Box, Button, Chip } from '@mui/material';
 import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
   BarChart,
@@ -14,7 +14,7 @@ import {
 import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
 
 const MARGIN_RIGHT = 120;
-const COLOR = '#3b82f6';
+const COLOR = '#10b981';
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const chartData = useMemo(
@@ -104,6 +104,7 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
         background: isDarkMode ? 'rgba(45, 55, 72, 0.8)' : 'rgba(255, 255, 255, 0.9)',
         backdropFilter: 'blur(20px)',
         border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
+        borderLeft: `6px solid ${COLOR}`,
         borderRadius: 3,
         transition: 'all 0.3s ease',
         '&:hover': {
@@ -115,21 +116,28 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
       }}
     >
       <CardContent sx={{ p: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25, mb: 2 }}>
+          <QueryStatsIcon sx={{ color: COLOR }} />
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            Edad Promedio por Función - Planta y Contratos
+          </Typography>
+          <Chip label="Análisis de Edad" size="small" variant="outlined" sx={{ borderColor: COLOR, color: COLOR }} />
+        </Box>
         <Typography
-          variant="h6"
+          variant="body2"
           align="center"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 1,
-            fontWeight: 600,
-            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
             mb: 2,
+            color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
           }}
         >
-          <QueryStatsIcon sx={{ fontSize: 24 }} />
-          Edad Promedio por Función - Planta y Contratos
+          {chartData.length} categorías • {formatMiles(grandTotal)} agentes
         </Typography>
         <Box sx={{ height: Math.max(420, pageData.length * 30) }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -189,10 +197,18 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
             <Button
               variant="outlined"
               size="small"
+              sx={{
+                borderColor: COLOR,
+                color: COLOR,
+                '&:hover': {
+                  borderColor: COLOR,
+                  backgroundColor: 'rgba(16,185,129,0.08)',
+                },
+              }}
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
             >
-              ← Anterior
+              « Anterior
             </Button>
             <Typography variant="body2" sx={{ alignSelf: 'center' }}>
               Página {page + 1} de {totalPages}
@@ -200,10 +216,18 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
             <Button
               variant="outlined"
               size="small"
+              sx={{
+                borderColor: COLOR,
+                color: COLOR,
+                '&:hover': {
+                  borderColor: COLOR,
+                  backgroundColor: 'rgba(16,185,129,0.08)',
+                },
+              }}
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page === totalPages - 1}
             >
-              Siguiente →
+              Siguiente »
             </Button>
           </Box>
         )}

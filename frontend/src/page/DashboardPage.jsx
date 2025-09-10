@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Box, Typography, CircularProgress, Alert, Grid, Button, Fab, Tooltip, Snackbar } from '@mui/material';
 import { useTheme } from '../context/ThemeContext.jsx';
 import apiClient from '../services/api';
+import { useErrorHandler } from '../hooks/useErrorHandler';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -36,6 +37,7 @@ const DashboardPage = () => {
     const { user } = useAuth();
     const { isDarkMode } = useTheme();
     const location = useLocation();
+    const { handleError, safeAsync } = useErrorHandler();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [tabValue, setTabValue] = useState(0);
@@ -139,7 +141,7 @@ const DashboardPage = () => {
         setLoading(true);
         setError('');
 
-        try {
+        const result = await safeAsync(async () => {
             const funcRes = await apiClient.get('/functions');
             const funcMap = funcRes.data.reduce((acc, f) => { acc[f.name] = f.endpoint; return acc; }, {});
             setFuncs(funcMap);
@@ -305,12 +307,43 @@ const DashboardPage = () => {
             }
             setNoData(totalData.total === 0);
 
-        } catch (err) {
+            return true; // Indica éxito
+        }, 'Dashboard data fetch');
+
+        if (result === null) {
+            // Error de extensión ignorado, usar datos por defecto
+            setTotalAgents(0);
+            setAgeDistribution(null);
+            setAgeByFunction([]);
+            setAgeByArea([]);
+            setAgentsByFunction([]);
+            setAgentsByEmploymentType([]);
+            setAgentsByDependency([]);
+            setAgentsBySecretaria([]);
+            setAgentsBySubsecretaría([]);
+            setAgentsBydireccionGeneral([]);
+            setAgentsBydireccion([]);
+            setAgentsByDepartamento([]);
+            setAgentsBydivision([]);
+            setSeniorityData([]);
+            setSecondaryData(null);
+            setTertiaryData(null);
+            setUniversityData(null);
+            setTopUniSecretariasData([]);
+            setTopTerSecretariasData([]);
+            setRegistrationTypeData([]);
+            setEntryTimeData([]);
+            setExitTimeData([]);
+            setTopUnitsData([]);
+            setExpTopInitiators([]);
+            setExpByTramite([]);
+            setSacViaData([]);
+        } else if (!result) {
+            // Error real
             setError('Error al cargar los datos del dashboard. Por favor, contacta al administrador.');
-            console.error(err);
-        } finally {
-            setLoading(false);
         }
+
+        setLoading(false);
     };
 
     const sanitizeFilters = (obj) => {

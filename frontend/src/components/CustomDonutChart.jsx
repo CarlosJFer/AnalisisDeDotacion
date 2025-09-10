@@ -1,11 +1,52 @@
 import React, { useMemo } from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
+import SchoolIcon from '@mui/icons-material/School';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF7C7C', '#8DD1E1', '#D084D0'];
 
+// Función para determinar el color, icono y chip basado en el título
+const getChartConfig = (title) => {
+    if (title.includes('Edad') || title.includes('edad')) {
+        return {
+            color: '#00C49F',
+            icon: AnalyticsIcon,
+            chipLabel: 'Análisis de Edad'
+        };
+    } else if (title.includes('estudios') || title.includes('título') || title.includes('Secretarías')) {
+        return {
+            color: '#8b5cf6',
+            icon: SchoolIcon,
+            chipLabel: 'Antigüedad y Estudios'
+        };
+    } else if (title.includes('horario') || title.includes('entrada') || title.includes('salida')) {
+        return {
+            color: '#f59e0b',
+            icon: AssignmentTurnedInIcon,
+            chipLabel: 'Control de Certificaciones'
+        };
+    } else if (title.includes('expedientes') || title.includes('trámite')) {
+        return {
+            color: '#ef4444',
+            icon: FolderOpenIcon,
+            chipLabel: 'Expedientes'
+        };
+    } else {
+        return {
+            color: '#00C49F',
+            icon: AnalyticsIcon,
+            chipLabel: 'Análisis General'
+        };
+    }
+};
+
 const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey, height = 400 }) => {
     const chartData = useMemo(() => data, [data]);
+    const config = getChartConfig(title);
+    const IconComponent = config.icon;
 
     const total = useMemo(() => {
         return chartData.reduce((sum, item) => sum + (item[dataKey] || 0), 0);
@@ -71,6 +112,7 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
             border: isDarkMode
                 ? '1px solid rgba(255, 255, 255, 0.1)'
                 : '1px solid rgba(0, 0, 0, 0.08)',
+            borderLeft: `6px solid ${config.color}`,
             borderRadius: 3,
             transition: 'all 0.3s ease',
             '&:hover': {
@@ -81,18 +123,24 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
             }
         }}>
             <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-                <Typography
-                    variant="h6"
-                    gutterBottom
-                    align="center"
-                    sx={{
-                        fontWeight: 600,
-                        color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-                        mb: 2,
-                    }}
-                >
-                    {title}
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25, mb: 2 }}>
+                    <IconComponent sx={{ color: config.color }} />
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontWeight: 600,
+                            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                        }}
+                    >
+                        {title}
+                    </Typography>
+                    <Chip 
+                        label={config.chipLabel} 
+                        size="small" 
+                        variant="outlined" 
+                        sx={{ borderColor: config.color, color: config.color }} 
+                    />
+                </Box>
                 <Box sx={{ flexGrow: 1, minHeight: 300 }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
