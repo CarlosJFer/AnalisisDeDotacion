@@ -1,32 +1,45 @@
 import React from 'react';
-import { CardContent, Typography, Box, Chip } from '@mui/material';
-import * as Icons from '@mui/icons-material';
-import GlassCard from './GlassCard.jsx';
-import { useTheme } from '../context/ThemeContext.jsx';
+import { Card, CardContent, Box, Typography, Icon } from '@mui/material';
+import theme from '../theme.js';
 
-const DashboardCard = ({ title, icon, chipLabel, children }) => {
-  const { isDarkMode, theme } = useTheme();
-  const IconComponent = Icons[icon.charAt(0).toUpperCase() + icon.slice(1)];
-  const color = theme.palette.primary.main;
-
+const DashboardCard = ({ title, icon, action, isDarkMode, children }) => {
+  const colors = isDarkMode ? theme.dark : theme.light;
   return (
-    <GlassCard isDarkMode={isDarkMode} sx={{ borderLeft: `6px solid ${color}` }}>
+    <Card
+      sx={{
+        background: isDarkMode ? 'rgba(45,55,72,0.8)' : 'rgba(255,255,255,0.9)',
+        backdropFilter: 'blur(20px)',
+        border: isDarkMode
+          ? '1px solid rgba(255,255,255,0.1)'
+          : '1px solid rgba(0,0,0,0.08)',
+        borderRadius: 3,
+      }}
+    >
       <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25 }}>
-          {IconComponent && <IconComponent sx={{ color }} />}
-          <Typography
-            variant="h6"
-            sx={{ fontWeight: 600, color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.8)' }}
-          >
-            {title}
-          </Typography>
-          {chipLabel && (
-            <Chip label={chipLabel} size="small" variant="outlined" sx={{ borderColor: color, color }} />
-          )}
-        </Box>
+        {(title || action) && (
+          <Box className="flex items-center justify-between gap-3" sx={{ mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+              {icon && <Icon sx={{ color: colors.button.border }}>{icon}</Icon>}
+              {title && (
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 600,
+                    color: isDarkMode
+                      ? 'rgba(255,255,255,0.9)'
+                      : 'rgba(0,0,0,0.8)',
+                  }}
+                >
+                  {title}
+                </Typography>
+              )}
+            </Box>
+            {action}
+          </Box>
+        )}
         {children}
       </CardContent>
-    </GlassCard>
+    </Card>
   );
 };
 
