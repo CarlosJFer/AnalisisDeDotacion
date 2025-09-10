@@ -2,9 +2,14 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
+import { onINP } from "web-vitals";
 
-// Monitor INP metric if web-vitals is available
-(window as any).webVitals?.onINP(console.log);
+// Monitor INP metric using web-vitals
+onINP(({ value }) => {
+  if (value > 200) console.warn("INP necesita mejora:", value);
+  // Enviar valor a un endpoint/analytics si se requiere
+  // fetch("/api/metrics", { method: "POST", body: JSON.stringify({ inp: value }) });
+});
 
 // Global error handler for unhandled promise rejections
 window.addEventListener("unhandledrejection", (event) => {
