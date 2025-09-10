@@ -1,15 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Card,
-  CardContent,
-  Typography,
-  Chip,
-} from '@mui/material';
+import React, { useMemo, useState, useCallback } from 'react';
+import { Box, FormControl, InputLabel, Select, MenuItem, Typography, Chip } from '@mui/material';
 import {
   ResponsiveContainer,
   BarChart,
@@ -22,10 +12,18 @@ import {
 } from 'recharts';
 import KeyboardArrowDownRounded from '@mui/icons-material/KeyboardArrowDownRounded';
 import CheckRounded from '@mui/icons-material/CheckRounded';
-import AnalyticsIcon from '@mui/icons-material/Analytics';
 import { useTheme } from '../context/ThemeContext.jsx';
-import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
+import {
+  formatMiles,
+  formatPct,
+  UnifiedTooltip,
+  rechartsCommon,
+  ValueLabel,
+} from '../ui/chart-utils';
 import PaginationControls from './ui/PaginationControls.jsx';
+import DashboardCard from './ui/DashboardCard.jsx';
+import icons from '../ui/icons.js';
+import { modeVars } from '../ui';
 
 const AGE_BUCKETS = [
   '18-25',
@@ -38,25 +36,24 @@ const AGE_BUCKETS = [
 ];
 const MIN_RIGHT = 160;
 const MAX_RIGHT = 240;
-const COLOR = '#00C49F';
 
 const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
   const [range, setRange] = useState('36-45');
   const { theme } = useTheme();
-  const colors = {
-    select: {
-      text: theme.palette.text.primary,
-      focusBorder: theme.palette.primary.main,
-      border: theme.palette.divider,
-      borderHover: theme.palette.primary.main,
-      bg: theme.palette.background.paper,
-      icon: theme.palette.text.primary,
-      focusShadow: `0 0 0 2px ${theme.palette.primary.main}33`,
-      selectedBg: theme.palette.action.selected,
-      selectedColor: theme.palette.text.primary,
-      selectedHoverBg: theme.palette.action.hover,
+  const COLOR = theme.palette.primary.main;
+  const vars = modeVars(isDarkMode);
+
+  const handleChange = useCallback(
+    (e) => {
+      const value = e.target.value;
+      if (rows.length > 1000 && typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+        requestIdleCallback(() => setRange(value));
+      } else {
+        setRange(value);
+      }
     },
-  };
+    [rows.length]
+  );
 
   const agregados = useMemo(() => {
     const acc = new Map();
@@ -69,17 +66,23 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
     return Array.from(acc, ([dependencia, cantidad]) => ({ dependencia, cantidad }));
   }, [rows, range]);
 
-  const ordenados = useMemo(() => agregados.sort((a, b) => b.cantidad - a.cantidad), [agregados]);
+  const ordenados = useMemo(
+    () => agregados.slice().sort((a, b) => b.cantidad - a.cantidad),
+    [agregados]
+  );
   const total = useMemo(() => ordenados.reduce((s, d) => s + d.cantidad, 0), [ordenados]);
 
   const PAGE = 10;
   const [page, setPage] = useState(0);
   const totalPages = Math.max(1, Math.ceil(ordenados.length / PAGE));
-  const pageData = useMemo(() => ordenados.slice(page * PAGE, (page + 1) * PAGE), [ordenados, page]);
+  const pageData = useMemo(
+    () => ordenados.slice(page * PAGE, (page + 1) * PAGE),
+    [ordenados, page]
+  );
 
   React.useEffect(() => setPage(0), [range]);
 
-  const dynamicRight = React.useMemo(() => {
+  const dynamicRight = useMemo(() => {
     if (!pageData?.length) return MIN_RIGHT;
     const labels = pageData.map(
       (d) => `${formatMiles(d.cantidad)} (${formatPct((d.cantidad || 0) / (total || 1))})`
@@ -88,71 +91,28 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
     const approxWidth = maxChars * 7 + 20;
     return Math.max(MIN_RIGHT, Math.min(MAX_RIGHT, approxWidth));
   }, [pageData, total]);
+  const handlePrev = useCallback(() => setPage((p) => Math.max(0, p - 1)), []);
+  const handleNext = useCallback(
+    () => setPage((p) => Math.min(totalPages - 1, p + 1)),
+    [totalPages]
+  );
 
-  const EndOutsideLabel = (props) => {
-    const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
-    const label = `${formatMiles(Number(value))} (${formatPct(Number(value) / Number(total || 1))})`;
-    const RIGHT_PAD = 8;
-    const xText = x + width + RIGHT_PAD;
-    const yText = y + (height || 0) / 2;
-    const color = isDarkMode ? '#ffffff' : '#0f172a';
-    return (
-      <text
-        x={xText}
-        y={yText}
-        fontSize={12}
-        textAnchor="start"
-        dominantBaseline="central"
-        fill={color}
-        fontWeight="600"
-        pointerEvents="none"
-      >
-        {label}
-      </text>
-    );
-  };
+  const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   return (
-    <Card
-      sx={{
-        height: '100%',
-        background: isDarkMode ? 'rgba(45, 55, 72, 0.8)' : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(20px)',
-        border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
-        borderLeft: `6px solid ${COLOR}`,
-        borderRadius: 3,
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          transform: 'translateY(-4px)',
-          boxShadow: isDarkMode
-            ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-            : '0 12px 40px rgba(0, 0, 0, 0.15)',
-        },
-      }}
-    >
-      <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-            <AnalyticsIcon sx={{ color: COLOR }} />
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 600,
-                color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
-              }}
-            >
-              Distribución por Rangos de Edad según el área - Planta y Contratos
-            </Typography>
-            <Chip label="Análisis de Edad" size="small" variant="outlined" sx={{ borderColor: COLOR, color: COLOR }} />
-          </Box>
+    <DashboardCard
+      title="Distribución por Rangos de Edad según el área - Planta y Contratos"
+      icon={<icons.distribucion />}
+      isDarkMode={isDarkMode}
+      headerRight={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Chip label="Análisis de Edad" size="small" variant="outlined" sx={{ borderColor: COLOR, color: COLOR }} />
           <FormControl size="small" variant="outlined" sx={{ minWidth: 170 }}>
             <InputLabel
               id="range-label"
               sx={{
-                color: colors.select.text,
-                '&.Mui-focused': {
-                  color: colors.select.focusBorder,
-                },
+                color: theme.palette.text.primary,
+                '&.Mui-focused': { color: theme.palette.primary.main },
               }}
             >
               Rango de edad
@@ -162,7 +122,7 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
               id="range-select"
               value={range}
               label="Rango de edad"
-              onChange={(e) => setRange(e.target.value)}
+              onChange={handleChange}
               IconComponent={KeyboardArrowDownRounded}
               MenuProps={{
                 PaperProps: {
@@ -176,43 +136,41 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
                     backgroundColor: isDarkMode
                       ? 'rgba(15,23,42,0.98)'
                       : 'rgba(255,255,255,0.98)',
-                    color: colors.select.text,
+                    color: 'var(--text-color)',
                     boxShadow: isDarkMode
                       ? '0 8px 24px rgba(0,0,0,0.35)'
                       : '0 8px 24px rgba(0,0,0,0.14)',
                   },
                 },
-                MenuListProps: {
-                  dense: true,
-                  sx: { py: 0.5 },
-                },
+                MenuListProps: { dense: true, sx: { py: 0.5 } },
                 disableScrollLock: true,
                 keepMounted: true,
                 TransitionProps: { timeout: 120 },
               }}
               sx={{
+                ...vars,
                 borderRadius: 9999,
                 pr: 4,
                 px: 1.5,
                 height: 36,
-                color: colors.select.text,
-                backgroundColor: colors.select.bg,
+                color: 'var(--text-color)',
+                backgroundColor: 'var(--bg-color)',
                 transition: 'all .2s ease',
                 '& .MuiSelect-select': { py: 0.5 },
                 '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: colors.select.border,
+                  borderColor: theme.palette.divider,
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: colors.select.borderHover,
+                  borderColor: theme.palette.primary.main,
                 },
                 '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: colors.select.focusBorder,
+                  borderColor: theme.palette.primary.main,
                 },
                 '& .MuiSvgIcon-root': {
-                  color: colors.select.icon,
+                  color: 'var(--text-color)',
                 },
                 '&.Mui-focused': {
-                  boxShadow: colors.select.focusShadow,
+                  boxShadow: `0 0 0 2px ${theme.palette.primary.main}33`,
                 },
               }}
             >
@@ -230,19 +188,19 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
                     borderRadius: 1.5,
                     fontSize: 14,
                     fontWeight: 500,
-                    color: colors.select.text,
+                    color: 'var(--text-color)',
                     '&.Mui-selected': {
-                      backgroundColor: colors.select.selectedBg,
-                      color: colors.select.selectedColor,
+                      backgroundColor: theme.palette.action.selected,
+                      color: 'var(--text-color)',
                       '&:hover': {
-                        backgroundColor: colors.select.selectedHoverBg,
+                        backgroundColor: theme.palette.action.hover,
                       },
                     },
                   }}
                 >
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     {range === b && (
-                      <CheckRounded fontSize="small" sx={{ color: colors.select.focusBorder }} />
+                      <CheckRounded fontSize="small" sx={{ color: theme.palette.primary.main }} />
                     )}
                     <span>{b}</span>
                   </Box>
@@ -251,16 +209,15 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
             </Select>
           </FormControl>
         </Box>
-        <Typography
-          variant="body2"
-          align="center"
-          sx={{
-            mb: 2,
-            color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
-          }}
-        >
-          {ordenados.length} categorías • {formatMiles(total)} agentes
-        </Typography>
+      }
+    >
+      <Typography
+        variant="body2"
+        align="center"
+        sx={{ mb: 2, color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }}
+      >
+        {ordenados.length} categorías • {formatMiles(total)} agentes
+      </Typography>
       <Box sx={{ height: 520 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
@@ -269,28 +226,24 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
             margin={{ top: 16, right: dynamicRight, bottom: 16, left: 260 }}
             barCategoryGap={10}
           >
-            <CartesianGrid
-              horizontal={false}
-              strokeDasharray="0 0"
-              stroke={isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}
-            />
+            <CartesianGrid {...gridProps} horizontal={false} strokeDasharray="0 0" />
             <XAxis
+              {...axisProps}
               type="number"
               domain={[0, (max) => Math.ceil((max || 0) * 1.2)]}
               allowDecimals={false}
               tickFormatter={formatMiles}
-              tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)' }}
             />
             <YAxis
+              {...axisProps}
               type="category"
               dataKey="dependencia"
               width={240}
               tickLine={false}
               interval={0}
-              tick={{ fill: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.7)', fontSize: 12 }}
             />
             <Tooltip
-              wrapperStyle={{ outline: 'none' }}
+              {...tooltipProps}
               content={({ active, payload }) => (
                 <UnifiedTooltip
                   active={active}
@@ -309,21 +262,23 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
               )}
             />
             <Bar dataKey="cantidad" maxBarSize={22} fill={COLOR}>
-              <LabelList dataKey="cantidad" content={(props) => <EndOutsideLabel {...props} />} />
+              <LabelList
+                dataKey="cantidad"
+                content={(props) => <ValueLabel {...props} total={total} dark={isDarkMode} />}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
       </Box>
       {ordenados.length > PAGE && (
-          <PaginationControls
-            page={page}
-            totalPages={totalPages}
-            onPrev={() => setPage((p) => Math.max(0, p - 1))}
-            onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-          />
-        )}
-      </CardContent>
-    </Card>
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          onPrev={handlePrev}
+          onNext={handleNext}
+        />
+      )}
+    </DashboardCard>
   );
 };
 
