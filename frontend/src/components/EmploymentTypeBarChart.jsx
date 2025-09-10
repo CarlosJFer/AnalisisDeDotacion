@@ -31,7 +31,7 @@ const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
 
   const EndOutsideLabel = (props) => {
     const { x = 0, y = 0, width = 0, height = 0, value = 0 } = props;
-    const label = `${formatMiles(Number(value))} (${formatPct(total ? Number(value) / total : 0)})`;
+    const label = formatPct(total ? Number(value) / total : 0);
     const color = isDarkMode ? "#ffffff" : "#0f172a";
     return (
       <text

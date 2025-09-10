@@ -105,15 +105,9 @@ const CustomHorizontalBarChart = ({
   const ValueLabel = (props) => {
     const { x = 0, y = 0, width = 0, value = 0, viewBox } = props;
     const chartW = viewBox?.width ?? 0;
-
-    let text = `${formatMiles(value)} (${formatPct(total ? value / total : 0)})`;
+    const text = formatPct(total ? value / total : 0);
     const barEndX = x + width;
-
-    if (barEndX + RIGHT_PAD + text.length * 7 > chartW - 4) {
-      text = `${formatShort(value)} (${formatPct(total ? value / total : 0)})`;
-    }
-
-    const textX = barEndX + RIGHT_PAD;
+    const textX = Math.min(barEndX + RIGHT_PAD, chartW - text.length * 7 - 4);
     const fill = theme.palette.text.primary;
 
     return (

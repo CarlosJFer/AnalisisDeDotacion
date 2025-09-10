@@ -44,10 +44,9 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
   const MAX_RIGHT = 240;
   const dynamicRight = React.useMemo(() => {
     if (!pageData?.length) return MIN_RIGHT;
-    const labels = pageData.map((d) => {
-      const cnt = Number(d.cantidad || 0);
-      return `${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
-    });
+    const labels = pageData.map((d) =>
+      formatPct((Number(d.cantidad) || 0) / (grandTotal || 1)),
+    );
     const maxChars = Math.max(...labels.map((t) => t.length));
     const approxWidth = maxChars * 7 + 20; // 7px por carácter + padding
     return Math.max(MIN_RIGHT, Math.min(MAX_RIGHT, approxWidth));
@@ -58,7 +57,7 @@ const AgentsBySecretariaBarChart = ({ data, isDarkMode }) => {
     const { x = 0, y = 0, width = 0, height = 0, index = 0 } = props;
     const row = pageData?.[index] || {};
     const cnt = Number(row.cantidad ?? 0);
-    const label = `${formatMiles(cnt)} (${formatPct((cnt || 0) / (grandTotal || 1))})`;
+    const label = formatPct((cnt || 0) / (grandTotal || 1));
     const xText = x + width + 8;
     const yText = y + (height || 0) / 2;
     const color = isDarkMode ? "#ffffff" : "#0f172a";

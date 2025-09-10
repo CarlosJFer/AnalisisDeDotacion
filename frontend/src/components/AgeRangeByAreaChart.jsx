@@ -102,9 +102,8 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
 
   const dynamicRight = useMemo(() => {
     if (!pageData?.length) return MIN_RIGHT;
-    const labels = pageData.map(
-      (d) =>
-        `${formatMiles(d.cantidad)} (${formatPct((d.cantidad || 0) / (total || 1))})`,
+    const labels = pageData.map((d) =>
+      formatPct((d.cantidad || 0) / (total || 1)),
     );
     const maxChars = Math.max(...labels.map((t) => t.length));
     const approxWidth = maxChars * 7 + 20;
