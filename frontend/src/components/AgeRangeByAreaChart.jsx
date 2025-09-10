@@ -27,11 +27,11 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
-} from "./ui/chart-utils";
+} from "../ui/chart-utils";
 import PaginationControls from "./ui/PaginationControls.jsx";
 import DashboardCard from "./ui/DashboardCard.jsx";
-import icons from "./ui/icons.js";
-import { modeVars } from "./ui";
+import icons from "../ui/icons.js";
+import { modeVars } from "../ui";
 
 const AGE_BUCKETS = [
   "18-25",

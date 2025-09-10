@@ -12,14 +12,14 @@ import {
 } from "recharts";
 import DashboardCard from "./ui/DashboardCard.jsx";
 import PaginationControls from "./ui/PaginationControls.jsx";
-import icons from "./ui/icons.js";
+import icons from "../ui/icons.js";
 import { useTheme } from "@mui/material/styles";
 import {
   formatMiles,
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
-} from "./ui/chart-utils";
+} from "../ui/chart-utils";
 
 const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
   const theme = useTheme();

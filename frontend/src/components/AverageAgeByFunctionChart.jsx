@@ -16,10 +16,10 @@ import {
   rechartsCommon,
   UnifiedTooltip,
   AvgAgeLabel,
-} from "./ui/chart-utils";
+} from "../ui/chart-utils";
 import PaginationControls from "./ui/PaginationControls.jsx";
 import DashboardCard from "./ui/DashboardCard.jsx";
-import icons from "./ui/icons.js";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {

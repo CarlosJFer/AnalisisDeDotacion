@@ -11,7 +11,7 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import { formatMiles, formatPct, UnifiedTooltip } from "./ui/chart-utils";
+import { formatMiles, formatPct, UnifiedTooltip } from "../ui/chart-utils";
 
 const COLOR = "#eab308";
 

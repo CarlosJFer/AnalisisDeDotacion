@@ -17,8 +17,8 @@ import {
   formatPct,
   rechartsCommon,
   UnifiedTooltip,
-} from "./ui/chart-utils";
-import icons from "./ui/icons.js";
+} from "../ui/chart-utils";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const AgeDistributionBarChart = ({ data, isDarkMode }) => {
