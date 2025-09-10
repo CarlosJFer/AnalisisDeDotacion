@@ -81,6 +81,26 @@ const setsAreEqual = (a, b) => {
   return true;
 };
 
+const fieldMap = {
+  secretaria: "Secretaria",
+  subsecretaria: "Subsecretaría",
+  direccionGeneral: "direccion general",
+  direccion: "direccion",
+  departamento: "Departamento",
+  division: "division",
+  funcion: "funcion",
+};
+
+const filterFields = [
+  "Secretaria",
+  "Subsecretaría",
+  "direccion general",
+  "direccion",
+  "Departamento",
+  "division",
+  "funcion",
+];
+
 const DashboardPage = () => {
   const { user } = useAuth();
   const { isDarkMode } = useTheme();
@@ -153,8 +173,8 @@ const DashboardPage = () => {
     [],
   );
 
-  // Función para filtrar datos que no sean "-" o vacÃ­os
-  const filterValidData = (data, nameKey) => {
+  // Función para filtrar datos que no sean "-" o vacíos
+  const filterValidData = useCallback((data, nameKey) => {
     return data.filter((item) => {
       const value = item[nameKey];
       // Verificar que el valor existe y es un string antes de usar trim()
@@ -168,26 +188,7 @@ const DashboardPage = () => {
         trimmedValue !== "Sin especificar"
       );
     });
-  };
-
-  const fieldMap = {
-    secretaria: "Secretaria",
-    subsecretaria: "Subsecretaría",
-    direccionGeneral: "direccion general",
-    direccion: "direccion",
-    departamento: "Departamento",
-    division: "division",
-    funcion: "funcion",
-  };
-  const filterFields = [
-    "Secretaria",
-    "Subsecretaría",
-    "direccion general",
-    "direccion",
-    "Departamento",
-    "division",
-    "funcion",
-  ];
+  }, []);
 
   const normalize = useCallback(
     (str) =>
