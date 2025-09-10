@@ -52,7 +52,7 @@ const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
   const EndOutsideLabel = (props) => {
     const { x = 0, y = 0, width = 0, height = 0, index = 0 } = props;
     const v = Number(pageData?.[index]?.cantidad) || 0;
-    const label = `${formatMiles(v)} (${formatPct(total ? v / total : 0)})`;
+    const label = formatPct(total ? v / total : 0);
     const color = isDarkMode ? "#ffffff" : "#0f172a";
     return (
       <text

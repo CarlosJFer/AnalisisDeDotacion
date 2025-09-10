@@ -41,9 +41,8 @@ const AgentsByDireccionBarChart = ({ data, isDarkMode }) => {
   const MAX_RIGHT = 240;
   const dynamicRight = React.useMemo(() => {
     if (!pageData?.length) return MIN_RIGHT;
-    const labels = pageData.map(
-      (d) =>
-        `${formatMiles(d.cantidad)} (${formatPct((d.cantidad || 0) / (grandTotal || 1))})`,
+    const labels = pageData.map((d) =>
+      formatPct((d.cantidad || 0) / (grandTotal || 1)),
     );
     const maxChars = Math.max(...labels.map((t) => t.length));
     const approxWidth = maxChars * 7 + 20;
@@ -53,7 +52,7 @@ const AgentsByDireccionBarChart = ({ data, isDarkMode }) => {
   const EndOutsideLabel = (props) => {
     const { x = 0, y = 0, width = 0, height = 0, index = 0 } = props;
     const row = pageData?.[index] || {};
-    const label = `${formatMiles(row.cantidad || 0)} (${formatPct((row.cantidad || 0) / (grandTotal || 1))})`;
+    const label = formatPct((row.cantidad || 0) / (grandTotal || 1));
     const color = isDarkMode ? "#ffffff" : "#0f172a";
     return (
       <text
