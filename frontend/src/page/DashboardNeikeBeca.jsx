@@ -86,7 +86,7 @@ const DashboardNeikeBeca = () => {
     try {
       await apiClient.post("/admin/limpiar-dashboard");
       setCleanMsg("Dashboard limpiado correctamente.");
-      window.location.reload();
+      fetchAllData(filters, false);
     } catch (err) {
       setCleanMsg("Error al limpiar el dashboard.");
     } finally {
