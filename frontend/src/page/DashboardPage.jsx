@@ -45,6 +45,9 @@ const CustomAreaChart = lazy(() => import("../components/CustomAreaChart"));
 const CustomHorizontalBarChart = lazy(
   () => import("../components/CustomHorizontalBarChart"),
 );
+const AgentsByFunctionBarChart = lazy(
+  () => import("../components/AgentsByFunctionBarChart.jsx"),
+);
 const AgeRangeByAreaChart = lazy(
   () => import("../components/AgeRangeByAreaChart"),
 );
@@ -782,19 +785,14 @@ const DashboardPage = () => {
           {/* gráficos principales */}
           <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomHorizontalBarChart
+              <AgentsByFunctionBarChart
                 data={agentsByFunction.filter(
                   (f) =>
                     f.function &&
                     f.function.trim() !== "" &&
                     f.function.trim() !== "-",
                 )}
-                title="Distribución de Agentes por Función - Planta y Contratos"
                 isDarkMode={isDarkMode}
-                nameKey="function"
-                valueKey="count"
-                pageSize={10}
-                height={520}
               />
             </Suspense>
           </Grid>
