@@ -1,68 +1,7 @@
 import React from 'react';
-import { Box, Grid, Typography, Avatar, Chip } from '@mui/material';
-import GlassCard from './GlassCard.jsx';
-import {
-  People as PeopleIcon,
-  AttachMoney as MoneyIcon,
-  TrendingUp as TrendingUpIcon,
-  Assessment as AssessmentIcon,
-} from '@mui/icons-material';
-import { motion } from 'framer-motion';
-
-const StatCard = ({ icon, title, value, subtitle, color, trend, isDarkMode }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3 }}
-  >
-    <GlassCard
-      isDarkMode={isDarkMode}
-      sx={{
-        p: 2,
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        borderRadius: 2,
-        background: isDarkMode
-          ? `linear-gradient(135deg, ${color}15 0%, rgba(45,55,72,0.8) 100%)`
-          : `linear-gradient(135deg, ${color}15 0%, rgba(255,255,255,0.9) 100%)`,
-        border: `1px solid ${color}20`,
-      }}
-    >
-      <Avatar
-        sx={{
-          bgcolor: color,
-          mb: 1,
-          width: 40,
-          height: 40,
-        }}
-      >
-        {icon}
-      </Avatar>
-      <Typography variant="h6" component="div" fontWeight="bold" color={color}>
-        {value}
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        {title}
-      </Typography>
-      {subtitle && (
-        <Typography variant="caption" color="text.secondary">
-          {subtitle}
-        </Typography>
-      )}
-      {trend && (
-        <Chip
-          label={trend > 0 ? `+${trend}%` : `${trend}%`}
-          size="small"
-          color={trend > 0 ? 'success' : 'error'}
-          sx={{ mt: 0.5 }}
-        />
-      )}
-    </GlassCard>
-  </motion.div>
-);
+import { Box, Grid, Typography } from '@mui/material';
+import KPIStat from './ui/KPIStat.jsx';
+import { People, AttachMoney, TrendingUp, Assessment } from '@mui/icons-material';
 
 const StatsWidget = ({ data, isDarkMode }) => {
   if (!data) {
@@ -75,51 +14,41 @@ const StatsWidget = ({ data, isDarkMode }) => {
     );
   }
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('es-AR', {
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat('es-AR', {
       style: 'currency',
       currency: 'ARS',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
 
-  const formatNumber = (number) => {
-    return new Intl.NumberFormat('es-AR').format(number);
-  };
+  const formatNumber = (number) => new Intl.NumberFormat('es-AR').format(number);
+  const formatPercent = (value) => `${Number(value || 0).toFixed(1)}%`;
 
   const stats = [
     {
-      icon: <PeopleIcon />,
-      title: 'Total de Agentes',
+      icon: People,
+      label: 'Total de Agentes',
       value: formatNumber(data.totalAgentes || 0),
-      subtitle: 'Personal activo',
-      color: '#1976d2',
-      trend: data.trendAgentes,
+      delta: data.trendAgentes,
     },
     {
-      icon: <MoneyIcon />,
-      title: 'Masa Salarial',
+      icon: AttachMoney,
+      label: 'Masa Salarial',
       value: formatCurrency(data.masaSalarial || 0),
-      subtitle: 'Total mensual',
-      color: '#2e7d32',
-      trend: data.trendMasaSalarial,
+      delta: data.trendMasaSalarial,
     },
     {
-      icon: <TrendingUpIcon />,
-      title: 'Sueldo Promedio',
+      icon: TrendingUp,
+      label: 'Sueldo Promedio',
       value: formatCurrency(data.sueldoPromedio || 0),
-      subtitle: 'Promedio general',
-      color: '#ed6c02',
-      trend: data.trendSueldoPromedio,
+      delta: data.trendSueldoPromedio,
     },
     {
-      icon: <AssessmentIcon />,
-      title: 'Índice de Eficiencia',
-      value: `${(data.indiceEficiencia || 0).toFixed(1)}%`,
-      subtitle: 'Ratio productividad',
-      color: '#9c27b0',
-      trend: data.trendEficiencia,
+      icon: Assessment,
+      label: 'Índice de Eficiencia',
+      value: formatPercent(data.indiceEficiencia || 0),
+      delta: data.trendEficiencia,
     },
   ];
 
@@ -128,11 +57,10 @@ const StatsWidget = ({ data, isDarkMode }) => {
       <Grid container spacing={2} sx={{ height: '100%' }}>
         {stats.map((stat, index) => (
           <Grid item xs={6} md={3} key={index} sx={{ height: '50%' }}>
-            <StatCard {...stat} isDarkMode={isDarkMode} />
+            <KPIStat {...stat} isDarkMode={isDarkMode} />
           </Grid>
         ))}
       </Grid>
-      
       {data.ultimaActualizacion && (
         <Box sx={{ mt: 2, textAlign: 'center' }}>
           <Typography variant="caption" color="text.secondary">
