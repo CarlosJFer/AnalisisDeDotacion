@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Grid, Typography } from '@mui/material';
-import KPIStat from './ui/KPIStat.jsx';
-import { People, AttachMoney, TrendingUp, Assessment } from '@mui/icons-material';
+import KPIStat from './KPIStat.jsx';
 
 const StatsWidget = ({ data, isDarkMode }) => {
   if (!data) {
@@ -27,25 +26,25 @@ const StatsWidget = ({ data, isDarkMode }) => {
 
   const stats = [
     {
-      icon: People,
+      metric: 'personas',
       label: 'Total de Agentes',
       value: formatNumber(data.totalAgentes || 0),
       delta: data.trendAgentes,
     },
     {
-      icon: AttachMoney,
+      metric: 'money',
       label: 'Masa Salarial',
       value: formatCurrency(data.masaSalarial || 0),
       delta: data.trendMasaSalarial,
     },
     {
-      icon: TrendingUp,
+      metric: 'porcentaje',
       label: 'Sueldo Promedio',
       value: formatCurrency(data.sueldoPromedio || 0),
       delta: data.trendSueldoPromedio,
     },
     {
-      icon: Assessment,
+      metric: 'eficiencia',
       label: 'Índice de Eficiencia',
       value: formatPercent(data.indiceEficiencia || 0),
       delta: data.trendEficiencia,
@@ -73,3 +72,4 @@ const StatsWidget = ({ data, isDarkMode }) => {
 };
 
 export default StatsWidget;
+
