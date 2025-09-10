@@ -21,16 +21,17 @@ type RechartsLabelProps = {
   viewBox?: { width?: number; height?: number; x?: number; y?: number };
   payload?: any;
   total?: number;
+  dark?: boolean;
 };
 
 export const ValueLabel: React.FC<RechartsLabelProps> = (p) => {
-  const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1 } = p;
+  const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1, dark } = p;
   const chartW = viewBox?.width ?? 0;
   const text = `${formatMiles(Number(value))} (${formatPct(Number(value) / Number(total || 1))})`;
   const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
-  const dark = isDark();
-  const color = dark ? '#ffffff' : '#0f172a';
+  const isDarkTheme = typeof dark === 'boolean' ? dark : isDark();
+  const color = isDarkTheme ? '#ffffff' : '#0f172a';
   return (
     <text x={xText} y={y + 4} fill={color} fontWeight="600">
       {text}
@@ -40,15 +41,15 @@ export const ValueLabel: React.FC<RechartsLabelProps> = (p) => {
 
 /** Label “Edad promedio: X años” afuera a la derecha (lee avg del payload) */
 export const AvgAgeLabel: React.FC<RechartsLabelProps> = (p) => {
-  const { x = 0, y = 0, width = 0, viewBox, payload } = p;
+  const { x = 0, y = 0, width = 0, viewBox, payload, dark } = p;
   const avg = Math.round(Number(payload?.avg ?? payload?.promedio ?? 0));
   if (!avg) return null;
   const chartW = viewBox?.width ?? 0;
   const text = `Edad promedio: ${avg} años`;
   const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
-  const dark = isDark();
-  const color = dark ? '#ffffff' : '#0f172a';
+  const isDarkTheme = typeof dark === 'boolean' ? dark : isDark();
+  const color = isDarkTheme ? '#ffffff' : '#0f172a';
   return (
     <text x={xText} y={y + 4} fill={color} fontWeight="600">
       {text}

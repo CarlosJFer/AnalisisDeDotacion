@@ -2,11 +2,11 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Box, Typography } from '@mui/material';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
-import chartColors from '../theme/chartColors';
+import { getPalette } from '../theme.js';
 
 const HistogramWidget = ({ data, xKey, barKey, color }) => {
   const { isDarkMode } = useAppTheme();
-  const colors = chartColors[isDarkMode ? 'dark' : 'light'];
+  const colors = getPalette(isDarkMode);
   const barColor = color || colors.palette[0];
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (

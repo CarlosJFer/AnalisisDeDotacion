@@ -2,11 +2,11 @@ import React from 'react';
 import { Treemap, ResponsiveContainer, Tooltip } from 'recharts';
 import { Box, Typography } from '@mui/material';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
-import chartColors from '../theme/chartColors';
+import { getPalette } from '../theme.js';
 
 const TreemapWidget = ({ data }) => {
   const { isDarkMode } = useAppTheme();
-  const colors = chartColors[isDarkMode ? 'dark' : 'light'];
+  const colors = getPalette(isDarkMode);
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
       <Box display="flex" alignItems="center" justifyContent="center" height="100%">
