@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
+// Monitor INP metric if web-vitals is available
+(window as any).webVitals?.onINP(console.log)
+
 // Global error handler for unhandled promise rejections
 window.addEventListener('unhandledrejection', (event) => {
   // Check if it's the extension error we want to ignore
