@@ -5,38 +5,37 @@ import SchoolIcon from '@mui/icons-material/School';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#FF7C7C', '#8DD1E1', '#D084D0'];
+import { useTheme } from '../context/ThemeContext.jsx';
 
 // Función para determinar el color, icono y chip basado en el título
-const getChartConfig = (title) => {
+const getChartConfig = (title, theme) => {
     if (title.includes('Edad') || title.includes('edad')) {
         return {
-            color: '#00C49F',
+            color: theme.palette.success.main,
             icon: AnalyticsIcon,
             chipLabel: 'Análisis de Edad'
         };
     } else if (title.includes('estudios') || title.includes('título') || title.includes('Secretarías')) {
         return {
-            color: '#8b5cf6',
+            color: theme.palette.secondary.main,
             icon: SchoolIcon,
             chipLabel: 'Antigüedad y Estudios'
         };
     } else if (title.includes('horario') || title.includes('entrada') || title.includes('salida')) {
         return {
-            color: '#f59e0b',
+            color: theme.palette.warning.main,
             icon: AssignmentTurnedInIcon,
             chipLabel: 'Control de Certificaciones'
         };
     } else if (title.includes('expedientes') || title.includes('trámite')) {
         return {
-            color: '#ef4444',
+            color: theme.palette.error.main,
             icon: FolderOpenIcon,
             chipLabel: 'Expedientes'
         };
     } else {
         return {
-            color: '#00C49F',
+            color: theme.palette.primary.main,
             icon: AnalyticsIcon,
             chipLabel: 'Análisis General'
         };
@@ -44,9 +43,22 @@ const getChartConfig = (title) => {
 };
 
 const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey, height = 400 }) => {
+    const { theme } = useTheme();
     const chartData = useMemo(() => data, [data]);
-    const config = getChartConfig(title);
+    const config = useMemo(() => getChartConfig(title, theme), [title, theme]);
     const IconComponent = config.icon;
+    const COLORS = [
+        theme.palette.primary.main,
+        theme.palette.success.main,
+        theme.palette.warning.main,
+        theme.palette.error.main,
+        theme.palette.secondary.main,
+        theme.palette.info.main,
+        theme.palette.success.light,
+        theme.palette.warning.light,
+        theme.palette.error.light,
+        theme.palette.info.light,
+    ];
 
     const total = useMemo(() => {
         return chartData.reduce((sum, item) => sum + (item[dataKey] || 0), 0);
@@ -58,11 +70,11 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
             const percentage = total > 0 ? ((data[dataKey] / total) * 100).toFixed(1) : 0;
             return (
                 <Box sx={{
-                    backgroundColor: isDarkMode ? 'rgba(45, 55, 72, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                    border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+                    backgroundColor: theme.palette.background.paper,
+                    border: `1px solid ${theme.palette.divider}`,
                     borderRadius: '8px',
                     p: 2,
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                    color: theme.palette.text.primary,
                 }}>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>
                         {data[nameKey]}
@@ -79,7 +91,7 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
         return null;
     };
 
-    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value }) => {
         if (percent < 0.05) return null;
 
         const RADIAN = Math.PI / 180;
@@ -91,13 +103,13 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
             <text
                 x={x}
                 y={y}
-                fill={isDarkMode ? 'white' : 'black'}
+                fill={theme.palette.text.primary}
                 textAnchor={x > cx ? 'start' : 'end'}
                 dominantBaseline="central"
                 fontSize="12"
                 fontWeight="600"
             >
-                {`${(percent * 100).toFixed(0)}%`}
+                {`${value} (${(percent * 100).toFixed(0)}%)`}
             </text>
         );
     };
@@ -124,21 +136,21 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
         }}>
             <CardContent sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25, mb: 2 }}>
-                    <IconComponent sx={{ color: config.color }} />
+                    <IconComponent aria-hidden="true" sx={{ color: config.color }} />
                     <Typography
                         variant="h6"
                         sx={{
                             fontWeight: 600,
-                            color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+                            color: theme.palette.text.primary,
                         }}
                     >
                         {title}
                     </Typography>
-                    <Chip 
-                        label={config.chipLabel} 
-                        size="small" 
-                        variant="outlined" 
-                        sx={{ borderColor: config.color, color: config.color }} 
+                    <Chip
+                        label={config.chipLabel}
+                        size="small"
+                        variant="outlined"
+                        sx={{ borderColor: config.color, color: config.color }}
                     />
                 </Box>
                 <Box sx={{ flexGrow: 1, minHeight: 300 }}>
@@ -152,7 +164,7 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
                                 label={renderCustomizedLabel}
                                 outerRadius={100}
                                 innerRadius={60}
-                                fill="#8884d8"
+                                fill={theme.palette.primary.main}
                                 dataKey={dataKey}
                                 nameKey={nameKey}
                             >
@@ -163,7 +175,7 @@ const CustomDonutChart = React.memo(({ data, title, isDarkMode, dataKey, nameKey
                             <Tooltip content={<CustomTooltip />} />
                             <Legend
                                 wrapperStyle={{
-                                    color: isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.7)',
+                                    color: theme.palette.text.secondary,
                                     fontSize: '12px',
                                     paddingTop: '10px'
                                 }}

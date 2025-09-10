@@ -12,6 +12,7 @@ import {
   LabelList,
 } from 'recharts';
 import PaginationControls from './ui/PaginationControls.jsx';
+import { useTheme } from '../context/ThemeContext.jsx';
 
 const nf = new Intl.NumberFormat('es-AR');
 const formatMiles = (n) => nf.format(n);
@@ -24,7 +25,6 @@ const truncate = (text, max = 30) => {
 
 const RIGHT_PAD = 8;
 const MARGIN_RIGHT = 96;
-const COLOR = '#00C49F';
 
 const formatShort = (n) => {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.', ',') + 'M';
@@ -41,6 +41,8 @@ const CustomHorizontalBarChart = ({
   height,
   pageSize,
 }) => {
+  const { theme } = useTheme();
+  const COLOR = theme.palette.primary.main;
   const chartData = useMemo(
     () =>
       data
@@ -81,7 +83,7 @@ const CustomHorizontalBarChart = ({
             y={0}
             dy={4}
             textAnchor="end"
-            fill={isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'}
+            fill={theme.palette.text.secondary}
             fontSize={12}
           >
             {truncated}
@@ -103,7 +105,7 @@ const CustomHorizontalBarChart = ({
     }
 
     const textX = barEndX + RIGHT_PAD;
-    const fill = isDarkMode ? '#ffffff' : '#0f172a';
+    const fill = theme.palette.text.primary;
 
     return (
       <text
@@ -123,9 +125,9 @@ const CustomHorizontalBarChart = ({
   const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || !payload.length) return null;
     const v = payload[0]?.value || 0;
-    const bg = isDarkMode ? '#0b1220' : '#ffffff';
-    const fg = isDarkMode ? '#e2e8f0' : '#0f172a';
-    const bd = isDarkMode ? '#334155' : '#cbd5e1';
+    const bg = theme.palette.background.paper;
+    const fg = theme.palette.text.primary;
+    const bd = theme.palette.divider;
     return (
       <div
         style={{
@@ -169,12 +171,12 @@ const CustomHorizontalBarChart = ({
     >
       <CardContent sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25, mb: 2 }}>
-          <DashboardIcon sx={{ color: COLOR }} />
+          <DashboardIcon aria-hidden="true" sx={{ color: COLOR }} />
           <Typography
             variant="h6"
             sx={{
               fontWeight: 600,
-              color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
+              color: theme.palette.text.primary,
             }}
           >
             {title}
@@ -186,7 +188,7 @@ const CustomHorizontalBarChart = ({
           align="center"
           sx={{
             mb: 2,
-            color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)',
+            color: theme.palette.text.secondary,
           }}
         >
           {chartData.length} categorías • {formatMiles(total)} agentes
@@ -199,18 +201,18 @@ const CustomHorizontalBarChart = ({
               margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 240 }}
               barCategoryGap={10}
             >
-              <CartesianGrid
-                horizontal={false}
-                strokeDasharray="0 0"
-                stroke={isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}
-              />
-              <XAxis
-                type="number"
-                domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                tickFormatter={formatMiles}
-                allowDecimals={false}
-                tick={{ fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}
-              />
+                <CartesianGrid
+                  horizontal={false}
+                  strokeDasharray="0 0"
+                  stroke={theme.palette.divider}
+                />
+                <XAxis
+                  type="number"
+                  domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                  tickFormatter={formatMiles}
+                  allowDecimals={false}
+                  tick={{ fill: theme.palette.text.secondary }}
+                />
               <YAxis
                 type="category"
                 dataKey={nameKey}
@@ -224,9 +226,9 @@ const CustomHorizontalBarChart = ({
                 cursor={{ fill: 'rgba(255,255,255,0.04)' }}
                 wrapperStyle={{ outline: 'none' }}
               />
-              <Bar dataKey={valueKey} maxBarSize={22} fill="#00C49F">
-                <LabelList content={<ValueLabel />} />
-              </Bar>
+                <Bar dataKey={valueKey} maxBarSize={22} fill={COLOR}>
+                  <LabelList content={<ValueLabel />} />
+                </Bar>
             </BarChart>
           </ResponsiveContainer>
         </Box>
