@@ -1,2 +1,2 @@
-export { default } from './OptimizedOrganigramaTreeView.jsx';
-export * from './OptimizedOrganigramaTreeView.jsx';
+export { default } from "./OptimizedOrganigramaTreeView.jsx";
+export * from "./OptimizedOrganigramaTreeView.jsx";

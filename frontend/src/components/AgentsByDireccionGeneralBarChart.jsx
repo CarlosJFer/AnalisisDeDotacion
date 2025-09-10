@@ -1,11 +1,5 @@
 import React, { useMemo, useState } from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Chip,
-} from "@mui/material";
+import { Card, CardContent, Typography, Box, Chip } from "@mui/material";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import {
   BarChart,
@@ -17,7 +11,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { formatMiles, formatPct, UnifiedTooltip } from "../ui/chart-utils";
+import { formatMiles, formatPct, UnifiedTooltip } from "./ui/chart-utils";
 import PaginationControls from "./ui/PaginationControls.jsx";
 
 const COLOR = "#a855f7";

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, Button, Typography } from '@mui/material';
-import { useTheme } from '../../context/ThemeContext.jsx';
+import React from "react";
+import { Box, Button, Typography } from "@mui/material";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
   const { theme } = useTheme();
@@ -10,14 +10,14 @@ const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
   const btnSx = {
     borderColor: primary,
     color: primary,
-    '&:hover': {
+    "&:hover": {
       borderColor: primary,
       backgroundColor: secondary,
     },
   };
 
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+    <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}>
       <Button
         variant="outlined"
         size="small"
@@ -28,7 +28,7 @@ const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
       >
         « Anterior
       </Button>
-      <Typography variant="body2" sx={{ alignSelf: 'center' }}>
+      <Typography variant="body2" sx={{ alignSelf: "center" }}>
         Página {page + 1} de {totalPages}
       </Typography>
       <Button

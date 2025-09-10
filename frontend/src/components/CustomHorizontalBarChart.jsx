@@ -1,6 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Tooltip as MuiTooltip, Chip } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
+import React, { useMemo, useState } from "react";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  Tooltip as MuiTooltip,
+  Chip,
+} from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import {
   BarChart,
   Bar,
@@ -10,25 +17,26 @@ import {
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
   LabelList,
-} from 'recharts';
-import PaginationControls from './ui/PaginationControls.jsx';
-import { useTheme } from '../context/ThemeContext.jsx';
+} from "recharts";
+import PaginationControls from "./ui/PaginationControls.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 
-const nf = new Intl.NumberFormat('es-AR');
+const nf = new Intl.NumberFormat("es-AR");
 const formatMiles = (n) => nf.format(n);
-const formatPct = (p, digits = 1) => `${(p * 100).toFixed(digits).replace('.', ',')}%`;
+const formatPct = (p, digits = 1) =>
+  `${(p * 100).toFixed(digits).replace(".", ",")}%`;
 
 const truncate = (text, max = 30) => {
-  if (!text) return '';
-  return text.length > max ? text.slice(0, max - 1) + '…' : text;
+  if (!text) return "";
+  return text.length > max ? text.slice(0, max - 1) + "…" : text;
 };
 
 const RIGHT_PAD = 8;
 const MARGIN_RIGHT = 96;
 
 const formatShort = (n) => {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace('.', ',') + 'M';
-  if (n >= 1_000) return (n / 1_000).toFixed(1).replace('.', ',') + 'k';
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(".", ",") + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(1).replace(".", ",") + "k";
   return formatMiles(n);
 };
 
@@ -48,18 +56,19 @@ const CustomHorizontalBarChart = ({
       data
         .map((item) => ({
           ...item,
-          [nameKey]: (item[nameKey] ?? '').toString().trim() || 'Sin categoría',
+          [nameKey]: (item[nameKey] ?? "").toString().trim() || "Sin categoría",
           [valueKey]: Number.isFinite(item[valueKey]) ? item[valueKey] : 0,
         }))
         .sort((a, b) => b[valueKey] - a[valueKey]),
-    [data, nameKey, valueKey]
+    [data, nameKey, valueKey],
   );
   const [page, setPage] = useState(0);
   const effectivePageSize = pageSize ?? chartData.length;
   const totalPages = Math.ceil(chartData.length / effectivePageSize);
   const paginatedData = useMemo(
-    () => chartData.slice(page * effectivePageSize, (page + 1) * effectivePageSize),
-    [chartData, page, effectivePageSize]
+    () =>
+      chartData.slice(page * effectivePageSize, (page + 1) * effectivePageSize),
+    [chartData, page, effectivePageSize],
   );
   const showPagination = pageSize && chartData.length > pageSize;
 
@@ -68,12 +77,12 @@ const CustomHorizontalBarChart = ({
   const chartHeight = height || Math.max(420, plotData.length * 30);
   const total = useMemo(
     () => chartData.reduce((sum, item) => sum + (item[valueKey] || 0), 0),
-    [chartData, valueKey]
+    [chartData, valueKey],
   );
 
   const renderYAxisTick = (props) => {
     const { x, y, payload } = props;
-    const value = payload.value || '';
+    const value = payload.value || "";
     const truncated = truncate(value);
     return (
       <g transform={`translate(${x},${y})`}>
@@ -135,8 +144,8 @@ const CustomHorizontalBarChart = ({
           border: `1px solid ${bd}`,
           color: fg,
           borderRadius: 10,
-          padding: '10px 12px',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.35)',
+          padding: "10px 12px",
+          boxShadow: "0 4px 16px rgba(0,0,0,0.35)",
           minWidth: 220,
         }}
       >
@@ -154,23 +163,35 @@ const CustomHorizontalBarChart = ({
   return (
     <Card
       sx={{
-        height: '100%',
-        background: isDarkMode ? 'rgba(45, 55, 72, 0.8)' : 'rgba(255, 255, 255, 0.9)',
-        backdropFilter: 'blur(20px)',
-        border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
+        height: "100%",
+        background: isDarkMode
+          ? "rgba(45, 55, 72, 0.8)"
+          : "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(20px)",
+        border: isDarkMode
+          ? "1px solid rgba(255, 255, 255, 0.1)"
+          : "1px solid rgba(0, 0, 0, 0.08)",
         borderLeft: `6px solid ${COLOR}`,
         borderRadius: 3,
-        transition: 'all 0.3s ease',
-        '&:hover': {
-          transform: 'translateY(-4px)',
+        transition: "all 0.3s ease",
+        "&:hover": {
+          transform: "translateY(-4px)",
           boxShadow: isDarkMode
-            ? '0 12px 40px rgba(0, 0, 0, 0.4)'
-            : '0 12px 40px rgba(0, 0, 0, 0.15)',
+            ? "0 12px 40px rgba(0, 0, 0, 0.4)"
+            : "0 12px 40px rgba(0, 0, 0, 0.15)",
         },
       }}
     >
       <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.25, mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 1.25,
+            mb: 2,
+          }}
+        >
           <DashboardIcon aria-hidden="true" sx={{ color: COLOR }} />
           <Typography
             variant="h6"
@@ -181,7 +202,12 @@ const CustomHorizontalBarChart = ({
           >
             {title}
           </Typography>
-          <Chip label="Resumen General" size="small" variant="outlined" sx={{ borderColor: COLOR, color: COLOR }} />
+          <Chip
+            label="Resumen General"
+            size="small"
+            variant="outlined"
+            sx={{ borderColor: COLOR, color: COLOR }}
+          />
         </Box>
         <Typography
           variant="body2"
@@ -201,18 +227,18 @@ const CustomHorizontalBarChart = ({
               margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 240 }}
               barCategoryGap={10}
             >
-                <CartesianGrid
-                  horizontal={false}
-                  strokeDasharray="0 0"
-                  stroke={theme.palette.divider}
-                />
-                <XAxis
-                  type="number"
-                  domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
-                  tickFormatter={formatMiles}
-                  allowDecimals={false}
-                  tick={{ fill: theme.palette.text.secondary }}
-                />
+              <CartesianGrid
+                horizontal={false}
+                strokeDasharray="0 0"
+                stroke={theme.palette.divider}
+              />
+              <XAxis
+                type="number"
+                domain={[0, (dataMax) => Math.ceil(dataMax * 1.2)]}
+                tickFormatter={formatMiles}
+                allowDecimals={false}
+                tick={{ fill: theme.palette.text.secondary }}
+              />
               <YAxis
                 type="category"
                 dataKey={nameKey}
@@ -223,12 +249,12 @@ const CustomHorizontalBarChart = ({
               />
               <RechartsTooltip
                 content={<CustomTooltip />}
-                cursor={{ fill: 'rgba(255,255,255,0.04)' }}
-                wrapperStyle={{ outline: 'none' }}
+                cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                wrapperStyle={{ outline: "none" }}
               />
-                <Bar dataKey={valueKey} maxBarSize={22} fill={COLOR}>
-                  <LabelList content={<ValueLabel />} />
-                </Bar>
+              <Bar dataKey={valueKey} maxBarSize={22} fill={COLOR}>
+                <LabelList content={<ValueLabel />} />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </Box>
@@ -246,4 +272,3 @@ const CustomHorizontalBarChart = ({
 };
 
 export default CustomHorizontalBarChart;
-
