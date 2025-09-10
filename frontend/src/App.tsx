@@ -1,14 +1,16 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import { HelmetProvider } from "react-helmet-async";
+import { setNavigate } from "./services/api.js";
 
 // Contextos
 import { AuthProvider } from "./context/AuthContext.jsx";
@@ -67,6 +69,10 @@ const queryClient = new QueryClient({
 // Componente para manejar el layout condicional
 const AppLayout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    setNavigate(navigate);
+  }, [navigate]);
   const isLoginPage = location.pathname.startsWith("/login");
 
   return (

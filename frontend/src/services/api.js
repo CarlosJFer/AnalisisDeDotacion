@@ -67,8 +67,6 @@ apiClient.interceptors.response.use(
       localStorage.removeItem("userInfo");
       if (navigator) {
         navigator("/login", { replace: true });
-      } else {
-        window.location.href = "/login";
       }
     } else if (error.response?.status >= 500) {
       console.error("Server error:", error.response.status);
