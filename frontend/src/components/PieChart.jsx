@@ -2,11 +2,11 @@ import React from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useTheme as useAppTheme } from '../context/ThemeContext';
-import chartColors from '../theme/chartColors';
+import { getPalette } from '../theme.js';
 
 const CustomPieChart = ({ data, dataKey, nameKey, title }) => {
   const { isDarkMode } = useAppTheme();
-  const colors = chartColors[isDarkMode ? 'dark' : 'light'];
+  const colors = getPalette(isDarkMode);
 
   return (
     <Card sx={{ width: '100%', height: 300, my: 3 }}>

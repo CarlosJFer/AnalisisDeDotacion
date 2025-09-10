@@ -1,12 +1,12 @@
-const theme = {
-  colors: {
-    textPrimary: '#1f2937',
-    textSecondary: '#6b7280'
-  },
-  fontSizes: {
-    kpiValue: '18px',
-    kpiLabel: '14px'
-  }
+import chartColors from './theme/chartColors.js';
+
+export const getPalette = (isDark) => {
+  const scheme = chartColors[isDark ? 'dark' : 'light'];
+  return {
+    primary: scheme.palette[0],
+    secondary: scheme.palette[1],
+    ...scheme,
+  };
 };
 
-export default theme;
+export default getPalette;
