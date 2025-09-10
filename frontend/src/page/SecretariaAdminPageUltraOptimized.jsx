@@ -24,6 +24,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { FixedSizeList as List } from "react-window";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -36,9 +37,11 @@ import {
   useOptimizedForm,
 } from "../components/OptimizedFormField.jsx";
 
+const ROW_HEIGHT = 56;
+
 // Componente de fila memoizado para evitar re-renders
 const SecretariaRow = memo(
-  ({ secretaria, onEdit, onDelete, getNombrePadre, isDarkMode }) => {
+  ({ secretaria, onEdit, onDelete, getNombrePadre, isDarkMode, style }) => {
     const handleEdit = useCallback(
       () => onEdit(secretaria),
       [onEdit, secretaria],
@@ -50,6 +53,7 @@ const SecretariaRow = memo(
 
     return (
       <TableRow
+        style={style}
         sx={{
           "&:hover": {
             backgroundColor: isDarkMode
@@ -614,18 +618,27 @@ const SecretariaAdminPageUltraOptimized = () => {
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {paginatedData.map((secretaria) => (
+            <List
+              height={Math.min(400, paginatedData.length * ROW_HEIGHT)}
+              itemCount={paginatedData.length}
+              itemSize={ROW_HEIGHT}
+              width="100%"
+              outerElementType={React.forwardRef((props, ref) => (
+                <TableBody {...props} ref={ref} />
+              ))}
+            >
+              {({ index, style }) => (
                 <SecretariaRow
-                  key={secretaria._id}
-                  secretaria={secretaria}
+                  key={paginatedData[index]._id}
+                  secretaria={paginatedData[index]}
                   onEdit={setEditingSec}
                   onDelete={handleDeleteSec}
                   getNombrePadre={getNombrePadre}
                   isDarkMode={isDarkMode}
+                  style={style}
                 />
-              ))}
-            </TableBody>
+              )}
+            </List>
           </Table>
         </TableContainer>
 
