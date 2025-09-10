@@ -111,13 +111,6 @@ const DashboardPage = () => {
     () => setOpenDeleteDialog(false),
     [],
   );
-  const handleDeleted = useCallback(
-    (msg) => {
-      setDeleteMsg(msg);
-      fetchAllData(filters, false);
-    },
-    [fetchAllData, filters],
-  );
 
   // Función para filtrar datos que no sean "-" o vacÃ­os
   const filterValidData = (data, nameKey) => {
@@ -440,6 +433,14 @@ const DashboardPage = () => {
       setLoading(false);
     },
     [filters, hasField],
+  );
+
+  const handleDeleted = useCallback(
+    (msg) => {
+      setDeleteMsg(msg);
+      fetchAllData(filters, false);
+    },
+    [fetchAllData, filters],
   );
 
   const sanitizeFilters = useCallback(
