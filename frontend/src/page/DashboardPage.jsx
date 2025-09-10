@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useCallback, lazy, Suspense } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  lazy,
+  Suspense,
+  useRef,
+} from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   Box,
@@ -45,6 +52,14 @@ const DeleteDashboardDialog = lazy(
   () => import("../components/DeleteDashboardDialog"),
 );
 
+const setsAreEqual = (a, b) => {
+  if (a.size !== b.size) return false;
+  for (const value of a) {
+    if (!b.has(value)) return false;
+  }
+  return true;
+};
+
 const DashboardPage = () => {
   const { user } = useAuth();
   const { isDarkMode } = useTheme();
@@ -63,9 +78,14 @@ const DashboardPage = () => {
     funcion: "",
   });
   const [availableFields, setAvailableFields] = useState(new Set());
+  const availableFieldsRef = useRef(new Set());
   const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
   const [filterApplied, setFilterApplied] = useState(false);
   const [noData, setNoData] = useState(false);
+
+  useEffect(() => {
+    availableFieldsRef.current = availableFields;
+  }, [availableFields]);
 
   // Estados para todos los datos
   const [totalAgents, setTotalAgents] = useState(0);
@@ -157,7 +177,7 @@ const DashboardPage = () => {
     [],
   );
   const hasField = useCallback(
-    (name, fields = availableFields) => {
+    (name, fields = availableFieldsRef.current) => {
       if (!fields.size) return true;
       const target = normalize(name);
       for (const f of fields) {
@@ -165,7 +185,7 @@ const DashboardPage = () => {
       }
       return false;
     },
-    [availableFields, normalize],
+    [normalize],
   );
 
   useEffect(() => {
@@ -206,8 +226,9 @@ const DashboardPage = () => {
           if (plantilla) {
             params.plantilla = plantilla;
           }
-          if (availableFields.size) {
-            params.availableFields = Array.from(availableFields);
+          const currentAvailableFields = availableFieldsRef.current;
+          if (currentAvailableFields.size) {
+            params.availableFields = Array.from(currentAvailableFields);
           }
           Object.assign(params, extraParams);
           try {
@@ -370,7 +391,9 @@ const DashboardPage = () => {
           if (departamentoData?.length) fieldSet.add("Departamento");
           if (divisionData?.length) fieldSet.add("division");
           if (functionData?.length) fieldSet.add("funcion");
-          setAvailableFields(fieldSet);
+          setAvailableFields((prev) =>
+            setsAreEqual(prev, fieldSet) ? prev : fieldSet,
+          );
           setSeniorityData(seniorityRes);
           setSecondaryData(secondaryRes);
           setTertiaryData(tertiaryRes);
