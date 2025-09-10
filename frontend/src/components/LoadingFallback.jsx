@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Box,
   Card,
@@ -8,10 +8,10 @@ import {
   Grid,
   Typography,
   LinearProgress,
-} from '@mui/material';
-import { motion } from 'framer-motion';
+} from "@mui/material";
+import { motion } from "framer-motion";
 
-const LoadingFallback = ({ type = 'dashboard', message = 'Cargando...' }) => {
+const LoadingFallback = ({ type = "dashboard", message = "Cargando..." }) => {
   const SkeletonCard = ({ height = 200 }) => (
     <motion.div
       initial={{ opacity: 0 }}
@@ -51,8 +51,13 @@ const LoadingFallback = ({ type = 'dashboard', message = 'Cargando...' }) => {
         {[1, 2, 3, 4].map((i) => (
           <Grid item xs={6} md={3} key={i}>
             <Card>
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Skeleton variant="circular" width={40} height={40} sx={{ mx: 'auto', mb: 1 }} />
+              <CardContent sx={{ textAlign: "center" }}>
+                <Skeleton
+                  variant="circular"
+                  width={40}
+                  height={40}
+                  sx={{ mx: "auto", mb: 1 }}
+                />
                 <Skeleton variant="text" width="80%" />
                 <Skeleton variant="text" width="60%" />
               </CardContent>
@@ -85,8 +90,13 @@ const LoadingFallback = ({ type = 'dashboard', message = 'Cargando...' }) => {
         />
         <CardContent>
           {[1, 2, 3, 4, 5].map((i) => (
-            <Box key={i} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Skeleton variant="circular" width={40} height={40} sx={{ mr: 2 }} />
+            <Box key={i} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <Skeleton
+                variant="circular"
+                width={40}
+                height={40}
+                sx={{ mr: 2 }}
+              />
               <Box sx={{ flexGrow: 1 }}>
                 <Skeleton variant="text" width="80%" />
                 <Skeleton variant="text" width="60%" />
@@ -112,7 +122,7 @@ const LoadingFallback = ({ type = 'dashboard', message = 'Cargando...' }) => {
               </Grid>
             ))}
             <Grid item xs={12}>
-              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              <Box sx={{ display: "flex", gap: 2, justifyContent: "flex-end" }}>
                 <Skeleton variant="rectangular" width={100} height={36} />
                 <Skeleton variant="rectangular" width={100} height={36} />
               </Box>
@@ -125,25 +135,25 @@ const LoadingFallback = ({ type = 'dashboard', message = 'Cargando...' }) => {
 
   const renderContent = () => {
     switch (type) {
-      case 'table':
+      case "table":
         return renderTableSkeleton();
-      case 'form':
+      case "form":
         return renderFormSkeleton();
-      case 'dashboard':
+      case "dashboard":
       default:
         return renderDashboardSkeleton();
     }
   };
 
   return (
-    <Box sx={{ width: '100%', minHeight: '60vh' }}>
+    <Box sx={{ width: "100%", minHeight: "60vh" }}>
       {/* Progress bar */}
-      <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
+      <Box sx={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999 }}>
         <LinearProgress />
       </Box>
 
       {/* Loading message */}
-      <Box sx={{ textAlign: 'center', py: 2 }}>
+      <Box sx={{ textAlign: "center", py: 2 }}>
         <Typography variant="h6" color="text.secondary">
           {message}
         </Typography>

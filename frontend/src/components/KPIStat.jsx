@@ -1,36 +1,38 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
-import { theme, modeVars, icons } from '../ui';
+import React from "react";
+import { Box, Typography } from "@mui/material";
+import { theme, modeVars, icons } from "./ui";
 
 const KPIStat = ({ metric, label, value, delta, isDarkMode }) => {
   const Icon = icons[metric];
   const vars = modeVars(isDarkMode);
 
   const deltaColor =
-    typeof delta === 'number'
+    typeof delta === "number"
       ? delta > 0
-        ? 'success.main'
+        ? "success.main"
         : delta < 0
-        ? 'error.main'
-        : 'text.secondary'
-      : 'text.secondary';
+          ? "error.main"
+          : "text.secondary"
+      : "text.secondary";
 
-  const textPrimary = isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.85)';
-  const textSecondary = isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)';
+  const textPrimary = isDarkMode ? "rgba(255,255,255,0.9)" : "rgba(0,0,0,0.85)";
+  const textSecondary = isDarkMode
+    ? "rgba(255,255,255,0.7)"
+    : "rgba(0,0,0,0.6)";
 
   return (
     <Box
       sx={{
         ...vars,
         p: 2,
-        height: '100%',
+        height: "100%",
         borderRadius: theme.radii.md,
-        backgroundColor: 'var(--bg-color)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        textAlign: 'center',
+        backgroundColor: "var(--bg-color)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
       }}
     >
       {Icon && (
@@ -60,7 +62,7 @@ const KPIStat = ({ metric, label, value, delta, isDarkMode }) => {
       >
         {label}
       </Typography>
-      {typeof delta === 'number' && (
+      {typeof delta === "number" && (
         <Typography
           sx={{
             mt: 0.5,
@@ -76,4 +78,3 @@ const KPIStat = ({ metric, label, value, delta, isDarkMode }) => {
 };
 
 export default KPIStat;
-

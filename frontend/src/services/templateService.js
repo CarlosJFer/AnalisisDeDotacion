@@ -1,12 +1,11 @@
+import apiClient from "./api"; // Usamos el apiClient existente
 
-import apiClient from './api'; // Usamos el apiClient existente
-
-const API_URL = '/templates';
+const API_URL = "/templates";
 
 const extractError = (err) => {
   if (err?.response?.data?.message) return err.response.data.message;
   if (err?.message) return err.message;
-  return 'Error de red o del servidor';
+  return "Error de red o del servidor";
 };
 
 // Obtener todas las plantillas

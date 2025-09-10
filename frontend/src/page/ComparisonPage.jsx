@@ -8,10 +8,17 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
 } from "chart.js";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+);
 
 const data = {
   labels: ["Secretaría A", "Secretaría B", "Secretaría C"],
@@ -50,7 +57,8 @@ const ComparisonPage = () => {
       </Typography>
       <Paper elevation={3} sx={{ p: 2, mb: 3 }}>
         <Typography variant="body1" gutterBottom>
-          Visualiza y compara la dotación y vacantes entre diferentes secretarías. Puedes personalizar los filtros y los datos mostrados.
+          Visualiza y compara la dotación y vacantes entre diferentes
+          secretarías. Puedes personalizar los filtros y los datos mostrados.
         </Typography>
       </Paper>
       <Grid container spacing={2}>
@@ -71,4 +79,4 @@ const ComparisonPage = () => {
   );
 };
 
-export default ComparisonPage; 
+export default ComparisonPage;

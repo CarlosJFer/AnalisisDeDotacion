@@ -1,5 +1,5 @@
-import React from 'react';
-import { Typography, Box } from '@mui/material';
+import React from "react";
+import { Typography, Box } from "@mui/material";
 
 const ResolucionesTool = () => (
   <Box sx={{ p: 4 }}>

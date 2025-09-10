@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, Button, Alert, Paper } from '@mui/material';
-import { checkLocalStorageHealth, clearLocalStorage, clearUserData } from '../utils/clearStorage';
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Button, Alert, Paper } from "@mui/material";
+import {
+  checkLocalStorageHealth,
+  clearLocalStorage,
+  clearUserData,
+} from "../utils/clearStorage";
 
 const DebugComponent = () => {
   const [debugInfo, setDebugInfo] = useState(null);
@@ -57,25 +61,23 @@ const DebugComponent = () => {
       <Typography variant="h4" gutterBottom>
         Panel de Depuración
       </Typography>
-      
+
       <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="h6" gutterBottom>
           Estado del LocalStorage
         </Typography>
-        
-        <Typography>
-          Total de claves: {debugInfo.totalKeys}
+
+        <Typography>Total de claves: {debugInfo.totalKeys}</Typography>
+
+        <Typography color={debugInfo.healthy ? "success.main" : "error.main"}>
+          Estado: {debugInfo.healthy ? "Saludable" : "Problemas detectados"}
         </Typography>
-        
-        <Typography color={debugInfo.healthy ? 'success.main' : 'error.main'}>
-          Estado: {debugInfo.healthy ? 'Saludable' : 'Problemas detectados'}
-        </Typography>
-        
+
         {debugInfo.corruptedKeys.length > 0 && (
           <Alert severity="warning" sx={{ mt: 2 }}>
             <Typography variant="subtitle2">Claves corruptas:</Typography>
             <ul>
-              {debugInfo.corruptedKeys.map(key => (
+              {debugInfo.corruptedKeys.map((key) => (
                 <li key={key}>{key}</li>
               ))}
             </ul>
@@ -83,20 +85,16 @@ const DebugComponent = () => {
         )}
       </Paper>
 
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        <Button 
-          variant="contained" 
-          color="warning" 
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <Button
+          variant="contained"
+          color="warning"
           onClick={handleClearUserData}
         >
           Limpiar Datos de Usuario
         </Button>
-        
-        <Button 
-          variant="contained" 
-          color="error" 
-          onClick={handleClearAll}
-        >
+
+        <Button variant="contained" color="error" onClick={handleClearAll}>
           Limpiar Todo el LocalStorage
         </Button>
       </Box>
@@ -104,4 +102,4 @@ const DebugComponent = () => {
   );
 };
 
-export default DebugComponent; 
+export default DebugComponent;

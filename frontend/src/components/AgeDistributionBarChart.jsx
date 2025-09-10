@@ -1,11 +1,25 @@
-import React, { useMemo, useState } from 'react';
-import { Typography, Box, Chip } from '@mui/material';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList } from 'recharts';
-import DashboardCard from '../components/ui/DashboardCard';
-import PaginationControls from '../components/ui/PaginationControls';
-import { formatMiles, formatPct, rechartsCommon, UnifiedTooltip } from '../ui/chart-utils';
-import icons from '../ui/icons.js';
-import { useTheme } from '../context/ThemeContext.jsx';
+import React, { useMemo, useState } from "react";
+import { Typography, Box, Chip } from "@mui/material";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  LabelList,
+} from "recharts";
+import DashboardCard from "./ui/DashboardCard";
+import PaginationControls from "./ui/PaginationControls";
+import {
+  formatMiles,
+  formatPct,
+  rechartsCommon,
+  UnifiedTooltip,
+} from "./ui/chart-utils";
+import icons from "./ui/icons.js";
+import { useTheme } from "../context/ThemeContext.jsx";
 
 const AgeDistributionBarChart = ({ data, isDarkMode }) => {
   const { theme } = useTheme();
@@ -14,7 +28,7 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
 
   const chartData = useMemo(() => {
     const total = (data || []).reduce((s, d) => s + Number(d.count || 0), 0);
-    return (data || []).map(d => {
+    return (data || []).map((d) => {
       const cantidad = Number(d.count || 0);
       return {
         rango: d.range,
@@ -24,14 +38,17 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
     });
   }, [data]);
 
-  const total = useMemo(() => chartData.reduce((s, d) => s + d.cantidad, 0), [chartData]);
+  const total = useMemo(
+    () => chartData.reduce((s, d) => s + d.cantidad, 0),
+    [chartData],
+  );
 
   const [page, setPage] = useState(0);
   const PAGE = 10;
   const totalPages = Math.ceil(chartData.length / PAGE) || 1;
   const pageData = useMemo(
     () => chartData.slice(page * PAGE, (page + 1) * PAGE),
-    [chartData, page]
+    [chartData, page],
   );
 
   const PercentLabel = (props) => {
@@ -40,7 +57,7 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
     const text = formatPct(Number(value));
     const approx = text.length * 7;
     const xText = Math.min(x + width + 8, chartW - approx - 4);
-    const color = isDarkMode ? '#ffffff' : '#0f172a';
+    const color = isDarkMode ? "#ffffff" : "#0f172a";
     return (
       <text x={xText} y={y + 4} fill={color} fontWeight="600">
         {text}
@@ -53,36 +70,57 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
       title="Distribución por Rangos de Edad - Planta y Contratos"
       icon={<icons.edad />}
       isDarkMode={isDarkMode}
-      headerRight={<Chip label="Rangos de edad" size="small" variant="outlined" />}
+      headerRight={
+        <Chip label="Rangos de edad" size="small" variant="outlined" />
+      }
     >
       <Typography
         variant="body2"
         align="center"
-        sx={{ mb: 2, color: isDarkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }}
+        sx={{
+          mb: 2,
+          color: isDarkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+        }}
       >
         {chartData.length} rangos • {formatMiles(total)} agentes
       </Typography>
       <Box sx={{ height: 360 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={pageData} margin={{ top: 16, right: 160, bottom: 16, left: 40 }}>
+          <BarChart
+            data={pageData}
+            margin={{ top: 16, right: 160, bottom: 16, left: 40 }}
+          >
             <CartesianGrid {...gridProps} />
             <XAxis dataKey="rango" {...axisProps} />
             <YAxis {...axisProps} />
             <Tooltip
               {...tooltipProps}
               content={({ active, payload, label }) => (
-                <UnifiedTooltip active={active} payload={payload} label={`Rango: ${label}`} dark={isDarkMode}>
+                <UnifiedTooltip
+                  active={active}
+                  payload={payload}
+                  label={`Rango: ${label}`}
+                  dark={isDarkMode}
+                >
                   {payload?.length && (
                     <>
-                      <div>Cantidad de agentes: {formatMiles(payload[0].payload.cantidad)}</div>
-                      <div>Porcentaje: {formatPct(payload[0].payload.porcentaje)}</div>
+                      <div>
+                        Cantidad de agentes:{" "}
+                        {formatMiles(payload[0].payload.cantidad)}
+                      </div>
+                      <div>
+                        Porcentaje: {formatPct(payload[0].payload.porcentaje)}
+                      </div>
                     </>
                   )}
                 </UnifiedTooltip>
               )}
             />
             <Bar dataKey="cantidad" fill={COLOR} maxBarSize={28}>
-              <LabelList dataKey="porcentaje" content={(p) => <PercentLabel {...p} />} />
+              <LabelList
+                dataKey="porcentaje"
+                content={(p) => <PercentLabel {...p} />}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
@@ -100,4 +138,3 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
 };
 
 export default AgeDistributionBarChart;
-
