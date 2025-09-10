@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback, memo } from "react";
+import { FixedSizeList as List } from "react-window";
 import apiClient from "../services/api";
 import {
   Button,
@@ -33,9 +34,11 @@ import {
 } from "../components/OptimizedFormField.jsx";
 import AdminSectionLayout from "../components/AdminSectionLayout.jsx";
 
+const ROW_HEIGHT = 56;
+
 // Componente de fila de usuario memoizado
 const UserRow = memo(
-  ({ user, onEdit, onDelete, onChangePassword, isDarkMode }) => {
+  ({ user, onEdit, onDelete, onChangePassword, isDarkMode, style }) => {
     const handleEdit = useCallback(() => onEdit(user), [onEdit, user]);
     const handleDelete = useCallback(
       () => onDelete(user._id),
@@ -48,6 +51,7 @@ const UserRow = memo(
 
     return (
       <TableRow
+        style={style}
         sx={{
           "&:hover": {
             backgroundColor: isDarkMode
@@ -626,18 +630,27 @@ const UserAdminPage = () => {
                 </TableCell>
               </TableRow>
             </TableHead>
-            <TableBody>
-              {users.map((user) => (
+            <List
+              height={Math.min(400, users.length * ROW_HEIGHT)}
+              itemCount={users.length}
+              itemSize={ROW_HEIGHT}
+              width="100%"
+              outerElementType={React.forwardRef((props, ref) => (
+                <TableBody {...props} ref={ref} />
+              ))}
+            >
+              {({ index, style }) => (
                 <UserRow
-                  key={user._id}
-                  user={user}
+                  key={users[index]._id}
+                  user={users[index]}
+                  style={style}
                   onEdit={handleOpenEdit}
                   onDelete={handleDeleteUser}
                   onChangePassword={handleOpenChangePassword}
                   isDarkMode={isDarkMode}
                 />
-              ))}
-            </TableBody>
+              )}
+            </List>
           </Table>
         </TableContainer>
       </Card>
