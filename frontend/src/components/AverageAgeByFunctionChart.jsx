@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
-import { Card, CardContent, Typography, Box, Button, Chip } from '@mui/material';\nimport QueryStatsIcon from '@mui/icons-material/QueryStats';
+import { Card, CardContent, Typography, Box, Button } from '@mui/material';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import {
   BarChart,
   Bar,
@@ -117,11 +118,16 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
           variant="h6"
           align="center"
           sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 1,
             fontWeight: 600,
             color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
             mb: 2,
           }}
         >
+          <QueryStatsIcon sx={{ fontSize: 24 }} />
           Edad Promedio por Función - Planta y Contratos
         </Typography>
         <Box sx={{ height: Math.max(420, pageData.length * 30) }}>
