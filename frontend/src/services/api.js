@@ -2,6 +2,13 @@
 
 import axios from "axios";
 
+// Navigator helper that can be injected from React components
+let navigator;
+
+export const setNavigate = (nav) => {
+  navigator = nav;
+};
+
 // 1. Creamos una instancia de Axios con la URL base de nuestro backend.
 const apiClient = axios.create({
   baseURL: "http://localhost:5001/api", // La base de todas tus rutas de la API
@@ -58,7 +65,11 @@ apiClient.interceptors.response.use(
     } else if (error.response?.status === 401) {
       console.warn("Unauthorized access - redirecting to login");
       localStorage.removeItem("userInfo");
-      window.location.href = "/login";
+      if (navigator) {
+        navigator("/login", { replace: true });
+      } else {
+        window.location.href = "/login";
+      }
     } else if (error.response?.status >= 500) {
       console.error("Server error:", error.response.status);
     }
