@@ -18,8 +18,8 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
-} from "./ui/chart-utils";
-import icons from "./ui/icons.js";
+} from "../ui/chart-utils";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const AgentsByDireccionGeneralBarChart = ({ data, isDarkMode }) => {

@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import KPIStat from "./KPIStat.jsx";
 import DashboardCard from "./ui/DashboardCard.jsx";
-import { icons } from "./ui";
+import { icons } from "../ui";
 
 const StatsWidget = ({ data, isDarkMode }) => {
   if (!data) {
