@@ -18,13 +18,13 @@ import {
   formatMiles,
   formatPct,
   UnifiedTooltip,
-  axisStyle,
-  gridStyle,
+  rechartsCommon,
 } from "./ui/chart-utils";
 
 const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
   const theme = useTheme();
   const primary = theme.palette.primary.main;
+  const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   const chartData = useMemo(
     () =>
@@ -102,13 +102,13 @@ const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
             margin={{ top: 16, right: 180, bottom: 16, left: 260 }}
             barCategoryGap={10}
           >
-            <CartesianGrid horizontal={false} {...gridStyle(isDarkMode)} />
+            <CartesianGrid horizontal={false} {...gridProps} />
             <XAxis
               type="number"
               domain={[0, (max) => Math.ceil((max || 0) * 1.2)]}
               allowDecimals={false}
               tickFormatter={formatMiles}
-              {...axisStyle(isDarkMode)}
+              {...axisProps}
             />
             <YAxis
               type="category"
@@ -116,10 +116,11 @@ const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
               width={260}
               tickLine={false}
               interval={0}
-              {...axisStyle(isDarkMode)}
+              {...axisProps}
             />
             <Tooltip
-              wrapperStyle={{ outline: "none" }}
+              {...tooltipProps}
+              wrapperStyle={{ ...tooltipProps.wrapperStyle, outline: "none" }}
               content={({ active, payload }) => (
                 <UnifiedTooltip
                   active={active}
