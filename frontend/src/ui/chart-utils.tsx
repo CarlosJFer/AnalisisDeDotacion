@@ -1,21 +1,28 @@
 import React from "react";
 
 /**
- * Utilidades de formato y estilo para los componentes de gráficos.
+ * Utilidades de formato y estilo para gráficos construidos con Recharts.
  *
- * `axisStyle(dark)`, `gridStyle(dark)` y `tooltipStyle(dark)` retornan
- * objetos con los colores y tipografías estándar según el modo oscuro o
- * claro.  Se pueden usar en los componentes de Recharts para mantener
- * una apariencia consistente:
+ * La función `rechartsCommon()` provee estilos y colores estandarizados
+ * para ejes, grillas y tooltips dependiendo del modo oscuro/claro. Estos
+ * valores se pueden utilizar directamente en los componentes de Recharts
+ * para mantener una apariencia coherente:
  *
- *   <XAxis {...axisStyle()} />
- *   <CartesianGrid {...gridStyle()} />
- *   <Tooltip wrapperStyle={tooltipStyle()} content={<UnifiedTooltip />} />
+ * ```tsx
+ * const { axisProps, gridProps, tooltipProps } = rechartsCommon();
+ * <XAxis {...axisProps} />
+ * <CartesianGrid {...gridProps} />
+ * <Tooltip {...tooltipProps} content={<UnifiedTooltip />} />
+ * ```
  */
 
 export const nf = new Intl.NumberFormat("es-AR");
-export const formatMiles = (n: number) => nf.format(n);
-export const formatPct = (p: number, d = 1) =>
+
+/** Formatea números con separador de miles. */
+const formatMiles = (n: number): string => nf.format(n);
+
+/** Formatea porcentajes con `d` decimales. */
+const formatPct = (p: number, d = 1): string =>
   `${(p * 100).toFixed(d).replace(".", ",")}%`;
 
 export const isDark = () =>
@@ -64,6 +71,34 @@ export const tooltipStyle = (dark?: boolean) => {
     minWidth: 220,
     fontSize: 14,
   } as React.CSSProperties;
+};
+
+/**
+ * Propiedades comunes para Recharts y paleta de colores derivada.
+ */
+const rechartsCommon = (dark?: boolean): {
+  axisProps: ReturnType<typeof axisStyle>;
+  gridProps: ReturnType<typeof gridStyle>;
+  tooltipProps: { wrapperStyle: React.CSSProperties };
+  colors: {
+    tick: string;
+    axisLine: string;
+    grid: string;
+    tooltipBg: string;
+    tooltipText: string;
+  };
+} => {
+  const axisProps = axisStyle(dark);
+  const gridProps = gridStyle(dark);
+  const tooltipProps = { wrapperStyle: tooltipStyle(dark) };
+  const colors = {
+    tick: axisProps.tick.fill as string,
+    axisLine: axisProps.axisLine.stroke as string,
+    grid: gridProps.stroke as string,
+    tooltipBg: tooltipProps.wrapperStyle.background as string,
+    tooltipText: tooltipProps.wrapperStyle.color as string,
+  };
+  return { axisProps, gridProps, tooltipProps, colors };
 };
 
 const RIGHT_PAD = 8;
@@ -133,3 +168,5 @@ export const UnifiedTooltip: React.FC<{
     </div>
   );
 };
+
+export { formatMiles, formatPct, rechartsCommon };
