@@ -122,22 +122,28 @@ const DashboardPage = () => {
     };
     const filterFields = ["Secretaria","Subsecretaría","direccion general","direccion","Departamento","division","funcion"];
 
-    const normalize = str => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-    const hasField = (name, fields = availableFields) => {
-        if (!fields.size) return true;
-        const target = normalize(name);
-        for (const f of fields) {
-            if (normalize(f) === target) return true;
-        }
-        return false;
-    };
+    const normalize = useCallback(
+        (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(),
+        []
+    );
+    const hasField = useCallback(
+        (name, fields = availableFields) => {
+            if (!fields.size) return true;
+            const target = normalize(name);
+            for (const f of fields) {
+                if (normalize(f) === target) return true;
+            }
+            return false;
+        },
+        [availableFields, normalize]
+    );
 
     useEffect(() => {
         setFilterApplied(false);
         setNoData(false);
     }, [tabValue]);
 
-    const fetchAllData = async (appliedFilters = filters, fromFilter = false) => {
+    const fetchAllData = useCallback(async (appliedFilters = filters, fromFilter = false) => {
         setLoading(true);
         setError('');
 
@@ -265,47 +271,57 @@ const DashboardPage = () => {
                 safeGet(funcMap.sacViaCaptacion, [], TEMPLATE_SAC_VIAS)
             ]);
 
-            setTotalAgents(totalData.total);
-            setAgeDistribution(ageDistData);
-            setAgeByFunction(ageFunctionData);
-            setAgeByArea(ageAreaData);
-            setAgentsByFunction(functionData);
-            setAgentsByEmploymentType(employmentData);
-            setAgentsByDependency(dependencyData);
-            setAgentsBySecretaria(secretariaData);
-            setAgentsBySubsecretaría(SubsecretaríaData);
-            setAgentsBydireccionGeneral(direccionGeneralData);
-            setAgentsBydireccion(direccionData);
-            setAgentsByDepartamento(departamentoData);
-            setAgentsBydivision(divisionData);
-            const fieldSet = new Set();
-            if (secretariaData?.length) fieldSet.add('Secretaria');
-            if (SubsecretaríaData?.length) fieldSet.add('Subsecretaría');
-            if (direccionGeneralData?.length) fieldSet.add('direccion general');
-            if (direccionData?.length) fieldSet.add('direccion');
-            if (departamentoData?.length) fieldSet.add('Departamento');
-            if (divisionData?.length) fieldSet.add('division');
-            if (functionData?.length) fieldSet.add('funcion');
-            setAvailableFields(fieldSet);
-            setSeniorityData(seniorityRes);
-            setSecondaryData(secondaryRes);
-            setTertiaryData(tertiaryRes);
-            setUniversityData(universityRes);
-            setTopUniSecretariasData(topUniRes);
-            setTopTerSecretariasData(topTerRes);
-            setRegistrationTypeData(regTypeRes);
-            setEntryTimeData(entryTimeRes);
-            setExitTimeData(exitTimeRes);
-            setTopUnitsData(topUnitsRes);
-            setExpTopInitiators(topInitiatorsData);
-            setExpByTramite(byTramiteData);
-            setSacViaData(sacViaCaptacionData);
+            const scheduleUpdate = (cb) => {
+                if ('requestIdleCallback' in window) {
+                    window.requestIdleCallback(() => cb());
+                } else {
+                    setTimeout(() => cb(), 0);
+                }
+            };
 
-            const has = filterFields.some(f => hasField(f, fieldSet));
-            if (fromFilter) {
-                setShowNoFiltersAlert(!has);
-            }
-            setNoData(totalData.total === 0);
+            scheduleUpdate(() => {
+                setTotalAgents(totalData.total);
+                setAgeDistribution(ageDistData);
+                setAgeByFunction(ageFunctionData);
+                setAgeByArea(ageAreaData);
+                setAgentsByFunction(functionData);
+                setAgentsByEmploymentType(employmentData);
+                setAgentsByDependency(dependencyData);
+                setAgentsBySecretaria(secretariaData);
+                setAgentsBySubsecretaría(SubsecretaríaData);
+                setAgentsBydireccionGeneral(direccionGeneralData);
+                setAgentsBydireccion(direccionData);
+                setAgentsByDepartamento(departamentoData);
+                setAgentsBydivision(divisionData);
+                const fieldSet = new Set();
+                if (secretariaData?.length) fieldSet.add('Secretaria');
+                if (SubsecretaríaData?.length) fieldSet.add('Subsecretaría');
+                if (direccionGeneralData?.length) fieldSet.add('direccion general');
+                if (direccionData?.length) fieldSet.add('direccion');
+                if (departamentoData?.length) fieldSet.add('Departamento');
+                if (divisionData?.length) fieldSet.add('division');
+                if (functionData?.length) fieldSet.add('funcion');
+                setAvailableFields(fieldSet);
+                setSeniorityData(seniorityRes);
+                setSecondaryData(secondaryRes);
+                setTertiaryData(tertiaryRes);
+                setUniversityData(universityRes);
+                setTopUniSecretariasData(topUniRes);
+                setTopTerSecretariasData(topTerRes);
+                setRegistrationTypeData(regTypeRes);
+                setEntryTimeData(entryTimeRes);
+                setExitTimeData(exitTimeRes);
+                setTopUnitsData(topUnitsRes);
+                setExpTopInitiators(topInitiatorsData);
+                setExpByTramite(byTramiteData);
+                setSacViaData(sacViaCaptacionData);
+
+                const has = filterFields.some(f => hasField(f, fieldSet));
+                if (fromFilter) {
+                    setShowNoFiltersAlert(!has);
+                }
+                setNoData(totalData.total === 0);
+            });
 
             return true; // Indica éxito
         }, 'Dashboard data fetch');
@@ -344,25 +360,31 @@ const DashboardPage = () => {
         }
 
         setLoading(false);
-    };
+    }, [filters, hasField]);
 
-    const sanitizeFilters = (obj) => {
-        return Object.fromEntries(
-            Object.entries(obj).filter(([k, v]) => {
-                if (!v) return false;
-                const fieldName = fieldMap[k];
-                return hasField(fieldName);
-            })
-        );
-    };
+    const sanitizeFilters = useCallback(
+        (obj) => {
+            return Object.fromEntries(
+                Object.entries(obj).filter(([k, v]) => {
+                    if (!v) return false;
+                    const fieldName = fieldMap[k];
+                    return hasField(fieldName);
+                })
+            );
+        },
+        [hasField]
+    );
 
-    const handleApplyFilters = (newFilters) => {
-        const clean = sanitizeFilters(newFilters);
-        setFilters(clean);
-        setFilterApplied(true);
-        setNoData(false);
-        fetchAllData(clean, true);
-    };
+    const handleApplyFilters = useCallback(
+        (newFilters) => {
+            const clean = sanitizeFilters(newFilters);
+            setFilters(clean);
+            setFilterApplied(true);
+            setNoData(false);
+            fetchAllData(clean, true);
+        },
+        [sanitizeFilters, fetchAllData]
+    );
 
     const levelMap = {
     1: 'secretaria',
@@ -413,7 +435,7 @@ const DashboardPage = () => {
         } else {
             fetchAllData(filters, false);
         }
-    }, [location.state]);
+    }, [location.state, fetchAllData]);
 
     const getTabButtonStyles = (value) => ({
         color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.8)',
