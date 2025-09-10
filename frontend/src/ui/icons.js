@@ -6,7 +6,8 @@ import {
   History as HistoryIcon,
   Assignment as AssignmentIcon,
   Percent as PercentIcon,
-  AttachMoney as AttachMoneyIcon
+  AttachMoney as AttachMoneyIcon,
+  Assessment as AssessmentIcon,
 } from '@mui/icons-material';
 
 const icons = {
@@ -17,7 +18,8 @@ const icons = {
   antiguedad: HistoryIcon,
   contratos: AssignmentIcon,
   porcentaje: PercentIcon,
-  money: AttachMoneyIcon
+  money: AttachMoneyIcon,
+  eficiencia: AssessmentIcon,
 };
 
 export default icons;
