@@ -1,23 +1,57 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Typography, Box, Chip } from '@mui/material';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList } from 'recharts';
-import DashboardCard from './ui/DashboardCard.jsx';
-import { formatMiles, ValueLabel, axisProps, gridProps, defaultTooltip } from '../ui/chart-utils';
+import DashboardCard from '../components/ui/DashboardCard';
+import PaginationControls from '../components/ui/PaginationControls';
+import { formatMiles, formatPct, rechartsCommon, UnifiedTooltip } from '../ui/chart-utils';
+import icons from '../ui/icons.js';
 import { useTheme } from '../context/ThemeContext.jsx';
 
 const AgeDistributionBarChart = ({ data, isDarkMode }) => {
   const { theme } = useTheme();
   const COLOR = theme.palette.primary.main;
-  const chartData = useMemo(
-    () => (data || []).map(d => ({ range: d.range, cantidad: Number(d.count || 0) })),
-    [data]
+  const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
+
+  const chartData = useMemo(() => {
+    const total = (data || []).reduce((s, d) => s + Number(d.count || 0), 0);
+    return (data || []).map(d => {
+      const cantidad = Number(d.count || 0);
+      return {
+        rango: d.range,
+        cantidad,
+        porcentaje: total ? cantidad / total : 0,
+      };
+    });
+  }, [data]);
+
+  const total = useMemo(() => chartData.reduce((s, d) => s + d.cantidad, 0), [chartData]);
+
+  const [page, setPage] = useState(0);
+  const PAGE = 10;
+  const totalPages = Math.ceil(chartData.length / PAGE) || 1;
+  const pageData = useMemo(
+    () => chartData.slice(page * PAGE, (page + 1) * PAGE),
+    [chartData, page]
   );
-  const total = useMemo(() => chartData.reduce((s, d) => s + (d.cantidad || 0), 0), [chartData]);
+
+  const PercentLabel = (props) => {
+    const { x = 0, y = 0, width = 0, value = 0, viewBox } = props;
+    const chartW = viewBox?.width ?? 0;
+    const text = formatPct(Number(value));
+    const approx = text.length * 7;
+    const xText = Math.min(x + width + 8, chartW - approx - 4);
+    const color = isDarkMode ? '#ffffff' : '#0f172a';
+    return (
+      <text x={xText} y={y + 4} fill={color} fontWeight="600">
+        {text}
+      </text>
+    );
+  };
 
   return (
     <DashboardCard
       title="Distribución por Rangos de Edad - Planta y Contratos"
-      icon="timeline"
+      icon={<icons.edad />}
       isDarkMode={isDarkMode}
       headerRight={<Chip label="Rangos de edad" size="small" variant="outlined" />}
     >
@@ -30,20 +64,37 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
       </Typography>
       <Box sx={{ height: 360 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData} margin={{ top: 16, right: 160, bottom: 16, left: 40 }}>
-            <CartesianGrid {...gridProps(isDarkMode)} />
-            <XAxis dataKey="range" {...axisProps(isDarkMode)} />
-            <YAxis {...axisProps(isDarkMode)} />
+          <BarChart data={pageData} margin={{ top: 16, right: 160, bottom: 16, left: 40 }}>
+            <CartesianGrid {...gridProps} />
+            <XAxis dataKey="rango" {...axisProps} />
+            <YAxis {...axisProps} />
             <Tooltip
-              wrapperStyle={{ outline: 'none' }}
-              content={defaultTooltip(isDarkMode, total, (l) => `Rango: ${l}`)}
+              {...tooltipProps}
+              content={({ active, payload, label }) => (
+                <UnifiedTooltip active={active} payload={payload} label={`Rango: ${label}`} dark={isDarkMode}>
+                  {payload?.length && (
+                    <>
+                      <div>Cantidad de agentes: {formatMiles(payload[0].payload.cantidad)}</div>
+                      <div>Porcentaje: {formatPct(payload[0].payload.porcentaje)}</div>
+                    </>
+                  )}
+                </UnifiedTooltip>
+              )}
             />
             <Bar dataKey="cantidad" fill={COLOR} maxBarSize={28}>
-              <LabelList dataKey="cantidad" content={(p) => <ValueLabel {...p} total={total} />} />
+              <LabelList dataKey="porcentaje" content={(p) => <PercentLabel {...p} />} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
       </Box>
+      {chartData.length > PAGE && (
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          onPrev={() => setPage((p) => Math.max(0, p - 1))}
+          onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+        />
+      )}
     </DashboardCard>
   );
 };
