@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Card,
@@ -22,6 +22,7 @@ import {
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const handleReportError = () => {
     // Aquí se podría enviar el error a un servicio de logging
     console.error("Error reportado:", error);
@@ -32,7 +33,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
       stack: error.stack,
       timestamp: new Date().toISOString(),
       userAgent: navigator.userAgent,
-      url: window.location.href,
+      url: pathname,
     };
 
     // En una implementación real, esto se enviaría a un servicio como Sentry
