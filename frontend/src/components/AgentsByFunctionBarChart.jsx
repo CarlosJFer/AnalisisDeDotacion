@@ -12,7 +12,8 @@ import {
 } from "recharts";
 import DashboardCard from "./ui/DashboardCard.jsx";
 import PaginationControls from "./ui/PaginationControls.jsx";
-import { useTheme } from "../context/ThemeContext.jsx";
+import icons from "./ui/icons.js";
+import { useTheme } from "@mui/material/styles";
 import {
   formatMiles,
   formatPct,
@@ -21,8 +22,8 @@ import {
   gridStyle,
 } from "./ui/chart-utils";
 
-const AgentsByFunctionBarChart = ({ data }) => {
-  const { isDarkMode, theme } = useTheme();
+const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
+  const theme = useTheme();
   const primary = theme.palette.primary.main;
 
   const chartData = useMemo(
@@ -71,7 +72,7 @@ const AgentsByFunctionBarChart = ({ data }) => {
 
   return (
     <DashboardCard
-      icon="work_outline"
+      icon={<icons.contratos />}
       title="Distribución de Agentes por Función - Planta y Contratos"
       isDarkMode={isDarkMode}
       headerRight={
