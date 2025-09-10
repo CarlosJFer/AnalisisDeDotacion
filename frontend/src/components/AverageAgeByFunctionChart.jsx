@@ -13,7 +13,8 @@ import {
 } from 'recharts';
 import { formatMiles, formatPct, UnifiedTooltip } from '../ui/chart-utils';
 
-const MARGIN_RIGHT = 120;\nconst COLOR = '#3b82f6';
+const MARGIN_RIGHT = 120;
+const COLOR = '#3b82f6';
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const chartData = useMemo(
