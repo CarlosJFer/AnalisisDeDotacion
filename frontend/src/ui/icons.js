@@ -53,6 +53,9 @@ import {
   Lock as LockIcon,
   AccountCircle as AccountCircleIcon,
   Add as AddIcon,
+  Tune as TuneIcon,
+  Description as DescriptionIcon,
+  Functions as FunctionsIcon,
 } from "@mui/icons-material";
 
 const icons = {
@@ -110,6 +113,9 @@ const icons = {
   candado: LockIcon,
   cuenta: AccountCircleIcon,
   agregar: AddIcon,
+  ajustes: TuneIcon,
+  descripcion: DescriptionIcon,
+  funciones: FunctionsIcon,
 };
 
 export default icons;

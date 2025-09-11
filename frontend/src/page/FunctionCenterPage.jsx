@@ -23,9 +23,7 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import AdminSectionLayout from "../components/AdminSectionLayout.jsx";
 import chartConfigService from "../services/chartConfigService.js";
@@ -214,7 +212,7 @@ const FunctionCenterPage = () => {
       <Box display="flex" justifyContent="flex-end" mb={2}>
         <Button
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<icons.agregar />}
           onClick={() => {
             setCurrent({ plantillas: [] });
             setDialogOpen(true);
@@ -252,14 +250,14 @@ const FunctionCenterPage = () => {
                       setDialogOpen(true);
                     }}
                   >
-                    <EditIcon fontSize="small" />
+                    <icons.editar fontSize="small" />
                   </Button>
                   <Button
                     size="small"
                     color="error"
                     onClick={() => handleDelete(c._id)}
                   >
-                    <DeleteIcon fontSize="small" />
+                    <icons.eliminar fontSize="small" />
                   </Button>
                 </TableCell>
               </TableRow>
