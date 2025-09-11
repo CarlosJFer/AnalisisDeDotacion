@@ -13,7 +13,7 @@ import {
 import DashboardCard from "./ui/DashboardCard.jsx";
 import PaginationControls from "./ui/PaginationControls.jsx";
 import icons from "../ui/icons.js";
-import { useTheme } from "../context/ThemeContext.jsx";
+import { theme } from "../ui";
 import {
   formatMiles,
   formatPct,
@@ -23,8 +23,7 @@ import {
 } from "../ui/chart-utils";
 
 const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
-  const { theme } = useTheme();
-  const primary = theme.palette.primary.main;
+  const primary = theme.palette.primary;
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   const chartData = useMemo(
