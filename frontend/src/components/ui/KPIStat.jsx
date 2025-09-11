@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { theme, modeVars, icons } from "../ui";
+import { theme, modeVars, icons } from "../../ui";
 
 const KPIStat = ({ metric, label, value, delta, isDarkMode }) => {
   const Icon = icons[metric];

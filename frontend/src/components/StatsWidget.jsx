@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Grid, Typography } from "@mui/material";
-import KPIStat from "./KPIStat.jsx";
+import KPIStat from "./ui/KPIStat.jsx";
 import DashboardCard from "./ui/DashboardCard.jsx";
 import { icons } from "../ui";
 
