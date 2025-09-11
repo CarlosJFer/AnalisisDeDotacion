@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Box, Typography, Icon } from "@mui/material";
+import { Card, CardContent, Box, Typography } from "@mui/material";
 import { theme } from "../../ui";
 
 const DashboardCard = ({
@@ -39,7 +39,7 @@ const DashboardCard = ({
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {icon && (
-              <Icon
+              <Box
                 aria-hidden="true"
                 sx={{
                   fontSize: theme.typography.fontSize.lg,
@@ -47,7 +47,7 @@ const DashboardCard = ({
                 }}
               >
                 {icon}
-              </Icon>
+              </Box>
             )}
             <Box>
               {title && (
