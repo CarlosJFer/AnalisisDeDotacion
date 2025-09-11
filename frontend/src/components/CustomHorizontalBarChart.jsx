@@ -10,7 +10,8 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { PaginationControls, DashboardCard, icons } from "../ui";
+import { PaginationControls, DashboardCard } from "../ui";
+import icons from "../ui/icons.js";
 import {
   formatMiles,
   formatPct,

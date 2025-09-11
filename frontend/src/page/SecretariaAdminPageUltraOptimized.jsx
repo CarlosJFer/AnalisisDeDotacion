@@ -25,7 +25,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { FixedSizeList as List } from "react-window";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import {
   OptimizedTextField,

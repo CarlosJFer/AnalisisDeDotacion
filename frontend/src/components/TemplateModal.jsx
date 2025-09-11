@@ -26,7 +26,7 @@ import {
   FormHelperText,
   Box,
 } from "@mui/material";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 
 // Reusable modal for creating/updating import templates with client-side validations
 const DATA_TYPES = ["String", "Number", "Date", "Time"];

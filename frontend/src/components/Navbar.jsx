@@ -9,7 +9,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 import NotificationBell from "./NotificationBell.jsx";
 import ProfileMenu from "./ProfileMenu.jsx";
 import ThemeToggle from "./ThemeToggle.jsx";

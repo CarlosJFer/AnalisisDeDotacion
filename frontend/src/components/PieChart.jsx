@@ -9,7 +9,8 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { DashboardCard, rechartsCommon, UnifiedTooltip, theme, icons, formatMiles, formatPct } from "../ui";
+import { DashboardCard, rechartsCommon, UnifiedTooltip, theme, formatMiles, formatPct } from "../ui";
+import icons from "../ui/icons.js";
 
 const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
   const { tooltipProps, colors } = rechartsCommon(isDarkMode);

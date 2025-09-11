@@ -10,7 +10,8 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import { DashboardCard, PaginationControls, formatMiles, formatPct, UnifiedTooltip, rechartsCommon, ValueLabel, icons, theme } from "../ui";
+import { DashboardCard, PaginationControls, formatMiles, formatPct, UnifiedTooltip, rechartsCommon, ValueLabel, theme } from "../ui";
+import icons from "../ui/icons.js";
 
 const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
   const chartData = useMemo(

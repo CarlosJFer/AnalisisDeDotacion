@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { Box, Typography } from "@mui/material";
-import { DashboardCard, rechartsCommon, UnifiedTooltip, icons, theme } from "../ui";
+import { DashboardCard, rechartsCommon, UnifiedTooltip, theme } from "../ui";
+import icons from "../ui/icons.js";
 
 const TreemapWidget = ({ data, isDarkMode }) => {
   const { tooltipProps } = rechartsCommon(isDarkMode);

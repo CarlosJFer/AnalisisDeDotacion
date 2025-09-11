@@ -5,7 +5,7 @@ import {
   GridToolbarQuickFilter,
   useGridApiContext,
 } from "@mui/x-data-grid";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 
 // Custom Columns button that blurs itself before opening the panel to avoid aria-hidden focus warning
 const ColumnsButton = memo(function ColumnsButton() {

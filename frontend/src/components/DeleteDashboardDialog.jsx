@@ -14,7 +14,7 @@ import {
   DialogContentText,
   Typography,
 } from "@mui/material";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 
