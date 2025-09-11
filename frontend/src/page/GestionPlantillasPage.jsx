@@ -18,7 +18,7 @@ import {
   DialogActions,
   Typography,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
 import templateService from "../services/templateService";
 import AdminSectionLayout from "../components/AdminSectionLayout.jsx";

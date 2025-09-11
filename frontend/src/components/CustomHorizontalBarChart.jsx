@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { PaginationControls } from "../ui";
+import { PaginationControls, DashboardCard, icons } from "../ui";
 import {
   formatMiles,
   formatPct,
@@ -18,8 +18,6 @@ import {
   rechartsCommon,
   ValueLabel,
 } from "../ui/chart-utils";
-import { DashboardCard } from "../ui";
-import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const truncate = (text, max = 30) => {

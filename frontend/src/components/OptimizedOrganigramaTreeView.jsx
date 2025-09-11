@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useImperativeHandle, forwardRef } from "react";
 import { useTheme } from "../context/ThemeContext.jsx";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 
 // FunciÃ³n memoizada para determinar estado de variables
 const getEstadoVariables = (variables) => {

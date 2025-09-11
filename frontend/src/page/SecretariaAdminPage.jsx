@@ -24,7 +24,7 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
 import {
   OptimizedTextField,

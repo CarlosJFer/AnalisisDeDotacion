@@ -18,7 +18,7 @@ import {
   CardContent,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 

@@ -21,7 +21,7 @@ import {
   Divider,
   Chip,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
