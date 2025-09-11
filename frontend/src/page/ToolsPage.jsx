@@ -1,10 +1,6 @@
 import React from "react";
 import { Grid, Box, Typography } from "@mui/material";
-import FolderIcon from "@mui/icons-material/Folder";
-import LayersIcon from "@mui/icons-material/Layers";
-import TimelapseIcon from "@mui/icons-material/Timelapse";
-import TagIcon from "@mui/icons-material/Tag";
-import DescriptionIcon from "@mui/icons-material/Description";
+import icons from "../ui/icons.js";
 import ToolCard from "../components/ToolCard.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -15,7 +11,7 @@ const ToolsPage = () => {
     {
       title: "Expedientes",
       description: "Ver expedientes sin movimiento",
-      icon: FolderIcon,
+      icon: icons.carpeta,
       route: "/tools/expedientes",
       color: "#1d976c",
       bgColor: isDarkMode ? "rgba(29,151,108,0.1)" : "rgba(29,151,108,0.05)",
@@ -23,7 +19,7 @@ const ToolsPage = () => {
     {
       title: "Agrupamiento y Niveles",
       description: "Detectar agentes en agrupamientos o niveles erróneos",
-      icon: LayersIcon,
+      icon: icons.capas,
       route: "/tools/agrupamiento-niveles",
       color: "#cc2b5e",
       bgColor: isDarkMode ? "rgba(204,43,94,0.1)" : "rgba(204,43,94,0.05)",
@@ -31,7 +27,7 @@ const ToolsPage = () => {
     {
       title: "ABNA",
       description: "Antigüedad de Becas, Neikes y Asesores",
-      icon: TimelapseIcon,
+      icon: icons.tiempo,
       route: "/tools/abna",
       color: "#ee9ca7",
       bgColor: isDarkMode ? "rgba(238,156,167,0.1)" : "rgba(238,156,167,0.05)",
@@ -39,7 +35,7 @@ const ToolsPage = () => {
     {
       title: "AID",
       description: "Asignador de ID según función",
-      icon: TagIcon,
+      icon: icons.etiqueta,
       route: "/tools/aid",
       color: "#42275a",
       bgColor: isDarkMode ? "rgba(66,39,90,0.1)" : "rgba(66,39,90,0.05)",
@@ -47,7 +43,7 @@ const ToolsPage = () => {
     {
       title: "Registro de resoluciones",
       description: "Seguimiento y avisos de resoluciones",
-      icon: DescriptionIcon,
+      icon: icons.descripcion,
       route: "/tools/resoluciones",
       color: "#2193b0",
       bgColor: isDarkMode ? "rgba(33,147,176,0.1)" : "rgba(33,147,176,0.05)",

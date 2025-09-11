@@ -18,8 +18,7 @@ import {
   DialogActions,
   Typography,
 } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
-import DescriptionIcon from "@mui/icons-material/Description";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import templateService from "../services/templateService";
 import AdminSectionLayout from "../components/AdminSectionLayout.jsx";
@@ -168,7 +167,7 @@ const GestionPlantillasPage = () => {
     <AdminSectionLayout
       title="Gestión de Plantillas"
       description="Administra las plantillas de importación de Excel"
-      icon={DescriptionIcon}
+      icon={icons.descripcion}
       color="#00bcd4"
       maxWidth={1200}
     >
@@ -176,7 +175,7 @@ const GestionPlantillasPage = () => {
         <Button
           onClick={openCreate}
           variant="contained"
-          startIcon={<AddIcon />}
+          startIcon={<icons.agregar />}
           sx={{
             background: "linear-gradient(45deg, #2196f3, #1976d2)",
             color: "white",

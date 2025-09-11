@@ -26,11 +26,7 @@ import {
   Avatar,
   Stack,
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import TuneIcon from "@mui/icons-material/Tune";
-import SettingsIcon from "@mui/icons-material/Settings";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useOptimizedForm } from "../components/OptimizedFormField.jsx";
 import VariableForm from "../components/VariableForm.jsx";
@@ -86,9 +82,9 @@ const VariableRow = memo(
               }}
             >
               {type === "global" ? (
-                <TuneIcon sx={{ fontSize: 12 }} />
+                <icons.ajustes sx={{ fontSize: 12 }} />
               ) : (
-                <SettingsIcon sx={{ fontSize: 12 }} />
+                <icons.configuracion sx={{ fontSize: 12 }} />
               )}
             </Avatar>
             <Typography variant="body2" fontWeight={500}>
@@ -180,7 +176,7 @@ const VariableRow = memo(
                   transition: "all 0.15s ease",
                 }}
               >
-                <EditIcon sx={{ fontSize: 16 }} />
+                <icons.editar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
             <Tooltip title="Eliminar">
@@ -200,7 +196,7 @@ const VariableRow = memo(
                   transition: "all 0.15s ease",
                 }}
               >
-                <DeleteIcon sx={{ fontSize: 16 }} />
+                <icons.eliminar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
           </Box>
@@ -730,7 +726,7 @@ const GestionVariablesPage = () => {
     <AdminSectionLayout
       title="Gestión de Variables"
       description="Define, edita y elimina variables de referencia y sus umbrales."
-      icon={TuneIcon}
+      icon={icons.ajustes}
       color="#9c27b0"
       maxWidth={1400}
     >
@@ -771,12 +767,12 @@ const GestionVariablesPage = () => {
       >
         <Tab
           label="Variables Globales"
-          icon={<SettingsIcon />}
+          icon={<icons.configuracion />}
           iconPosition="start"
         />
         <Tab
           label="Variables Específicas"
-          icon={<TuneIcon />}
+          icon={<icons.ajustes />}
           iconPosition="start"
         />
       </Tabs>
@@ -792,7 +788,7 @@ const GestionVariablesPage = () => {
           <Box display="flex" justifyContent="flex-end" mb={2}>
             <Button
               variant="contained"
-              startIcon={<AddIcon />}
+              startIcon={<icons.agregar />}
               onClick={() => setOpenCreateVar(true)}
               sx={{
                 background: "linear-gradient(135deg, #9c27b0, #7b1fa2)",
@@ -891,7 +887,7 @@ const GestionVariablesPage = () => {
           <Box display="flex" justifyContent="flex-end" mb={2}>
             <Button
               variant="contained"
-              startIcon={<AddIcon />}
+              startIcon={<icons.agregar />}
               onClick={() => setOpenCreateVarEspecifica(true)}
               sx={{
                 background: "linear-gradient(135deg, #2196f3, #1976d2)",
@@ -1007,7 +1003,7 @@ const GestionVariablesPage = () => {
                 background: "linear-gradient(135deg, #9c27b0, #7b1fa2)",
               }}
             >
-              <AddIcon sx={{ fontSize: 18 }} />
+              <icons.agregar sx={{ fontSize: 18 }} />
             </Avatar>
             Agregar Variable Global
           </DialogTitle>
@@ -1097,7 +1093,7 @@ const GestionVariablesPage = () => {
                   background: "linear-gradient(135deg, #9c27b0, #7b1fa2)",
                 }}
               >
-                <EditIcon sx={{ fontSize: 18 }} />
+                <icons.editar sx={{ fontSize: 18 }} />
               </Avatar>
               Editar Variable Global
             </DialogTitle>
@@ -1168,7 +1164,7 @@ const GestionVariablesPage = () => {
                 background: "linear-gradient(135deg, #2196f3, #1976d2)",
               }}
             >
-              <AddIcon sx={{ fontSize: 18 }} />
+              <icons.agregar sx={{ fontSize: 18 }} />
             </Avatar>
             Agregar Variable Específica
           </DialogTitle>
@@ -1264,7 +1260,7 @@ const GestionVariablesPage = () => {
                   background: "linear-gradient(135deg, #2196f3, #1976d2)",
                 }}
               >
-                <EditIcon sx={{ fontSize: 18 }} />
+                <icons.editar sx={{ fontSize: 18 }} />
               </Avatar>
               Editar Variable Específica
             </DialogTitle>
