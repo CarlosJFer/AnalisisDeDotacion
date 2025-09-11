@@ -18,8 +18,6 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
-import CheckRounded from "@mui/icons-material/CheckRounded";
 import { useTheme } from "../context/ThemeContext.jsx";
 import {
   formatMiles,
@@ -146,7 +144,7 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
               value={range}
               label="Rango de edad"
               onChange={handleChange}
-              IconComponent={KeyboardArrowDownRounded}
+              IconComponent={icons.flechaAbajo}
               MenuProps={{
                 PaperProps: {
                   elevation: 0,
@@ -223,7 +221,7 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     {range === b && (
-                      <CheckRounded
+                      <icons.check
                         fontSize="small"
                         sx={{ color: theme.palette.primary.main }}
                       />

@@ -14,7 +14,7 @@ import {
   DialogContentText,
   Typography,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 
@@ -102,7 +102,7 @@ const DeleteDashboardDialog = ({ isOpen, onClose, onDelete }) => {
           variant="contained"
           disabled={loading || selected.length === 0}
         >
-          {loading ? <CircularProgress size={24} /> : <DeleteIcon />}
+          {loading ? <CircularProgress size={24} /> : <icons.eliminar />}
           {loading ? " Borrando..." : " Borrar datos"}
         </Button>
       </DialogActions>

@@ -23,11 +23,7 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
-import DeleteIcon from "@mui/icons-material/Delete";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 import templateService from "../services/templateService"; // Importamos el servicio
@@ -79,7 +75,7 @@ const FileItem = memo(
                 transition: "all 0.15s ease",
               }}
             >
-              <DeleteIcon />
+              <icons.eliminar />
             </IconButton>
           )
         }
@@ -92,7 +88,7 @@ const FileItem = memo(
             background: "linear-gradient(135deg, #4caf50, #388e3c)",
           }}
         >
-          <InsertDriveFileIcon sx={{ fontSize: 16 }} />
+          <icons.archivo sx={{ fontSize: 16 }} />
         </Avatar>
         <ListItemText
           primary={
@@ -326,7 +322,7 @@ const UploadSection = () => {
               background: "linear-gradient(135deg, #ff9800, #f57c00)",
             }}
           >
-            <CloudUploadIcon sx={{ fontSize: 18 }} />
+            <icons.subir sx={{ fontSize: 18 }} />
           </Avatar>
           <Typography
             variant="h6"
@@ -377,7 +373,7 @@ const UploadSection = () => {
             },
           }}
         >
-          <CloudUploadIcon
+          <icons.subir
             sx={{
               fontSize: 48,
               color: isDarkMode
@@ -412,7 +408,7 @@ const UploadSection = () => {
             <Button
               variant="contained"
               component="span"
-              startIcon={<CloudUploadIcon />}
+              startIcon={<icons.subir />}
               sx={{
                 background: "linear-gradient(45deg, #ff9800, #f57c00)",
                 color: "white",
@@ -500,7 +496,7 @@ const UploadSection = () => {
                   fileTemplates[idx] === undefined,
               )
             }
-            startIcon={<CloudUploadIcon />}
+            startIcon={<icons.subir />}
             sx={{
               background:
                 files.length > 0 && !uploading
@@ -565,7 +561,7 @@ const UploadSection = () => {
                 background: "linear-gradient(135deg, #ff9800, #f57c00)",
               }}
             >
-              <CloudUploadIcon sx={{ fontSize: 18 }} />
+              <icons.subir sx={{ fontSize: 18 }} />
             </Avatar>
             ¿Confirmar carga?
           </DialogTitle>
@@ -588,7 +584,7 @@ const UploadSection = () => {
                         background: "linear-gradient(135deg, #4caf50, #388e3c)",
                       }}
                     >
-                      <InsertDriveFileIcon sx={{ fontSize: 12 }} />
+                      <icons.archivo sx={{ fontSize: 12 }} />
                     </Avatar>
                     <ListItemText
                       primary={file.name}
@@ -647,7 +643,7 @@ const UploadSection = () => {
                 : "rgba(244, 67, 54, 0.05)",
               border: `1px solid ${isDarkMode ? "rgba(244, 67, 54, 0.3)" : "rgba(244, 67, 54, 0.2)"}`,
             }}
-            icon={<ErrorIcon />}
+            icon={<icons.error />}
           >
             {error}
           </Alert>
@@ -664,7 +660,7 @@ const UploadSection = () => {
                 : "rgba(76, 175, 80, 0.05)",
               border: `1px solid ${isDarkMode ? "rgba(76, 175, 80, 0.3)" : "rgba(76, 175, 80, 0.2)"}`,
             }}
-            icon={<CheckCircleIcon />}
+            icon={<icons.exito />}
           >
             <Typography
               variant="body2"

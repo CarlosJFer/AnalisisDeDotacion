@@ -12,13 +12,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import {
-  Error as ErrorIcon,
-  Refresh as RefreshIcon,
-  Home as HomeIcon,
-  ExpandMore as ExpandMoreIcon,
-  BugReport as BugReportIcon,
-} from "@mui/icons-material";
+import icons from "../ui/icons.js";
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
   const navigate = useNavigate();
@@ -59,7 +53,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
     >
       <Card sx={{ maxWidth: 600, width: "100%" }}>
         <CardContent sx={{ textAlign: "center", p: 4 }}>
-          <ErrorIcon sx={{ fontSize: 64, color: "error.main", mb: 2 }} />
+          <icons.error sx={{ fontSize: 64, color: "error.main", mb: 2 }} />
 
           <Typography variant="h4" gutterBottom color="error">
             ¡Algo salió mal!
@@ -81,7 +75,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
           >
             <Button
               variant="contained"
-              startIcon={<RefreshIcon />}
+              startIcon={<icons.refrescar />}
               onClick={resetErrorBoundary}
               color="primary"
             >
@@ -90,7 +84,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
 
             <Button
               variant="outlined"
-              startIcon={<HomeIcon />}
+              startIcon={<icons.inicio />}
               onClick={handleGoHome}
             >
               Ir al Inicio
@@ -98,7 +92,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
 
             <Button
               variant="text"
-              startIcon={<BugReportIcon />}
+              startIcon={<icons.bug />}
               onClick={handleReportError}
               color="error"
             >
@@ -109,7 +103,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
           <Divider sx={{ my: 2 }} />
 
           <Accordion sx={{ textAlign: "left" }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <AccordionSummary expandIcon={<icons.expandir />}>
               <Typography variant="subtitle2">Detalles técnicos</Typography>
             </AccordionSummary>
             <AccordionDetails>

@@ -21,13 +21,7 @@ import {
   Divider,
   Chip,
 } from "@mui/material";
-import {
-  Download as DownloadIcon,
-  PictureAsPdf as PdfIcon,
-  TableChart as ExcelIcon,
-  Code as JsonIcon,
-  Image as ImageIcon,
-} from "@mui/icons-material";
+import icons from "../ui/icons.js";
 import { saveAs } from "file-saver";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -332,25 +326,25 @@ const ExportOptions = ({ data, secretariaId, widgetId = null }) => {
     {
       value: "pdf",
       label: "PDF",
-      icon: <PdfIcon />,
+      icon: <icons.pdf />,
       description: "Documento portable con gráficos",
     },
     {
       value: "excel",
       label: "Excel",
-      icon: <ExcelIcon />,
+      icon: <icons.excel />,
       description: "Hojas de cálculo con datos",
     },
     {
       value: "json",
       label: "JSON",
-      icon: <JsonIcon />,
+      icon: <icons.json />,
       description: "Datos estructurados",
     },
     {
       value: "image",
       label: "Imagen",
-      icon: <ImageIcon />,
+      icon: <icons.imagen />,
       description: "Captura visual del dashboard",
     },
   ];
@@ -359,7 +353,7 @@ const ExportOptions = ({ data, secretariaId, widgetId = null }) => {
     <>
       <Button
         variant="contained"
-        startIcon={<DownloadIcon />}
+        startIcon={<icons.descargar />}
         onClick={handleMenuOpen}
         data-tour="export-options"
         disabled={loading}

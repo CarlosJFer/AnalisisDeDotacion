@@ -1,8 +1,7 @@
 import React from "react";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const ThemeToggle = () => {
@@ -36,7 +35,7 @@ const ThemeToggle = () => {
           transition: "all 0.3s ease",
         }}
       >
-        {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+        {isDarkMode ? <icons.sol /> : <icons.luna />}
       </IconButton>
     </Tooltip>
   );

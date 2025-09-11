@@ -5,7 +5,7 @@ import {
   GridToolbarQuickFilter,
   useGridApiContext,
 } from "@mui/x-data-grid";
-import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import icons from "../ui/icons.js";
 
 // Custom Columns button that blurs itself before opening the panel to avoid aria-hidden focus warning
 const ColumnsButton = memo(function ColumnsButton() {
@@ -92,7 +92,7 @@ const TemplatesTable = ({
                 "&:hover": { background: "rgba(33,150,243,0.1)" },
               }}
             >
-              <EditIcon fontSize="small" />
+              <icons.editar fontSize="small" />
             </IconButton>
             <IconButton
               size="small"
@@ -102,7 +102,7 @@ const TemplatesTable = ({
                 "&:hover": { background: "rgba(244,67,54,0.1)" },
               }}
             >
-              <DeleteIcon fontSize="small" />
+              <icons.eliminar fontSize="small" />
             </IconButton>
           </Box>
         ),

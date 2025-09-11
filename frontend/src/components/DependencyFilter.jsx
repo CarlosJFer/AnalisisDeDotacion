@@ -13,7 +13,7 @@ import {
   Avatar,
   Typography,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
+import icons from "../ui/icons.js";
 import { OptimizedTextField } from "./OptimizedFormField.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -88,7 +88,7 @@ const DependencyFilter = ({ filters = defaultFilters, onFilter }) => {
               background: "linear-gradient(135deg, #2196f3, #1976d2)",
             }}
           >
-            <SearchIcon sx={{ fontSize: 18 }} />
+            <icons.buscar sx={{ fontSize: 18 }} />
           </Avatar>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
             Filtrar datos

@@ -7,7 +7,7 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import icons from "../ui/icons.js";
 import CustomBarChart from "./CustomBarChart";
 import MonthCutoffAlert from "./MonthCutoffAlert";
 import apiClient from "../services/api";
@@ -188,7 +188,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -217,7 +217,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchCierre()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -282,7 +282,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchBoca()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -310,7 +310,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchFrecuencia()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -338,7 +338,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchTemas()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -414,7 +414,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchTipoContacto()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -457,7 +457,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchLlamadasBarrio()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -485,7 +485,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchAmbiente()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -550,7 +550,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchInfraestructura()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>
@@ -615,7 +615,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
       <Grid item xs={12}>
         <Accordion onChange={(_, exp) => exp && fetchCoordinacion()}>
           <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={<icons.expandir />}
             sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
           >
             <Typography variant="h6" fontWeight={600}>

@@ -10,16 +10,9 @@ import {
   Card,
   IconButton,
 } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import BusinessIcon from "@mui/icons-material/Business";
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
-import WarningIcon from "@mui/icons-material/Warning";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import ErrorIcon from "@mui/icons-material/Error";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import ArrowCircleRightOutlinedIcon from "@mui/icons-material/ArrowCircleRightOutlined";
 import { useImperativeHandle, forwardRef } from "react";
 import { useTheme } from "../context/ThemeContext.jsx";
+import icons from "../ui/icons.js";
 
 // FunciÃ³n memoizada para determinar estado de variables
 const getEstadoVariables = (variables) => {
@@ -38,10 +31,10 @@ const getEstadoVariables = (variables) => {
 // Componente de Ã­cono ultra-optimizado
 const EstadoIcon = memo(({ estado }) => {
   const iconMap = {
-    critico: <ErrorIcon fontSize="small" sx={{ color: "#f44336" }} />,
-    preventivo: <WarningIcon fontSize="small" sx={{ color: "#ff9800" }} />,
-    ok: <CheckCircleIcon fontSize="small" sx={{ color: "#4caf50" }} />,
-    sin: <HelpOutlineIcon fontSize="small" sx={{ color: "#9e9e9e" }} />,
+    critico: <icons.error fontSize="small" sx={{ color: "#f44336" }} />,
+    preventivo: <icons.advertencia fontSize="small" sx={{ color: "#ff9800" }} />,
+    ok: <icons.exito fontSize="small" sx={{ color: "#4caf50" }} />,
+    sin: <icons.ayuda fontSize="small" sx={{ color: "#9e9e9e" }} />,
   };
   return iconMap[estado] || null;
 });
@@ -213,9 +206,9 @@ const TreeNode = memo(
               }}
             >
               {level === 0 ? (
-                <BusinessIcon sx={{ fontSize: avatarSize * 0.6 }} />
+                <icons.empresa sx={{ fontSize: avatarSize * 0.6 }} />
               ) : (
-                <AccountTreeIcon sx={{ fontSize: avatarSize * 0.6 }} />
+                <icons.organigrama sx={{ fontSize: avatarSize * 0.6 }} />
               )}
             </Avatar>
 
@@ -278,7 +271,7 @@ const TreeNode = memo(
                         alignItems: "center",
                       }}
                     >
-                      <InfoOutlinedIcon
+                      <icons.infoOutlined
                         fontSize="small"
                         sx={{
                           color: isDarkMode
@@ -324,7 +317,7 @@ const TreeNode = memo(
                           },
                         }}
                       >
-                        <ArrowCircleRightOutlinedIcon
+                        <icons.flechaDerecha
                           fontSize="small"
                           sx={{ color: "#ffffff" }}
                         />
@@ -364,7 +357,7 @@ const TreeNode = memo(
                           },
                         }}
                       >
-                        <ArrowCircleRightOutlinedIcon
+                        <icons.flechaDerecha
                           fontSize="small"
                           sx={{ color: "#ffffff" }}
                         />
@@ -494,7 +487,7 @@ const OptimizedOrganigramaTreeView = forwardRef(
                 background: "linear-gradient(135deg, #9e9e9e, #757575)",
               }}
             >
-              <HelpOutlineIcon sx={{ fontSize: 32 }} />
+              <icons.ayuda sx={{ fontSize: 32 }} />
             </Avatar>
             <Typography
               variant="h6"

@@ -21,12 +21,7 @@ import {
   FormControlLabel,
   Autocomplete,
 } from "@mui/material";
-import {
-  ExpandMore as ExpandMoreIcon,
-  FilterList as FilterIcon,
-  Clear as ClearIcon,
-  Search as SearchIcon,
-} from "@mui/icons-material";
+import icons from "../ui/icons.js";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -110,7 +105,7 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
       <Card data-tour="dashboard-filters" sx={{ mb: 2 }}>
         <CardHeader
-          avatar={<FilterIcon />}
+          avatar={<icons.filtro />}
           action={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               {getActiveFiltersCount() > 0 && (
@@ -129,7 +124,7 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
                   transition: "transform 0.2s",
                 }}
               >
-                <ExpandMoreIcon />
+                <icons.expandir />
               </IconButton>
             </Box>
           }
@@ -151,7 +146,7 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
                     handleFilterChange("searchTerm", e.target.value)
                   }
                   InputProps={{
-                    endAdornment: <SearchIcon />,
+                    endAdornment: <icons.buscar />,
                   }}
                 />
               </Grid>
@@ -362,14 +357,14 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
                 >
                   <Button
                     variant="outlined"
-                    startIcon={<ClearIcon />}
+                    startIcon={<icons.limpiar />}
                     onClick={resetFilters}
                   >
                     Limpiar Filtros
                   </Button>
                   <Button
                     variant="contained"
-                    startIcon={<FilterIcon />}
+                    startIcon={<icons.filtro />}
                     onClick={applyFilters}
                   >
                     Aplicar Filtros

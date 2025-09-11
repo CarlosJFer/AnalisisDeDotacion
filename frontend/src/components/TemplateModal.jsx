@@ -26,7 +26,7 @@ import {
   FormHelperText,
   Box,
 } from "@mui/material";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import icons from "../ui/icons.js";
 
 // Reusable modal for creating/updating import templates with client-side validations
 const DATA_TYPES = ["String", "Number", "Date", "Time"];
@@ -336,7 +336,7 @@ const TemplateModal = ({
                 )}
                 <Button
                   onClick={addMapping}
-                  startIcon={<AddIcon />}
+                  startIcon={<icons.agregar />}
                   variant="outlined"
                   sx={{ mt: 2 }}
                   disabled={isPendingAdd}
@@ -438,7 +438,7 @@ const MappingRow = memo(function MappingRow({
               "&:hover": { background: "rgba(244, 67, 54, 0.2)" },
             }}
           >
-            <DeleteIcon />
+            <icons.eliminar />
           </IconButton>
         </Grid>
       </Grid>

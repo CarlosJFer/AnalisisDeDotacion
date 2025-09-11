@@ -11,7 +11,7 @@ import {
   Button,
   Tooltip,
 } from "@mui/material";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import icons from "../ui/icons.js";
 
 const VirtualizedTable = ({
   data,
@@ -57,7 +57,7 @@ const VirtualizedTable = ({
           }}
         >
           {sec.nivel > 1 && (
-            <ChevronRightIcon
+            <icons.chevronDerecha
               fontSize="small"
               sx={{ verticalAlign: "middle", color: "gray.500", mr: 0.5 }}
             />
