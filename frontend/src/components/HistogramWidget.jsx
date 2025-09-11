@@ -10,18 +10,13 @@ import {
 } from "recharts";
 import { Box, Typography } from "@mui/material";
 import { useTheme as useAppTheme } from "../context/ThemeContext";
-import {
-  DashboardCard,
-  icons,
-  rechartsCommon,
-  UnifiedTooltip,
-  modeVars,
-} from "../ui";
+import { DashboardCard, icons, UnifiedTooltip, modeVars } from "../ui";
+import { rechartsCommon } from "../ui/chart-utils";
 
 const HistogramWidget = ({ data, xKey, barKey, color }) => {
   const { isDarkMode, theme } = useAppTheme();
   const vars = modeVars(isDarkMode);
-  const { axisProps, tooltipProps, colors } = rechartsCommon(isDarkMode);
+  const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
   const barColor = color || theme.palette.primary.main;
 
   if (!data || !Array.isArray(data) || data.length === 0) {
@@ -60,7 +55,7 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
             data={data}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid stroke={colors.grid} />
+            <CartesianGrid {...gridProps} />
             <XAxis
               dataKey={xKey}
               {...axisProps}
@@ -74,7 +69,7 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
                 value: "Frecuencia",
                 angle: -90,
                 position: "insideLeft",
-                fill: colors.tick,
+                fill: axisProps.tick.fill,
               }}
             />
             <Tooltip
