@@ -1,19 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-  Switch,
-  FormControlLabel,
-  Tooltip,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Box, IconButton, Menu, MenuItem, Typography, Tooltip } from "@mui/material";
+import DashboardCard from "./ui/DashboardCard.jsx";
+import { useTheme } from "../context/ThemeContext.jsx";
 import icons from "../ui/icons.js";
 import { useDashboard } from "../context/DashboardContext";
 import { useNotifications } from "../context/NotificationContext";
@@ -38,8 +27,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
   } = useDashboard();
 
   const { showToast } = useNotifications();
-  const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
+  const { theme, isDarkMode } = useTheme();
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [selectedWidget, setSelectedWidget] = useState(null);
 
@@ -91,10 +79,10 @@ const DashboardGrid = ({ data, secretariaId }) => {
   const renderWidget = (widget) => {
     const widgetData = data?.[widget.dataKey];
 
+    let content;
     if (!widgetData && widget.dataKey !== "resumen") {
-      return (
-        <Card
-          elevation={2}
+      content = (
+        <Box
           sx={{
             height: "100%",
             display: "flex",
@@ -105,61 +93,65 @@ const DashboardGrid = ({ data, secretariaId }) => {
           <Typography variant="body2" color="text.secondary">
             No hay datos disponibles
           </Typography>
-        </Card>
+        </Box>
       );
-    }
-
-    let content;
-    switch (widget.type) {
-      case "bar":
-        content = (
-          <CustomBarChart
-            data={widgetData}
-            xKey={widget.config.xKey}
-            barKey={widget.config.barKey}
-            title=""
-            color={widget.config.color}
-          />
-        );
-        break;
-      case "pie":
-        content = (
-          <CustomPieChart
-            data={widgetData}
-            dataKey={widget.config.dataKey}
-            nameKey={widget.config.nameKey}
-            title=""
-            isDarkMode={isDarkMode}
-          />
-        );
-        break;
-      case "stats":
-        content = <StatsWidget data={data?.resumen} isDarkMode={isDarkMode} />;
-        break;
-      case "histogram":
-        content = (
-          <HistogramWidget
-            data={widgetData}
-            xKey={widget.config.xKey}
-            barKey={widget.config.barKey}
-            color={widget.config.color}
-          />
-        );
-        break;
-      case "treemap":
-        content = <TreemapWidget data={widgetData} />;
-        break;
-      default:
-        content = (
-          <Typography variant="body2" color="text.secondary">
-            Tipo de widget no soportado: {widget.type}
-          </Typography>
-        );
+    } else {
+      switch (widget.type) {
+        case "bar":
+          content = (
+            <CustomBarChart
+              data={widgetData}
+              xKey={widget.config.xKey}
+              barKey={widget.config.barKey}
+              title=""
+              color={widget.config.color}
+              isDarkMode={isDarkMode}
+            />
+          );
+          break;
+        case "pie":
+          content = (
+            <CustomPieChart
+              data={widgetData}
+              dataKey={widget.config.dataKey}
+              nameKey={widget.config.nameKey}
+              title=""
+              isDarkMode={isDarkMode}
+            />
+          );
+          break;
+        case "stats":
+          content = (
+            <StatsWidget data={data?.resumen} isDarkMode={isDarkMode} />
+          );
+          break;
+        case "histogram":
+          content = (
+            <HistogramWidget
+              data={widgetData}
+              xKey={widget.config.xKey}
+              barKey={widget.config.barKey}
+              color={widget.config.color}
+              isDarkMode={isDarkMode}
+            />
+          );
+          break;
+        case "treemap":
+          content = (
+            <TreemapWidget data={widgetData} isDarkMode={isDarkMode} />
+          );
+          break;
+        default:
+          content = (
+            <Typography variant="body2" color="text.secondary">
+              Tipo de widget no soportado: {widget.type}
+            </Typography>
+          );
+      }
     }
 
     return (
-      <Card
-        elevation={dashboardSettings.compactMode ? 1 : 2}
+      <Box
         sx={{
           height: "100%",
           display: "flex",
@@ -167,13 +159,10 @@ const DashboardGrid = ({ data, secretariaId }) => {
           "&:hover .widget-actions": { opacity: 1 },
         }}
       >
-        <CardHeader
+        <DashboardCard
           title={widget.title}
-          titleTypographyProps={{
-            variant: dashboardSettings.compactMode ? "subtitle1" : "h6",
-            noWrap: true,
-          }}
-          action={
+          isDarkMode={isDarkMode}
+          headerRight={
             <Box
               className="widget-actions"
               sx={{ opacity: 0, transition: "opacity 0.2s" }}
@@ -189,14 +178,10 @@ const DashboardGrid = ({ data, secretariaId }) => {
               </Tooltip>
             </Box>
           }
-          sx={{
-            pb: dashboardSettings.compactMode ? 1 : 2,
-          }}
-        />
-        <CardContent sx={{ flexGrow: 1, pt: 0, "&:last-child": { pb: 2 } }}>
+        >
           {content}
-        </CardContent>
-      </Card>
+        </DashboardCard>
+      </Box>
     );
   };
 
