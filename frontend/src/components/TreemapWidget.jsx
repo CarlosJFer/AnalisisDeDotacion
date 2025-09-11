@@ -1,79 +1,52 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { Box, Typography } from "@mui/material";
-import { useTheme as useAppTheme } from "../context/ThemeContext";
-import { getPalette } from "../theme.js";
+import DashboardCard from "./ui/DashboardCard.jsx";
+import { rechartsCommon, UnifiedTooltip, icons, theme } from "../ui";
 
-const TreemapWidget = ({ data }) => {
-  const { isDarkMode } = useAppTheme();
-  const colors = getPalette(isDarkMode);
-  if (!data || !Array.isArray(data) || data.length === 0) {
+const TreemapWidget = ({ data, isDarkMode }) => {
+  const { tooltipProps } = rechartsCommon(isDarkMode);
+  const palette = useMemo(() => Object.values(theme.palette), []);
+
+  const processedData = useMemo(
+    () =>
+      (data || []).map((item, index) => ({
+        ...item,
+        fill: palette[index % palette.length],
+      })),
+    [data, palette],
+  );
+
+  if (!processedData.length) {
     return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        height="100%"
+      <DashboardCard
+        title="Estructura"
+        icon={<icons.distribucion />}
+        isDarkMode={isDarkMode}
       >
-        <Typography variant="body2" color="text.secondary">
-          No hay datos de estructura disponibles
-        </Typography>
-      </Box>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          height="100%"
+        >
+          <Typography variant="body2" color="text.secondary">
+            No hay datos de estructura disponibles
+          </Typography>
+        </Box>
+      </DashboardCard>
     );
   }
 
-  const processedData = data.map((item, index) => ({
-    ...item,
-    fill: colors.palette[index % colors.palette.length],
-  }));
-
-  const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <Box
-          sx={{
-            backgroundColor: colors.tooltipBg,
-            border: colors.tooltipBorder,
-            p: 2,
-            borderRadius: 1,
-            boxShadow: 2,
-            maxWidth: 200,
-            color: colors.tooltipText,
-          }}
-        >
-          <Typography variant="subtitle2" fontWeight="bold">
-            {data.name || data.departamento}
-          </Typography>
-          <Typography variant="body2">
-            Personal: {data.value || data.cantidad}
-          </Typography>
-          {data.porcentaje && (
-            <Typography variant="body2">
-              Porcentaje: {data.porcentaje}%
-            </Typography>
-          )}
-          {data.presupuesto && (
-            <Typography variant="body2">
-              Presupuesto: ${data.presupuesto.toLocaleString("es-AR")}
-            </Typography>
-          )}
-        </Box>
-      );
-    }
-    return null;
-  };
-
   const CustomContent = ({
-    root,
     depth,
     x,
     y,
     width,
     height,
-    index,
     name,
     value,
+    payload,
   }) => {
     if (depth === 1) {
       return (
@@ -84,7 +57,7 @@ const TreemapWidget = ({ data }) => {
             width={width}
             height={height}
             style={{
-              fill: colors.palette[index % colors.palette.length],
+              fill: payload.fill,
               stroke: "#fff",
               strokeWidth: 2,
               strokeOpacity: 1,
@@ -120,20 +93,50 @@ const TreemapWidget = ({ data }) => {
   };
 
   return (
-    <Box sx={{ width: "100%", height: "100%", minHeight: 200 }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <Treemap
-          data={processedData}
-          dataKey="value"
-          ratio={4 / 3}
-          stroke="#fff"
-          content={<CustomContent />}
-        >
-          <Tooltip content={<CustomTooltip />} />
-        </Treemap>
-      </ResponsiveContainer>
-    </Box>
+    <DashboardCard
+      title="Estructura"
+      icon={<icons.distribucion />}
+      isDarkMode={isDarkMode}
+    >
+      <Box sx={{ width: "100%", height: "100%", minHeight: 200 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <Treemap
+            data={processedData}
+            dataKey="value"
+            ratio={4 / 3}
+            stroke="#fff"
+            content={<CustomContent />}
+          >
+            <Tooltip
+              {...tooltipProps}
+              content={({ active, payload }) => {
+                if (!active || !payload?.length) return null;
+                const d = payload[0].payload;
+                return (
+                  <UnifiedTooltip
+                    active={active}
+                    payload={payload}
+                    label={d.name || d.departamento}
+                    dark={isDarkMode}
+                  >
+                    <div>Personal: {d.value || d.cantidad}</div>
+                    {d.porcentaje && <div>Porcentaje: {d.porcentaje}%</div>}
+                    {d.presupuesto && (
+                      <div>
+                        Presupuesto: $
+                        {d.presupuesto.toLocaleString("es-AR")}
+                      </div>
+                    )}
+                  </UnifiedTooltip>
+                );
+              }}
+            />
+          </Treemap>
+        </ResponsiveContainer>
+      </Box>
+    </DashboardCard>
   );
 };
 
 export default TreemapWidget;
+
