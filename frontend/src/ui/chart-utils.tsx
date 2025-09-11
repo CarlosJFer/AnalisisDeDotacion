@@ -113,7 +113,7 @@ export const donutColors = (theme: Theme): string[] => [
 
 const RIGHT_PAD = 8;
 
-/** Label “valor (porcentaje)” SIEMPRE afuera a la derecha */
+/** Label de porcentaje SIEMPRE afuera a la derecha */
 // Props laxas para renderers de Recharts (labels/tooltips)
 type RechartsLabelProps = {
   x?: number;
@@ -130,7 +130,8 @@ type RechartsLabelProps = {
 export const ValueLabel: React.FC<RechartsLabelProps> = (p) => {
   const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1, dark } = p;
   const chartW = viewBox?.width ?? 0;
-  const text = formatPct(Number(value) / Number(total || 1));
+  const pct = Number(value) / Number(total || 1);
+  const text = formatPct(pct);
   const approx = text.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
