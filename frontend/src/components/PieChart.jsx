@@ -7,6 +7,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  LabelList,
 } from "recharts";
 import { DashboardCard } from "../ui";
 import {
@@ -29,8 +30,8 @@ const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
     theme.palette.primaryLight,
     theme.palette.primaryHover,
   ];
-  const renderLabel = ({ payload }) =>
-    formatPct((payload.value || 0) / (total || 1));
+  const renderLabel = ({ value }) =>
+    formatPct((value || 0) / (total || 1));
 
   return (
     <DashboardCard
@@ -48,9 +49,9 @@ const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={renderLabel}
               >
-                {data.map((entry, index) => (
+                <LabelList content={renderLabel} />
+                {(data || []).map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={palette[index % palette.length] || theme.palette.primary}
