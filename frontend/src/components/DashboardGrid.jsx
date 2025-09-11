@@ -129,6 +129,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
             dataKey={widget.config.dataKey}
             nameKey={widget.config.nameKey}
             title=""
+            isDarkMode={isDarkMode}
           />
         );
         break;

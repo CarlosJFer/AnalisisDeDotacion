@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import {
   PieChart,
   Pie,
@@ -8,52 +8,67 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useTheme as useAppTheme } from "../context/ThemeContext";
-import { getPalette } from "../theme.js";
+import DashboardCard from "./ui/DashboardCard.jsx";
+import { rechartsCommon, UnifiedTooltip, theme, icons } from "../ui";
 
-const CustomPieChart = ({ data, dataKey, nameKey, title }) => {
-  const { isDarkMode } = useAppTheme();
-  const colors = getPalette(isDarkMode);
+const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
+  const { tooltipProps, colors } = rechartsCommon(isDarkMode);
+  const palette = [
+    theme.palette.primary,
+    theme.palette.primaryLight,
+    theme.palette.primaryHover,
+  ];
 
   return (
-    <Card sx={{ width: "100%", height: 300, my: 3 }}>
-      <CardContent sx={{ height: "100%" }}>
-        <Typography variant="h6" align="center" gutterBottom>
-          {title}
-        </Typography>
-        <Box sx={{ width: "100%", height: "100%" }}>
-          <ResponsiveContainer>
-            <PieChart>
-              <Pie
-                data={data}
-                dataKey={dataKey}
-                nameKey={nameKey}
-                cx="50%"
-                cy="50%"
-                outerRadius={100}
-                label
-              >
-                {data.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={colors.palette[index % colors.palette.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: colors.tooltipBg,
-                  border: colors.tooltipBorder,
-                }}
-                itemStyle={{ color: colors.tooltipText }}
-                labelStyle={{ color: colors.tooltipText }}
-              />
-              <Legend wrapperStyle={{ color: colors.text }} />
-            </PieChart>
-          </ResponsiveContainer>
-        </Box>
-      </CardContent>
-    </Card>
+    <DashboardCard
+      title={title}
+      icon={<icons.porcentaje />}
+      isDarkMode={isDarkMode}
+    >
+      <Box sx={{ width: "100%", height: 300 }}>
+        <ResponsiveContainer>
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey={dataKey}
+              nameKey={nameKey}
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              label
+            >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={palette[index % palette.length] || theme.palette.primary}
+                />
+              ))}
+            </Pie>
+            <Tooltip
+              {...tooltipProps}
+              content={({ active, payload, label }) => (
+                <UnifiedTooltip
+                  active={active}
+                  payload={payload}
+                  label={label}
+                  dark={isDarkMode}
+                >
+                  {payload?.map((item, idx) => (
+                    <div key={idx} style={{ color: item.color }}>
+                      {`${item.name}: ${item.value}`}
+                    </div>
+                  ))}
+                </UnifiedTooltip>
+              )}
+            />
+            <Legend
+              wrapperStyle={{ color: colors.tooltipText, fontSize: "12px" }}
+              iconType="circle"
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </Box>
+    </DashboardCard>
   );
 };
 
