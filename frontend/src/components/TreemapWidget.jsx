@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { Box, Typography } from "@mui/material";
-import DashboardCard from "./ui/DashboardCard.jsx";
+import { DashboardCard } from "../ui";
 import { rechartsCommon, UnifiedTooltip, icons, theme } from "../ui";
 
 const TreemapWidget = ({ data, isDarkMode }) => {
