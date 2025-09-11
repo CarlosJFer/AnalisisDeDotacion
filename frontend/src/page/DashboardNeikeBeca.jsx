@@ -13,7 +13,8 @@ import {
 } from "@mui/material";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
-import { icons, KPIStat, DashboardCard } from "../ui";
+import icons from "../ui/icons.js";
+import { KPIStat, DashboardCard } from "../ui";
 import CustomBarChart from "../components/CustomBarChart";
 import CustomDonutChart from "../components/CustomDonutChart";
 import CustomAreaChart from "../components/CustomAreaChart";
