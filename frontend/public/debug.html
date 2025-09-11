@@ -155,14 +155,14 @@
             }
         }
 
-        // Función de navegación eliminada para evitar recargas inesperadas.
+        // Mostrar información del sistema sin provocar redirecciones.
 
         function showSystemInfo() {
             const systemInfo = document.getElementById('systemInfo');
             systemInfo.innerHTML = `
                 <div class="info">
                     <p><strong>Navegador:</strong> ${navigator.userAgent}</p>
-                    <p><strong>URL:</strong> ${window.location.href}</p>
+                    <p><strong>URL:</strong> ${window.location.pathname}</p>
                     <p><strong>Timestamp:</strong> ${new Date().toISOString()}</p>
                     <p><strong>LocalStorage disponible:</strong> ${typeof(Storage) !== "undefined" ? 'Sí' : 'No'}</p>
                 </div>
