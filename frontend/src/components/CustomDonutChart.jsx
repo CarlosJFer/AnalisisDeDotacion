@@ -14,6 +14,7 @@ import {
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
+  donutColors,
 } from "../ui/chart-utils";
 import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
@@ -38,18 +39,7 @@ const CustomDonutChart = React.memo(
     const { tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
     const COLOR = theme.palette.primary.main;
-    const COLORS = [
-      theme.palette.primary.main,
-      theme.palette.success.main,
-      theme.palette.warning.main,
-      theme.palette.error.main,
-      theme.palette.secondary.main,
-      theme.palette.info.main,
-      theme.palette.success.light,
-      theme.palette.warning.light,
-      theme.palette.error.light,
-      theme.palette.info.light,
-    ];
+    const colors = donutColors(theme);
 
     const renderCustomizedLabel = ({
       cx,
@@ -114,7 +104,7 @@ const CustomDonutChart = React.memo(
                 nameKey={nameKey}
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                 ))}
               </Pie>
               <Tooltip

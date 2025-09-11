@@ -1,4 +1,5 @@
 import React from "react";
+import { Theme } from "@mui/material/styles";
 
 /**
  * Utilidades de formato y estilo para gráficos construidos con Recharts.
@@ -94,6 +95,22 @@ const rechartsCommon = (
   return { axisProps, gridProps, tooltipProps, colors };
 };
 
+/**
+ * Devuelve una paleta de colores para gráficos de dona basada en el tema.
+ */
+export const donutColors = (theme: Theme): string[] => [
+  theme.palette.primary.main,
+  theme.palette.success.main,
+  theme.palette.warning.main,
+  theme.palette.error.main,
+  theme.palette.secondary.main,
+  theme.palette.info.main,
+  theme.palette.success.light,
+  theme.palette.warning.light,
+  theme.palette.error.light,
+  theme.palette.info.light,
+];
+
 const RIGHT_PAD = 8;
 
 /** Label “valor (porcentaje)” SIEMPRE afuera a la derecha */
@@ -162,4 +179,4 @@ export const UnifiedTooltip: React.FC<{
   );
 };
 
-export { formatMiles, formatPct, rechartsCommon };
+export { formatMiles, formatPct, rechartsCommon, donutColors };
