@@ -6,6 +6,7 @@ import {
   Cell,
   Tooltip,
   Legend,
+  LabelList,
   ResponsiveContainer,
 } from "recharts";
 import { DashboardCard } from "../ui";
@@ -14,7 +15,7 @@ import {
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
-  donutColors,
+  ValueLabel,
 } from "../ui/chart-utils";
 import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
@@ -39,37 +40,14 @@ const CustomDonutChart = React.memo(
     const { tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
     const COLOR = theme.palette.primary.main;
-    const colors = donutColors;
-
-    const renderCustomizedLabel = ({
-      cx,
-      cy,
-      midAngle,
-      innerRadius,
-      outerRadius,
-      percent,
-    }) => {
-      if (percent < 0.05) return null;
-
-      const RADIAN = Math.PI / 180;
-      const radius = innerRadius + (outerRadius - innerRadius) * 0.6;
-      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-      const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-      return (
-        <text
-          x={x}
-          y={y}
-          fill={theme.palette.text.primary}
-          textAnchor="middle"
-          dominantBaseline="central"
-          fontSize="14"
-          fontWeight="600"
-        >
-          {formatPct(percent)}
-        </text>
-      );
-    };
+    const colors = [
+      theme.palette.primary.main,
+      theme.palette.secondary.main,
+      theme.palette.success.main,
+      theme.palette.error.main,
+      theme.palette.warning.main,
+      theme.palette.info.main,
+    ];
 
     return (
       <DashboardCard
@@ -96,7 +74,6 @@ const CustomDonutChart = React.memo(
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={renderCustomizedLabel}
                 outerRadius={100}
                 innerRadius={60}
                 fill={COLOR}
@@ -106,6 +83,12 @@ const CustomDonutChart = React.memo(
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                 ))}
+                <LabelList
+                  dataKey={dataKey}
+                  content={(p) => (
+                    <ValueLabel {...p} total={total} dark={isDarkMode} />
+                  )}
+                />
               </Pie>
               <Tooltip
                 {...tooltipProps}

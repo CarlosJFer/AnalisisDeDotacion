@@ -94,22 +94,6 @@ const rechartsCommon = (
   return { axisProps, gridProps, tooltipProps, colors };
 };
 
-/**
- * Paleta de colores predefinida para los gráficos de dona.
- */
-export const donutColors: string[] = [
-  "#3b82f6",
-  "#22c55e",
-  "#facc15",
-  "#ef4444",
-  "#9333ea",
-  "#0ea5e9",
-  "#86efac",
-  "#fde047",
-  "#fca5a5",
-  "#a5f3fc",
-];
-
 const RIGHT_PAD = 8;
 
 /** Label de porcentaje SIEMPRE afuera a la derecha */
@@ -179,4 +163,4 @@ export const UnifiedTooltip: React.FC<{
   );
 };
 
-export { formatMiles, formatPct, rechartsCommon, donutColors };
+export { formatMiles, formatPct, rechartsCommon };

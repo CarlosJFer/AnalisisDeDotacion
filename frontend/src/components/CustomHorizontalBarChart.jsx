@@ -115,7 +115,7 @@ const CustomHorizontalBarChart = ({
         align="center"
         sx={{
           mb: 2,
-          color: isDarkMode ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.6)",
+          color: theme.palette.text.secondary,
         }}
       >
         {chartData.length} categorías • {formatMiles(total)} agentes
@@ -147,7 +147,7 @@ const CustomHorizontalBarChart = ({
             />
             <Tooltip
               {...tooltipProps}
-              cursor={{ fill: "rgba(255,255,255,0.04)" }}
+              cursor={{ fill: theme.palette.action.hover }}
               content={({ active, payload, label }) => (
                 <UnifiedTooltip
                   active={active}
