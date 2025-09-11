@@ -19,7 +19,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
   const { pathname } = useLocation();
   const handleReportError = () => {
     // Aquí se podría enviar el error a un servicio de logging
-    console.error("Error reportado:", error);
+    console.error("Error reportado en", pathname, error);
 
     // Ejemplo de reporte automático
     const errorReport = {
@@ -67,6 +67,9 @@ const ErrorFallback = ({ error, resetErrorBoundary }) => {
           <Alert severity="error" sx={{ mb: 3, textAlign: "left" }}>
             <Typography variant="subtitle2" gutterBottom>
               Error: {error.message}
+            </Typography>
+            <Typography variant="caption" display="block">
+              URL: {pathname}
             </Typography>
           </Alert>
 
