@@ -56,6 +56,12 @@ import {
   Tune as TuneIcon,
   Description as DescriptionIcon,
   Functions as FunctionsIcon,
+  Folder as FolderIcon,
+  Layers as LayersIcon,
+  Timelapse as TimelapseIcon,
+  Tag as TagIcon,
+  Login as LoginIcon,
+  Security as SecurityIcon,
 } from "@mui/icons-material";
 
 const icons = {
@@ -116,6 +122,12 @@ const icons = {
   ajustes: TuneIcon,
   descripcion: DescriptionIcon,
   funciones: FunctionsIcon,
+  carpeta: FolderIcon,
+  capas: LayersIcon,
+  tiempo: TimelapseIcon,
+  etiqueta: TagIcon,
+  login: LoginIcon,
+  seguridad: SecurityIcon,
 };
 
 export default icons;

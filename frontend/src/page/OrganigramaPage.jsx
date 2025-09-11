@@ -18,11 +18,7 @@ import {
   CardContent,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
-import SearchIcon from "@mui/icons-material/Search";
-import ClearIcon from "@mui/icons-material/Clear";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 
@@ -223,7 +219,7 @@ const OrganigramaPage = () => {
             background: "linear-gradient(135deg, #4caf50, #388e3c)",
           }}
         >
-          <AccountTreeIcon sx={{ fontSize: 24 }} />
+          <icons.organigrama sx={{ fontSize: 24 }} />
         </Avatar>
         <Typography
           variant="h3"
@@ -274,7 +270,7 @@ const OrganigramaPage = () => {
               }}
               InputProps={{
                 startAdornment: (
-                  <SearchIcon
+                  <icons.buscar
                     sx={{
                       mr: 1,
                       color: isDarkMode
@@ -290,7 +286,7 @@ const OrganigramaPage = () => {
               onClick={() => setSearch("")}
               variant="outlined"
               disabled={!search}
-              startIcon={<ClearIcon />}
+              startIcon={<icons.limpiar />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -328,7 +324,7 @@ const OrganigramaPage = () => {
             <Button
               onClick={handleExpandAll}
               variant="outlined"
-              startIcon={<ExpandMoreIcon />}
+              startIcon={<icons.expandir />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -358,7 +354,7 @@ const OrganigramaPage = () => {
             <Button
               onClick={handleCollapseAll}
               variant="outlined"
-              startIcon={<ChevronRightIcon />}
+              startIcon={<icons.chevronDerecha />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"

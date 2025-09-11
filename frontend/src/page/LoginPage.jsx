@@ -17,12 +17,7 @@ import {
   InputAdornment,
   Avatar,
 } from "@mui/material";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import LockIcon from "@mui/icons-material/Lock";
-import PersonIcon from "@mui/icons-material/Person";
-import LoginIcon from "@mui/icons-material/Login";
-import SecurityIcon from "@mui/icons-material/Security";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const LoginPage = () => {
@@ -105,7 +100,7 @@ const LoginPage = () => {
               transition: "all 0.3s ease",
             }}
           >
-            {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+            {isDarkMode ? <icons.sol /> : <icons.luna />}
           </IconButton>
         </Tooltip>
       </Box>
@@ -193,7 +188,7 @@ const LoginPage = () => {
                 boxShadow: "0 8px 25px rgba(76, 175, 80, 0.4)",
               }}
             >
-              <SecurityIcon sx={{ fontSize: 40, color: "white" }} />
+              <icons.seguridad sx={{ fontSize: 40, color: "white" }} />
             </Avatar>
 
             <Typography
@@ -255,7 +250,7 @@ const LoginPage = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <PersonIcon
+                    <icons.persona
                       sx={{
                         color: isDarkMode
                           ? "rgba(255, 255, 255, 0.6)"
@@ -304,7 +299,7 @@ const LoginPage = () => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <LockIcon
+                    <icons.candado
                       sx={{
                         color: isDarkMode
                           ? "rgba(255, 255, 255, 0.6)"
@@ -351,7 +346,7 @@ const LoginPage = () => {
                 loading ? (
                   <CircularProgress size={20} color="inherit" />
                 ) : (
-                  <LoginIcon />
+                  <icons.login />
                 )
               }
               sx={{
