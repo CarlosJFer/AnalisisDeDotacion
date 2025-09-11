@@ -1,8 +1,7 @@
 import React from "react";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import KPIStat from "./ui/KPIStat.jsx";
-import DashboardCard from "./ui/DashboardCard.jsx";
-import { icons } from "../ui";
+import { DashboardCard, icons } from "../ui";
 
 const StatsWidget = ({ data, isDarkMode }) => {
   if (!data) {
@@ -71,14 +70,19 @@ const StatsWidget = ({ data, isDarkMode }) => {
       icon={<icons.resumen />}
       isDarkMode={isDarkMode}
     >
-      <Box sx={{ height: "100%" }}>
-        <Grid container spacing={2} sx={{ height: "100%" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: "grid",
+            gridTemplateColumns: { xs: "repeat(2, 1fr)", md: "repeat(4, 1fr)" },
+            gap: 2,
+          }}
+        >
           {stats.map((stat, index) => (
-            <Grid item xs={6} md={3} key={index} sx={{ height: "50%" }}>
-              <KPIStat {...stat} isDarkMode={isDarkMode} />
-            </Grid>
+            <KPIStat key={index} {...stat} isDarkMode={isDarkMode} />
           ))}
-        </Grid>
+        </Box>
         {data.ultimaActualizacion && (
           <Box sx={{ mt: 2, textAlign: "center" }}>
             <Typography variant="caption" color="text.secondary">
