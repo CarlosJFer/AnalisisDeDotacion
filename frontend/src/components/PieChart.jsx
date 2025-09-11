@@ -9,15 +9,28 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import DashboardCard from "./ui/DashboardCard.jsx";
-import { rechartsCommon, UnifiedTooltip, theme, icons } from "../ui";
+import {
+  rechartsCommon,
+  UnifiedTooltip,
+  theme,
+  icons,
+  formatMiles,
+  formatPct,
+} from "../ui";
 
 const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
   const { tooltipProps, colors } = rechartsCommon(isDarkMode);
+  const total = React.useMemo(
+    () => (data || []).reduce((sum, item) => sum + (item[dataKey] || 0), 0),
+    [data, dataKey],
+  );
   const palette = [
     theme.palette.primary,
     theme.palette.primaryLight,
     theme.palette.primaryHover,
   ];
+  const renderLabel = ({ payload }) =>
+    formatPct((payload.value || 0) / (total || 1));
 
   return (
     <DashboardCard
@@ -25,49 +38,51 @@ const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
       icon={<icons.porcentaje />}
       isDarkMode={isDarkMode}
     >
-      <Box sx={{ width: "100%", height: 300 }}>
-        <ResponsiveContainer>
-          <PieChart>
-            <Pie
-              data={data}
-              dataKey={dataKey}
-              nameKey={nameKey}
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              label
-            >
-              {data.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={palette[index % palette.length] || theme.palette.primary}
-                />
-              ))}
-            </Pie>
-            <Tooltip
-              {...tooltipProps}
-              content={({ active, payload, label }) => (
-                <UnifiedTooltip
-                  active={active}
-                  payload={payload}
-                  label={label}
-                  dark={isDarkMode}
-                >
-                  {payload?.map((item, idx) => (
-                    <div key={idx} style={{ color: item.color }}>
-                      {`${item.name}: ${item.value}`}
-                    </div>
-                  ))}
-                </UnifiedTooltip>
-              )}
-            />
-            <Legend
-              wrapperStyle={{ color: colors.tooltipText, fontSize: "12px" }}
-              iconType="circle"
-            />
-          </PieChart>
-        </ResponsiveContainer>
-      </Box>
+        <Box sx={{ width: "100%", height: 300 }}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey={dataKey}
+                nameKey={nameKey}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                label={renderLabel}
+              >
+                {data.map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={palette[index % palette.length] || theme.palette.primary}
+                  />
+                ))}
+              </Pie>
+              <Tooltip
+                {...tooltipProps}
+                content={({ active, payload, label }) => (
+                  <UnifiedTooltip
+                    active={active}
+                    payload={payload}
+                    label={label}
+                    dark={isDarkMode}
+                  >
+                    {payload?.map((item, idx) => (
+                      <div key={idx} style={{ color: item.color }}>
+                        {`${item.name}: ${formatMiles(item.value)} (${formatPct(
+                          (item.value || 0) / (total || 1),
+                        )})`}
+                      </div>
+                    ))}
+                  </UnifiedTooltip>
+                )}
+              />
+              <Legend
+                wrapperStyle={{ color: colors.tooltipText, fontSize: "12px" }}
+                iconType="circle"
+              />
+            </PieChart>
+          </ResponsiveContainer>
+        </Box>
     </DashboardCard>
   );
 };
