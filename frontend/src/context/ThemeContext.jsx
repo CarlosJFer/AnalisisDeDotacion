@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
+import { palette } from "../ui/theme.js";
 
 const ThemeContext = createContext();
 
@@ -22,9 +23,9 @@ const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#1976d2",
-      light: "#42a5f5",
-      dark: "#1565c0",
+      main: palette.primary,
+      light: palette.primaryLight,
+      dark: palette.primary,
     },
     secondary: {
       main: "#dc004e",
@@ -32,11 +33,11 @@ const lightTheme = createTheme({
       dark: "#9a0036",
     },
     background: {
-      default: "#f5f5f5",
-      paper: "#ffffff",
+      default: palette.backgroundLight,
+      paper: palette.backgroundLight,
     },
     text: {
-      primary: "#212121",
+      primary: palette.textLight,
       secondary: "#757575",
     },
   },
@@ -63,6 +64,9 @@ const lightTheme = createTheme({
         root: {
           textTransform: "none",
           borderRadius: "8px",
+          "&:hover": {
+            backgroundColor: palette.primaryHover,
+          },
         },
       },
     },
@@ -73,9 +77,9 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#90caf9",
-      light: "#e3f2fd",
-      dark: "#42a5f5",
+      main: palette.primary,
+      light: palette.primaryLight,
+      dark: palette.primary,
     },
     secondary: {
       main: "#f48fb1",
@@ -83,11 +87,11 @@ const darkTheme = createTheme({
       dark: "#f06292",
     },
     background: {
-      default: "#121212",
-      paper: "#1e1e1e",
+      default: palette.backgroundDark,
+      paper: palette.backgroundDark,
     },
     text: {
-      primary: "#ffffff",
+      primary: palette.textDark,
       secondary: "#b0b0b0",
     },
   },
@@ -114,6 +118,9 @@ const darkTheme = createTheme({
         root: {
           textTransform: "none",
           borderRadius: "8px",
+          "&:hover": {
+            backgroundColor: palette.primaryHover,
+          },
         },
       },
     },
