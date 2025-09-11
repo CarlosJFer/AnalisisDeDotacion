@@ -1,4 +1,4 @@
-export const palette = {
+const palette = {
   primary: "#3b82f6",
   primaryLight: "#60a5fa",
   primaryHover: "rgba(59,130,246,0.15)",
