@@ -6,15 +6,27 @@ import { rechartsCommon, UnifiedTooltip, icons, theme } from "../ui";
 
 const TreemapWidget = ({ data, isDarkMode }) => {
   const { tooltipProps } = rechartsCommon(isDarkMode);
-  const palette = useMemo(() => Object.values(theme.palette), []);
+  const colorPalette = useMemo(
+    () => [
+      theme.palette.primary,
+      theme.palette.primaryLight,
+      theme.palette.primaryHover,
+      "#8b5cf6",
+      "#f59e0b",
+      "#10b981",
+      "#ef4444",
+      "#6366f1",
+    ],
+    [],
+  );
 
   const processedData = useMemo(
     () =>
       (data || []).map((item, index) => ({
         ...item,
-        fill: palette[index % palette.length],
+        fill: colorPalette[index % colorPalette.length],
       })),
-    [data, palette],
+    [data, colorPalette],
   );
 
   if (!processedData.length) {
