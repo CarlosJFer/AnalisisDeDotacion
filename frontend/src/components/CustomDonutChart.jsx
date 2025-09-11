@@ -9,16 +9,16 @@ import {
   LabelList,
   ResponsiveContainer,
 } from "recharts";
-import { DashboardCard } from "../ui";
-import icons from "../ui/icons.js";
 import {
+  DashboardCard,
+  icons,
+  theme,
   formatMiles,
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
-} from "../ui/chart-utils";
-import { useTheme } from "../context/ThemeContext.jsx";
+} from "../ui";
 
 const CustomDonutChart = React.memo(
   ({
@@ -31,7 +31,6 @@ const CustomDonutChart = React.memo(
     metric = "resumen",
     chipLabel,
   }) => {
-    const { theme } = useTheme();
     const chartData = useMemo(() => data || [], [data]);
     const total = useMemo(
       () => chartData.reduce((sum, item) => sum + (item[dataKey] || 0), 0),
@@ -39,15 +38,17 @@ const CustomDonutChart = React.memo(
     );
     const { tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
-    const COLOR = theme.palette.primary.main;
-    const colors = [
-      theme.palette.primary.main,
-      theme.palette.secondary.main,
-      theme.palette.success.main,
-      theme.palette.error.main,
-      theme.palette.warning.main,
-      theme.palette.info.main,
-    ];
+    const COLOR = theme.palette.primary;
+    const colorKeys = useMemo(
+      () =>
+        Object.keys(theme.palette).filter(
+          (k) =>
+            !k.startsWith("background") &&
+            !k.startsWith("text") &&
+            !k.includes("hover"),
+        ),
+      [],
+    );
 
     return (
       <DashboardCard
@@ -81,7 +82,14 @@ const CustomDonutChart = React.memo(
                 nameKey={nameKey}
               >
                 {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={
+                      theme.palette[
+                        colorKeys[index % colorKeys.length] || "primary"
+                      ]
+                    }
+                  />
                 ))}
                 <LabelList
                   dataKey={dataKey}
@@ -93,13 +101,20 @@ const CustomDonutChart = React.memo(
               <Tooltip
                 {...tooltipProps}
                 content={({ active, payload }) => (
-                  <UnifiedTooltip active={active} payload={payload} dark={isDarkMode}>
+                  <UnifiedTooltip
+                    active={active}
+                    payload={payload}
+                    dark={isDarkMode}
+                  >
                     {payload?.length && (
                       <>
                         <div>{payload[0].payload[nameKey]}</div>
-                        <div>Cantidad: {formatMiles(payload[0].payload[dataKey])}</div>
                         <div>
-                          Porcentaje: {formatPct(
+                          Cantidad: {formatMiles(payload[0].payload[dataKey])}
+                        </div>
+                        <div>
+                          Porcentaje:{" "}
+                          {formatPct(
                             (payload[0].payload[dataKey] || 0) / (total || 1),
                           )}
                         </div>

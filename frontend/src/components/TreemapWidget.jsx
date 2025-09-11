@@ -1,22 +1,24 @@
 import React, { useMemo } from "react";
 import { Treemap, ResponsiveContainer, Tooltip } from "recharts";
 import { Box, Typography } from "@mui/material";
-import { DashboardCard, rechartsCommon, UnifiedTooltip, theme } from "../ui";
-import icons from "../ui/icons.js";
+import {
+  DashboardCard,
+  rechartsCommon,
+  UnifiedTooltip,
+  theme,
+  icons,
+} from "../ui";
 
 const TreemapWidget = ({ data, isDarkMode }) => {
   const { tooltipProps } = rechartsCommon(isDarkMode);
-  const colorPalette = useMemo(
-    () => [
-      theme.palette.primary,
-      theme.palette.primaryLight,
-      theme.palette.primaryHover,
-      "#8b5cf6",
-      "#f59e0b",
-      "#10b981",
-      "#ef4444",
-      "#6366f1",
-    ],
+  const colorKeys = useMemo(
+    () =>
+      Object.keys(theme.palette).filter(
+        (k) =>
+          !k.startsWith("background") &&
+          !k.startsWith("text") &&
+          !k.includes("hover"),
+      ),
     [],
   );
 
@@ -24,9 +26,9 @@ const TreemapWidget = ({ data, isDarkMode }) => {
     () =>
       (data || []).map((item, index) => ({
         ...item,
-        fill: colorPalette[index % colorPalette.length],
+        fill: theme.palette[colorKeys[index % colorKeys.length] || "primary"],
       })),
-    [data, colorPalette],
+    [data, colorKeys],
   );
 
   if (!processedData.length) {
@@ -133,8 +135,7 @@ const TreemapWidget = ({ data, isDarkMode }) => {
                     {d.porcentaje && <div>Porcentaje: {d.porcentaje}%</div>}
                     {d.presupuesto && (
                       <div>
-                        Presupuesto: $
-                        {d.presupuesto.toLocaleString("es-AR")}
+                        Presupuesto: ${d.presupuesto.toLocaleString("es-AR")}
                       </div>
                     )}
                   </UnifiedTooltip>
@@ -149,4 +150,3 @@ const TreemapWidget = ({ data, isDarkMode }) => {
 };
 
 export default TreemapWidget;
-
