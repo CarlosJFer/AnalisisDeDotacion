@@ -9,7 +9,8 @@ import {
   LabelList,
   ResponsiveContainer,
 } from "recharts";
-import { DashboardCard, icons } from "../ui";
+import { DashboardCard } from "../ui";
+import icons from "../ui/icons.js";
 import {
   formatMiles,
   formatPct,

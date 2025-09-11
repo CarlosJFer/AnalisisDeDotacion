@@ -1,7 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { Box, IconButton, Menu, MenuItem, Typography, Tooltip } from "@mui/material";
-import { DashboardCard, icons } from "../ui";
+import { DashboardCard } from "../ui";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useDashboard } from "../context/DashboardContext";
 import { useNotifications } from "../context/NotificationContext";

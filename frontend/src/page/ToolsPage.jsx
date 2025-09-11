@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Box, Typography } from "@mui/material";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 import ToolCard from "../components/ToolCard.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 

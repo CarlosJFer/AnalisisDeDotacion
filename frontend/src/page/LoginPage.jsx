@@ -17,7 +17,7 @@ import {
   InputAdornment,
   Avatar,
 } from "@mui/material";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const LoginPage = () => {

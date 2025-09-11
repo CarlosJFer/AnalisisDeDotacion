@@ -26,7 +26,7 @@ import {
   Avatar,
   Stack,
 } from "@mui/material";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useOptimizedForm } from "../components/OptimizedFormField.jsx";
 import VariableForm from "../components/VariableForm.jsx";

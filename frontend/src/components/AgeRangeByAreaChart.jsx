@@ -26,7 +26,8 @@ import {
   rechartsCommon,
   ValueLabel,
 } from "../ui/chart-utils";
-import { DashboardCard, PaginationControls, icons, modeVars } from "../ui";
+import { DashboardCard, PaginationControls, modeVars } from "../ui";
+import icons from "../ui/icons.js";
 
 const AGE_BUCKETS = [
   "18-25",

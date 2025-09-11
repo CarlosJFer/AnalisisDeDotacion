@@ -12,7 +12,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
-import { icons } from "../ui";
+import icons from "../ui/icons.js";
 
 const ErrorFallback = ({ error, resetErrorBoundary }) => {
   const navigate = useNavigate();
