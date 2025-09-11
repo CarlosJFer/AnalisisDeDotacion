@@ -39,7 +39,7 @@ const CustomDonutChart = React.memo(
     const { tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
     const COLOR = theme.palette.primary.main;
-    const colors = donutColors(theme);
+    const colors = donutColors;
 
     const renderCustomizedLabel = ({
       cx,

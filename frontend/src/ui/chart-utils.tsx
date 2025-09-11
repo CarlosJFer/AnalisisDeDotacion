@@ -1,5 +1,4 @@
 import React from "react";
-import { Theme } from "@mui/material/styles";
 
 /**
  * Utilidades de formato y estilo para gráficos construidos con Recharts.
@@ -96,19 +95,19 @@ const rechartsCommon = (
 };
 
 /**
- * Devuelve una paleta de colores para gráficos de dona basada en el tema.
+ * Paleta de colores predefinida para los gráficos de dona.
  */
-export const donutColors = (theme: Theme): string[] => [
-  theme.palette.primary.main,
-  theme.palette.success.main,
-  theme.palette.warning.main,
-  theme.palette.error.main,
-  theme.palette.secondary.main,
-  theme.palette.info.main,
-  theme.palette.success.light,
-  theme.palette.warning.light,
-  theme.palette.error.light,
-  theme.palette.info.light,
+export const donutColors: string[] = [
+  "#3b82f6",
+  "#22c55e",
+  "#facc15",
+  "#ef4444",
+  "#9333ea",
+  "#0ea5e9",
+  "#86efac",
+  "#fde047",
+  "#fca5a5",
+  "#a5f3fc",
 ];
 
 const RIGHT_PAD = 8;
