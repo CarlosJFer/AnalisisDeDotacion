@@ -13,7 +13,7 @@ import {
   Avatar,
   Typography,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { OptimizedTextField } from "./OptimizedFormField.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 

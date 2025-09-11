@@ -9,7 +9,7 @@ import {
   LabelList,
   ResponsiveContainer,
 } from "recharts";
-import { DashboardCard } from "../ui";
+import { DashboardCard, icons } from "../ui";
 import {
   formatMiles,
   formatPct,
@@ -17,7 +17,6 @@ import {
   rechartsCommon,
   ValueLabel,
 } from "../ui/chart-utils";
-import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const CustomDonutChart = React.memo(

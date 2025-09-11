@@ -18,7 +18,7 @@ import {
   Snackbar,
   Fade,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { useTheme } from "../context/ThemeContext";
 import { useNotifications } from "../context/NotificationContext";
 

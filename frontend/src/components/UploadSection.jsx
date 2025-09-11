@@ -23,7 +23,7 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 import templateService from "../services/templateService"; // Importamos el servicio

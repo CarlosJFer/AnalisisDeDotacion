@@ -20,7 +20,7 @@ import {
   Avatar,
   Chip,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { optimizedStyles, getGradient } from "../utils/performance.js";
 import { useOptimizedDataTable } from "../hooks/useOptimizedSearch.js";

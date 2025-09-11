@@ -7,7 +7,7 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import CustomBarChart from "./CustomBarChart";
 import MonthCutoffAlert from "./MonthCutoffAlert";
 import apiClient from "../services/api";

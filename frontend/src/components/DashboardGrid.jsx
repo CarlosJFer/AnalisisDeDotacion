@@ -1,9 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { Responsive, WidthProvider } from "react-grid-layout";
 import { Box, IconButton, Menu, MenuItem, Typography, Tooltip } from "@mui/material";
-import { DashboardCard } from "../ui";
+import { DashboardCard, icons } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
-import icons from "../ui/icons.js";
 import { useDashboard } from "../context/DashboardContext";
 import { useNotifications } from "../context/NotificationContext";
 import CustomBarChart from "./BarChart";

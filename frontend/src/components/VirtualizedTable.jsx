@@ -11,7 +11,7 @@ import {
   Button,
   Tooltip,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 
 const VirtualizedTable = ({
   data,

@@ -17,9 +17,7 @@ import {
   UnifiedTooltip,
   AvgAgeLabel,
 } from "../ui/chart-utils";
-import { DashboardCard, PaginationControls } from "../ui";
-import icons from "../ui/icons.js";
-import { theme } from "../ui";
+import { DashboardCard, PaginationControls, icons, theme } from "../ui";
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const COLOR = theme.palette.primary;

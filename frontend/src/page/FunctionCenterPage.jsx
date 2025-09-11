@@ -23,7 +23,7 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
 import AdminSectionLayout from "../components/AdminSectionLayout.jsx";
 import chartConfigService from "../services/chartConfigService.js";

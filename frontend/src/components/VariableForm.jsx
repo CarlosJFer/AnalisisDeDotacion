@@ -12,7 +12,7 @@ import {
   Tooltip,
   InputAdornment,
 } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 
 const VariableForm = ({
   values,

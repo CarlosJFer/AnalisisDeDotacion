@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { palette } from "../ui/theme.js";
+import { palette } from "../ui";
 
 const ThemeContext = createContext();
 

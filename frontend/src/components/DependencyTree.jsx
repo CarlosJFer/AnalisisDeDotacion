@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Box, Typography, IconButton, Collapse, Paper } from "@mui/material";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 
 const DependencyNode = ({ node, level = 0 }) => {
   const [open, setOpen] = useState(level < 1); // Primer nivel abierto por defecto

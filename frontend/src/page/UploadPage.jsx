@@ -1,5 +1,5 @@
 import React from "react";
-import icons from "../ui/icons.js";
+import { icons } from "../ui";
 import AdminSectionLayout from "../components/AdminSectionLayout.jsx";
 import UploadSection from "../components/UploadSection.jsx";
 

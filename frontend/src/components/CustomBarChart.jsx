@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { DashboardCard } from "../ui";
+import { DashboardCard, icons } from "../ui";
 import {
   formatMiles,
   formatPct,
@@ -19,7 +19,6 @@ import {
   ValueLabel,
   AvgAgeLabel,
 } from "../ui/chart-utils";
-import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const CustomBarChart = React.memo(
