@@ -13,12 +13,7 @@ import {
 } from "@mui/material";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AnalyticsIcon from "@mui/icons-material/Analytics";
-import BusinessIcon from "@mui/icons-material/Business";
-import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
-import SchoolIcon from "@mui/icons-material/School";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
+import icons from "../ui/icons.js";
 import StatCard from "../components/StatCard";
 import CustomBarChart from "../components/CustomBarChart";
 import CustomDonutChart from "../components/CustomDonutChart";
@@ -516,35 +511,35 @@ const DashboardNeikeBeca = () => {
       >
         <Button
           onClick={() => setTabValue(0)}
-          startIcon={<DashboardIcon />}
+          startIcon={<icons.resumen />}
           sx={getTabButtonStyles(0)}
         >
           Resumen General
         </Button>
         <Button
           onClick={() => setTabValue(1)}
-          startIcon={<AnalyticsIcon />}
+          startIcon={<icons.analitica />}
           sx={getTabButtonStyles(1)}
         >
           Análisis de Edad
         </Button>
         <Button
           onClick={() => setTabValue(2)}
-          startIcon={<BusinessIcon />}
+          startIcon={<icons.empresa />}
           sx={getTabButtonStyles(2)}
         >
           Distribución Organizacional
         </Button>
         <Button
           onClick={() => setTabValue(3)}
-          startIcon={<SchoolIcon />}
+          startIcon={<icons.antiguedad />}
           sx={getTabButtonStyles(3)}
         >
           Antigüedad y Estudios
         </Button>
         <Button
           onClick={() => setTabValue(4)}
-          startIcon={<AssignmentTurnedInIcon />}
+          startIcon={<icons.contratos />}
           sx={getTabButtonStyles(4)}
         >
           Control de certificaciones - Neikes y Becas
@@ -948,7 +943,7 @@ const DashboardNeikeBeca = () => {
               {cleaning ? (
                 <CircularProgress size={24} sx={{ color: "white" }} />
               ) : (
-                <CleaningServicesIcon />
+                <icons.eliminar />
               )}
             </Fab>
           </Tooltip>
