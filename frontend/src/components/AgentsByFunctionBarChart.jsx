@@ -10,8 +10,8 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import DashboardCard from "./ui/DashboardCard.jsx";
-import PaginationControls from "./ui/PaginationControls.jsx";
+import DashboardCard from "./ui/DashboardCard";
+import PaginationControls from "./ui/PaginationControls";
 import icons from "../ui/icons.js";
 import { theme } from "../ui";
 import {
