@@ -2,11 +2,11 @@
 
 import axios from "axios";
 
-// Navigator helper that can be injected from React components
-let navigator;
+// Navigation helper that can be injected from React components
+let navigate;
 
 export const setNavigate = (nav) => {
-  navigator = nav;
+  navigate = nav;
 };
 
 // 1. Creamos una instancia de Axios con la URL base de nuestro backend.
@@ -65,8 +65,8 @@ apiClient.interceptors.response.use(
     } else if (error.response?.status === 401) {
       console.warn("Unauthorized access - redirecting to login");
       localStorage.removeItem("userInfo");
-      if (navigator) {
-        navigator("/login", { replace: true });
+      if (navigate) {
+        navigate("/login", { replace: true });
       }
     } else if (error.response?.status >= 500) {
       console.error("Server error:", error.response.status);
