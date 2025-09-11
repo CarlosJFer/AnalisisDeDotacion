@@ -5,9 +5,9 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createTheme, ThemeProvider, alpha } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import { palette } from "../ui";
+import { palette } from "../ui/theme.js";
 
 const ThemeContext = createContext();
 
@@ -51,7 +51,7 @@ const lightTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          boxShadow: `0 2px 8px ${alpha(palette.textLight, 0.1)}`,
           borderRadius: "12px",
         },
       },
@@ -102,7 +102,7 @@ const darkTheme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+          boxShadow: `0 2px 8px ${alpha(palette.textDark, 0.3)}`,
           borderRadius: "12px",
         },
       },
@@ -200,6 +200,15 @@ export const CustomThemeProvider = ({ children }) => {
     accessibility,
     updateAccessibility,
     theme: accessibleTheme,
+    primary: palette.primary,
+    primaryLight: palette.primaryLight,
+    primaryHover: palette.primaryHover,
+    backgroundLight: palette.backgroundLight,
+    backgroundDark: palette.backgroundDark,
+    textLight: palette.textLight,
+    textDark: palette.textDark,
+    hoverLight: palette.hoverLight,
+    hoverDark: palette.hoverDark,
   };
 
   return (
