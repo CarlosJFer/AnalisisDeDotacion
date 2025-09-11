@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, Box, Typography, Icon } from "@mui/material";
-import { theme } from "../../ui/theme.js";
+import { theme } from "../../ui";
 
 const DashboardCard = ({
   title,
