@@ -18,13 +18,7 @@ import {
   Alert,
   Snackbar,
 } from "@mui/material";
-import SettingsIcon from "@mui/icons-material/Settings";
-import EmailIcon from "@mui/icons-material/Email";
-import LockIcon from "@mui/icons-material/Lock";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import PersonIcon from "@mui/icons-material/Person";
-import NotificationsIcon from "@mui/icons-material/Notifications";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import AuthContext from "../context/AuthContext.jsx";
 import apiClient from "../services/api";
@@ -308,7 +302,7 @@ const ProfileMenu = () => {
             transition: "all 0.3s ease",
           }}
         >
-          <SettingsIcon />
+          <icons.configuracion />
         </IconButton>
       </Tooltip>
 
@@ -356,9 +350,9 @@ const ProfileMenu = () => {
               }}
             >
               {user?.role === "admin" ? (
-                <AdminPanelSettingsIcon />
+                <icons.admin />
               ) : (
-                <PersonIcon />
+                <icons.persona />
               )}
             </Avatar>
             <Box>
@@ -402,7 +396,7 @@ const ProfileMenu = () => {
                 },
               }}
             >
-              <EmailIcon
+              <icons.correo
                 sx={{
                   mr: 2,
                   color: isDarkMode
@@ -450,7 +444,7 @@ const ProfileMenu = () => {
                 },
               }}
             >
-              <LockIcon
+              <icons.candado
                 sx={{
                   mr: 2,
                   color: isDarkMode
@@ -486,7 +480,7 @@ const ProfileMenu = () => {
                 },
               }}
             >
-              <AccountCircleIcon
+              <icons.cuenta
                 sx={{
                   mr: 2,
                   color: isDarkMode
@@ -534,7 +528,7 @@ const ProfileMenu = () => {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", flex: 1 }}>
-              <NotificationsIcon
+              <icons.campana
                 sx={{
                   mr: 2,
                   color: isDarkMode

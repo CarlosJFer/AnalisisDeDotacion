@@ -9,12 +9,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
 import Chip from "@mui/material/Chip";
-import HomeIcon from "@mui/icons-material/Home";
-import DashboardCustomizeIcon from "@mui/icons-material/DashboardCustomize";
-import AnalyticsIcon from "@mui/icons-material/Analytics";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import LogoutIcon from "@mui/icons-material/Logout";
-import PersonIcon from "@mui/icons-material/Person";
+import icons from "../ui/icons.js";
 import NotificationBell from "./NotificationBell.jsx";
 import ProfileMenu from "./ProfileMenu.jsx";
 import ThemeToggle from "./ThemeToggle.jsx";
@@ -109,7 +104,7 @@ const Navbar = () => {
             <Button
               component={Link}
               to="/organigrama"
-              startIcon={<HomeIcon />}
+              startIcon={<icons.inicio />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -148,7 +143,7 @@ const Navbar = () => {
             <>
               <Button
                 onClick={handleDashboardMenuOpen}
-                startIcon={<AnalyticsIcon />}
+                startIcon={<icons.analitica />}
                 sx={{
                   color: isDarkMode
                     ? "rgba(255, 255, 255, 0.9)"
@@ -214,7 +209,7 @@ const Navbar = () => {
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 32 }}>
-                    <AnalyticsIcon fontSize="small" />
+                    <icons.analitica fontSize="small" />
                   </ListItemIcon>
                   <ListItemText primary="Dashboard - Planta y Contratos" />
                 </MenuItem>
@@ -233,7 +228,7 @@ const Navbar = () => {
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 32 }}>
-                    <AnalyticsIcon fontSize="small" />
+                    <icons.analitica fontSize="small" />
                   </ListItemIcon>
                   <ListItemText primary="Dashboard - Neikes y Becas" />
                 </MenuItem>
@@ -246,7 +241,7 @@ const Navbar = () => {
             <Button
               component={Link}
               to="/tools"
-              startIcon={<DashboardCustomizeIcon />}
+              startIcon={<icons.herramientas />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -285,7 +280,7 @@ const Navbar = () => {
             <Button
               component={Link}
               to="/admin"
-              startIcon={<AdminPanelSettingsIcon />}
+              startIcon={<icons.admin />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -354,9 +349,9 @@ const Navbar = () => {
                 }}
               >
                 {user.role === "admin" ? (
-                  <AdminPanelSettingsIcon sx={{ fontSize: 18 }} />
+                  <icons.admin sx={{ fontSize: 18 }} />
                 ) : (
-                  <PersonIcon sx={{ fontSize: 18 }} />
+                  <icons.persona sx={{ fontSize: 18 }} />
                 )}
               </Avatar>
               <Box
@@ -407,7 +402,7 @@ const Navbar = () => {
 
             <Button
               onClick={logout}
-              startIcon={<LogoutIcon />}
+              startIcon={<icons.salir />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"

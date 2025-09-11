@@ -18,17 +18,7 @@ import {
   Snackbar,
   Fade,
 } from "@mui/material";
-import {
-  Notifications as NotificationsIcon,
-  NotificationsActive as NotificationsActiveIcon,
-  Close as CloseIcon,
-  CheckCircle as CheckCircleIcon,
-  Info as InfoIcon,
-  Warning as WarningIcon,
-  Error as ErrorIcon,
-  Upload as UploadIcon,
-  Edit as EditIcon,
-} from "@mui/icons-material";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext";
 import { useNotifications } from "../context/NotificationContext";
 
@@ -114,22 +104,22 @@ const NotificationBell = () => {
 
   const getNotificationIcon = (type, data) => {
     if (data?.action === "upload") {
-      return <UploadIcon sx={{ color: "#4caf50", fontSize: 20 }} />;
+      return <icons.upload sx={{ color: "#4caf50", fontSize: 20 }} />;
     }
     if (data?.action === "modify") {
-      return <EditIcon sx={{ color: "#ff9800", fontSize: 20 }} />;
+      return <icons.editar sx={{ color: "#ff9800", fontSize: 20 }} />;
     }
 
     switch (type) {
       case "success":
-        return <CheckCircleIcon sx={{ color: "#4caf50", fontSize: 20 }} />;
+        return <icons.exito sx={{ color: "#4caf50", fontSize: 20 }} />;
       case "warning":
-        return <WarningIcon sx={{ color: "#ff9800", fontSize: 20 }} />;
+        return <icons.advertencia sx={{ color: "#ff9800", fontSize: 20 }} />;
       case "error":
-        return <ErrorIcon sx={{ color: "#f44336", fontSize: 20 }} />;
+        return <icons.error sx={{ color: "#f44336", fontSize: 20 }} />;
       case "info":
       default:
-        return <InfoIcon sx={{ color: "#2196f3", fontSize: 20 }} />;
+        return <icons.info sx={{ color: "#2196f3", fontSize: 20 }} />;
     }
   };
 
@@ -204,9 +194,9 @@ const NotificationBell = () => {
             }}
           >
             {unreadCount > 0 ? (
-              <NotificationsActiveIcon />
+              <icons.campanaActiva />
             ) : (
-              <NotificationsIcon />
+              <icons.campana />
             )}
           </IconButton>
           {unreadCount > 0 && (
@@ -279,7 +269,7 @@ const NotificationBell = () => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <NotificationsIcon
+            <icons.campana
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -335,7 +325,7 @@ const NotificationBell = () => {
         <Box sx={{ maxHeight: 400, overflow: "auto" }}>
           {notifications.length === 0 ? (
             <Box sx={{ p: 3, textAlign: "center" }}>
-              <NotificationsIcon
+              <icons.campana
                 sx={{
                   fontSize: 48,
                   color: isDarkMode
@@ -529,7 +519,7 @@ const NotificationBell = () => {
                                   },
                                 }}
                               >
-                                <CheckCircleIcon sx={{ fontSize: 16 }} />
+                                <icons.exito sx={{ fontSize: 16 }} />
                               </IconButton>
                             )}
                             <IconButton
@@ -549,7 +539,7 @@ const NotificationBell = () => {
                                 },
                               }}
                             >
-                              <CloseIcon sx={{ fontSize: 16 }} />
+                              <icons.cerrar sx={{ fontSize: 16 }} />
                             </IconButton>
                           </Box>
                         </Box>

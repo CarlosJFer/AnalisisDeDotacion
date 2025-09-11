@@ -14,13 +14,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import {
-  MoreVert as MoreVertIcon,
-  Settings as SettingsIcon,
-  Close as CloseIcon,
-  Fullscreen as FullscreenIcon,
-  Download as DownloadIcon,
-} from "@mui/icons-material";
+import icons from "../ui/icons.js";
 import { useDashboard } from "../context/DashboardContext";
 import { useNotifications } from "../context/NotificationContext";
 import CustomBarChart from "./BarChart";
@@ -189,7 +183,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
                   onClick={(e) => handleMenuOpen(e, widget)}
                   aria-label="opciones del widget"
                 >
-                  <MoreVertIcon />
+                  <icons.opciones />
                 </IconButton>
               </Tooltip>
             </Box>
@@ -243,15 +237,15 @@ const DashboardGrid = ({ data, secretariaId }) => {
         }}
       >
         <MenuItem onClick={handleConfigureWidget}>
-          <SettingsIcon sx={{ mr: 1 }} fontSize="small" />
+          <icons.configuracion sx={{ mr: 1 }} fontSize="small" />
           Configurar
         </MenuItem>
         <MenuItem onClick={handleExportWidget}>
-          <DownloadIcon sx={{ mr: 1 }} fontSize="small" />
+          <icons.descargar sx={{ mr: 1 }} fontSize="small" />
           Exportar
         </MenuItem>
         <MenuItem onClick={handleRemoveWidget} sx={{ color: "error.main" }}>
-          <CloseIcon sx={{ mr: 1 }} fontSize="small" />
+          <icons.cerrar sx={{ mr: 1 }} fontSize="small" />
           Eliminar
         </MenuItem>
       </Menu>

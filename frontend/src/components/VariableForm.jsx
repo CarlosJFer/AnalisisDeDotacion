@@ -12,7 +12,7 @@ import {
   Tooltip,
   InputAdornment,
 } from "@mui/material";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import icons from "../ui/icons.js";
 
 const VariableForm = ({
   values,
@@ -30,7 +30,7 @@ const VariableForm = ({
   const infoAdornment = (title) => (
     <InputAdornment position="end">
       <Tooltip title={title}>
-        <InfoOutlinedIcon fontSize="small" color="action" />
+        <icons.infoOutlined fontSize="small" color="action" />
       </Tooltip>
     </InputAdornment>
   );
