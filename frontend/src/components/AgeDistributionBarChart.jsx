@@ -17,6 +17,7 @@ import {
   formatPct,
   rechartsCommon,
   UnifiedTooltip,
+  ValueLabel,
 } from "../ui/chart-utils";
 import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
@@ -50,20 +51,6 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
     () => chartData.slice(page * PAGE, (page + 1) * PAGE),
     [chartData, page],
   );
-
-  const PercentLabel = (props) => {
-    const { x = 0, y = 0, width = 0, value = 0, viewBox } = props;
-    const chartW = viewBox?.width ?? 0;
-    const text = formatPct(Number(value));
-    const approx = text.length * 7;
-    const xText = Math.min(x + width + 8, chartW - approx - 4);
-    const color = isDarkMode ? "#ffffff" : "#0f172a";
-    return (
-      <text x={xText} y={y + 4} fill={color} fontWeight="600">
-        {text}
-      </text>
-    );
-  };
 
   return (
     <DashboardCard
@@ -118,8 +105,10 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
             />
             <Bar dataKey="cantidad" fill={COLOR} maxBarSize={28}>
               <LabelList
-                dataKey="porcentaje"
-                content={(p) => <PercentLabel {...p} />}
+                dataKey="cantidad"
+                content={(p) => (
+                  <ValueLabel {...p} total={total} dark={isDarkMode} />
+                )}
               />
             </Bar>
           </BarChart>
