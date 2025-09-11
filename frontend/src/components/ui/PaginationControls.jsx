@@ -10,7 +10,7 @@ const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
     borderColor: primary,
     color: primary,
     "&:hover": {
-      borderColor: primary,
+      borderColor: theme.palette.primaryHover,
       backgroundColor: theme.palette.primaryHover,
     },
   };
@@ -23,7 +23,7 @@ const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
         sx={btnSx}
         onClick={onPrev}
         disabled={page === 0}
-        aria-label="Página anterior"
+        aria-label="Anterior"
       >
         « Anterior
       </Button>
@@ -36,7 +36,7 @@ const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
         sx={btnSx}
         onClick={onNext}
         disabled={page === totalPages - 1}
-        aria-label="Página siguiente"
+        aria-label="Siguiente"
       >
         Siguiente »
       </Button>
