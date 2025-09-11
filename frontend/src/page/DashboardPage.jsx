@@ -21,14 +21,7 @@ import {
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 import { useErrorHandler } from "../hooks/useErrorHandler";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AnalyticsIcon from "@mui/icons-material/Analytics";
-import BusinessIcon from "@mui/icons-material/Business";
-import CleaningServicesIcon from "@mui/icons-material/CleaningServices";
-import SchoolIcon from "@mui/icons-material/School";
-import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import PhoneIcon from "@mui/icons-material/Phone";
+import icons from "../ui/icons.js";
 import StatCard from "../components/StatCard";
 import DependencyFilter from "../components/DependencyFilter.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
@@ -693,49 +686,49 @@ const DashboardPage = () => {
       >
         <Button
           onClick={() => setTabValue(0)}
-          startIcon={<DashboardIcon />}
+          startIcon={<icons.resumen />}
           sx={getTabButtonStyles(0)}
         >
           Resumen General
         </Button>
         <Button
           onClick={() => setTabValue(1)}
-          startIcon={<AnalyticsIcon />}
+          startIcon={<icons.analitica />}
           sx={getTabButtonStyles(1)}
         >
           Análisis de Edad
         </Button>
         <Button
           onClick={() => setTabValue(2)}
-          startIcon={<BusinessIcon />}
+          startIcon={<icons.empresa />}
           sx={getTabButtonStyles(2)}
         >
           Distribución Organizacional
         </Button>
         <Button
           onClick={() => setTabValue(3)}
-          startIcon={<SchoolIcon />}
+          startIcon={<icons.antiguedad />}
           sx={getTabButtonStyles(3)}
         >
           Antigüedad y Estudios
         </Button>
         <Button
           onClick={() => setTabValue(4)}
-          startIcon={<AssignmentTurnedInIcon />}
+          startIcon={<icons.contratos />}
           sx={getTabButtonStyles(4)}
         >
           Control de certificaciones - Planta y Contratos
         </Button>
         <Button
           onClick={() => setTabValue(5)}
-          startIcon={<FolderOpenIcon />}
+          startIcon={<icons.archivo />}
           sx={getTabButtonStyles(5)}
         >
           Expedientes
         </Button>
         <Button
           onClick={() => setTabValue(6)}
-          startIcon={<PhoneIcon />}
+          startIcon={<icons.campana />}
           sx={getTabButtonStyles(6)}
         >
           SAC
@@ -1203,7 +1196,7 @@ const DashboardPage = () => {
                 },
               }}
             >
-              <CleaningServicesIcon />
+              <icons.eliminar />
             </Fab>
           </Tooltip>
           {deleteMsg && (
