@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -7,23 +7,42 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  LabelList,
 } from "recharts";
 import { Box, Typography } from "@mui/material";
-import { useTheme as useAppTheme } from "../context/ThemeContext";
-import { DashboardCard, icons, UnifiedTooltip, modeVars } from "../ui";
-import { rechartsCommon } from "../ui/chart-utils";
+import {
+  DashboardCard,
+  icons,
+  UnifiedTooltip,
+  modeVars,
+  PaginationControls,
+  rechartsCommon,
+  ValueLabel,
+  theme,
+} from "../ui";
 
-const HistogramWidget = ({ data, xKey, barKey, color }) => {
-  const { isDarkMode, theme } = useAppTheme();
+const HistogramWidget = ({ data, xKey, barKey, color, isDarkMode }) => {
   const vars = modeVars(isDarkMode);
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
-  const barColor = color || theme.palette.primary.main;
+  const chartData = useMemo(() => data || [], [data]);
+  const [page, setPage] = useState(0);
+  const PAGE = 20;
+  const totalPages = Math.ceil(chartData.length / PAGE) || 1;
+  const pageData = useMemo(
+    () => chartData.slice(page * PAGE, (page + 1) * PAGE),
+    [chartData, page],
+  );
+  const grandTotal = useMemo(
+    () => chartData.reduce((s, d) => s + (Number(d[barKey]) || 0), 0),
+    [chartData, barKey],
+  );
+  const barColor = color || theme.palette.primary;
 
-  if (!data || !Array.isArray(data) || data.length === 0) {
+  if (!chartData.length) {
     return (
       <DashboardCard
         title="Histograma"
-        icon={<icons.distribucion />}
+        icon={<icons.contratos />}
         isDarkMode={isDarkMode}
       >
         <Box
@@ -46,13 +65,13 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
   return (
     <DashboardCard
       title="Histograma"
-      icon={<icons.distribucion />}
+      icon={<icons.contratos />}
       isDarkMode={isDarkMode}
     >
       <Box sx={{ ...vars, width: "100%", height: "100%", minHeight: 200 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
+            data={pageData}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid {...gridProps} />
@@ -89,10 +108,25 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
                 </UnifiedTooltip>
               )}
             />
-            <Bar dataKey={barKey} fill={barColor} radius={[2, 2, 0, 0]} />
+            <Bar dataKey={barKey} fill={barColor} radius={[2, 2, 0, 0]}>
+              <LabelList
+                dataKey={barKey}
+                content={(p) => (
+                  <ValueLabel {...p} total={grandTotal} dark={isDarkMode} />
+                )}
+              />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </Box>
+      {chartData.length > PAGE && (
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          onPrev={() => setPage((p) => Math.max(0, p - 1))}
+          onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+        />
+      )}
     </DashboardCard>
   );
 };
