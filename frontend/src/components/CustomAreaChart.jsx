@@ -15,7 +15,8 @@ import icons from "../ui/icons.js";
 import {
   UnifiedTooltip,
   rechartsCommon,
-  AvgAgeLabel,
+  ValueLabel,
+  formatPct,
 } from "../ui/chart-utils";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -31,6 +32,10 @@ const CustomAreaChart = React.memo(
   }) => {
     const { theme } = useTheme();
     const chartData = useMemo(() => data || [], [data]);
+    const total = useMemo(
+      () => chartData.reduce((s, d) => s + Number(d[yKey] || 0), 0),
+      [chartData, yKey],
+    );
     const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
     const COLOR = theme.palette.primary.main;
@@ -83,9 +88,14 @@ const CustomAreaChart = React.memo(
                     dark={isDarkMode}
                   >
                     {payload?.length && (
-                      <div>
-                        Edad promedio: {Math.round(payload[0].value)} años
-                      </div>
+                      <>
+                        <div>
+                          Edad promedio: {Math.round(payload[0].value)} años
+                        </div>
+                        <div>
+                          Porcentaje: {formatPct((payload[0].value || 0) / (total || 1))}
+                        </div>
+                      </>
                     )}
                   </UnifiedTooltip>
                 )}
@@ -101,7 +111,9 @@ const CustomAreaChart = React.memo(
               >
                 <LabelList
                   dataKey={yKey}
-                  content={(p) => <AvgAgeLabel {...p} dark={isDarkMode} />}
+                  content={(p) => (
+                    <ValueLabel {...p} total={total} dark={isDarkMode} />
+                  )}
                 />
               </Area>
             </AreaChart>

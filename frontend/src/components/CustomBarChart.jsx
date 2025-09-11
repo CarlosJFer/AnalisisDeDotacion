@@ -18,7 +18,6 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
-  AvgAgeLabel,
 } from "../ui/chart-utils";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -87,17 +86,17 @@ const CustomBarChart = React.memo(
                     {payload?.length && (
                       <>
                         {barKey === "avgAge" ? (
-                          <div>Edad promedio: {Math.round(payload[0].value)} años</div>
+                          <div>
+                            Edad promedio: {Math.round(payload[0].value)} años
+                          </div>
                         ) : (
-                          <>
-                            <div>Cantidad: {formatMiles(payload[0].value)}</div>
-                            <div>
-                              Porcentaje: {formatPct(
-                                (payload[0].value || 0) / (total || 1),
-                              )}
-                            </div>
-                          </>
+                          <div>Cantidad: {formatMiles(payload[0].value)}</div>
                         )}
+                        <div>
+                          Porcentaje: {formatPct(
+                            (payload[0].value || 0) / (total || 1),
+                          )}
+                        </div>
                       </>
                     )}
                   </UnifiedTooltip>
@@ -106,13 +105,9 @@ const CustomBarChart = React.memo(
               <Bar dataKey={barKey} fill={COLOR} radius={[4, 4, 0, 0]}>
                 <LabelList
                   dataKey={barKey}
-                  content={(p) =>
-                    barKey === "avgAge" ? (
-                      <AvgAgeLabel {...p} dark={isDarkMode} />
-                    ) : (
-                      <ValueLabel {...p} total={total} dark={isDarkMode} />
-                    )
-                  }
+                  content={(p) => (
+                    <ValueLabel {...p} total={total} dark={isDarkMode} />
+                  )}
                 />
               </Bar>
             </BarChart>

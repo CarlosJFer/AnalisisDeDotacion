@@ -102,24 +102,6 @@ export const ValueLabel = (p) => {
   );
 };
 
-/** Label “Edad promedio: X años” afuera a la derecha (lee avg del payload) */
-export const AvgAgeLabel = (p) => {
-  const { x = 0, y = 0, width = 0, viewBox, payload, dark } = p;
-  const avg = Math.round(Number(payload?.avg ?? payload?.promedio ?? 0));
-  if (!avg) return null;
-  const chartW = viewBox?.width ?? 0;
-  const text = `Edad promedio: ${avg} años`;
-  const approx = text.length * 7;
-  const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
-  const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
-  const color = isDarkTheme ? "#ffffff" : "#0f172a";
-  return (
-    <text x={xText} y={y + 4} fill={color} fontWeight="600">
-      {text}
-    </text>
-  );
-};
-
 /** Tooltip unificado (oscuro/claro) */
 export const UnifiedTooltip = ({ active, payload, label, children, dark, style }) => {
   if (!active || !payload?.length) return null;

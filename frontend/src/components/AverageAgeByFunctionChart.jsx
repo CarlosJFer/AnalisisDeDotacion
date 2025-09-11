@@ -15,7 +15,7 @@ import {
   formatPct,
   rechartsCommon,
   UnifiedTooltip,
-  AvgAgeLabel,
+  ValueLabel,
 } from "../ui/chart-utils";
 import { DashboardCard, PaginationControls, theme } from "../ui";
 import icons from "../ui/icons.js";
@@ -72,13 +72,13 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
   const MAX_RIGHT = 260;
   const dynamicRight = useMemo(() => {
     if (!pageData?.length) return MIN_RIGHT;
-    const maxAvg = Math.max(
-      ...pageData.map((d) => Math.round(Number(d.avg ?? d.promedio ?? 0))),
+    const labels = pageData.map((d) =>
+      formatPct((d.cantidad || 0) / (grandTotal || 1)),
     );
-    const label = `Edad promedio: ${maxAvg} años`;
-    const approxWidth = label.length * 7 + 20;
+    const maxChars = Math.max(...labels.map((t) => t.length));
+    const approxWidth = maxChars * 7 + 20;
     return Math.max(MIN_RIGHT, Math.min(MAX_RIGHT, approxWidth));
-  }, [pageData]);
+  }, [pageData, grandTotal]);
 
   const handlePrev = useCallback(() => setPage((p) => Math.max(0, p - 1)), []);
   const handleNext = useCallback(
@@ -170,8 +170,10 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
             />
             <Bar dataKey="avg" maxBarSize={22} fill={COLOR}>
               <LabelList
-                dataKey="avg"
-                content={(p) => <AvgAgeLabel {...p} />}
+                dataKey="cantidad"
+                content={(p) => (
+                  <ValueLabel {...p} total={grandTotal} dark={isDarkMode} />
+                )}
               />
             </Bar>
           </BarChart>
