@@ -10,21 +10,25 @@ import {
 } from "recharts";
 import { Box, Typography } from "@mui/material";
 import { useTheme as useAppTheme } from "../context/ThemeContext";
-import { DashboardCard } from "../ui";
-import icons from "../ui/icons.js";
-import { rechartsCommon, UnifiedTooltip, modeVars } from "../ui";
+import {
+  DashboardCard,
+  icons,
+  rechartsCommon,
+  UnifiedTooltip,
+  modeVars,
+} from "../ui";
 
 const HistogramWidget = ({ data, xKey, barKey, color }) => {
   const { isDarkMode, theme } = useAppTheme();
   const vars = modeVars(isDarkMode);
-  const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
+  const { axisProps, tooltipProps, colors } = rechartsCommon(isDarkMode);
   const barColor = color || theme.palette.primary.main;
 
   if (!data || !Array.isArray(data) || data.length === 0) {
     return (
       <DashboardCard
         title="Histograma"
-        icon={<icons.analitica />}
+        icon={<icons.distribucion />}
         isDarkMode={isDarkMode}
       >
         <Box
@@ -47,7 +51,7 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
   return (
     <DashboardCard
       title="Histograma"
-      icon={<icons.analitica />}
+      icon={<icons.distribucion />}
       isDarkMode={isDarkMode}
     >
       <Box sx={{ ...vars, width: "100%", height: "100%", minHeight: 200 }}>
@@ -56,7 +60,7 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
             data={data}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid {...gridProps} />
+            <CartesianGrid stroke={colors.grid} />
             <XAxis
               dataKey={xKey}
               {...axisProps}
@@ -70,7 +74,7 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
                 value: "Frecuencia",
                 angle: -90,
                 position: "insideLeft",
-                fill: axisProps.tick.fill,
+                fill: colors.tick,
               }}
             />
             <Tooltip
