@@ -1,4 +1,4 @@
-const palette = {
+export const palette = {
   primary: "#3b82f6",
   primaryLight: "#60a5fa",
   primaryHover: "rgba(59,130,246,0.15)",
@@ -56,5 +56,5 @@ export const modeVars = (isDarkMode) => ({
   "--hover-color": isDarkMode ? palette.hoverDark : palette.hoverLight,
 });
 
-export { theme };
+export { theme, palette };
 export default theme;
