@@ -5,14 +5,13 @@ import { useTheme } from "../../context/ThemeContext.jsx";
 const PaginationControls = ({ page, totalPages, onPrev, onNext }) => {
   const { theme } = useTheme();
   const primary = theme.palette.primary.main;
-  const secondary = theme.palette.secondary.light;
 
   const btnSx = {
     borderColor: primary,
     color: primary,
     "&:hover": {
       borderColor: primary,
-      backgroundColor: secondary,
+      backgroundColor: theme.palette.primaryHover,
     },
   };
 
