@@ -68,12 +68,10 @@ const TreemapWidget = ({ data, isDarkMode }) => {
             y={y}
             width={width}
             height={height}
-            style={{
-              fill: payload.fill,
-              stroke: "#fff",
-              strokeWidth: 2,
-              strokeOpacity: 1,
-            }}
+            fill={payload.fill}
+            stroke="#fff"
+            strokeWidth={2}
+            strokeOpacity={1}
           />
           {width > 60 && height > 30 && (
             <>
