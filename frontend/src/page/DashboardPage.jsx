@@ -22,7 +22,8 @@ import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 import { useErrorHandler } from "../hooks/useErrorHandler";
 import icons from "../ui/icons.js";
-import StatCard from "../components/StatCard";
+import KPIStat from "../components/ui/KPIStat.jsx";
+import DashboardCard from "../components/ui/DashboardCard.jsx";
 import DependencyFilter from "../components/DependencyFilter.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
 import SacSection from "../components/SACSection";
@@ -740,39 +741,55 @@ const DashboardPage = () => {
         <Grid container spacing={3}>
           {/* EstadÃ­sticas principales */}
           <Grid item xs={12} md={3}>
-            <StatCard
-              title="Total de agentes municipales"
-              value={totalAgents.toLocaleString()}
-              isDarkMode={isDarkMode}
-            />
+            <DashboardCard isDarkMode={isDarkMode}>
+              <KPIStat
+                metric="personas"
+                label="Total de agentes municipales"
+                value={totalAgents.toLocaleString()}
+                delta={null}
+                isDarkMode={isDarkMode}
+              />
+            </DashboardCard>
           </Grid>
           <Grid item xs={12} md={3}>
-            <StatCard
-              title="Funciones registradas"
-              value={
-                agentsByFunction.filter(
-                  (f) =>
-                    f.function &&
-                    f.function.trim() !== "" &&
-                    f.function.trim() !== "-",
-                ).length
-              }
-              isDarkMode={isDarkMode}
-            />
+            <DashboardCard isDarkMode={isDarkMode}>
+              <KPIStat
+                metric="organigrama"
+                label="Funciones registradas"
+                value={
+                  agentsByFunction.filter(
+                    (f) =>
+                      f.function &&
+                      f.function.trim() !== "" &&
+                      f.function.trim() !== "-",
+                  ).length
+                }
+                delta={null}
+                isDarkMode={isDarkMode}
+              />
+            </DashboardCard>
           </Grid>
           <Grid item xs={12} md={3}>
-            <StatCard
-              title="Tipos de situación de revista"
-              value={agentsByEmploymentType.length}
-              isDarkMode={isDarkMode}
-            />
+            <DashboardCard isDarkMode={isDarkMode}>
+              <KPIStat
+                metric="contratos"
+                label="Tipos de situación de revista"
+                value={agentsByEmploymentType.length}
+                delta={null}
+                isDarkMode={isDarkMode}
+              />
+            </DashboardCard>
           </Grid>
           <Grid item xs={12} md={3}>
-            <StatCard
-              title="Cantidad de Secretarías"
-              value={agentsBySecretaria.length}
-              isDarkMode={isDarkMode}
-            />
+            <DashboardCard isDarkMode={isDarkMode}>
+              <KPIStat
+                metric="empresa"
+                label="Cantidad de Secretarías"
+                value={agentsBySecretaria.length}
+                delta={null}
+                isDarkMode={isDarkMode}
+              />
+            </DashboardCard>
           </Grid>
 
           {/* gráficos principales */}
