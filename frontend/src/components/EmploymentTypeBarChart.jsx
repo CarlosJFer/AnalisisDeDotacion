@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Typography, Box, Chip } from "@mui/material";
 import {
   ResponsiveContainer,
@@ -10,7 +10,7 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import { DashboardCard } from "../ui";
+import { DashboardCard, PaginationControls } from "../ui";
 import {
   formatMiles,
   formatPct,
@@ -34,6 +34,26 @@ const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
     () => chartData.reduce((s, d) => s + (d.cantidad || 0), 0),
     [chartData],
   );
+
+  const [page, setPage] = useState(0);
+  const PAGE = 10;
+  const totalPages = Math.ceil(chartData.length / PAGE) || 1;
+  const pageData = useMemo(
+    () => chartData.slice(page * PAGE, (page + 1) * PAGE),
+    [chartData, page],
+  );
+
+  const MIN_RIGHT = 140;
+  const MAX_RIGHT = 240;
+  const dynamicRight = React.useMemo(() => {
+    if (!pageData?.length) return MIN_RIGHT;
+    const labels = pageData.map((d) =>
+      formatPct((Number(d.cantidad) || 0) / (total || 1)),
+    );
+    const maxChars = Math.max(...labels.map((t) => t.length));
+    const approxWidth = maxChars * 7 + 20;
+    return Math.max(MIN_RIGHT, Math.min(MAX_RIGHT, approxWidth));
+  }, [pageData, total]);
 
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
   const primary = theme.palette.primary;
@@ -63,12 +83,12 @@ const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
       >
         {chartData.length} categorías • {formatMiles(total)} agentes
       </Typography>
-      <Box sx={{ height: Math.max(320, chartData.length * 30) }}>
+      <Box sx={{ height: Math.max(320, pageData.length * 40) }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={chartData}
+            data={pageData}
             layout="vertical"
-            margin={{ top: 16, right: 160, bottom: 16, left: 240 }}
+            margin={{ top: 16, right: dynamicRight, bottom: 16, left: 240 }}
             barCategoryGap={10}
           >
             <CartesianGrid horizontal={false} {...gridProps} />
@@ -129,6 +149,14 @@ const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
           </BarChart>
         </ResponsiveContainer>
       </Box>
+      {chartData.length > PAGE && (
+        <PaginationControls
+          page={page}
+          totalPages={totalPages}
+          onPrev={() => setPage((p) => Math.max(0, p - 1))}
+          onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+        />
+      )}
     </DashboardCard>
   );
 };
