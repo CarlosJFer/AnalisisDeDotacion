@@ -27,19 +27,16 @@ const lightTheme = createTheme({
       light: palette.primaryLight,
       dark: palette.primary,
     },
-    secondary: {
-      main: "#dc004e",
-      light: "#ff6f8b",
-      dark: "#9a0036",
-    },
     background: {
       default: palette.backgroundLight,
       paper: palette.backgroundLight,
     },
     text: {
       primary: palette.textLight,
-      secondary: "#757575",
+      secondary: palette.textLight,
     },
+    primaryHover: palette.primaryHover,
+    hover: palette.hoverLight,
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -61,13 +58,13 @@ const lightTheme = createTheme({
     },
     MuiButton: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           textTransform: "none",
           borderRadius: "8px",
           "&:hover": {
-            backgroundColor: palette.primaryHover,
+            backgroundColor: theme.palette.primaryHover,
           },
-        },
+        }),
       },
     },
   },
@@ -81,19 +78,16 @@ const darkTheme = createTheme({
       light: palette.primaryLight,
       dark: palette.primary,
     },
-    secondary: {
-      main: "#f48fb1",
-      light: "#fce4ec",
-      dark: "#f06292",
-    },
     background: {
       default: palette.backgroundDark,
       paper: palette.backgroundDark,
     },
     text: {
       primary: palette.textDark,
-      secondary: "#b0b0b0",
+      secondary: palette.textDark,
     },
+    primaryHover: palette.primaryHover,
+    hover: palette.hoverDark,
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
@@ -115,13 +109,13 @@ const darkTheme = createTheme({
     },
     MuiButton: {
       styleOverrides: {
-        root: {
+        root: ({ theme }) => ({
           textTransform: "none",
           borderRadius: "8px",
           "&:hover": {
-            backgroundColor: palette.primaryHover,
+            backgroundColor: theme.palette.primaryHover,
           },
-        },
+        }),
       },
     },
   },
