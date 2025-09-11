@@ -1,11 +1,6 @@
 import React from "react";
 import { Box, Typography, Grid } from "@mui/material";
-import PeopleIcon from "@mui/icons-material/People";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
-import TuneIcon from "@mui/icons-material/Tune";
-import DescriptionIcon from "@mui/icons-material/Description";
-import FunctionsIcon from "@mui/icons-material/Functions";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import AdminCard from "../components/AdminCard.jsx";
 
@@ -16,7 +11,7 @@ const AdminPage = () => {
     {
       title: "Gestión de Usuarios",
       description: "Crea, edita y elimina usuarios del sistema.",
-      icon: PeopleIcon,
+      icon: icons.personas,
       link: "/admin/users",
       color: "#2196f3", // Azul
       bgColor: isDarkMode
@@ -27,7 +22,7 @@ const AdminPage = () => {
       title: "Carga de Archivos Excel",
       description:
         "Sube archivos de dotación y actualiza los datos del sistema.",
-      icon: CloudUploadIcon,
+      icon: icons.subir,
       link: "/admin/upload",
       color: "#ff9800", // Naranja
       bgColor: isDarkMode
@@ -37,7 +32,7 @@ const AdminPage = () => {
     {
       title: "Gestión de Secretarias",
       description: "Administra las dependencias jerárquicas del organigrama.",
-      icon: AccountTreeIcon,
+      icon: icons.organigrama,
       link: "/admin/secretarias",
       color: "#4caf50", // Verde
       bgColor: isDarkMode
@@ -48,7 +43,7 @@ const AdminPage = () => {
       title: "Gestión de Variables",
       description:
         "Define, edita y elimina variables de referencia y sus umbrales.",
-      icon: TuneIcon,
+      icon: icons.ajustes,
       link: "/admin/variables",
       color: "#9c27b0", // Púrpura
       bgColor: isDarkMode
@@ -58,7 +53,7 @@ const AdminPage = () => {
     {
       title: "Gestión de Plantillas",
       description: "Administra y edita plantillas de importación de Excel.",
-      icon: DescriptionIcon,
+      icon: icons.descripcion,
       link: "/admin/plantillas",
       color: "#00bcd4", // Cyan
       bgColor: isDarkMode
@@ -69,7 +64,7 @@ const AdminPage = () => {
       title: "Centro de Funciones",
       description:
         "Administra las funciones usadas en los gráficos del dashboard.",
-      icon: FunctionsIcon,
+      icon: icons.funciones,
       link: "/admin/funciones",
       color: "#673ab7",
       bgColor: isDarkMode

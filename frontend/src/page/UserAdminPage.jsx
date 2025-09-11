@@ -20,12 +20,7 @@ import {
   Avatar,
   Chip,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import PersonIcon from "@mui/icons-material/Person";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import PeopleIcon from "@mui/icons-material/People";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import {
   OptimizedTextField,
@@ -74,9 +69,9 @@ const UserRow = memo(
               }}
             >
               {user.role === "admin" ? (
-                <AdminPanelSettingsIcon sx={{ fontSize: 18 }} />
+                <icons.admin sx={{ fontSize: 18 }} />
               ) : (
-                <PersonIcon sx={{ fontSize: 18 }} />
+                <icons.persona sx={{ fontSize: 18 }} />
               )}
             </Avatar>
             <Typography variant="body2" fontWeight={500}>
@@ -128,7 +123,7 @@ const UserRow = memo(
                   transition: "all 0.15s ease",
                 }}
               >
-                <EditIcon sx={{ fontSize: 16 }} />
+                <icons.editar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
             <Tooltip title="Cambiar contraseña">
@@ -176,7 +171,7 @@ const UserRow = memo(
                   transition: "all 0.15s ease",
                 }}
               >
-                <DeleteIcon sx={{ fontSize: 16 }} />
+                <icons.eliminar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
           </Box>
@@ -472,7 +467,7 @@ const UserAdminPage = () => {
     <AdminSectionLayout
       title="Gestión de Usuarios"
       description="Crea, edita y elimina usuarios del sistema."
-      icon={PeopleIcon}
+      icon={icons.personas}
       color="#2196f3"
       maxWidth={1200}
     >
@@ -505,7 +500,7 @@ const UserAdminPage = () => {
                 background: "linear-gradient(135deg, #2196f3, #1976d2)",
               }}
             >
-              <AddIcon sx={{ fontSize: 18 }} />
+              <icons.agregar sx={{ fontSize: 18 }} />
             </Avatar>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               Crear nuevo usuario
@@ -569,7 +564,7 @@ const UserAdminPage = () => {
                 creating ? (
                   <CircularProgress size={16} color="inherit" />
                 ) : (
-                  <AddIcon />
+                  <icons.agregar />
                 )
               }
               sx={{

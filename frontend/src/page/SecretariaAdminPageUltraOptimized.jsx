@@ -25,11 +25,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { FixedSizeList as List } from "react-window";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import BusinessIcon from "@mui/icons-material/Business";
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import {
   OptimizedTextField,
@@ -72,7 +68,7 @@ const SecretariaRow = memo(
                 background: "linear-gradient(135deg, #4caf50, #388e3c)",
               }}
             >
-              <BusinessIcon sx={{ fontSize: 12 }} />
+              <icons.empresa sx={{ fontSize: 12 }} />
             </Avatar>
             <Typography variant="body2" fontWeight={500}>
               {secretaria.nombre}
@@ -133,7 +129,7 @@ const SecretariaRow = memo(
                   transition: "all 0.15s ease",
                 }}
               >
-                <EditIcon sx={{ fontSize: 16 }} />
+                <icons.editar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
             <Tooltip title="Eliminar">
@@ -153,7 +149,7 @@ const SecretariaRow = memo(
                   transition: "all 0.15s ease",
                 }}
               >
-                <DeleteIcon sx={{ fontSize: 16 }} />
+                <icons.eliminar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
           </Box>
@@ -432,7 +428,7 @@ const SecretariaAdminPageUltraOptimized = () => {
             background: "linear-gradient(135deg, #4caf50, #388e3c)",
           }}
         >
-          <AccountTreeIcon sx={{ fontSize: 24 }} />
+          <icons.organigrama sx={{ fontSize: 24 }} />
         </Avatar>
         <Typography
           variant="h3"
@@ -477,7 +473,7 @@ const SecretariaAdminPageUltraOptimized = () => {
                   background: "linear-gradient(135deg, #4caf50, #388e3c)",
                 }}
               >
-                <AddIcon sx={{ fontSize: 18 }} />
+                <icons.agregar sx={{ fontSize: 18 }} />
               </Avatar>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 Agregar nueva dependencia
@@ -545,7 +541,7 @@ const SecretariaAdminPageUltraOptimized = () => {
                   creating ? (
                     <CircularProgress size={16} color="inherit" />
                   ) : (
-                    <AddIcon />
+                    <icons.agregar />
                   )
                 }
                 sx={{

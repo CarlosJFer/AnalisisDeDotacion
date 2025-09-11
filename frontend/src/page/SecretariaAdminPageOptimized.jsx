@@ -20,11 +20,7 @@ import {
   Avatar,
   Chip,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import BusinessIcon from "@mui/icons-material/Business";
-import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import icons from "../ui/icons.js";
 import { useTheme } from "../context/ThemeContext.jsx";
 import { optimizedStyles, getGradient } from "../utils/performance.js";
 import { useOptimizedDataTable } from "../hooks/useOptimizedSearch.js";
@@ -247,7 +243,7 @@ const SecretariaAdminPageOptimized = () => {
                 background: getGradient("primary"),
               }}
             >
-              <BusinessIcon sx={{ fontSize: 12 }} />
+              <icons.empresa sx={{ fontSize: 12 }} />
             </Avatar>
             <Typography variant="body2" fontWeight={500}>
               {item.nombre}
@@ -314,7 +310,7 @@ const SecretariaAdminPageOptimized = () => {
                   ...optimizedStyles.modernButton(isDarkMode),
                 }}
               >
-                <EditIcon sx={{ fontSize: 16 }} />
+                <icons.editar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
             <Tooltip title="Eliminar">
@@ -333,7 +329,7 @@ const SecretariaAdminPageOptimized = () => {
                   },
                 }}
               >
-                <DeleteIcon sx={{ fontSize: 16 }} />
+                <icons.eliminar sx={{ fontSize: 16 }} />
               </Button>
             </Tooltip>
           </Box>
@@ -358,7 +354,7 @@ const SecretariaAdminPageOptimized = () => {
             background: getGradient("primary"),
           }}
         >
-          <AccountTreeIcon sx={{ fontSize: 24 }} />
+          <icons.organigrama sx={{ fontSize: 24 }} />
         </Avatar>
         <Typography
           variant="h3"
@@ -393,7 +389,7 @@ const SecretariaAdminPageOptimized = () => {
                   background: getGradient("primary"),
                 }}
               >
-                <AddIcon sx={{ fontSize: 18 }} />
+                <icons.agregar sx={{ fontSize: 18 }} />
               </Avatar>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 Agregar nueva dependencia
@@ -466,7 +462,7 @@ const SecretariaAdminPageOptimized = () => {
                   creating ? (
                     <CircularProgress size={16} color="inherit" />
                   ) : (
-                    <AddIcon />
+                    <icons.agregar />
                   )
                 }
                 sx={{
@@ -510,7 +506,7 @@ const SecretariaAdminPageOptimized = () => {
                   background: getGradient("warning"),
                 }}
               >
-                <EditIcon sx={{ fontSize: 18 }} />
+                <icons.editar sx={{ fontSize: 18 }} />
               </Avatar>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 Editar dependencia: {editingSec.nombre}
@@ -557,7 +553,7 @@ const SecretariaAdminPageOptimized = () => {
                   savingEdit ? (
                     <CircularProgress size={16} color="inherit" />
                   ) : (
-                    <EditIcon />
+                    <icons.editar />
                   )
                 }
                 sx={{
