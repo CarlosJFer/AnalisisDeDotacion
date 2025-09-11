@@ -20,11 +20,10 @@ import {
 import PaginationControls from "./ui/PaginationControls.jsx";
 import DashboardCard from "./ui/DashboardCard.jsx";
 import icons from "../ui/icons.js";
-import { useTheme } from "../context/ThemeContext.jsx";
+import { theme } from "../ui";
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
-  const { theme } = useTheme();
-  const COLOR = theme.palette.primary.main;
+  const COLOR = theme.palette.primary;
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
   const chartData = useMemo(
     () =>

@@ -20,11 +20,10 @@ import {
   ValueLabel,
 } from "../ui/chart-utils";
 import icons from "../ui/icons.js";
-import { useTheme } from "../context/ThemeContext.jsx";
+import { theme } from "../ui";
 
 const AgentsByDireccionGeneralBarChart = ({ data, isDarkMode }) => {
-  const { theme } = useTheme();
-  const primary = theme.palette.primary.main;
+  const primary = theme.palette.primary;
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   const chartData = useMemo(() => {

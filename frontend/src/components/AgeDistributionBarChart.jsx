@@ -20,11 +20,10 @@ import {
   ValueLabel,
 } from "../ui/chart-utils";
 import icons from "../ui/icons.js";
-import { useTheme } from "../context/ThemeContext.jsx";
+import { theme } from "../ui";
 
 const AgeDistributionBarChart = ({ data, isDarkMode }) => {
-  const { theme } = useTheme();
-  const COLOR = theme.palette.primary.main;
+  const COLOR = theme.palette.primary;
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   const chartData = useMemo(() => {
