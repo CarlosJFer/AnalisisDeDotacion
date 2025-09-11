@@ -56,7 +56,7 @@ const HistogramWidget = ({ data, xKey, barKey, color }) => {
             data={data}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
-            <CartesianGrid {...gridProps} strokeDasharray="3 3" />
+            <CartesianGrid {...gridProps} />
             <XAxis
               dataKey={xKey}
               {...axisProps}
