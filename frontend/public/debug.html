@@ -85,7 +85,7 @@
         <h2>Log de Eventos</h2>
         <div id="log"></div>
 
-        <p><a class="button" href="/">Volver al inicio</a></p>
+        <p><button class="button" onclick="navigateHome()">Volver al inicio</button></p>
     </div>
 
     <script>
@@ -157,6 +157,10 @@
             } catch (error) {
                 log(`Error al limpiar localStorage: ${error.message}`, 'error');
             }
+        }
+
+        function navigateHome() {
+            window.location.assign('/');
         }
 
         // Mostrar información del sistema sin provocar redirecciones.
