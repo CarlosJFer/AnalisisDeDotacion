@@ -19,6 +19,7 @@ import {
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
+  ValueLabel,
 } from "../ui/chart-utils";
 
 const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
@@ -48,27 +49,6 @@ const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
     () => chartData.reduce((s, d) => s + (d.cantidad || 0), 0),
     [chartData],
   );
-
-  const EndOutsideLabel = (props) => {
-    const { x = 0, y = 0, width = 0, height = 0, index = 0 } = props;
-    const v = Number(pageData?.[index]?.cantidad) || 0;
-    const label = formatPct(total ? v / total : 0);
-    const color = isDarkMode ? "#ffffff" : "#0f172a";
-    return (
-      <text
-        x={x + width + 8}
-        y={y + (height || 0) / 2}
-        fontSize={12}
-        textAnchor="start"
-        dominantBaseline="central"
-        fill={color}
-        fontWeight="600"
-        pointerEvents="none"
-      >
-        {label}
-      </text>
-    );
-  };
 
   return (
     <DashboardCard
@@ -148,7 +128,9 @@ const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
             <Bar dataKey="cantidad" maxBarSize={22} fill={primary}>
               <LabelList
                 dataKey="cantidad"
-                content={(p) => <EndOutsideLabel {...p} />}
+                content={(p) => (
+                  <ValueLabel {...p} total={total} dark={isDarkMode} />
+                )}
               />
             </Bar>
           </BarChart>
