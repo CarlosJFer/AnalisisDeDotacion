@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import DashboardCard from "./ui/DashboardCard.jsx";
+import { DashboardCard } from "../ui";
 import {
   formatMiles,
   formatPct,

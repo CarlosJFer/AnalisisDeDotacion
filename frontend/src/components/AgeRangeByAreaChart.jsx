@@ -26,8 +26,7 @@ import {
   rechartsCommon,
   ValueLabel,
 } from "../ui/chart-utils";
-import PaginationControls from "./ui/PaginationControls.jsx";
-import DashboardCard from "./ui/DashboardCard.jsx";
+import { DashboardCard, PaginationControls } from "../ui";
 import icons from "../ui/icons.js";
 import { modeVars } from "../ui";
 

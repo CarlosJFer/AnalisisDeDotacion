@@ -21,9 +21,7 @@ import {
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 import { useErrorHandler } from "../hooks/useErrorHandler";
-import icons from "../ui/icons.js";
-import KPIStat from "../components/ui/KPIStat.jsx";
-import DashboardCard from "../components/ui/DashboardCard.jsx";
+import { icons, KPIStat, DashboardCard } from "../ui";
 import DependencyFilter from "../components/DependencyFilter.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
 import SacSection from "../components/SACSection";

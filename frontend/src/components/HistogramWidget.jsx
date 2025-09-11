@@ -10,7 +10,7 @@ import {
 } from "recharts";
 import { Box, Typography } from "@mui/material";
 import { useTheme as useAppTheme } from "../context/ThemeContext";
-import DashboardCard from "./ui/DashboardCard.jsx";
+import { DashboardCard } from "../ui";
 import icons from "../ui/icons.js";
 import { rechartsCommon, UnifiedTooltip, modeVars } from "../ui";
 

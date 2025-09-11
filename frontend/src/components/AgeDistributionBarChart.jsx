@@ -10,8 +10,7 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import DashboardCard from "./ui/DashboardCard";
-import PaginationControls from "./ui/PaginationControls";
+import { DashboardCard, PaginationControls } from "../ui";
 import {
   formatMiles,
   formatPct,
