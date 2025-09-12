@@ -12,6 +12,7 @@ const DashboardAccordionBase = ({ children, ...props }) => (
       borderRadius: theme.radii.lg,
       boxShadow: theme.shadows.dashboard,
       overflow: "hidden",
+      "&::before": { display: "none" }, // evita el borde cuadrado superior
     }}
     {...props}
   >
@@ -33,7 +34,15 @@ const Summary = ({ isDarkMode, ...props }) => (
   />
 );
 
-const Details = (props) => <AccordionDetails {...props} />;
+const Details = ({ isDarkMode, ...props }) => (
+  <AccordionDetails
+    sx={{
+      bgcolor: isDarkMode ? modeVars.dark.surface : modeVars.light.surface,
+      borderRadius: `0 0 ${theme.radii.lg}px ${theme.radii.lg}px`,
+    }}
+    {...props}
+  />
+);
 
 const DashboardAccordion = React.memo(DashboardAccordionBase);
 DashboardAccordion.Summary = Summary;
