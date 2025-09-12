@@ -52,7 +52,7 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
   return (
     <DashboardCard
       title="Distribución por Rangos de Edad - Planta y Contratos"
-      icon={<icons.edad />}
+      icon={<icons.distribucion />}
       isDarkMode={isDarkMode}
       headerRight={
         <Chip label="Rangos de edad" size="small" variant="outlined" />
