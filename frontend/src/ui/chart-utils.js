@@ -102,6 +102,28 @@ export const ValueLabel = (p) => {
   );
 };
 
+/**
+ * Etiqueta personalizada que muestra la edad promedio y la cantidad
+ * correspondiente a cada barra. Se posiciona fuera de la barra,
+ * alineada a la derecha, similar a {@link ValueLabel}.
+ */
+export const AgeCountLabel = (p) => {
+  const { x = 0, y = 0, width = 0, viewBox, payload = {}, dark } = p;
+  const chartW = viewBox?.width ?? 0;
+  const edad = Math.round(payload.avg ?? payload.promedio ?? 0);
+  const cantidad = Number(payload.cantidad ?? 0);
+  const text = `${edad} años · ${formatMiles(cantidad)}`;
+  const approx = text.length * 7;
+  const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
+  const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
+  const color = isDarkTheme ? "#ffffff" : "#0f172a";
+  return (
+    <text x={xText} y={y + 4} fill={color} fontWeight="600">
+      {text}
+    </text>
+  );
+};
+
 /** Tooltip unificado (oscuro/claro) */
 export const UnifiedTooltip = ({ active, payload, label, children, dark, style }) => {
   if (!active || !payload?.length) return null;
