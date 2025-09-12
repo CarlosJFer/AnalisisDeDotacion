@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
 import { FixedSizeList as List } from "react-window";
 import {
   Table,
@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import icons from "../ui/icons.js";
+import { chunkArray } from "../utils/performance.js";
 
 const VirtualizedTable = ({
   data,
@@ -20,9 +21,37 @@ const VirtualizedTable = ({
   getNombrePadre,
   height = 400,
 }) => {
+  const [processedData, setProcessedData] = useState([]);
+
+  useEffect(() => {
+    if (data.length > 1000) {
+      const chunks = chunkArray(data, 500);
+      let index = 0;
+      setProcessedData([]);
+      const schedule =
+        typeof requestIdleCallback === "function"
+          ? requestIdleCallback
+          : (cb) => setTimeout(cb, 0);
+      const processChunk = (deadline) => {
+        while (
+          index < chunks.length &&
+          (!deadline || deadline.timeRemaining() > 0)
+        ) {
+          setProcessedData((prev) => [...prev, ...chunks[index]]);
+          index++;
+        }
+        if (index < chunks.length) schedule(processChunk);
+      };
+      schedule(processChunk);
+    } else {
+      setProcessedData(data);
+    }
+  }, [data]);
+
   // Componente para renderizar cada fila
-  const Row = ({ index, style }) => {
-    const sec = data[index];
+  const Row = useCallback(
+    ({ index, style }) => {
+      const sec = processedData[index];
 
     return (
       <div
@@ -141,9 +170,11 @@ const VirtualizedTable = ({
         </div>
       </div>
     );
-  };
+    },
+    [processedData, getNombrePadre, onDelete, onEdit],
+  );
 
-  const memoizedData = useMemo(() => data, [data]);
+  const memoizedData = useMemo(() => processedData, [processedData]);
 
   return (
     <div style={{ marginTop: "24px" }}>

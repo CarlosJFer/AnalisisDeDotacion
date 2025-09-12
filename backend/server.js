@@ -19,6 +19,7 @@ const importTemplateRoutes = require('./routes/importTemplates');
 const adminRoutes = require('./routes/adminRoutes');
 const functionRoutes = require('./routes/functions');
 const chartConfigRoutes = require('./routes/chartConfigRoutes');
+const metricsRoutes = require('./routes/metrics');
 const initFunctions = require('./config/initFunctions');
 
 const app = express();
@@ -48,6 +49,7 @@ app.use('/api/templates', importTemplateRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/functions', functionRoutes);
 app.use('/api/chart-configs', chartConfigRoutes);
+app.use('/api/metrics', metricsRoutes);
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
