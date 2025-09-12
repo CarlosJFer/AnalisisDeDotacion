@@ -18,7 +18,7 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
-} from "../ui/chart-utils";
+} from "../ui/chart-utils.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const CustomBarChart = React.memo(

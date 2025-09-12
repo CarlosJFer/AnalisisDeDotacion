@@ -16,7 +16,7 @@ import {
   rechartsCommon,
   UnifiedTooltip,
   AgeCountLabel,
-} from "../ui/chart-utils";
+} from "../ui/chart-utils.jsx";
 import { DashboardCard, PaginationControls, theme } from "../ui";
 import icons from "../ui/icons.js";
 

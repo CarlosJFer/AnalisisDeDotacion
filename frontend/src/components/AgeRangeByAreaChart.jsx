@@ -25,7 +25,7 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
-} from "../ui/chart-utils";
+} from "../ui/chart-utils.jsx";
 import { DashboardCard, PaginationControls, modeVars } from "../ui";
 import icons from "../ui/icons.js";
 

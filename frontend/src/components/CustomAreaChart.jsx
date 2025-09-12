@@ -17,7 +17,7 @@ import {
   rechartsCommon,
   ValueLabel,
   formatPct,
-} from "../ui/chart-utils";
+} from "../ui/chart-utils.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
 const CustomAreaChart = React.memo(
