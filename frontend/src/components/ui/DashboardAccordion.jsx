@@ -11,6 +11,7 @@ const DashboardAccordionBase = ({ children, ...props }) => (
     sx={{
       borderRadius: theme.radii.lg,
       boxShadow: theme.shadows.dashboard,
+      overflow: "hidden",
     }}
     {...props}
   >
@@ -22,6 +23,7 @@ const Summary = ({ isDarkMode, ...props }) => (
   <AccordionSummary
     expandIcon={<icons.expandir aria-hidden="true" />}
     sx={{
+      borderRadius: theme.radii.lg,
       bgcolor: isDarkMode ? modeVars.dark.surface : modeVars.light.surface,
       "&:hover": {
         bgcolor: theme.palette.primaryHover,
