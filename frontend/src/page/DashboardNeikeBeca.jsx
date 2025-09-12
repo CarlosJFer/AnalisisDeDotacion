@@ -17,6 +17,7 @@ import icons from "../ui/icons.js";
 import { DashboardCard } from "../ui";
 import KPIStat from "../components/ui/KPIStat.jsx";
 import CustomBarChart from "../components/CustomBarChart";
+import AgeDistributionBarChart from "../components/AgeDistributionBarChart";
 import CustomDonutChart from "../components/CustomDonutChart";
 import CustomAreaChart from "../components/CustomAreaChart";
 import AgeRangeByAreaChart from "../components/AgeRangeByAreaChart";
@@ -649,12 +650,10 @@ const DashboardNeikeBeca = () => {
           {/* GrÃ¡fico de rangos de edad principal */}
           <Grid item xs={12}>
             {ageDistribution ? (
-              <CustomBarChart
+              <AgeDistributionBarChart
                 data={ageDistribution.rangeData}
-                xKey="range"
-                barKey="count"
-                title="Distribución por Rangos de Edad - Neikes y Beca"
                 isDarkMode={isDarkMode}
+                title="Distribución por Rangos de Edad - Neikes y Beca"
               />
             ) : (
               <Box

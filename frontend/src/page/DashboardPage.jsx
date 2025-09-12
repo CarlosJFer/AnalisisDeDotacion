@@ -45,6 +45,9 @@ const AgentsByFunctionBarChart = lazy(
 const AgeRangeByAreaChart = lazy(
   () => import("../components/AgeRangeByAreaChart"),
 );
+const AgeDistributionBarChart = lazy(
+  () => import("../components/AgeDistributionBarChart"),
+);
 const AgentsBySecretariaBarChart = lazy(
   () => import("../components/AgentsBySecretariaBarChart.jsx"),
 );
@@ -1052,12 +1055,10 @@ const DashboardPage = () => {
           <Grid item xs={12}>
             {ageDistribution ? (
               <Suspense fallback={<CircularProgress />}>
-                <CustomBarChart
+                <AgeDistributionBarChart
                   data={ageDistribution.rangeData}
-                  xKey="range"
-                  barKey="count"
-                  title="Distribución por Rangos de Edad - Planta y Contratos"
                   isDarkMode={isDarkMode}
+                  title="Distribución por Rangos de Edad - Planta y Contratos"
                 />
               </Suspense>
             ) : (
