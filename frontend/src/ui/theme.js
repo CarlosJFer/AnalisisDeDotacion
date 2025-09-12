@@ -56,5 +56,8 @@ export const modeVars = (isDarkMode) => ({
   "--hover-color": isDarkMode ? palette.hoverDark : palette.hoverLight,
 });
 
+modeVars.light = { surface: palette.hoverLight };
+modeVars.dark = { surface: palette.hoverDark };
+
 export { theme, palette };
 export default theme;
