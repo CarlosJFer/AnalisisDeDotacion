@@ -13,6 +13,7 @@ import {
 import { useImperativeHandle, forwardRef } from "react";
 import { useTheme } from "../context/ThemeContext.jsx";
 import icons from "../ui/icons.js";
+import { modeVars } from "../ui";
 
 // FunciÃ³n memoizada para determinar estado de variables
 const getEstadoVariables = (variables) => {
@@ -31,48 +32,74 @@ const getEstadoVariables = (variables) => {
 // Componente de Ã­cono ultra-optimizado
 const EstadoIcon = memo(({ estado }) => {
   const iconMap = {
-    critico: <icons.error fontSize="small" sx={{ color: "#f44336" }} />,
-    preventivo: <icons.advertencia fontSize="small" sx={{ color: "#ff9800" }} />,
-    ok: <icons.exito fontSize="small" sx={{ color: "#4caf50" }} />,
-    sin: <icons.ayuda fontSize="small" sx={{ color: "#9e9e9e" }} />,
+    critico: (
+      <icons.error
+        fontSize="small"
+        sx={{ color: "#f44336" }}
+        aria-hidden="true"
+      />
+    ),
+    preventivo: (
+      <icons.advertencia
+        fontSize="small"
+        sx={{ color: "#ff9800" }}
+        aria-hidden="true"
+      />
+    ),
+    ok: (
+      <icons.exito
+        fontSize="small"
+        sx={{ color: "#4caf50" }}
+        aria-hidden="true"
+      />
+    ),
+    sin: (
+      <icons.ayuda
+        fontSize="small"
+        sx={{ color: "#9e9e9e" }}
+        aria-hidden="true"
+      />
+    ),
   };
   return iconMap[estado] || null;
 });
 
 // Chip ultra-optimizado con estilos pre-calculados
 const EstadoChip = memo(({ estado, variablesCount }) => {
+  const { isDarkMode } = useTheme();
+  const vars = modeVars(isDarkMode);
   const chipStyles = useMemo(
     () => ({
       critico: {
         background: "linear-gradient(135deg, #f44336, #d32f2f)",
-        color: "white",
+        color: vars["--text-color"],
         fontWeight: 600,
         fontSize: "0.7rem",
         height: 20,
       },
       preventivo: {
         background: "linear-gradient(135deg, #ff9800, #f57c00)",
-        color: "white",
+        color: vars["--text-color"],
         fontWeight: 600,
         fontSize: "0.7rem",
         height: 20,
       },
       ok: {
         background: "linear-gradient(135deg, #4caf50, #388e3c)",
-        color: "white",
+        color: vars["--text-color"],
         fontWeight: 600,
         fontSize: "0.7rem",
         height: 20,
       },
       sin: {
         background: "linear-gradient(135deg, #9e9e9e, #757575)",
-        color: "white",
+        color: vars["--text-color"],
         fontWeight: 600,
         fontSize: "0.7rem",
         height: 20,
       },
     }),
-    [],
+    [vars],
   );
 
   const style = chipStyles[estado];
@@ -90,7 +117,8 @@ const EstadoChip = memo(({ estado, variablesCount }) => {
 // FunciÃ³n de resaltado ultra-optimizada
 const HighlightText = memo(({ text, term }) => {
   if (!term || term.length < 2) return text;
-
+  const { isDarkMode } = useTheme();
+  const vars = modeVars(isDarkMode);
   const parts = String(text).split(new RegExp(`(${term})`, "gi"));
   return parts.map((part, i) =>
     new RegExp(term, "i").test(part) ? (
@@ -98,7 +126,7 @@ const HighlightText = memo(({ text, term }) => {
         key={i}
         style={{
           background: "linear-gradient(135deg, #2196f3, #1976d2)",
-          color: "white",
+          color: vars["--text-color"],
           fontWeight: 600,
           padding: "2px 4px",
           borderRadius: "4px",
@@ -206,9 +234,15 @@ const TreeNode = memo(
               }}
             >
               {level === 0 ? (
-                <icons.empresa sx={{ fontSize: avatarSize * 0.6 }} />
+                <icons.empresa
+                  sx={{ fontSize: avatarSize * 0.6 }}
+                  aria-hidden="true"
+                />
               ) : (
-                <icons.organigrama sx={{ fontSize: avatarSize * 0.6 }} />
+                <icons.organigrama
+                  sx={{ fontSize: avatarSize * 0.6 }}
+                  aria-hidden="true"
+                />
               )}
             </Avatar>
 
@@ -278,6 +312,7 @@ const TreeNode = memo(
                             ? "rgba(255, 255, 255, 0.6)"
                             : "rgba(0, 0, 0, 0.6)",
                         }}
+                        aria-hidden="true"
                       />
                     </Box>
                   </Tooltip>
@@ -293,6 +328,7 @@ const TreeNode = memo(
                     >
                       <IconButton
                         size="small"
+                        aria-label="ver dashboard planta y contratos"
                         onClick={(e) => {
                           e.stopPropagation();
                           onNodeSelect(node);
@@ -320,6 +356,7 @@ const TreeNode = memo(
                         <icons.flechaDerecha
                           fontSize="small"
                           sx={{ color: "#ffffff" }}
+                          aria-hidden="true"
                         />
                       </IconButton>
                     </Tooltip>
@@ -332,6 +369,7 @@ const TreeNode = memo(
                     >
                       <IconButton
                         size="small"
+                        aria-label="ver dashboard neikes y beca"
                         onClick={(e) => {
                           e.stopPropagation();
                           onNodeSelectNeike(node);
@@ -360,6 +398,7 @@ const TreeNode = memo(
                         <icons.flechaDerecha
                           fontSize="small"
                           sx={{ color: "#ffffff" }}
+                          aria-hidden="true"
                         />
                       </IconButton>
                     </Tooltip>
@@ -487,8 +526,8 @@ const OptimizedOrganigramaTreeView = forwardRef(
                 background: "linear-gradient(135deg, #9e9e9e, #757575)",
               }}
             >
-              <icons.ayuda sx={{ fontSize: 32 }} />
-            </Avatar>
+            <icons.ayuda sx={{ fontSize: 32 }} aria-hidden="true" />
+          </Avatar>
             <Typography
               variant="h6"
               sx={{ color: "text.secondary", fontWeight: 500 }}

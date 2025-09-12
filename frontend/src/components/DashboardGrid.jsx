@@ -173,7 +173,7 @@ const DashboardGrid = ({ data, secretariaId }) => {
                   onClick={(e) => handleMenuOpen(e, widget)}
                   aria-label="opciones del widget"
                 >
-                  <icons.opciones />
+                  <icons.opciones aria-hidden="true" />
                 </IconButton>
               </Tooltip>
             </Box>

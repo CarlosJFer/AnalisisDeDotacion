@@ -302,7 +302,7 @@ const ProfileMenu = () => {
             transition: "all 0.3s ease",
           }}
         >
-          <icons.configuracion />
+          <icons.configuracion aria-hidden="true" />
         </IconButton>
       </Tooltip>
 
@@ -350,9 +350,9 @@ const ProfileMenu = () => {
               }}
             >
               {user?.role === "admin" ? (
-                <icons.admin />
+                <icons.admin aria-hidden="true" />
               ) : (
-                <icons.persona />
+                <icons.persona aria-hidden="true" />
               )}
             </Avatar>
             <Box>
@@ -403,6 +403,7 @@ const ProfileMenu = () => {
                     ? "rgba(255, 255, 255, 0.7)"
                     : "rgba(0, 0, 0, 0.6)",
                 }}
+                aria-hidden="true"
               />
               <Box sx={{ flex: 1 }}>
                 <Typography
@@ -451,6 +452,7 @@ const ProfileMenu = () => {
                     ? "rgba(255, 255, 255, 0.7)"
                     : "rgba(0, 0, 0, 0.6)",
                 }}
+                aria-hidden="true"
               />
               <Typography
                 variant="body2"
@@ -487,6 +489,7 @@ const ProfileMenu = () => {
                     ? "rgba(255, 255, 255, 0.7)"
                     : "rgba(0, 0, 0, 0.6)",
                 }}
+                aria-hidden="true"
               />
               <Typography
                 variant="body2"
@@ -535,6 +538,7 @@ const ProfileMenu = () => {
                     ? "rgba(255, 255, 255, 0.7)"
                     : "rgba(0, 0, 0, 0.6)",
                 }}
+                aria-hidden="true"
               />
               <Box sx={{ flex: 1 }}>
                 <Typography

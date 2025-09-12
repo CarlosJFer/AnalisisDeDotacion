@@ -432,13 +432,14 @@ const MappingRow = memo(function MappingRow({
         <Grid item xs={12} sm={3}>
           <IconButton
             onClick={() => onRemove(idx)}
+            aria-label="eliminar mapeo"
             color="error"
             sx={{
               background: "rgba(244, 67, 54, 0.1)",
               "&:hover": { background: "rgba(244, 67, 54, 0.2)" },
             }}
           >
-            <icons.eliminar />
+            <icons.eliminar aria-hidden="true" />
           </IconButton>
         </Grid>
       </Grid>

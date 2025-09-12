@@ -14,6 +14,9 @@ const ThemeToggle = () => {
     >
       <IconButton
         onClick={toggleTheme}
+        aria-label={
+          isDarkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
+        }
         sx={{
           color: isDarkMode ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)",
           background: isDarkMode
@@ -35,7 +38,11 @@ const ThemeToggle = () => {
           transition: "all 0.3s ease",
         }}
       >
-        {isDarkMode ? <icons.sol /> : <icons.luna />}
+        {isDarkMode ? (
+          <icons.sol aria-hidden="true" />
+        ) : (
+          <icons.luna aria-hidden="true" />
+        )}
       </IconButton>
     </Tooltip>
   );

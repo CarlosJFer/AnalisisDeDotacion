@@ -24,6 +24,7 @@ import {
   InputLabel,
 } from "@mui/material";
 import icons from "../ui/icons.js";
+import { modeVars } from "../ui";
 import { useTheme } from "../context/ThemeContext.jsx";
 import apiClient from "../services/api";
 import templateService from "../services/templateService"; // Importamos el servicio
@@ -66,6 +67,7 @@ const FileItem = memo(
           !uploading && (
             <IconButton
               edge="end"
+              aria-label="eliminar archivo"
               onClick={handleRemove}
               sx={{
                 color: "#f44336",
@@ -75,7 +77,7 @@ const FileItem = memo(
                 transition: "all 0.15s ease",
               }}
             >
-              <icons.eliminar />
+              <icons.eliminar aria-hidden="true" />
             </IconButton>
           )
         }
@@ -88,7 +90,7 @@ const FileItem = memo(
             background: "linear-gradient(135deg, #4caf50, #388e3c)",
           }}
         >
-          <icons.archivo sx={{ fontSize: 16 }} />
+          <icons.archivo sx={{ fontSize: 16 }} aria-hidden="true" />
         </Avatar>
         <ListItemText
           primary={
@@ -148,6 +150,7 @@ const FileItem = memo(
 
 const UploadSection = () => {
   const { isDarkMode } = useTheme();
+  const vars = modeVars(isDarkMode);
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -322,7 +325,7 @@ const UploadSection = () => {
               background: "linear-gradient(135deg, #ff9800, #f57c00)",
             }}
           >
-            <icons.subir sx={{ fontSize: 18 }} />
+            <icons.subir sx={{ fontSize: 18 }} aria-hidden="true" />
           </Avatar>
           <Typography
             variant="h6"
@@ -381,6 +384,7 @@ const UploadSection = () => {
                 : "rgba(255, 152, 0, 0.8)",
               mb: 2,
             }}
+            aria-hidden="true"
           />
           <Typography
             variant="h6"
@@ -408,10 +412,10 @@ const UploadSection = () => {
             <Button
               variant="contained"
               component="span"
-              startIcon={<icons.subir />}
+              startIcon={<icons.subir aria-hidden="true" />}
               sx={{
                 background: "linear-gradient(45deg, #ff9800, #f57c00)",
-                color: "white",
+                color: vars["--text-color"],
                 fontWeight: 600,
                 px: 3,
                 py: 1.5,
@@ -496,7 +500,7 @@ const UploadSection = () => {
                   fileTemplates[idx] === undefined,
               )
             }
-            startIcon={<icons.subir />}
+            startIcon={<icons.subir aria-hidden="true" />}
             sx={{
               background:
                 files.length > 0 && !uploading
@@ -504,7 +508,7 @@ const UploadSection = () => {
                   : "rgba(0, 0, 0, 0.12)",
               color:
                 files.length > 0 && !uploading
-                  ? "white"
+                  ? vars["--text-color"]
                   : "rgba(0, 0, 0, 0.26)",
               fontWeight: 600,
               px: 4,
@@ -561,7 +565,7 @@ const UploadSection = () => {
                 background: "linear-gradient(135deg, #ff9800, #f57c00)",
               }}
             >
-              <icons.subir sx={{ fontSize: 18 }} />
+              <icons.subir sx={{ fontSize: 18 }} aria-hidden="true" />
             </Avatar>
             ¿Confirmar carga?
           </DialogTitle>
@@ -584,7 +588,7 @@ const UploadSection = () => {
                         background: "linear-gradient(135deg, #4caf50, #388e3c)",
                       }}
                     >
-                      <icons.archivo sx={{ fontSize: 12 }} />
+                      <icons.archivo sx={{ fontSize: 12 }} aria-hidden="true" />
                     </Avatar>
                     <ListItemText
                       primary={file.name}
@@ -619,7 +623,7 @@ const UploadSection = () => {
               variant="contained"
               sx={{
                 background: "linear-gradient(45deg, #ff9800, #f57c00)",
-                color: "white",
+                color: vars["--text-color"],
                 fontWeight: 600,
                 "&:hover": {
                   background: "linear-gradient(45deg, #f57c00, #ef6c00)",
@@ -643,7 +647,7 @@ const UploadSection = () => {
                 : "rgba(244, 67, 54, 0.05)",
               border: `1px solid ${isDarkMode ? "rgba(244, 67, 54, 0.3)" : "rgba(244, 67, 54, 0.2)"}`,
             }}
-            icon={<icons.error />}
+            icon={<icons.error aria-hidden="true" />}
           >
             {error}
           </Alert>
@@ -660,7 +664,7 @@ const UploadSection = () => {
                 : "rgba(76, 175, 80, 0.05)",
               border: `1px solid ${isDarkMode ? "rgba(76, 175, 80, 0.3)" : "rgba(76, 175, 80, 0.2)"}`,
             }}
-            icon={<icons.exito />}
+            icon={<icons.exito aria-hidden="true" />}
           >
             <Typography
               variant="body2"
