@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useMemo, useRef } from "react";
 import {
   Box,
   Card,
@@ -34,45 +34,70 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
   const { showToast } = useNotifications();
   const [expanded, setExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState(filters);
+  const searchTimeout = useRef();
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  const handleExpandClick = useCallback(() => {
+    setExpanded((prev) => !prev);
+  }, []);
 
-  const handleFilterChange = (filterKey, value) => {
-    const newFilters = { ...localFilters, [filterKey]: value };
-    setLocalFilters(newFilters);
-  };
+  const handleFilterChange = useCallback((filterKey, value) => {
+    setLocalFilters((prev) => ({ ...prev, [filterKey]: value }));
+  }, []);
 
-  const applyFilters = () => {
-    updateFilters(localFilters);
-    if (onFiltersChange) {
-      onFiltersChange(localFilters);
+  const handleSearchChange = useCallback(
+    (e) => {
+      const value = e.target.value;
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+      searchTimeout.current = setTimeout(() => {
+        handleFilterChange("searchTerm", value);
+      }, 200);
+    },
+    [handleFilterChange],
+  );
+
+  const applyFilters = useCallback(() => {
+    const run = () => {
+      updateFilters(localFilters);
+      if (onFiltersChange) {
+        onFiltersChange(localFilters);
+      }
+      showToast("Filtros aplicados correctamente", "success");
+    };
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(run);
+    } else {
+      setTimeout(run, 0);
     }
-    showToast("Filtros aplicados correctamente", "success");
-  };
+  }, [localFilters, onFiltersChange, showToast, updateFilters]);
 
-  const resetFilters = () => {
-    clearFilters();
-    setLocalFilters({
-      dateRange: null,
-      secretarias: [],
-      tipoContratacion: [],
-      genero: [],
-      searchTerm: "",
-      salaryRange: [0, 1000000],
-      antiguedadRange: [0, 40],
-      edad: { min: 18, max: 70 },
-      estado: "todos",
-      departamento: [],
-    });
-    if (onFiltersChange) {
-      onFiltersChange({});
+  const resetFilters = useCallback(() => {
+    const run = () => {
+      clearFilters();
+      setLocalFilters({
+        dateRange: null,
+        secretarias: [],
+        tipoContratacion: [],
+        genero: [],
+        searchTerm: "",
+        salaryRange: [0, 1000000],
+        antiguedadRange: [0, 40],
+        edad: { min: 18, max: 70 },
+        estado: "todos",
+        departamento: [],
+      });
+      if (onFiltersChange) {
+        onFiltersChange({});
+      }
+      showToast("Filtros reiniciados", "info");
+    };
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(run);
+    } else {
+      setTimeout(run, 0);
     }
-    showToast("Filtros reiniciados", "info");
-  };
+  }, [clearFilters, onFiltersChange, showToast]);
 
-  const getActiveFiltersCount = () => {
+  const activeFiltersCount = useMemo(() => {
     let count = 0;
     if (localFilters.searchTerm) count++;
     if (localFilters.secretarias?.length > 0) count++;
@@ -82,24 +107,34 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
     if (localFilters.dateRange) count++;
     if (localFilters.estado !== "todos") count++;
     return count;
-  };
+  }, [localFilters]);
 
   // Opciones disponibles (estas vendrían del backend en una implementación real)
-  const tiposContratacion = [
-    "Planta Permanente",
-    "Planta Transitoria",
-    "Contrato",
-    "Pasantía",
-  ];
-  const generos = ["Masculino", "Femenino", "Otro", "Prefiero no decir"];
-  const secretariasDisponibles = availableData?.secretarias || [];
-  const departamentos = availableData?.departamentos || [];
-  const estados = [
-    { value: "todos", label: "Todos" },
-    { value: "activo", label: "Activos" },
-    { value: "inactivo", label: "Inactivos" },
-    { value: "licencia", label: "En Licencia" },
-  ];
+  const tiposContratacion = useMemo(
+    () => ["Planta Permanente", "Planta Transitoria", "Contrato", "Pasantía"],
+    [],
+  );
+  const generos = useMemo(
+    () => ["Masculino", "Femenino", "Otro", "Prefiero no decir"],
+    [],
+  );
+  const secretariasDisponibles = useMemo(
+    () => availableData?.secretarias || [],
+    [availableData],
+  );
+  const departamentos = useMemo(
+    () => availableData?.departamentos || [],
+    [availableData],
+  );
+  const estados = useMemo(
+    () => [
+      { value: "todos", label: "Todos" },
+      { value: "activo", label: "Activos" },
+      { value: "inactivo", label: "Inactivos" },
+      { value: "licencia", label: "En Licencia" },
+    ],
+    [],
+  );
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
@@ -108,9 +143,9 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
           avatar={<icons.filtro aria-hidden="true" />}
           action={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              {getActiveFiltersCount() > 0 && (
+              {activeFiltersCount > 0 && (
                 <Chip
-                  label={`${getActiveFiltersCount()} filtros activos`}
+                  label={`${activeFiltersCount} filtros activos`}
                   size="small"
                   color="primary"
                 />
@@ -142,9 +177,7 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
                   label="Búsqueda global"
                   placeholder="Buscar por nombre, DNI, cargo..."
                   value={localFilters.searchTerm || ""}
-                  onChange={(e) =>
-                    handleFilterChange("searchTerm", e.target.value)
-                  }
+                  onChange={handleSearchChange}
                   InputProps={{
                   endAdornment: <icons.buscar aria-hidden="true" />,
                   }}

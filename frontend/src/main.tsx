@@ -4,11 +4,24 @@ import "./index.css";
 import App from "./App.tsx";
 import { onINP } from "web-vitals";
 
-// Monitor INP metric using web-vitals
+// Monitor INP metric using web-vitals and send to backend
 onINP(({ value }) => {
   if (value > 200) console.warn("INP necesita mejora:", value);
-  // Enviar valor a un endpoint/analytics si se requiere
-  // fetch("/api/metrics", { method: "POST", body: JSON.stringify({ inp: value }) });
+  const body = JSON.stringify({ value });
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/metrics/inp", body);
+    } else {
+      fetch("/api/metrics/inp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+        keepalive: true,
+      });
+    }
+  } catch (err) {
+    console.error("Error enviando INP:", err);
+  }
 });
 
 // Global error handler for unhandled promise rejections
