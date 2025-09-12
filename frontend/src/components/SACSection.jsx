@@ -191,7 +191,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Análisis de vía de captación
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-via-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-via-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -223,7 +223,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Análisis de cierre por problemas
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-cierre-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-cierre-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -291,7 +291,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Análisis por boca receptora
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-boca-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-boca-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -322,7 +322,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Análisis de frecuencia de tipo de cierre
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-frecuencia-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-frecuencia-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -353,7 +353,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Análisis por temas
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-temas-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-temas-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -432,7 +432,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Discriminación por tipo de contacto
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-contacto-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-contacto-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -478,7 +478,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Evaluación de llamadas por barrio
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-llamadas-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-llamadas-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -509,7 +509,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Secretaría de Ambiente y Desarrollo Sustentable
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-ambiente-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-ambiente-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -577,7 +577,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Secretaría de Infraestructura
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-infra-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-infra-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -645,7 +645,7 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
               Secretaría de Coordinación de Relaciones Territoriales
             </Typography>
           </DashboardAccordion.Summary>
-          <DashboardAccordion.Details id="sac-coord-content">
+          <DashboardAccordion.Details isDarkMode={isDarkMode} id="sac-coord-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
