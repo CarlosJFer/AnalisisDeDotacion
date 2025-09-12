@@ -105,7 +105,7 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
     <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={es}>
       <Card data-tour="dashboard-filters" sx={{ mb: 2 }}>
         <CardHeader
-          avatar={<icons.filtro />}
+          avatar={<icons.filtro aria-hidden="true" />}
           action={
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
               {getActiveFiltersCount() > 0 && (
@@ -124,7 +124,7 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
                   transition: "transform 0.2s",
                 }}
               >
-                <icons.expandir />
+                <icons.expandir aria-hidden="true" />
               </IconButton>
             </Box>
           }
@@ -146,7 +146,7 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
                     handleFilterChange("searchTerm", e.target.value)
                   }
                   InputProps={{
-                    endAdornment: <icons.buscar />,
+                  endAdornment: <icons.buscar aria-hidden="true" />,
                   }}
                 />
               </Grid>
@@ -357,14 +357,14 @@ const AdvancedFilters = ({ onFiltersChange, availableData }) => {
                 >
                   <Button
                     variant="outlined"
-                    startIcon={<icons.limpiar />}
+                    startIcon={<icons.limpiar aria-hidden="true" />}
                     onClick={resetFilters}
                   >
                     Limpiar Filtros
                   </Button>
                   <Button
                     variant="contained"
-                    startIcon={<icons.filtro />}
+                    startIcon={<icons.filtro aria-hidden="true" />}
                     onClick={applyFilters}
                   >
                     Aplicar Filtros

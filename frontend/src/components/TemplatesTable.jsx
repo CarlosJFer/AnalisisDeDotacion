@@ -86,23 +86,25 @@ const TemplatesTable = ({
           <Box sx={{ display: "flex", gap: 1 }}>
             <IconButton
               size="small"
+              aria-label="editar plantilla"
               onClick={() => onEdit?.(params.row.raw)}
               sx={{
                 color: "#2196f3",
                 "&:hover": { background: "rgba(33,150,243,0.1)" },
               }}
             >
-              <icons.editar fontSize="small" />
+              <icons.editar fontSize="small" aria-hidden="true" />
             </IconButton>
             <IconButton
               size="small"
+              aria-label="eliminar plantilla"
               onClick={() => onDelete?.(params.row.raw)}
               sx={{
                 color: "#f44336",
                 "&:hover": { background: "rgba(244,67,54,0.1)" },
               }}
             >
-              <icons.eliminar fontSize="small" />
+              <icons.eliminar fontSize="small" aria-hidden="true" />
             </IconButton>
           </Box>
         ),

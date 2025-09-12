@@ -19,11 +19,13 @@ import {
   Fade,
 } from "@mui/material";
 import icons from "../ui/icons.js";
+import { modeVars } from "../ui";
 import { useTheme } from "../context/ThemeContext";
 import { useNotifications } from "../context/NotificationContext";
 
 const NotificationBell = () => {
   const { isDarkMode } = useTheme();
+  const vars = modeVars(isDarkMode);
   const {
     notifications,
     unreadCount,
@@ -104,22 +106,52 @@ const NotificationBell = () => {
 
   const getNotificationIcon = (type, data) => {
     if (data?.action === "upload") {
-      return <icons.upload sx={{ color: "#4caf50", fontSize: 20 }} />;
+      return (
+        <icons.upload
+          sx={{ color: "#4caf50", fontSize: 20 }}
+          aria-hidden="true"
+        />
+      );
     }
     if (data?.action === "modify") {
-      return <icons.editar sx={{ color: "#ff9800", fontSize: 20 }} />;
+      return (
+        <icons.editar
+          sx={{ color: "#ff9800", fontSize: 20 }}
+          aria-hidden="true"
+        />
+      );
     }
 
     switch (type) {
       case "success":
-        return <icons.exito sx={{ color: "#4caf50", fontSize: 20 }} />;
+        return (
+          <icons.exito
+            sx={{ color: "#4caf50", fontSize: 20 }}
+            aria-hidden="true"
+          />
+        );
       case "warning":
-        return <icons.advertencia sx={{ color: "#ff9800", fontSize: 20 }} />;
+        return (
+          <icons.advertencia
+            sx={{ color: "#ff9800", fontSize: 20 }}
+            aria-hidden="true"
+          />
+        );
       case "error":
-        return <icons.error sx={{ color: "#f44336", fontSize: 20 }} />;
+        return (
+          <icons.error
+            sx={{ color: "#f44336", fontSize: 20 }}
+            aria-hidden="true"
+          />
+        );
       case "info":
       default:
-        return <icons.info sx={{ color: "#2196f3", fontSize: 20 }} />;
+        return (
+          <icons.info
+            sx={{ color: "#2196f3", fontSize: 20 }}
+            aria-hidden="true"
+          />
+        );
     }
   };
 
@@ -168,6 +200,7 @@ const NotificationBell = () => {
         <Box sx={{ position: "relative" }}>
           <IconButton
             onClick={handleClick}
+            aria-label="ver notificaciones"
             sx={{
               color: isDarkMode
                 ? "rgba(255, 255, 255, 0.9)"
@@ -194,9 +227,9 @@ const NotificationBell = () => {
             }}
           >
             {unreadCount > 0 ? (
-              <icons.campanaActiva />
+              <icons.campanaActiva aria-hidden="true" />
             ) : (
-              <icons.campana />
+              <icons.campana aria-hidden="true" />
             )}
           </IconButton>
           {unreadCount > 0 && (
@@ -270,6 +303,7 @@ const NotificationBell = () => {
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <icons.campana
+              aria-hidden="true"
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -293,7 +327,7 @@ const NotificationBell = () => {
                 size="small"
                 sx={{
                   background: "linear-gradient(135deg, #f44336, #d32f2f)",
-                  color: "white",
+                  color: vars["--text-color"],
                   fontWeight: 600,
                   fontSize: "0.7rem",
                 }}
@@ -307,7 +341,7 @@ const NotificationBell = () => {
               onClick={handleMarkAllAsRead}
               sx={{
                 background: "linear-gradient(135deg, #4caf50, #388e3c)",
-                color: "white",
+                color: vars["--text-color"],
                 fontWeight: 600,
                 fontSize: "0.7rem",
                 textTransform: "none",
@@ -326,6 +360,7 @@ const NotificationBell = () => {
           {notifications.length === 0 ? (
             <Box sx={{ p: 3, textAlign: "center" }}>
               <icons.campana
+                aria-hidden="true"
                 sx={{
                   fontSize: 48,
                   color: isDarkMode
@@ -504,6 +539,7 @@ const NotificationBell = () => {
                             {!notification.read && (
                               <IconButton
                                 size="small"
+                                aria-label="marcar como leída"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleMarkAsRead(
@@ -519,11 +555,15 @@ const NotificationBell = () => {
                                   },
                                 }}
                               >
-                                <icons.exito sx={{ fontSize: 16 }} />
+                                <icons.exito
+                                  sx={{ fontSize: 16 }}
+                                  aria-hidden="true"
+                                />
                               </IconButton>
                             )}
                             <IconButton
                               size="small"
+                              aria-label="eliminar notificación"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleDeleteNotification(
@@ -539,7 +579,10 @@ const NotificationBell = () => {
                                 },
                               }}
                             >
-                              <icons.cerrar sx={{ fontSize: 16 }} />
+                              <icons.cerrar
+                                sx={{ fontSize: 16 }}
+                                aria-hidden="true"
+                              />
                             </IconButton>
                           </Box>
                         </Box>

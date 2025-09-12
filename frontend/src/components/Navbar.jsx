@@ -2,6 +2,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { modeVars } from "../ui";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -21,6 +22,7 @@ import ListItemText from "@mui/material/ListItemText";
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
   const { isDarkMode } = useTheme();
+  const vars = modeVars(isDarkMode);
   const navigate = useNavigate();
   const [dashboardAnchorEl, setDashboardAnchorEl] = useState(null);
 
@@ -104,7 +106,7 @@ const Navbar = () => {
             <Button
               component={Link}
               to="/organigrama"
-              startIcon={<icons.inicio />}
+              startIcon={<icons.inicio aria-hidden="true" />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -143,7 +145,7 @@ const Navbar = () => {
             <>
               <Button
                 onClick={handleDashboardMenuOpen}
-                startIcon={<icons.analitica />}
+                startIcon={<icons.analitica aria-hidden="true" />}
                 sx={{
                   color: isDarkMode
                     ? "rgba(255, 255, 255, 0.9)"
@@ -209,7 +211,7 @@ const Navbar = () => {
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 32 }}>
-                    <icons.analitica fontSize="small" />
+                    <icons.analitica fontSize="small" aria-hidden="true" />
                   </ListItemIcon>
                   <ListItemText primary="Dashboard - Planta y Contratos" />
                 </MenuItem>
@@ -228,7 +230,7 @@ const Navbar = () => {
                   }}
                 >
                   <ListItemIcon sx={{ minWidth: 32 }}>
-                    <icons.analitica fontSize="small" />
+                    <icons.analitica fontSize="small" aria-hidden="true" />
                   </ListItemIcon>
                   <ListItemText primary="Dashboard - Neikes y Becas" />
                 </MenuItem>
@@ -241,7 +243,7 @@ const Navbar = () => {
             <Button
               component={Link}
               to="/tools"
-              startIcon={<icons.herramientas />}
+              startIcon={<icons.herramientas aria-hidden="true" />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -280,7 +282,7 @@ const Navbar = () => {
             <Button
               component={Link}
               to="/admin"
-              startIcon={<icons.admin />}
+              startIcon={<icons.admin aria-hidden="true" />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"
@@ -349,9 +351,9 @@ const Navbar = () => {
                 }}
               >
                 {user.role === "admin" ? (
-                  <icons.admin sx={{ fontSize: 18 }} />
+                  <icons.admin sx={{ fontSize: 18 }} aria-hidden="true" />
                 ) : (
-                  <icons.persona sx={{ fontSize: 18 }} />
+                  <icons.persona sx={{ fontSize: 18 }} aria-hidden="true" />
                 )}
               </Avatar>
               <Box
@@ -385,7 +387,7 @@ const Navbar = () => {
                       user.role === "admin"
                         ? "linear-gradient(135deg, #ff9800, #f57c00)"
                         : "linear-gradient(135deg, #2196f3, #1976d2)",
-                    color: "white",
+                    color: vars["--text-color"],
                     "& .MuiChip-label": {
                       px: 1,
                     },
@@ -402,7 +404,7 @@ const Navbar = () => {
 
             <Button
               onClick={logout}
-              startIcon={<icons.salir />}
+              startIcon={<icons.salir aria-hidden="true" />}
               sx={{
                 color: isDarkMode
                   ? "rgba(255, 255, 255, 0.9)"

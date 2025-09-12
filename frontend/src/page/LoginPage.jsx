@@ -79,6 +79,9 @@ const LoginPage = () => {
         >
           <IconButton
             onClick={toggleTheme}
+            aria-label={
+              isDarkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
+            }
             sx={{
               background: isDarkMode
                 ? "rgba(255, 255, 255, 0.05)"
@@ -100,7 +103,11 @@ const LoginPage = () => {
               transition: "all 0.3s ease",
             }}
           >
-            {isDarkMode ? <icons.sol /> : <icons.luna />}
+            {isDarkMode ? (
+              <icons.sol aria-hidden="true" />
+            ) : (
+              <icons.luna aria-hidden="true" />
+            )}
           </IconButton>
         </Tooltip>
       </Box>
@@ -188,7 +195,10 @@ const LoginPage = () => {
                 boxShadow: "0 8px 25px rgba(76, 175, 80, 0.4)",
               }}
             >
-              <icons.seguridad sx={{ fontSize: 40, color: "white" }} />
+              <icons.seguridad
+                sx={{ fontSize: 40, color: "white" }}
+                aria-hidden="true"
+              />
             </Avatar>
 
             <Typography

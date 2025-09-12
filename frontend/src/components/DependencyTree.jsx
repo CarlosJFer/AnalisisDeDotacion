@@ -17,7 +17,11 @@ const DependencyNode = ({ node, level = 0 }) => {
             aria-expanded={open}
             sx={{ mr: 1 }}
           >
-            {open ? <icons.expandir /> : <icons.chevronDerecha />}
+            {open ? (
+              <icons.expandir aria-hidden="true" />
+            ) : (
+              <icons.chevronDerecha aria-hidden="true" />
+            )}
           </IconButton>
         )}
         <Typography
