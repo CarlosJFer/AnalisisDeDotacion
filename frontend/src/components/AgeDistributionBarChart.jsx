@@ -20,13 +20,27 @@ import {
   ValueLabel,
 } from "../ui/chart-utils";
 
-const AgeDistributionBarChart = ({ data, isDarkMode }) => {
+const AGE_BUCKETS = [
+  "18-25",
+  "26-35",
+  "36-45",
+  "46-55",
+  "56-65",
+  "65+",
+  "No tiene datos",
+];
+
+const AgeDistributionBarChart = ({
+  data,
+  isDarkMode,
+  title = "Distribución por Rangos de Edad - Planta y Contratos",
+}) => {
   const COLOR = theme.palette.primary;
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   const chartData = useMemo(() => {
     const total = (data || []).reduce((s, d) => s + Number(d.count || 0), 0);
-    return (data || []).map((d) => {
+    const arr = (data || []).map((d) => {
       const cantidad = Number(d.count || 0);
       return {
         rango: d.range,
@@ -34,6 +48,11 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
         porcentaje: total ? cantidad / total : 0,
       };
     });
+    const order = (r) => {
+      const idx = AGE_BUCKETS.indexOf(r);
+      return idx === -1 ? AGE_BUCKETS.length : idx;
+    };
+    return arr.sort((a, b) => order(a.rango) - order(b.rango));
   }, [data]);
 
   const total = useMemo(
@@ -51,8 +70,8 @@ const AgeDistributionBarChart = ({ data, isDarkMode }) => {
 
   return (
     <DashboardCard
-      title="Distribución por Rangos de Edad - Planta y Contratos"
-      icon={<icons.distribucion />}
+      title={title}
+      icon={<icons.edad />}
       isDarkMode={isDarkMode}
       headerRight={
         <Chip label="Rangos de edad" size="small" variant="outlined" />
