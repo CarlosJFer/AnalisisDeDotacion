@@ -47,6 +47,17 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
   const COLOR = theme.palette.primary.main;
   const vars = modeVars(isDarkMode);
 
+  const rangeOptions = useMemo(() => {
+    const set = new Set(rows.map((r) => r.range));
+    return AGE_BUCKETS.filter((b) => set.has(b));
+  }, [rows]);
+
+  React.useEffect(() => {
+    if (!rangeOptions.includes(range)) {
+      setRange(rangeOptions[0] || "");
+    }
+  }, [rangeOptions, range]);
+
   const handleChange = useCallback(
     (e) => {
       const value = e.target.value;
@@ -193,7 +204,7 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
                 },
               }}
             >
-              {AGE_BUCKETS.map((b) => (
+              {rangeOptions.map((b) => (
                 <MenuItem
                   key={b}
                   value={b}
