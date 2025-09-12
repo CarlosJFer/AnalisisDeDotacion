@@ -1420,7 +1420,10 @@ const getTopSecretariasByUniversity = async (req, res) => {
       {
         $match: {
           ...match,
-          'Estudios Universitarios': { $exists: true, $ne: null, $ne: '' }
+          $or: [
+            { 'Estudios Universitarios': { $exists: true, $ne: null, $ne: '' } },
+            { 'Estudios Universitario': { $exists: true, $ne: null, $ne: '' } }
+          ]
         }
       },
       {
@@ -1448,7 +1451,10 @@ const getTopSecretariasByTertiary = async (req, res) => {
       {
         $match: {
           ...match,
-          'Estudios Terciario': { $exists: true, $ne: null, $ne: '' }
+          $or: [
+            { 'Estudios Terciario': { $exists: true, $ne: null, $ne: '' } },
+            { 'Estudios Terciarios': { $exists: true, $ne: null, $ne: '' } }
+          ]
         }
       },
       {
