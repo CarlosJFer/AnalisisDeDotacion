@@ -1,13 +1,6 @@
 import React, { useState, useCallback } from "react";
-import {
-  Grid,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Typography,
-  Alert,
-} from "@mui/material";
-import icons from "../ui/icons.js";
+import { Grid, Typography, Alert } from "@mui/material";
+import { DashboardAccordion, theme } from "../ui";
 import CustomBarChart from "./CustomBarChart";
 import MonthCutoffAlert from "./MonthCutoffAlert";
 import apiClient from "../services/api";
@@ -186,16 +179,19 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
         </Alert>
       </Grid>
       <Grid item xs={12}>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-via-header"
+            aria-controls="sac-via-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Análisis de vía de captación
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-via-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -211,20 +207,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 height={400}
               />
             )}
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchCierre()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchCierre()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-cierre-header"
+            aria-controls="sac-cierre-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Análisis de cierre por problemas
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-cierre-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -276,20 +275,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 )}
               </Grid>
             </Grid>
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchBoca()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchBoca()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-boca-header"
+            aria-controls="sac-boca-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Análisis por boca receptora
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-boca-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -304,20 +306,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 isDarkMode={isDarkMode}
               />
             )}
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchFrecuencia()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchFrecuencia()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-frecuencia-header"
+            aria-controls="sac-frecuencia-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Análisis de frecuencia de tipo de cierre
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-frecuencia-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -332,20 +337,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 isDarkMode={isDarkMode}
               />
             )}
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchTemas()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchTemas()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-temas-header"
+            aria-controls="sac-temas-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Análisis por temas
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-temas-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -408,20 +416,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 )}
               </Grid>
             </Grid>
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchTipoContacto()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchTipoContacto()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-contacto-header"
+            aria-controls="sac-contacto-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Discriminación por tipo de contacto
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-contacto-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -451,20 +462,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 )}
               </Grid>
             </Grid>
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchLlamadasBarrio()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchLlamadasBarrio()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-llamadas-header"
+            aria-controls="sac-llamadas-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Evaluación de llamadas por barrio
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-llamadas-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -479,20 +493,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 isDarkMode={isDarkMode}
               />
             )}
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchAmbiente()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchAmbiente()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-ambiente-header"
+            aria-controls="sac-ambiente-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Secretaría de Ambiente y Desarrollo Sustentable
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-ambiente-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -544,20 +561,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 )}
               </Grid>
             </Grid>
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchInfraestructura()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchInfraestructura()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-infra-header"
+            aria-controls="sac-infra-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Secretaría de Infraestructura
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-infra-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -609,20 +629,23 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 )}
               </Grid>
             </Grid>
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
       <Grid item xs={12}>
-        <Accordion onChange={(_, exp) => exp && fetchCoordinacion()}>
-          <AccordionSummary
-            expandIcon={<icons.expandir />}
-            sx={{ bgcolor: isDarkMode ? "grey.800" : "grey.200" }}
+        <DashboardAccordion onChange={(_, exp) => exp && fetchCoordinacion()}>
+          <DashboardAccordion.Summary
+            isDarkMode={isDarkMode}
+            id="sac-coord-header"
+            aria-controls="sac-coord-content"
           >
-            <Typography variant="h6" fontWeight={600}>
+            <Typography
+              sx={{ fontSize: theme.typography.fontSize.lg, fontWeight: 600 }}
+            >
               Secretaría de Coordinación de Relaciones Territoriales
             </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
+          </DashboardAccordion.Summary>
+          <DashboardAccordion.Details id="sac-coord-content">
             <MonthCutoffAlert
               systemName="SAC"
               startDate={startDate}
@@ -674,8 +697,8 @@ const SacSection = ({ sacViaData, funcs, isDarkMode, startDate, endDate }) => {
                 )}
               </Grid>
             </Grid>
-          </AccordionDetails>
-        </Accordion>
+          </DashboardAccordion.Details>
+        </DashboardAccordion>
       </Grid>
     </Grid>
   );
