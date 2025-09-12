@@ -90,14 +90,14 @@ export const ValueLabel = (p) => {
   const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1, dark } = p;
   const chartW = viewBox?.width ?? 0;
   const pct = Number(value) / Number(total || 1);
-  const text = formatPct(pct);
-  const approx = text.length * 7;
+  const pctText = formatPct(pct);
+  const approx = pctText.length * 7;
   const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
   const color = isDarkTheme ? "#ffffff" : "#0f172a";
   return (
     <text x={xText} y={y + 4} fill={color} fontWeight="600">
-      {text}
+      {pctText}
     </text>
   );
 };
