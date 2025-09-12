@@ -18,7 +18,7 @@ import {
   rechartsCommon,
   UnifiedTooltip,
   ValueLabel,
-} from "../ui/chart-utils";
+} from "../ui/chart-utils.jsx";
 
 const AGE_BUCKETS = [
   "18-25",

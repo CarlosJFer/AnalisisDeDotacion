@@ -18,7 +18,7 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
-} from "../ui/chart-utils";
+} from "../ui/chart-utils.jsx";
 
 const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
   const primary = theme.palette.primary;
