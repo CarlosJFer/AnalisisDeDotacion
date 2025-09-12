@@ -14,7 +14,6 @@ import {
   PaginationControls,
   rechartsCommon,
   UnifiedTooltip,
-  ValueLabel,
   theme,
   formatMiles,
   formatPct,
@@ -48,6 +47,32 @@ const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
     theme.palette.primaryHover,
   ];
 
+  const renderLabel = ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    value,
+  }) => {
+    const RADIAN = Math.PI / 180;
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text
+        x={x}
+        y={y}
+        fill={colors.tooltipText}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontWeight="600"
+      >
+        {formatPct((value || 0) / (grandTotal || 1))}
+      </text>
+    );
+  };
+
   return (
     <DashboardCard
       title={title}
@@ -65,16 +90,7 @@ const CustomPieChart = ({ data, dataKey, nameKey, title, isDarkMode }) => {
               cy="50%"
               outerRadius={100}
             >
-              <LabelList
-                dataKey={dataKey}
-                content={(p) => (
-                  <ValueLabel
-                    {...p}
-                    total={grandTotal}
-                    dark={isDarkMode}
-                  />
-                )}
-              />
+              <LabelList content={renderLabel} />
               {pageData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
