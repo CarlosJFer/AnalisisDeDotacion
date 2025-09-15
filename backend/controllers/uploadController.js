@@ -187,6 +187,14 @@ async function uploadFile(req, res) {
                   }
                 }
               }
+              // Normalizar strings "sin dato" a vacío para campos tipo String
+              if (mapping.dataType === 'String' && typeof value === 'string') {
+                const val = value.trim().toLowerCase();
+                const invalids = ['', '0', '-', 's/d', 'sin dato', 'sin datos', 'na', 'n/a', 'nan'];
+                if (invalids.includes(val)) {
+                  value = '';
+                }
+              }
               obj[mapping.variableName] = value;
             }
           });
@@ -224,7 +232,11 @@ async function uploadFile(req, res) {
           // Validar: al menos un campo clave debe tener valor válido
           const tieneClave = camposClave.some(campo => {
             const v = obj[campo];
-            if (typeof v === 'string') return v.trim() && v.trim().toLowerCase() !== 'sin dato' && v.trim().toLowerCase() !== 's/d';
+            if (typeof v === 'string') {
+              const val = v.trim().toLowerCase();
+              const invalids = ['', '0', '-', 's/d', 'sin dato', 'sin datos', 'na', 'n/a', 'nan'];
+              return !invalids.includes(val);
+            }
             if (typeof v === 'number') return v > 0;
             return !!v;
           });
@@ -233,7 +245,12 @@ async function uploadFile(req, res) {
             return String(v).trim().toLowerCase() === (encabezado[idx] ? encabezado[idx].toLowerCase() : '');
           });
           // Validar: la fila no debe estar completamente vacía
-          const vacia = Object.values(obj).every(v => v === undefined || v === null || String(v).trim() === '' || String(v).toLowerCase() === 'sin dato' || String(v).toLowerCase() === 's/d');
+          const vacia = Object.values(obj).every(v => {
+            if (v === undefined || v === null) return true;
+            const s = String(v).trim().toLowerCase();
+            const invalids = ['', '0', '-', 's/d', 'sin dato', 'sin datos', 'na', 'n/a', 'nan'];
+            return invalids.includes(s);
+          });
           if (tieneClave && !esEncabezado && !vacia) {
             return obj;
           }

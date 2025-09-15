@@ -65,9 +65,8 @@ const CustomDonutChart = React.memo(
             />
           )
         }
-        style={{ height }}
       >
-        <Box sx={{ flexGrow: 1, minHeight: 300 }}>
+        <Box sx={{ height }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

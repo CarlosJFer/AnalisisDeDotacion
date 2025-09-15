@@ -1376,11 +1376,42 @@ const countStudies = async (match, columns) => {
   return res[0] || { conTitulo: 0, otros: 0 };
 };
 
+// Version normalizada: recorta y pone en minusculas, e ignora valores invalidos como 'nan', '0', '-', 's/d', etc.
+const countStudiesNormalized = async (match, columns) => {
+  const field1 = `$${columns[0]}`;
+  const field2 = `$${columns[1]}`;
+  const invalid = ['', '-', '0', 's/d', 'sin dato', 'sin datos', 'na', 'n/a', 'nan'];
+
+  const res = await Agent.aggregate([
+    { $match: match },
+    {
+      $project: {
+        estudio: {
+          $toLower: {
+            $ifNull: [
+              { $trim: { input: { $toString: field1 } } },
+              { $trim: { input: { $toString: field2 } } }
+            ]
+          }
+        }
+      }
+    },
+    {
+      $project: {
+        conTitulo: { $cond: [ { $in: ['$estudio', invalid] }, 0, 1 ] }
+      }
+    },
+    { $group: { _id: null, conTitulo: { $sum: '$conTitulo' }, total: { $sum: 1 } } },
+    { $project: { _id: 0, conTitulo: 1, otros: { $subtract: ['$total', '$conTitulo'] } } }
+  ]);
+  return res[0] || { conTitulo: 0, otros: 0 };
+};
+
 // @desc    Cantidad de agentes según estudios secundarios
 const getAgentsBySecondaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudies(match, ['Estudios Secundario', 'Estudios Secundarios']);
+    const result = await countStudiesNormalized(match, ['Estudios Secundario', 'Estudios Secundarios']);
     res.json(result);
   } catch (err) {
     console.error('Error en estudios secundarios:', err.message);
@@ -1392,7 +1423,7 @@ const getAgentsBySecondaryStudies = async (req, res) => {
 const getAgentsByTertiaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudies(match, ['Estudios Terciario', 'Estudios Terciarios']);
+    const result = await countStudiesNormalized(match, ['Estudios Terciario', 'Estudios Terciarios']);
     res.json(result);
   } catch (err) {
     console.error('Error en estudios terciarios:', err.message);
@@ -1404,7 +1435,7 @@ const getAgentsByTertiaryStudies = async (req, res) => {
 const getAgentsByUniversityStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudies(match, ['Estudios Universitarios', 'Estudios Universitario']);
+    const result = await countStudiesNormalized(match, ['Estudios Universitarios', 'Estudios Universitario']);
     res.json(result);
   } catch (err) {
     console.error('Error en estudios universitarios:', err.message);

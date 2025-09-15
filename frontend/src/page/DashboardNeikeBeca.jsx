@@ -1,4 +1,4 @@
-Ôªøimport React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import {
   Box,
@@ -91,7 +91,7 @@ const DashboardNeikeBeca = () => {
     }
   };
 
-  // Funci√≥n para filtrar datos que no sean "-" o vac√É¬≠os
+  // FunciÛn para filtrar datos que no sean "-" o vac√≠os
   const filterValidData = (data, nameKey) => {
     return data.filter((item) => {
       const value = item[nameKey];
@@ -157,7 +157,7 @@ const DashboardNeikeBeca = () => {
         return acc;
       }, {});
 
-      // Obtiene datos de forma segura: si falta el endpoint o la petici√É¬≥n falla,
+      // Obtiene datos de forma segura: si falta el endpoint o la petici√≥n falla,
       // devuelve el valor por defecto. En caso contrario, retorna solo el campo
       // `data` de la respuesta.
       const safeGet = async (
@@ -233,7 +233,7 @@ const DashboardNeikeBeca = () => {
         safeGet(funcs.agentsByDireccion, [], TEMPLATE_NEIKES_BECAS),
         safeGet(funcs.agentsByDepartamento, [], TEMPLATE_NEIKES_BECAS),
         safeGet(funcs.agentsByDivision, [], TEMPLATE_NEIKES_BECAS),
-        // Datos para Antig√ºedad y estudios
+        // Datos para Antig¸edad y estudios
         safeGet(funcs.agentsBySeniority, [], TEMPLATE_DATOS_NEIKES),
         safeGet(
           funcs.agentsBySecondaryStudies,
@@ -475,7 +475,7 @@ const DashboardNeikeBeca = () => {
           mb: 2,
         }}
       >
-        An√°lisis detallado de la dotaci√≥n municipal con gr√°ficos especializados
+        An·lisis detallado de la dotaciÛn municipal con gr·ficos especializados
       </Typography>
 
       <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
@@ -486,7 +486,7 @@ const DashboardNeikeBeca = () => {
         autoHideDuration={6000}
       >
         <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
-          Esta secci√≥n no tiene datos de Secretar√≠a/Subsecretar√≠a/Direcci√≥n...
+          Esta secciÛn no tiene datos de SecretarÌa/SubsecretarÌa/DirecciÛn...
         </Alert>
       </Snackbar>
 
@@ -500,7 +500,7 @@ const DashboardNeikeBeca = () => {
         </Alert>
       </Snackbar>
 
-      {/* Navegaci√≥n por botones */}
+      {/* NavegaciÛn por botones */}
       <Box
         sx={{
           mb: 4,
@@ -523,21 +523,21 @@ const DashboardNeikeBeca = () => {
           startIcon={<icons.analitica />}
           sx={getTabButtonStyles(1)}
         >
-          An√°lisis de Edad
+          An·lisis de Edad
         </Button>
         <Button
           onClick={() => setTabValue(2)}
           startIcon={<icons.empresa />}
           sx={getTabButtonStyles(2)}
         >
-          Distribuci√≥n Organizacional
+          DistribuciÛn Organizacional
         </Button>
         <Button
           onClick={() => setTabValue(3)}
           startIcon={<icons.antiguedad />}
           sx={getTabButtonStyles(3)}
         >
-          Antig√ºedad y Estudios
+          Antig¸edad y Estudios
         </Button>
         <Button
           onClick={() => setTabValue(4)}
@@ -551,7 +551,7 @@ const DashboardNeikeBeca = () => {
       {/* Tab 0: Resumen General */}
       {tabValue === 0 && (
         <Grid container spacing={3}>
-          {/* Estad√É¬≠sticas principales */}
+          {/* Estad√≠sticas principales */}
           <Grid item xs={12} md={3}>
             <DashboardCard isDarkMode={isDarkMode}>
               <KPIStat
@@ -585,7 +585,7 @@ const DashboardNeikeBeca = () => {
             <DashboardCard isDarkMode={isDarkMode}>
               <KPIStat
                 metric="contratos"
-                label="Tipos de situaci√≥n de revista"
+                label="Tipos de situaciÛn de revista"
                 value={agentsByEmploymentType.length}
                 delta={null}
                 isDarkMode={isDarkMode}
@@ -596,7 +596,7 @@ const DashboardNeikeBeca = () => {
             <DashboardCard isDarkMode={isDarkMode}>
               <KPIStat
                 metric="empresa"
-                label="Cantidad de Secretar√≠as"
+                label="Cantidad de SecretarÌas"
                 value={agentsBySecretaria.length}
                 delta={null}
                 isDarkMode={isDarkMode}
@@ -604,7 +604,7 @@ const DashboardNeikeBeca = () => {
             </DashboardCard>
           </Grid>
 
-          {/* gr√°ficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
+          {/* gr·ficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
           <Grid item xs={12} lg={8}>
             <CustomDonutChart
               data={agentsByFunction
@@ -615,7 +615,7 @@ const DashboardNeikeBeca = () => {
                     f.function.trim() !== "-",
                 )
                 .slice(0, 10)}
-              title="Distribuci√≥n de Agentes por Funci√≥n (Top 10) - Neikes y Beca"
+              title="DistribuciÛn de Agentes por FunciÛn (Top 10) - Neikes y Beca"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="function"
@@ -624,7 +624,7 @@ const DashboardNeikeBeca = () => {
           <Grid item xs={12} lg={4}>
             <CustomDonutChart
               data={agentsByEmploymentType}
-              title="Agentes por Situaci√≥n de Revista - Neikes y Beca"
+              title="Agentes por SituaciÛn de Revista - Neikes y Beca"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="type"
@@ -633,12 +633,12 @@ const DashboardNeikeBeca = () => {
         </Grid>
       )}
 
-      {/* Tab 1: An√°lisis de Edad */}
+      {/* Tab 1: An·lisis de Edad */}
       {tabValue === 1 && (
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-              An√°lisis de Edad de los Agentes Municipales
+              An·lisis de Edad de los Agentes Municipales
             </Typography>
             {ageDistribution?.note && (
               <Alert severity="info" sx={{ mb: 2 }}>
@@ -647,13 +647,13 @@ const DashboardNeikeBeca = () => {
             )}
           </Grid>
 
-          {/* Gr√É¬°fico de rangos de edad principal */}
+          {/* Gr√°fico de rangos de edad principal */}
           <Grid item xs={12}>
             {ageDistribution ? (
               <AgeDistributionBarChart
                 data={ageDistribution.rangeData}
                 isDarkMode={isDarkMode}
-                title="Distribuci√≥n por Rangos de Edad - Neikes y Beca"
+                title="DistribuciÛn por Rangos de Edad - Neikes y Beca"
               />
             ) : (
               <Box
@@ -664,13 +664,13 @@ const DashboardNeikeBeca = () => {
               >
                 <CircularProgress size={40} />
                 <Typography sx={{ ml: 2 }}>
-                  Cargando An√°lisis de edad...
+                  Cargando An·lisis de edad...
                 </Typography>
               </Box>
             )}
           </Grid>
 
-          {/* Distribuci√≥n por Rangos de Edad seg√∫n el √°rea */}
+          {/* DistribuciÛn por Rangos de Edad seg˙n el ·rea */}
           <Grid item xs={12}>
             {ageByArea.length ? (
               <AgeRangeByAreaChart rows={ageByArea} isDarkMode={isDarkMode} />
@@ -705,19 +705,19 @@ const DashboardNeikeBeca = () => {
         </Grid>
       )}
 
-      {/* Tab 2: Distribuci√≥n Organizacional */}
+      {/* Tab 2: DistribuciÛn Organizacional */}
       {tabValue === 2 && (
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-              Distribuci√≥n Organizacional
+              DistribuciÛn Organizacional
             </Typography>
           </Grid>
 
           <Grid item xs={12} md={6}>
             <CustomDonutChart
               data={agentsBySecretaria.slice(0, 8)}
-              title="Agentes por Secretar√≠a (Top 8) - Neikes y Beca"
+              title="Agentes por SecretarÌa (Top 8) - Neikes y Beca"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="secretaria"
@@ -734,14 +734,15 @@ const DashboardNeikeBeca = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <CustomBarChart
+            <CustomHorizontalBarChart
               data={filterValidData(
                 agentsBySubsecretaria,
                 "subsecretaria",
               ).slice(0, 10)}
               xKey="subsecretaria"
-              barKey="count"
-              title="Agentes por Subsecretar√≠a (Top 10) - Neikes y Beca"
+              valueKey="count"
+              pageSize={10}
+              title="Agentes por SubsecretarÌa (Top 10) - Neikes y Beca"
               isDarkMode={isDarkMode}
               height={400}
             />
@@ -749,32 +750,34 @@ const DashboardNeikeBeca = () => {
 
           <Grid item xs={12}>
             <Typography variant="h6" sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
-              Estructura Jer√°rquica Detallada
+              Estructura Jer·rquica Detallada
             </Typography>
           </Grid>
 
           <Grid item xs={12} lg={6}>
-            <CustomBarChart
+            <CustomHorizontalBarChart
               data={filterValidData(
                 agentsByDireccionGeneral,
                 "direccionGeneral",
               ).slice(0, 10)}
               xKey="direccionGeneral"
-              barKey="count"
-              title="Agentes por Direcci√≥n General (Top 10) - Neikes y Beca"
+              valueKey="count"
+              pageSize={10}
+              title="Agentes por DirecciÛn General (Top 10) - Neikes y Beca"
               isDarkMode={isDarkMode}
               height={400}
             />
           </Grid>
           <Grid item xs={12} lg={6}>
-            <CustomBarChart
+            <CustomHorizontalBarChart
               data={filterValidData(agentsByDireccion, "direccion").slice(
                 0,
                 10,
               )}
               xKey="direccion"
-              barKey="count"
-              title="Agentes por Direcci√≥n (Top 10) - Neikes y Beca"
+              valueKey="count"
+              pageSize={10}
+              title="Agentes por DirecciÛn (Top 10) - Neikes y Beca"
               isDarkMode={isDarkMode}
               height={400}
             />
@@ -795,7 +798,7 @@ const DashboardNeikeBeca = () => {
           <Grid item xs={12} lg={6}>
             <CustomDonutChart
               data={filterValidData(agentsByDivision, "division").slice(0, 8)}
-              title="Agentes por Divisi√≥n (Top 8) - Neikes y Beca"
+              title="Agentes por DivisiÛn (Top 8) - Neikes y Beca"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="division"
@@ -804,12 +807,12 @@ const DashboardNeikeBeca = () => {
         </Grid>
       )}
 
-      {/* Tab 3: Antig√ºedad y Estudios */}
+      {/* Tab 3: Antig¸edad y Estudios */}
       {tabValue === 3 && (
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-              Antig√ºedad y Estudios
+              Antig¸edad y Estudios
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -817,7 +820,8 @@ const DashboardNeikeBeca = () => {
               data={seniorityData}
               xKey="range"
               barKey="count"
-              title="Cantidad de agentes seg√∫n Antig√ºedad municipal"
+
+              title="Cantidad de agentes seg˙n Antig¸edad municipal"
               isDarkMode={isDarkMode}
               height={400}
             />
@@ -826,12 +830,12 @@ const DashboardNeikeBeca = () => {
             <CustomDonutChart
               data={[
                 {
-                  category: "Con t√≠tulo secundario",
+                  category: "Con tÌtulo secundario",
                   count: secondaryData?.conTitulo || 0,
                 },
                 { category: "Otros", count: secondaryData?.otros || 0 },
               ]}
-              title="Agentes seg√∫n estudios secundarios"
+              title="Agentes seg˙n estudios secundarios"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="category"
@@ -841,12 +845,12 @@ const DashboardNeikeBeca = () => {
             <CustomDonutChart
               data={[
                 {
-                  category: "Con t√≠tulo terciario",
+                  category: "Con tÌtulo terciario",
                   count: tertiaryData?.conTitulo || 0,
                 },
                 { category: "Otros", count: tertiaryData?.otros || 0 },
               ]}
-              title="Agentes seg√∫n estudios terciarios"
+              title="Agentes seg˙n estudios terciarios"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="category"
@@ -856,33 +860,35 @@ const DashboardNeikeBeca = () => {
             <CustomDonutChart
               data={[
                 {
-                  category: "Con t√≠tulo universitario",
+                  category: "Con tÌtulo universitario",
                   count: universityData?.conTitulo || 0,
                 },
                 { category: "Otros", count: universityData?.otros || 0 },
               ]}
-              title="Agentes seg√∫n estudios universitarios"
+              title="Agentes seg˙n estudios universitarios"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="category"
             />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <CustomBarChart
+          <Grid item xs={12}>
+            <CustomHorizontalBarChart
               data={topUniSecretariasData}
-              xKey="secretaria"
-              barKey="count"
-              title="Top 10 Secretar√≠as con m√É¬°s agentes con t√≠tulo universitario"
+              nameKey="secretaria"
+              valueKey="count"
+              pageSize={10}
+              title="SecretarÌas con mas agentes con tÌtulo universitario"
               isDarkMode={isDarkMode}
               height={400}
             />
           </Grid>
-          <Grid item xs={12} md={6}>
-            <CustomBarChart
+          <Grid item xs={12}>
+            <CustomHorizontalBarChart
               data={topTerSecretariasData}
-              xKey="secretaria"
-              barKey="count"
-              title="Top 10 Secretar√≠as con m√É¬°s agentes con t√≠tulo terciario"
+              nameKey="secretaria"
+              valueKey="count"
+              pageSize={10}
+              title="SecretarÌas con mas agentes con tÌtulo terciario"
               isDarkMode={isDarkMode}
               height={400}
             />
@@ -899,11 +905,12 @@ const DashboardNeikeBeca = () => {
             </Typography>
           </Grid>
           <Grid item xs={12} md={6}>
-            <CustomBarChart
+            <CustomHorizontalBarChart
               data={registrationTypeData}
               xKey="tipo"
-              barKey="count"
-              title="Cantidad de agentes seg√∫n tipo de registraci√≥n"
+              valueKey="count"
+              pageSize={10}
+              title="Cantidad de agentes seg˙n tipo de registraciÛn"
               isDarkMode={isDarkMode}
               height={400}
             />
@@ -911,7 +918,7 @@ const DashboardNeikeBeca = () => {
           <Grid item xs={12} md={3}>
             <CustomDonutChart
               data={entryTimeData}
-              title="Agentes seg√∫n horario de entrada"
+              title="Agentes seg˙n horario de entrada"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="time"
@@ -920,18 +927,19 @@ const DashboardNeikeBeca = () => {
           <Grid item xs={12} md={3}>
             <CustomDonutChart
               data={exitTimeData}
-              title="Agentes seg√∫n horario de salida"
+              title="Agentes seg˙n horario de salida"
               isDarkMode={isDarkMode}
               dataKey="count"
               nameKey="time"
             />
           </Grid>
           <Grid item xs={12}>
-            <CustomBarChart
+            <CustomHorizontalBarChart
               data={topUnitsData}
               xKey="unidad"
-              barKey="count"
-              title="Top 10 unidades de registraci√≥n con m√É¬°s agentes"
+              valueKey="count"
+              pageSize={10}
+              title="Top 10 unidades de registraciÛn con m√°s agentes"
               isDarkMode={isDarkMode}
               height={400}
             />
