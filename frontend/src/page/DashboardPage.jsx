@@ -1025,15 +1025,15 @@ const DashboardPage = () => {
               Expedientes
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
-            {expTopInitiators.length > 0 ? (
+          <Grid item xs={12}>
+            {expByTramite.length > 0 ? (
               <Suspense fallback={<CircularProgress />}>
                 <CustomHorizontalBarChart
-                  data={expTopInitiators}
-                  xKey="initiator"
+                  data={expByTramite}
+                  xKey="tramite"
                   valueKey="count"
-                pageSize={10}
-                  title="Top 10 áreas con mÃ¡s trámites gestionados"
+                  pageSize={10}
+                  title="Cantidad de expedientes seg�n tipo de tr�mite"
                   isDarkMode={isDarkMode}
                   height={400}
                 />
@@ -1042,15 +1042,15 @@ const DashboardPage = () => {
               <Typography align="center">Sin datos</Typography>
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
-            {expByTramite.length > 0 ? (
+          <Grid item xs={12}>
+            {expTopInitiators.length > 0 ? (
               <Suspense fallback={<CircularProgress />}>
                 <CustomHorizontalBarChart
-                  data={expByTramite}
-                  xKey="tramite"
+                  data={expTopInitiators}
+                  xKey="initiator"
                   valueKey="count"
-                pageSize={10}
-                  title="Cantidad de expedientes según tipo de trÃ¡mite"
+                  pageSize={5}
+                  title="Areas con mas tramites gestionados"
                   isDarkMode={isDarkMode}
                   height={400}
                 />
