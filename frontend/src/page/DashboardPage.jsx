@@ -928,8 +928,8 @@ const DashboardPage = () => {
                 data={topUniSecretariasData}
                 nameKey="secretaria"
                 valueKey="count"
-                pageSize={10}
-                title="Secretar�as con mas agentes con t�tulo universitario"
+                pageSize={5}
+                title="Secretarias con agentes con titulo universitario"
                 isDarkMode={isDarkMode}
                 height={400}
               />
@@ -941,8 +941,8 @@ const DashboardPage = () => {
                 data={topTerSecretariasData}
                 nameKey="secretaria"
                 valueKey="count"
-                pageSize={10}
-                title="Secretar�as con mas agentes con t�tulo terciario"
+                pageSize={5}
+                title="Secretarias con agentes con titulo terciario"
                 isDarkMode={isDarkMode}
                 height={400}
               />

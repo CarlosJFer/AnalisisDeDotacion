@@ -877,8 +877,8 @@ const DashboardNeikeBeca = () => {
               data={topUniSecretariasData}
               nameKey="secretaria"
               valueKey="count"
-              pageSize={10}
-              title="Secretarías con mas agentes con título universitario"
+              pageSize={5}
+              title="Secretarias con agentes con titulo universitario"
               isDarkMode={isDarkMode}
               height={400}
             />
@@ -888,8 +888,8 @@ const DashboardNeikeBeca = () => {
               data={topTerSecretariasData}
               nameKey="secretaria"
               valueKey="count"
-              pageSize={10}
-              title="Secretarías con mas agentes con título terciario"
+              pageSize={5}
+              title="Secretarias con agentes con titulo terciario"
               isDarkMode={isDarkMode}
               height={400}
             />
