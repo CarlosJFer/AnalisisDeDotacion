@@ -1002,8 +1002,8 @@ const DashboardPage = () => {
                 data={topUnitsData}
                 xKey="unidad"
                 valueKey="count"
-                pageSize={10}
-                title="Top 10 unidades de registración con mÃ¡s agentes"
+                pageSize={5}
+                title="Unidades de registración con más agentes"
                 isDarkMode={isDarkMode}
                 height={400}
               />
