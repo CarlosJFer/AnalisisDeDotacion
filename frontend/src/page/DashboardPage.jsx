@@ -842,6 +842,7 @@ const DashboardPage = () => {
                 isDarkMode={isDarkMode}
                 nameKey="type"
                 valueKey="count"
+                pageSize={10}
               />
             </Suspense>
           </Grid>
@@ -856,19 +857,20 @@ const DashboardPage = () => {
               Antigüedad y Estudios
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
               <CustomBarChart
                 data={seniorityData}
                 xKey="range"
                 barKey="count"
+
                 title="Cantidad de agentes según Antigüedad municipal"
                 isDarkMode={isDarkMode}
                 height={400}
               />
             </Suspense>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
               <CustomDonutChart
                 data={[
@@ -919,25 +921,27 @@ const DashboardPage = () => {
               />
             </Suspense>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={topUniSecretariasData}
-                xKey="secretaria"
-                barKey="count"
-                title="Top 10 Secretarías con mÃ¡s agentes con título universitario"
+                nameKey="secretaria"
+                valueKey="count"
+                pageSize={10}
+                title="Secretar�as con mas agentes con t�tulo universitario"
                 isDarkMode={isDarkMode}
                 height={400}
               />
             </Suspense>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={topTerSecretariasData}
-                xKey="secretaria"
-                barKey="count"
-                title="Top 10 Secretarías con mÃ¡s agentes con título terciario"
+                nameKey="secretaria"
+                valueKey="count"
+                pageSize={10}
+                title="Secretar�as con mas agentes con t�tulo terciario"
                 isDarkMode={isDarkMode}
                 height={400}
               />
@@ -956,10 +960,11 @@ const DashboardPage = () => {
           </Grid>
           <Grid item xs={12} md={6}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={registrationTypeData}
                 xKey="tipo"
-                barKey="count"
+                valueKey="count"
+                pageSize={10}
                 title="Cantidad de agentes según tipo de registración"
                 isDarkMode={isDarkMode}
                 height={400}
@@ -990,10 +995,11 @@ const DashboardPage = () => {
           </Grid>
           <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={topUnitsData}
                 xKey="unidad"
-                barKey="count"
+                valueKey="count"
+                pageSize={10}
                 title="Top 10 unidades de registración con mÃ¡s agentes"
                 isDarkMode={isDarkMode}
                 height={400}
@@ -1019,10 +1025,11 @@ const DashboardPage = () => {
           <Grid item xs={12} md={6}>
             {expTopInitiators.length > 0 ? (
               <Suspense fallback={<CircularProgress />}>
-                <CustomBarChart
+                <CustomHorizontalBarChart
                   data={expTopInitiators}
                   xKey="initiator"
-                  barKey="count"
+                  valueKey="count"
+                pageSize={10}
                   title="Top 10 áreas con mÃ¡s trámites gestionados"
                   isDarkMode={isDarkMode}
                   height={400}
@@ -1035,10 +1042,11 @@ const DashboardPage = () => {
           <Grid item xs={12} md={6}>
             {expByTramite.length > 0 ? (
               <Suspense fallback={<CircularProgress />}>
-                <CustomBarChart
+                <CustomHorizontalBarChart
                   data={expByTramite}
                   xKey="tramite"
-                  barKey="count"
+                  valueKey="count"
+                pageSize={10}
                   title="Cantidad de expedientes según tipo de trÃ¡mite"
                   isDarkMode={isDarkMode}
                   height={400}

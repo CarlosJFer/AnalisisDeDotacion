@@ -6,7 +6,6 @@ import {
   Cell,
   Tooltip,
   Legend,
-  LabelList,
   ResponsiveContainer,
 } from "recharts";
 import {
@@ -17,8 +16,34 @@ import {
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
-  ValueLabel,
 } from "../ui";
+
+// Etiqueta personalizada: muestra el porcentaje dentro de cada sector
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({
+  cx,
+  cy,
+  midAngle,
+  innerRadius,
+  outerRadius,
+  percent,
+}) => {
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="#ffffff"
+      textAnchor={x > cx ? "start" : "end"}
+      dominantBaseline="central"
+      fontWeight="600"
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
 
 const CustomDonutChart = React.memo(
   ({
@@ -65,15 +90,15 @@ const CustomDonutChart = React.memo(
             />
           )
         }
-        style={{ height }}
       >
-        <Box sx={{ flexGrow: 1, minHeight: 300 }}>
+        <Box sx={{ height }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={chartData}
                 cx="50%"
                 cy="50%"
+                label={renderCustomizedLabel}
                 labelLine={false}
                 outerRadius={100}
                 innerRadius={60}
@@ -91,12 +116,6 @@ const CustomDonutChart = React.memo(
                     }
                   />
                 ))}
-                <LabelList
-                  dataKey={dataKey}
-                  content={(p) => (
-                    <ValueLabel {...p} total={total} dark={isDarkMode} />
-                  )}
-                />
               </Pie>
               <Tooltip
                 {...tooltipProps}
