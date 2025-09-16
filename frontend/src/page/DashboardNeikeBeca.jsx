@@ -19,6 +19,7 @@ import KPIStat from "../components/ui/KPIStat.jsx";
 import CustomBarChart from "../components/CustomBarChart";
 import AgeDistributionBarChart from "../components/AgeDistributionBarChart";
 import CustomDonutChart from "../components/CustomDonutChart";
+import CustomLineChart from "../components/CustomLineChart";
 import CustomAreaChart from "../components/CustomAreaChart";
 import AgeRangeByAreaChart from "../components/AgeRangeByAreaChart";
 import AverageAgeByFunctionChart from "../components/AverageAgeByFunctionChart";
@@ -904,7 +905,7 @@ const DashboardNeikeBeca = () => {
               Control de certificaciones - Neikes y Becas
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <CustomHorizontalBarChart
               data={registrationTypeData}
               xKey="tipo"
@@ -915,22 +916,24 @@ const DashboardNeikeBeca = () => {
               height={400}
             />
           </Grid>
-          <Grid item xs={12} md={3}>
-            <CustomDonutChart
+          <Grid item xs={12}>
+            <CustomLineChart
               data={entryTimeData}
               title="Agentes según horario de entrada"
               isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="time"
+              xKey="time"
+              yKey="count"
+              height={400}
             />
           </Grid>
-          <Grid item xs={12} md={3}>
-            <CustomDonutChart
+          <Grid item xs={12}>
+            <CustomLineChart
               data={exitTimeData}
               title="Agentes según horario de salida"
               isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="time"
+              xKey="time"
+              yKey="count"
+              height={400}
             />
           </Grid>
           <Grid item xs={12}>

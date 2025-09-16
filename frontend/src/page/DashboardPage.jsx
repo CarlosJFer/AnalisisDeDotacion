@@ -36,6 +36,7 @@ const DeleteDashboardDialog = lazy(
 const CustomBarChart = lazy(() => import("../components/CustomBarChart"));
 const CustomDonutChart = lazy(() => import("../components/CustomDonutChart"));
 const CustomAreaChart = lazy(() => import("../components/CustomAreaChart"));
+const CustomLineChart = lazy(() => import("../components/CustomLineChart"));
 const CustomHorizontalBarChart = lazy(
   () => import("../components/CustomHorizontalBarChart"),
 );
@@ -928,7 +929,7 @@ const DashboardPage = () => {
                 nameKey="secretaria"
                 valueKey="count"
                 pageSize={10}
-                title="Secretarías con mas agentes con título universitario"
+                title="Secretarï¿½as con mas agentes con tï¿½tulo universitario"
                 isDarkMode={isDarkMode}
                 height={400}
               />
@@ -941,7 +942,7 @@ const DashboardPage = () => {
                 nameKey="secretaria"
                 valueKey="count"
                 pageSize={10}
-                title="Secretarías con mas agentes con título terciario"
+                title="Secretarï¿½as con mas agentes con tï¿½tulo terciario"
                 isDarkMode={isDarkMode}
                 height={400}
               />
@@ -958,7 +959,7 @@ const DashboardPage = () => {
               Control de certificaciones - Planta y Contratos
             </Typography>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
               <CustomHorizontalBarChart
                 data={registrationTypeData}
@@ -971,25 +972,27 @@ const DashboardPage = () => {
               />
             </Suspense>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomDonutChart
+              <CustomLineChart
                 data={entryTimeData}
                 title="Agentes segÃºn horario de entrada"
                 isDarkMode={isDarkMode}
-                dataKey="count"
-                nameKey="time"
+                xKey="time"
+                yKey="count"
+                height={400}
               />
             </Suspense>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomDonutChart
+              <CustomLineChart
                 data={exitTimeData}
                 title="Agentes segÃºn horario de salida"
                 isDarkMode={isDarkMode}
-                dataKey="count"
-                nameKey="time"
+                xKey="time"
+                yKey="count"
+                height={400}
               />
             </Suspense>
           </Grid>
