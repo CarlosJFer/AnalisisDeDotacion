@@ -263,11 +263,32 @@ const DashboardPage = () => {
 
         // Ajustar nombres de plantillas a los mismos usados en el backend.
         const TEMPLATE_PLANTA_CONTRATOS = "Rama completa - Planta y Contratos";
-        const TEMPLATE_DATOS_CONCURSO = "Datos concurso - Planta y Contratos";
+        const TEMPLATE_DATOS_CONCURSO = "Rama completa - Planta y Contratos";
         const TEMPLATE_CONTROL_PLANTA =
           "Control de certificaciones - Planta y Contratos";
         const TEMPLATE_EXPEDIENTES = "Expedientes";
         const TEMPLATE_SAC_VIAS = "SAC - Via de captacion";
+        const TEMPLATE_DATOS_CONCURSO_ALT = "Datos concurso - Planta y Contratos";
+
+        // Helper: determina si una respuesta tiene datos útiles
+        const hasUsefulData = (data) => {
+          if (Array.isArray(data)) return data.length > 0;
+          if (data && typeof data === "object") {
+            if ("conTitulo" in data && "otros" in data) {
+              return (Number(data.conTitulo) || 0) + (Number(data.otros) || 0) > 0;
+            }
+          }
+          return !!data;
+        };
+
+        // Helper: intenta con varias plantillas y devuelve la primera no vacía
+        const fetchWithTemplates = async (endpoint, def, templates, extraParams = {}) => {
+          for (const tpl of templates) {
+            const res = await safeGet(endpoint, def, tpl, extraParams);
+            if (hasUsefulData(res)) return res;
+          }
+          return def;
+        };
         const [
           totalData,
           ageDistData,
@@ -341,31 +362,35 @@ const DashboardPage = () => {
             TEMPLATE_PLANTA_CONTRATOS,
           ),
           // Datos para Antigüedad y estudios
-          safeGet(funcMap.agentsBySeniority, [], TEMPLATE_DATOS_CONCURSO),
-          safeGet(
+          fetchWithTemplates(
+            funcMap.agentsBySeniority,
+            [],
+            [TEMPLATE_DATOS_CONCURSO, TEMPLATE_DATOS_CONCURSO_ALT],
+          ),
+          fetchWithTemplates(
             funcMap.agentsBySecondaryStudies,
             { conTitulo: 0, otros: 0 },
-            TEMPLATE_DATOS_CONCURSO,
+            [TEMPLATE_DATOS_CONCURSO, TEMPLATE_DATOS_CONCURSO_ALT],
           ),
-          safeGet(
+          fetchWithTemplates(
             funcMap.agentsByTertiaryStudies,
             { conTitulo: 0, otros: 0 },
-            TEMPLATE_DATOS_CONCURSO,
+            [TEMPLATE_DATOS_CONCURSO, TEMPLATE_DATOS_CONCURSO_ALT],
           ),
-          safeGet(
+          fetchWithTemplates(
             funcMap.agentsByUniversityStudies,
             { conTitulo: 0, otros: 0 },
-            TEMPLATE_DATOS_CONCURSO,
+            [TEMPLATE_DATOS_CONCURSO, TEMPLATE_DATOS_CONCURSO_ALT],
           ),
-          safeGet(
+          fetchWithTemplates(
             funcMap.agentsByTopSecretariasUniversity,
             [],
-            TEMPLATE_DATOS_CONCURSO,
+            [TEMPLATE_DATOS_CONCURSO, TEMPLATE_DATOS_CONCURSO_ALT],
           ),
-          safeGet(
+          fetchWithTemplates(
             funcMap.agentsByTopSecretariasTertiary,
             [],
-            TEMPLATE_DATOS_CONCURSO,
+            [TEMPLATE_DATOS_CONCURSO, TEMPLATE_DATOS_CONCURSO_ALT],
           ),
           // Datos para control de certificaciones
           safeGet(

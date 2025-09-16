@@ -1311,6 +1311,48 @@ const getAgentsByDivisionNeikeBeca = async (req, res) => {
 const getAgentsBySeniority = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
+    // Agregación robusta para antigüedad (soporta variantes de nombre de columna)
+    try {
+      const pipeline = [
+        { $match: match },
+        {
+          $addFields: {
+            _yearsRaw: {
+              $ifNull: [
+                '$Años en la municipalidad',
+                { $ifNull: [
+                    '$Años en la Municipalidad',
+                    { $ifNull: [
+                        '$Anos en la municipalidad',
+                        { $ifNull: ['$Anios en la municipalidad', null] }
+                    ] }
+                ] }
+              ]
+            }
+          }
+        },
+        { $addFields: { _years: { $convert: { input: '$_yearsRaw', to: 'int', onError: null, onNull: null } } } },
+        { $match: { _years: { $ne: null } } },
+        { $project: { range: { $switch: {
+          branches: [
+            { case: { $lte: ['$_years', 10] }, then: '1-10' },
+            { case: { $and: [ { $gte: ['$_years', 11] }, { $lte: ['$_years', 20] } ] }, then: '11-20' },
+            { case: { $and: [ { $gte: ['$_years', 21] }, { $lte: ['$_years', 30] } ] }, then: '21-30' },
+            { case: { $and: [ { $gte: ['$_years', 31] }, { $lte: ['$_years', 40] } ] }, then: '31-40' },
+          ],
+          default: '41-50'
+        } } } },
+        { $group: { _id: '$range', count: { $sum: 1 } } },
+        { $project: { _id: 0, range: '$_id', count: 1 } }
+      ];
+      const agg = await Agent.aggregate(pipeline);
+      const order = ['1-10','11-20','21-30','31-40','41-50'];
+      const map = Object.fromEntries(agg.map(r => [r.range, r.count]));
+      const result = order.map(r => ({ range: r, count: map[r] || 0 }));
+      return res.json(result);
+    } catch (e) {
+      // Fallback a la lógica legacy si falla la agregación
+    }
     const agents = await Agent.find({
       ...match,
       'Años en la municipalidad': { $exists: true, $ne: null, $ne: '' }
@@ -1380,6 +1422,36 @@ const countStudies = async (match, columns) => {
 const getAgentsBySecondaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
+    // Agregación flexible: detecta columnas por regex (p.ej. "Estudios Secund...")
+    try {
+      const regex = /estudio.*secund/i;
+      const agg = await Agent.aggregate([
+        { $match: match },
+        {
+          $addFields: {
+            _matches: {
+              $filter: {
+                input: { $objectToArray: '$$ROOT' },
+                as: 'kv',
+                cond: {
+                  $and: [
+                    { $regexMatch: { input: '$$kv.k', regex } },
+                    { $ne: ['$$kv.v', null] },
+                    { $ne: ['$$kv.v', ''] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        { $addFields: { _has: { $gt: [{ $size: '$_matches' }, 0] } } },
+        { $group: { _id: null, conTitulo: { $sum: { $cond: ['$_has', 1, 0] } }, total: { $sum: 1 } } },
+        { $project: { _id: 0, conTitulo: 1, otros: { $subtract: ['$total', '$conTitulo'] } } },
+      ]);
+      if (agg && agg[0]) return res.json(agg[0]);
+    } catch (e) {
+      // Fallback a lógica existente
+    }
     const result = await countStudies(match, ['Estudios Secundario', 'Estudios Secundarios']);
     res.json(result);
   } catch (err) {
@@ -1392,6 +1464,33 @@ const getAgentsBySecondaryStudies = async (req, res) => {
 const getAgentsByTertiaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
+    try {
+      const regex = /estudio.*tercia/i;
+      const agg = await Agent.aggregate([
+        { $match: match },
+        {
+          $addFields: {
+            _matches: {
+              $filter: {
+                input: { $objectToArray: '$$ROOT' },
+                as: 'kv',
+                cond: {
+                  $and: [
+                    { $regexMatch: { input: '$$kv.k', regex } },
+                    { $ne: ['$$kv.v', null] },
+                    { $ne: ['$$kv.v', ''] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        { $addFields: { _has: { $gt: [{ $size: '$_matches' }, 0] } } },
+        { $group: { _id: null, conTitulo: { $sum: { $cond: ['$_has', 1, 0] } }, total: { $sum: 1 } } },
+        { $project: { _id: 0, conTitulo: 1, otros: { $subtract: ['$total', '$conTitulo'] } } },
+      ]);
+      if (agg && agg[0]) return res.json(agg[0]);
+    } catch (e) {}
     const result = await countStudies(match, ['Estudios Terciario', 'Estudios Terciarios']);
     res.json(result);
   } catch (err) {
@@ -1404,6 +1503,33 @@ const getAgentsByTertiaryStudies = async (req, res) => {
 const getAgentsByUniversityStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
+    try {
+      const regex = /estudio.*univers/i;
+      const agg = await Agent.aggregate([
+        { $match: match },
+        {
+          $addFields: {
+            _matches: {
+              $filter: {
+                input: { $objectToArray: '$$ROOT' },
+                as: 'kv',
+                cond: {
+                  $and: [
+                    { $regexMatch: { input: '$$kv.k', regex } },
+                    { $ne: ['$$kv.v', null] },
+                    { $ne: ['$$kv.v', ''] },
+                  ],
+                },
+              },
+            },
+          },
+        },
+        { $addFields: { _has: { $gt: [{ $size: '$_matches' }, 0] } } },
+        { $group: { _id: null, conTitulo: { $sum: { $cond: ['$_has', 1, 0] } }, total: { $sum: 1 } } },
+        { $project: { _id: 0, conTitulo: 1, otros: { $subtract: ['$total', '$conTitulo'] } } },
+      ]);
+      if (agg && agg[0]) return res.json(agg[0]);
+    } catch (e) {}
     const result = await countStudies(match, ['Estudios Universitarios', 'Estudios Universitario']);
     res.json(result);
   } catch (err) {
