@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
+const logger = require('./utils/logger');
 require('dotenv').config();
 const connectDB = require('./config/db'); // Importar la función centralizada
 
@@ -93,7 +94,7 @@ app.use('*', (req, res) => {
 
 // Middleware para manejo de errores
 app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
+  logger.error('Error:', err.stack);
 
   if (err.name === 'MulterError') {
     if (err.code === 'LIMIT_FILE_SIZE') {
@@ -109,9 +110,7 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-  console.log(`URL: http://localhost:${PORT}`);
-  console.log(`Panel de salud: http://localhost:${PORT}/api/health`);
+  logger.info(`Servidor escuchando en http://localhost:${PORT} (salud: /api/health)`);
 });
 
 module.exports = app;

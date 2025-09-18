@@ -1,5 +1,6 @@
 const FunctionDefinition = require('../models/FunctionDefinition');
 const defaultFunctions = require('./defaultFunctions');
+const logger = require('../utils/logger');
 
 async function initFunctions() {
   try {
@@ -10,9 +11,9 @@ async function initFunctions() {
         FunctionDefinition.updateOne({ name: func.name }, { $set: func }, { upsert: true })
       )
     );
-    console.log('Funciones sincronizadas');
+    logger.debug('Funciones sincronizadas');
   } catch (error) {
-    console.error('Error al sincronizar funciones iniciales:', error.message);
+    logger.error('Error al sincronizar funciones iniciales:', error.message);
   }
 }
 

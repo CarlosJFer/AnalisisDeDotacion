@@ -195,6 +195,27 @@ async function uploadFile(req, res) {
                   value = '';
                 }
               }
+              let normalizedVarName = mapping.variableName || '';
+              if (typeof normalizedVarName === 'string' && normalizedVarName.normalize) {
+                normalizedVarName = normalizedVarName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+              }
+              normalizedVarName = normalizedVarName.toLowerCase();
+              if (normalizedVarName === 'anos en la municipalidad') {
+                const invalidTokens = new Set(['', '-', 's/d', 'sin dato', 'sin datos', 'na', 'n/a', 'nan']);
+                if (value === undefined || value === null) {
+                  value = null;
+                } else if (typeof value === 'number') {
+                  value = Number.isFinite(value) && value > 0 ? Math.floor(value) : null;
+                } else {
+                  const text = value.toString().trim().toLowerCase();
+                  if (invalidTokens.has(text)) {
+                    value = null;
+                  } else {
+                    const numeric = parseInt(text, 10);
+                    value = Number.isFinite(numeric) && numeric > 0 ? numeric : null;
+                  }
+                }
+              }
               obj[mapping.variableName] = value;
             }
           });

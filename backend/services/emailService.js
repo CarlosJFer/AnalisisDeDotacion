@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const logger = require('../utils/logger');
 
 class EmailService {
   constructor() {
@@ -13,8 +14,8 @@ class EmailService {
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD || 
         process.env.EMAIL_USER === 'tu-email@gmail.com' || 
         process.env.EMAIL_PASSWORD === 'tu-app-password') {
-      console.log('⚠️  Servicio de email no configurado - usando modo de desarrollo');
-      console.log('   Para habilitar emails, configura EMAIL_USER y EMAIL_PASSWORD en .env');
+      logger.warn('Servicio de email no configurado - usando modo de desarrollo');
+      logger.warn('Para habilitar emails, configura EMAIL_USER y EMAIL_PASSWORD en .env');
       this.transporter = null;
       return;
     }
@@ -31,11 +32,11 @@ class EmailService {
     // Verificar la conexión solo si está configurado
     this.transporter.verify((error, success) => {
       if (error) {
-        console.error('❌ Error configurando el servicio de email:', error.message);
-        console.log('   Verifica tus credenciales de Gmail en el archivo .env');
+        logger.error('Error configurando el servicio de email:', error.message);
+        logger.warn('Verifica tus credenciales de Gmail en el archivo .env');
         this.transporter = null;
       } else {
-        console.log('✅ Servicio de email configurado correctamente');
+        logger.info('Servicio de email configurado correctamente');
       }
     });
   }
@@ -43,7 +44,7 @@ class EmailService {
   async sendDashboardUpdateNotification(users, dashboardInfo) {
     // Si no hay transporter configurado, solo simular el envío
     if (!this.transporter) {
-      console.log('📧 Simulando envío de emails (servicio no configurado)');
+      logger.debug('Simulando envío de emails (servicio no configurado)');
       return users.map(() => ({ status: 'fulfilled', value: 'simulated' }));
     }
 
@@ -53,9 +54,9 @@ class EmailService {
     // Log de resultados
     results.forEach((result, index) => {
       if (result.status === 'rejected') {
-        console.error(`Error enviando email a ${users[index].email}:`, result.reason);
+        logger.error(`Error enviando email a ${users[index].email}:`, result.reason);
       } else {
-        console.log(`Email enviado exitosamente a ${users[index].email}`);
+        logger.debug(`Email enviado exitosamente a ${users[index].email}`);
       }
     });
 
@@ -250,7 +251,7 @@ class EmailService {
       });
 
       await Promise.all(notificationPromises);
-      console.log(`📱 Notificaciones creadas para ${usersForNotifications.length} usuarios con notificaciones habilitadas`);
+      logger.debug(`Notificaciones creadas para ${usersForNotifications.length} usuarios con notificaciones habilitadas`);
 
       // Intentar enviar emails solo si el servicio está configurado
       let emailResults = [];
@@ -262,10 +263,10 @@ class EmailService {
           notificationsEnabled: true
         });
 
-        console.log(`📧 Enviando emails a ${usersWithEmail.length} usuarios con notificaciones habilitadas`);
+        logger.debug(`Enviando emails a ${usersWithEmail.length} usuarios con notificaciones habilitadas`);
         emailResults = await this.sendDashboardUpdateNotification(usersWithEmail, dashboardInfo);
       } else {
-        console.log('📧 Emails no enviados - servicio no configurado');
+        logger.debug('Emails no enviados - servicio no configurado');
         emailResults = [];
       }
 
@@ -277,7 +278,7 @@ class EmailService {
       };
 
     } catch (error) {
-      console.error('Error enviando notificaciones:', error);
+      logger.error('Error enviando notificaciones:', error);
       throw error;
     }
   }
