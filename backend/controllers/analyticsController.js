@@ -1348,7 +1348,48 @@ const getAgentsBySeniority = async (req, res) => {
       const agg = await Agent.aggregate(pipeline);
       const order = ['1-10','11-20','21-30','31-40','41-50'];
       const map = Object.fromEntries(agg.map(r => [r.range, r.count]));
-      const result = order.map(r => ({ range: r, count: map[r] || 0 }));
+      let result = order.map(r => ({ range: r, count: map[r] || 0 }));
+
+      // If all zeros, try fallback plantilla to avoid empty charts when the first template lacks the field
+      const total = result.reduce((s, d) => s + (Number(d.count) || 0), 0);
+      if (total === 0) {
+        const currentTpl = (req.query.plantilla || 'Rama completa - Planta y Contratos').trim();
+        const fallbackTpl = currentTpl === 'Rama completa - Planta y Contratos'
+          ? 'Datos concurso - Planta y Contratos'
+          : 'Rama completa - Planta y Contratos';
+        const fallbackMatch = { ...match, plantilla: fallbackTpl };
+        const fallbackPipeline = [
+          { $match: fallbackMatch },
+          { $addFields: {
+            _yearsRaw: {
+              $ifNull: [
+                '$Años en la municipalidad',
+                { $ifNull: [
+                  '$Años en la Municipalidad',
+                  { $ifNull: [ '$Anos en la municipalidad', { $ifNull: ['$Anios en la municipalidad', null] } ] }
+                ] }
+              ]
+            }
+          } },
+          { $addFields: { _years: { $convert: { input: '$_yearsRaw', to: 'int', onError: null, onNull: null } } } },
+          { $match: { _years: { $ne: null } } },
+          { $project: { range: { $switch: {
+            branches: [
+              { case: { $lte: ['$_years', 10] }, then: '1-10' },
+              { case: { $and: [ { $gte: ['$_years', 11] }, { $lte: ['$_years', 20] } ] }, then: '11-20' },
+              { case: { $and: [ { $gte: ['$_years', 21] }, { $lte: ['$_years', 30] } ] }, then: '21-30' },
+              { case: { $and: [ { $gte: ['$_years', 31] }, { $lte: ['$_years', 40] } ] }, then: '31-40' },
+            ],
+            default: '41-50'
+          } } } },
+          { $group: { _id: '$range', count: { $sum: 1 } } },
+          { $project: { _id: 0, range: '$_id', count: 1 } }
+        ];
+        const agg2 = await Agent.aggregate(fallbackPipeline);
+        const map2 = Object.fromEntries(agg2.map(r => [r.range, r.count]));
+        result = order.map(r => ({ range: r, count: map2[r] || 0 }));
+      }
+
       return res.json(result);
     } catch (e) {
       // Fallback a la lógica legacy si falla la agregación
@@ -1440,7 +1481,21 @@ const countStudiesNormalized = async (match, columns) => {
     },
     {
       $project: {
-        conTitulo: { $cond: [ { $in: ['$estudio', invalid] }, 0, 1 ] }
+        // Clasificación: valores vacíos o negativos cuentan como "otros" (0)
+        // Si no cae en negativos, cuenta como "conTitulo" (1)
+        conTitulo: {
+          $cond: [
+            {
+              $or: [
+                { $in: ['$estudio', invalid] },
+                { $eq: ['$estudio', null] },
+                { $regexMatch: { input: '$estudio', regex: /^(no|ningun|ningún|sin|incomplet)/i } }
+              ]
+            },
+            0,
+            1
+          ]
+        }
       }
     },
     { $group: { _id: null, conTitulo: { $sum: '$conTitulo' }, total: { $sum: 1 } } },
@@ -1453,7 +1508,19 @@ const countStudiesNormalized = async (match, columns) => {
 const getAgentsBySecondaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudiesNormalized(match, ['Estudios Secundario', 'Estudios Secundarios']);
+    let result = await countStudiesNormalized(match, ['Estudios Secundario', 'Estudios Secundarios']);
+    // Si solo devuelve "otros" y la plantilla actual es Rama completa, intentar fallback a Datos concurso
+    if ((result.conTitulo || 0) === 0 && (result.otros || 0) > 0) {
+      const curTpl = (req.query.plantilla || 'Rama completa - Planta y Contratos').trim();
+      const altTpl = curTpl === 'Rama completa - Planta y Contratos'
+        ? 'Datos concurso - Planta y Contratos'
+        : 'Rama completa - Planta y Contratos';
+      const altMatch = { ...match, plantilla: altTpl };
+      const alt = await countStudiesNormalized(altMatch, ['Estudios Secundario', 'Estudios Secundarios']);
+      if ((alt.conTitulo || 0) + (alt.otros || 0) > 0 && (alt.conTitulo || 0) > 0) {
+        result = alt;
+      }
+    }
     res.json(result);
   } catch (err) {
     console.error('Error en estudios secundarios:', err.message);
@@ -1465,7 +1532,18 @@ const getAgentsBySecondaryStudies = async (req, res) => {
 const getAgentsByTertiaryStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudiesNormalized(match, ['Estudios Terciario', 'Estudios Terciarios']);
+    let result = await countStudiesNormalized(match, ['Estudios Terciario', 'Estudios Terciarios']);
+    if ((result.conTitulo || 0) === 0 && (result.otros || 0) > 0) {
+      const curTpl = (req.query.plantilla || 'Rama completa - Planta y Contratos').trim();
+      const altTpl = curTpl === 'Rama completa - Planta y Contratos'
+        ? 'Datos concurso - Planta y Contratos'
+        : 'Rama completa - Planta y Contratos';
+      const altMatch = { ...match, plantilla: altTpl };
+      const alt = await countStudiesNormalized(altMatch, ['Estudios Terciario', 'Estudios Terciarios']);
+      if ((alt.conTitulo || 0) + (alt.otros || 0) > 0 && (alt.conTitulo || 0) > 0) {
+        result = alt;
+      }
+    }
     res.json(result);
   } catch (err) {
     console.error('Error en estudios terciarios:', err.message);
@@ -1477,7 +1555,18 @@ const getAgentsByTertiaryStudies = async (req, res) => {
 const getAgentsByUniversityStudies = async (req, res) => {
   try {
     const match = buildMatchStage(req.query);
-    const result = await countStudiesNormalized(match, ['Estudios Universitarios', 'Estudios Universitario']);
+    let result = await countStudiesNormalized(match, ['Estudios Universitarios', 'Estudios Universitario']);
+    if ((result.conTitulo || 0) === 0 && (result.otros || 0) > 0) {
+      const curTpl = (req.query.plantilla || 'Rama completa - Planta y Contratos').trim();
+      const altTpl = curTpl === 'Rama completa - Planta y Contratos'
+        ? 'Datos concurso - Planta y Contratos'
+        : 'Rama completa - Planta y Contratos';
+      const altMatch = { ...match, plantilla: altTpl };
+      const alt = await countStudiesNormalized(altMatch, ['Estudios Universitarios', 'Estudios Universitario']);
+      if ((alt.conTitulo || 0) + (alt.otros || 0) > 0 && (alt.conTitulo || 0) > 0) {
+        result = alt;
+      }
+    }
     res.json(result);
   } catch (err) {
     console.error('Error en estudios universitarios:', err.message);
