@@ -33,6 +33,7 @@ const CustomHorizontalBarChart = ({
   title,
   isDarkMode,
   nameKey,
+  xKey,
   valueKey,
   height,
   pageSize,
@@ -42,17 +43,23 @@ const CustomHorizontalBarChart = ({
   const { theme } = useTheme();
   const COLOR = theme.palette.primary.main;
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
-  const chartData = useMemo(
-    () =>
-      data
-        .map((item) => ({
+  const categoryKey = nameKey ?? xKey ?? "category";
+  const chartData = useMemo(() => {
+    const source = Array.isArray(data) ? data : [];
+    return source
+      .map((item) => {
+        const rawLabel = (item?.[categoryKey] ?? "").toString().trim();
+        const label = rawLabel || "Sin categoria";
+        const numericCandidate = Number(item?.[valueKey]);
+        const amount = Number.isFinite(numericCandidate) ? numericCandidate : 0;
+        return {
           ...item,
-          [nameKey]: (item[nameKey] ?? "").toString().trim() || "Sin categoría",
-          [valueKey]: Number.isFinite(item[valueKey]) ? item[valueKey] : 0,
-        }))
-        .sort((a, b) => b[valueKey] - a[valueKey]),
-    [data, nameKey, valueKey],
-  );
+          [categoryKey]: label,
+          [valueKey]: amount,
+        };
+      })
+      .sort((a, b) => b[valueKey] - a[valueKey]);
+  }, [data, categoryKey, valueKey]);
   const [page, setPage] = useState(0);
   const effectivePageSize = pageSize ?? chartData.length;
   const totalPages = Math.ceil(chartData.length / effectivePageSize);
@@ -145,7 +152,7 @@ const CustomHorizontalBarChart = ({
             />
             <YAxis
               type="category"
-              dataKey={nameKey}
+              dataKey={categoryKey}
               width={240}
               tickLine={false}
               tick={renderYAxisTick}
