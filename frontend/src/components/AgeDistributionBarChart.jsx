@@ -121,6 +121,7 @@ const AgeDistributionBarChart = ({
             />
             <Bar dataKey="cantidad" fill={COLOR} maxBarSize={28}>
               <LabelList
+                position="right"
                 dataKey="cantidad"
                 content={(p) => (
                   <ValueLabel {...p} total={total} dark={isDarkMode} />

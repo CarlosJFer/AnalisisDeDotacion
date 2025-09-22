@@ -172,6 +172,7 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
             />
             <Bar dataKey="avg" maxBarSize={22} fill={COLOR}>
               <LabelList
+                position="right"
                 content={(p) => <AgeCountLabel {...p} dark={isDarkMode} />}
               />
             </Bar>

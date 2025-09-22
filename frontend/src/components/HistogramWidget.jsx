@@ -110,6 +110,7 @@ const HistogramWidget = ({ data, xKey, barKey, color, isDarkMode }) => {
             />
             <Bar dataKey={barKey} fill={barColor} radius={[2, 2, 0, 0]}>
               <LabelList
+                position="right"
                 dataKey={barKey}
                 content={(p) => (
                   <ValueLabel {...p} total={grandTotal} dark={isDarkMode} />

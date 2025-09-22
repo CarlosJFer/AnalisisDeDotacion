@@ -132,6 +132,7 @@ const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
               activeBar={{ fill: hover }}
             >
               <LabelList
+                position="right"
                 dataKey="cantidad"
                 content={(p) => (
                   <ValueLabel {...p} total={total} dark={isDarkMode} />

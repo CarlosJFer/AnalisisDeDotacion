@@ -26,7 +26,7 @@ const truncate = (text, max = 30) => {
   return text.length > max ? text.slice(0, max - 1) + "…" : text;
 };
 
-const MARGIN_RIGHT = 96;
+const BASE_MARGIN_RIGHT = 96;
 
 const CustomHorizontalBarChart = ({
   data,
@@ -70,6 +70,14 @@ const CustomHorizontalBarChart = ({
     () => chartData.reduce((sum, item) => sum + (item[valueKey] || 0), 0),
     [chartData, valueKey],
   );
+  // margen derecho dinámico según el largo del porcentaje mostrado a la derecha
+  const dynamicRight = useMemo(() => {
+    if (!plotData?.length) return BASE_MARGIN_RIGHT;
+    const maxVal = Math.max(0, ...plotData.map((d) => Number(d[valueKey] || 0)));
+    const txt = formatPct((maxVal || 0) / (total || 1));
+    const approx = txt.length * 7 + 14;
+    return Math.max(BASE_MARGIN_RIGHT, Math.min(260, approx));
+  }, [plotData, valueKey, total]);
 
   const renderYAxisTick = (props) => {
     const { x, y, payload } = props;
@@ -124,7 +132,7 @@ const CustomHorizontalBarChart = ({
           <BarChart
             data={plotData}
             layout="vertical"
-            margin={{ top: 16, right: MARGIN_RIGHT, bottom: 16, left: 240 }}
+            margin={{ top: 16, right: dynamicRight, bottom: 16, left: 240 }}
             barCategoryGap={10}
           >
             <CartesianGrid horizontal={false} strokeDasharray="0 0" {...gridProps} />
@@ -167,6 +175,7 @@ const CustomHorizontalBarChart = ({
             />
             <Bar dataKey={valueKey} maxBarSize={22} fill={COLOR}>
               <LabelList
+                position="right"
                 content={(p) => (
                   <ValueLabel {...p} total={total} dark={isDarkMode} />
                 )}

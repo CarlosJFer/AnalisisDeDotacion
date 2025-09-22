@@ -311,6 +311,7 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
             />
             <Bar dataKey="cantidad" maxBarSize={22} fill={COLOR}>
               <LabelList
+                position="right"
                 dataKey="cantidad"
                 content={(props) => (
                   <ValueLabel {...props} total={total} dark={isDarkMode} />

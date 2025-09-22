@@ -42,6 +42,12 @@ const CustomBarChart = React.memo(
     const Icon = icons[metric] || icons.resumen;
     const COLOR = theme.palette.primary.main;
 
+    // Margen derecho dinámico para dejar espacio a la etiqueta (porcentaje) a la derecha de las barras
+    const maxVal = Math.max(0, ...chartData.map((d) => Number(d[barKey] || 0)));
+    const maxPctText = formatPct((maxVal || 0) / (total || 1));
+    const approxRight = maxPctText.length * 7 + 16; // 7px por char + pequeño padding
+    const MARGIN_RIGHT = Math.max(80, Math.min(260, approxRight));
+
     return (
       <DashboardCard
         title={title}
@@ -62,7 +68,7 @@ const CustomBarChart = React.memo(
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
-              margin={{ top: 5, right: 20, left: -10, bottom: xKey === "range" ? 40 : 80 }}
+              margin={{ top: 5, right: MARGIN_RIGHT, left: -10, bottom: xKey === "range" ? 40 : 80 }}
             >
               <CartesianGrid {...gridProps} />
               <XAxis
@@ -104,6 +110,7 @@ const CustomBarChart = React.memo(
               />
               <Bar dataKey={barKey} fill={COLOR} radius={[4, 4, 0, 0]}>
                 <LabelList
+                  position="right"
                   dataKey={barKey}
                   content={(p) => (
                     <ValueLabel {...p} total={total} dark={isDarkMode} />

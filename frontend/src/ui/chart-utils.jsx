@@ -82,21 +82,41 @@ export const rechartsCommon = (dark) => {
 };
 
 const RIGHT_PAD = 8;
+// Compute a robust chart width for label positioning.
+// Recent Recharts versions sometimes pass viewBox.width as 0/undefined in Label/LabelList.
+// If width is not usable, avoid right-clipping by falling back to Infinity
+// and place the label to the right of the bar using x + width + RIGHT_PAD.
+const getChartWidth = (viewBox) => {
+  if (!viewBox) return Infinity;
+  const w = typeof viewBox.width === "number" ? viewBox.width : undefined;
+  if (typeof w === "number" && w > 0) return w;
+  const x = typeof viewBox.x === "number" ? viewBox.x : 0;
+  const sum = x + (typeof w === "number" ? w : 0);
+  if (sum > 0) return sum;
+  return Infinity;
+};
 
 /** Label de porcentaje SIEMPRE afuera a la derecha */
 // Props laxas para renderers de Recharts (labels/tooltips)
 
 export const ValueLabel = (p) => {
   const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1, dark } = p;
-  const chartW = viewBox?.width ?? 0;
+  const chartW = getChartWidth(viewBox);
   const pct = Number(value) / Number(total || 1);
   const pctText = formatPct(pct);
   const approx = pctText.length * 7;
-  const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
+  // Prefer x computed by Recharts when available (LabelList position="right").
+  const givenX = Number.isFinite(x) ? x : undefined;
+  const barRight = Number.isFinite(x) && Number.isFinite(width) ? x + width + RIGHT_PAD : undefined;
+  const vbRight = Number.isFinite(viewBox?.x) && Number.isFinite(viewBox?.width)
+    ? viewBox.x + viewBox.width + RIGHT_PAD
+    : undefined;
+  const xBase = (givenX ?? barRight ?? vbRight ?? (Number.isFinite(x) ? x + RIGHT_PAD : 0));
+  const xText = givenX !== undefined ? xBase : Math.min(xBase, chartW - approx - 4);
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
   const color = isDarkTheme ? "#ffffff" : "#0f172a";
   return (
-    <text x={xText} y={y + 4} fill={color} fontWeight="600">
+    <text x={xText} y={y + 4} fill={color} fontWeight="600" textAnchor="start">
       {pctText}
     </text>
   );
@@ -109,16 +129,22 @@ export const ValueLabel = (p) => {
  */
 export const AgeCountLabel = (p) => {
   const { x = 0, y = 0, width = 0, viewBox, payload = {}, dark } = p;
-  const chartW = viewBox?.width ?? 0;
+  const chartW = getChartWidth(viewBox);
   const edad = Math.round(payload.avg ?? payload.promedio ?? 0);
   const cantidad = Number(payload.cantidad ?? 0);
   const text = `${edad} años · ${formatMiles(cantidad)}`;
   const approx = text.length * 7;
-  const xText = Math.min(x + width + RIGHT_PAD, chartW - approx - 4);
+  const givenX = Number.isFinite(x) ? x : undefined;
+  const barRight = Number.isFinite(x) && Number.isFinite(width) ? x + width + RIGHT_PAD : undefined;
+  const vbRight = Number.isFinite(viewBox?.x) && Number.isFinite(viewBox?.width)
+    ? viewBox.x + viewBox.width + RIGHT_PAD
+    : undefined;
+  const xBase = (givenX ?? barRight ?? vbRight ?? (Number.isFinite(x) ? x + RIGHT_PAD : 0));
+  const xText = givenX !== undefined ? xBase : Math.min(xBase, chartW - approx - 4);
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
   const color = isDarkTheme ? "#ffffff" : "#0f172a";
   return (
-    <text x={xText} y={y + 4} fill={color} fontWeight="600">
+    <text x={xText} y={y + 4} fill={color} fontWeight="600" textAnchor="start">
       {text}
     </text>
   );

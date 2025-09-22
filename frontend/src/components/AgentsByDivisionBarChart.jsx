@@ -139,6 +139,7 @@ const AgentsByDivisionBarChart = ({ data, isDarkMode }) => {
             />
             <Bar dataKey="cantidad" maxBarSize={22} fill={primary}>
               <LabelList
+                position="right"
                 dataKey="cantidad"
                 content={(p) => (
                   <ValueLabel
