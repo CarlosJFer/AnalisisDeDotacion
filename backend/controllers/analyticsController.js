@@ -1689,6 +1689,45 @@ const getAgentsByEntryTime = async (req, res) => {
   }
 };
 
+
+// @desc    Cantidad de agentes por horario de entrada según unidad de registración
+const getAgentsEntryTimeByUnit = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await Agent.aggregate([
+      { $match: match },
+      {
+        $addFields: {
+          entrada: { $ifNull: ['$Horario de entrada', '$Horario de Entrada'] },
+          unidadReg: { $ifNull: ['$Unidad de registración', '$Unidad de registracion'] },
+        },
+      },
+      {
+        $match: {
+          entrada: { $ne: null, $ne: '' },
+          unidadReg: { $ne: null, $ne: '' },
+        },
+      },
+      {
+        $group: {
+          _id: { entrada: '$entrada', unidad: '$unidadReg' },
+          count: { $sum: 1 },
+        },
+      },
+      { $project: { _id: 0, time: '$_id.entrada', unit: '$_id.unidad', count: 1 } },
+      { $sort: { time: 1, unit: 1 } },
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en horarios de entrada por unidad de registración:', err.message);
+    res.status(500).json({
+      error: 'Error en horarios de entrada por unidad de registración',
+      message: err.message,
+    });
+  }
+};
+
+
 // @desc    Cantidad de agentes por horario de salida
 const getAgentsByExitTime = async (req, res) => {
   try {
@@ -2182,6 +2221,7 @@ module.exports = {
   getTopSecretariasByTertiary,
   getAgentsByRegistrationType,
   getAgentsByEntryTime,
+  getAgentsEntryTimeByUnit,
   getAgentsByExitTime,
   getTopRegistrationUnits,
   getCierreProblemasTopByReclamos,

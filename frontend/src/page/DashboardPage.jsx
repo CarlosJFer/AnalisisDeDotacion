@@ -37,6 +37,7 @@ const CustomBarChart = lazy(() => import("../components/CustomBarChart"));
 const CustomDonutChart = lazy(() => import("../components/CustomDonutChart"));
 const CustomAreaChart = lazy(() => import("../components/CustomAreaChart"));
 const CustomLineChart = lazy(() => import("../components/CustomLineChart"));
+const EntryTimeByUnitChart = lazy(() => import("../components/EntryTimeByUnitChart.jsx"));
 const CustomHorizontalBarChart = lazy(
   () => import("../components/CustomHorizontalBarChart"),
 );
@@ -153,6 +154,7 @@ const DashboardPage = () => {
 
   const [registrationTypeData, setRegistrationTypeData] = useState([]);
   const [entryTimeData, setEntryTimeData] = useState([]);
+  const [entryTimeByUnitData, setEntryTimeByUnitData] = useState([]);
   const [exitTimeData, setExitTimeData] = useState([]);
   const [topUnitsData, setTopUnitsData] = useState([]);
   const [expTopInitiators, setExpTopInitiators] = useState([]);
@@ -312,6 +314,7 @@ const DashboardPage = () => {
           topTerRes,
           regTypeRes,
           entryTimeRes,
+          entryTimeByUnitRes,
           exitTimeRes,
           topUnitsRes,
           topInitiatorsData,
@@ -400,6 +403,12 @@ const DashboardPage = () => {
             TEMPLATE_CONTROL_PLANTA,
           ),
           safeGet(funcMap.certificationsEntryTime, [], TEMPLATE_CONTROL_PLANTA),
+          safeGet(
+            funcMap.certificationsEntryTimeByUnit ??
+              funcMap.certificationsEntryTimebyUnit,
+            [],
+            TEMPLATE_CONTROL_PLANTA,
+          ),
           safeGet(funcMap.certificationsExitTime, [], TEMPLATE_CONTROL_PLANTA),
           safeGet(funcMap.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
           // Expedientes
@@ -450,6 +459,7 @@ const DashboardPage = () => {
           setTopTerSecretariasData(topTerRes);
           setRegistrationTypeData(regTypeRes);
           setEntryTimeData(entryTimeRes);
+          setEntryTimeByUnitData(entryTimeByUnitRes);
           setExitTimeData(exitTimeRes);
           setTopUnitsData(topUnitsRes);
           setExpTopInitiators(topInitiatorsData);
@@ -489,6 +499,7 @@ const DashboardPage = () => {
         setTopTerSecretariasData([]);
         setRegistrationTypeData([]);
         setEntryTimeData([]);
+        setEntryTimeByUnitData([]);
         setExitTimeData([]);
         setTopUnitsData([]);
         setExpTopInitiators([]);
@@ -986,6 +997,14 @@ const DashboardPage = () => {
           </Grid>
           <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
+              <EntryTimeByUnitChart
+                data={entryTimeByUnitData}
+                isDarkMode={isDarkMode}
+              />
+            </Suspense>
+          </Grid>
+          <Grid item xs={12}>
+            <Suspense fallback={<CircularProgress />}>
               <CustomLineChart
                 data={exitTimeData}
                 title="Agentes segÃºn horario de salida"
@@ -1033,7 +1052,7 @@ const DashboardPage = () => {
                   xKey="tramite"
                   valueKey="count"
                   pageSize={10}
-                  title="Cantidad de expedientes según tipo de trámite"
+                  title="Cantidad de expedientes segï¿½n tipo de trï¿½mite"
                   isDarkMode={isDarkMode}
                   height={400}
                 />

@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Box, Chip } from "@mui/material";
 import {
   LineChart,
@@ -20,6 +20,16 @@ import {
 } from "../ui/chart-utils.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
+const SERIES_COLORS = [
+  "#3b82f6",
+  "#f97316",
+  "#22c55e",
+  "#a855f7",
+  "#ef4444",
+  "#0ea5e9",
+  "#14b8a6",
+];
+
 const CustomLineChart = React.memo(
   ({
     data,
@@ -30,16 +40,51 @@ const CustomLineChart = React.memo(
     height = 300,
     metric = "resumen",
     chipLabel,
+    series,
   }) => {
     const { theme } = useTheme();
-    const chartData = useMemo(() => data || [], [data]);
-    const total = useMemo(
-      () => chartData.reduce((sum, item) => sum + Number(item[yKey] || 0), 0),
-      [chartData, yKey],
-    );
+    const chartData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
     const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
     const COLOR = theme.palette.primary.main;
+
+    const rawSeries = useMemo(() => {
+      if (Array.isArray(series) && series.length) {
+        return series;
+      }
+      if (yKey) {
+        return [{ dataKey: yKey }];
+      }
+      return [];
+    }, [series, yKey]);
+
+    const lineSeries = useMemo(
+      () =>
+        rawSeries
+          .map((item, index) => {
+            const dataKey = item?.dataKey || item?.key || yKey;
+            if (!dataKey) return null;
+            const paletteColor = SERIES_COLORS[index % SERIES_COLORS.length];
+            return {
+              dataKey,
+              name: item?.name || item?.label || dataKey,
+              color: item?.color || (index === 0 ? COLOR : paletteColor),
+            };
+          })
+          .filter(Boolean),
+      [rawSeries, COLOR, yKey],
+    );
+
+    const isMultiSeries = lineSeries.length > 1;
+    const primaryKey = lineSeries[0]?.dataKey;
+
+    const total = useMemo(() => {
+      if (!primaryKey || isMultiSeries) return 0;
+      return chartData.reduce(
+        (sum, item) => sum + Number(item?.[primaryKey] || 0),
+        0,
+      );
+    }, [chartData, primaryKey, isMultiSeries]);
 
     return (
       <DashboardCard
@@ -75,40 +120,78 @@ const CustomLineChart = React.memo(
               <YAxis {...axisProps} allowDecimals={false} />
               <Tooltip
                 {...tooltipProps}
-                content={({ active, payload, label }) => (
-                  <UnifiedTooltip
-                    active={active}
-                    payload={payload}
-                    label={`${label}`}
-                    dark={isDarkMode}
-                  >
-                    {payload?.length && (
-                      <>
-                        <div>Cantidad: {formatMiles(payload[0].value || 0)}</div>
+                content={({ active, payload, label }) => {
+                  if (!active || !payload?.length) return null;
+                  if (!isMultiSeries) {
+                    const value = payload[0]?.value || 0;
+                    return (
+                      <UnifiedTooltip
+                        active={active}
+                        payload={payload}
+                        label={"" + label}
+                        dark={isDarkMode}
+                      >
+                        <div>Cantidad: {formatMiles(value)}</div>
                         <div>
-                          Porcentaje: {formatPct(
-                            (payload[0].value || 0) / (total || 1),
-                          )}
+                          Porcentaje: {formatPct(value / (total || 1))}
                         </div>
-                      </>
-                    )}
-                  </UnifiedTooltip>
-                )}
+                      </UnifiedTooltip>
+                    );
+                  }
+
+                  const items = payload
+                    .filter((entry) => Number.isFinite(Number(entry?.value)))
+                    .map((entry) => {
+                      const match = lineSeries.find(
+                        (serie) => serie.dataKey === entry.dataKey,
+                      );
+                      const name = match?.name || entry?.name || entry.dataKey;
+                      const color = match?.color || entry?.color;
+                      return (
+                        <div key={entry.dataKey} style={{ color: color || undefined }}>
+                          {name}: {formatMiles(entry.value || 0)}
+                        </div>
+                      );
+                    });
+
+                  if (!items.length) return null;
+
+                  return (
+                    <UnifiedTooltip
+                      active={active}
+                      payload={payload}
+                      label={"" + label}
+                      dark={isDarkMode}
+                    >
+                      {items}
+                    </UnifiedTooltip>
+                  );
+                }}
               />
-              <Line
-                type="monotone"
-                dataKey={yKey}
-                stroke={COLOR}
-                strokeWidth={3}
-                dot={{ r: 5, strokeWidth: 2, stroke: "#ffffff", fill: COLOR }}
-                activeDot={{ r: 7 }}
-              >
-                <LabelList
-                  dataKey={yKey}
-                  position="top"
-                  formatter={(value) => formatMiles(value)}
-                />
-              </Line>
+              {lineSeries.map((serie, index) => (
+                <Line
+                  key={serie.dataKey || index}
+                  type="monotone"
+                  dataKey={serie.dataKey}
+                  stroke={serie.color}
+                  strokeWidth={isMultiSeries ? 2 : 3}
+                  dot={{
+                    r: isMultiSeries ? 4 : 5,
+                    strokeWidth: 2,
+                    stroke: isDarkMode ? "#0f172a" : "#ffffff",
+                    fill: serie.color,
+                  }}
+                  activeDot={{ r: isMultiSeries ? 6 : 7 }}
+                >
+                  {!isMultiSeries && index === 0 && (
+                    <LabelList
+                      dataKey={serie.dataKey}
+                      position="top"
+                      formatter={(value) => formatMiles(value)}
+                    />
+                  )}
+                </Line>
+              ))}
             </LineChart>
           </ResponsiveContainer>
         </Box>

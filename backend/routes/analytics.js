@@ -41,6 +41,7 @@ const {
   getTopSecretariasByTertiary,
   getAgentsByRegistrationType,
   getAgentsByEntryTime,
+  getAgentsEntryTimeByUnit,
   getAgentsByExitTime,
   getTopRegistrationUnits,
   notifyDashboardModification,
@@ -105,6 +106,7 @@ router.get('/agents/top-secretarias-university', authenticateToken, getTopSecret
 router.get('/agents/top-secretarias-tertiary', authenticateToken, getTopSecretariasByTertiary);
 router.get('/certifications/registration-type', authenticateToken, getAgentsByRegistrationType);
 router.get('/certifications/entry-time', authenticateToken, getAgentsByEntryTime);
+router.get('/certifications/entry-time-by-unit', authenticateToken, getAgentsEntryTimeByUnit);
 router.get('/certifications/exit-time', authenticateToken, getAgentsByExitTime);
 router.get('/certifications/top-units', authenticateToken, getTopRegistrationUnits);
 
