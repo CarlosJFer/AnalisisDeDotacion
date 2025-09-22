@@ -128,18 +128,45 @@ export const ValueLabel = (p) => {
  * alineada a la derecha, similar a {@link ValueLabel}.
  */
 export const AgeCountLabel = (p) => {
-  const { x = 0, y = 0, width = 0, viewBox, payload = {}, dark } = p;
+  const {
+    x = 0,
+    y = 0,
+    width = 0,
+    viewBox,
+    payload: rawPayload,
+    datum,
+    value,
+    dark,
+  } = p;
+  const entry = {
+    ...(datum && typeof datum === "object" ? datum : {}),
+    ...(rawPayload && typeof rawPayload === "object" ? rawPayload : {}),
+  };
+  const toNumber = (candidate) => {
+    if (candidate === null || candidate === undefined) return undefined;
+    const num = Number(candidate);
+    return Number.isFinite(num) ? num : undefined;
+  };
+  const avgValue =
+    toNumber(value) ??
+    toNumber(entry.avg) ??
+    toNumber(entry.promedio) ??
+    toNumber(entry.avgAge);
+  const cantidadValue =
+    toNumber(entry.cantidad) ?? toNumber(entry.count) ?? 0;
   const chartW = getChartWidth(viewBox);
-  const edad = Math.round(payload.avg ?? payload.promedio ?? 0);
-  const cantidad = Number(payload.cantidad ?? 0);
-  const text = `${edad} años · ${formatMiles(cantidad)}`;
+  const edad = Math.round(avgValue ?? 0);
+  const text = `${edad} años · ${formatMiles(cantidadValue)}`;
   const approx = text.length * 7;
   const givenX = Number.isFinite(x) ? x : undefined;
-  const barRight = Number.isFinite(x) && Number.isFinite(width) ? x + width + RIGHT_PAD : undefined;
-  const vbRight = Number.isFinite(viewBox?.x) && Number.isFinite(viewBox?.width)
-    ? viewBox.x + viewBox.width + RIGHT_PAD
-    : undefined;
-  const xBase = (givenX ?? barRight ?? vbRight ?? (Number.isFinite(x) ? x + RIGHT_PAD : 0));
+  const barRight =
+    Number.isFinite(x) && Number.isFinite(width) ? x + width + RIGHT_PAD : undefined;
+  const vbRight =
+    Number.isFinite(viewBox?.x) && Number.isFinite(viewBox?.width)
+      ? viewBox.x + viewBox.width + RIGHT_PAD
+      : undefined;
+  const xBase =
+    givenX ?? barRight ?? vbRight ?? (Number.isFinite(x) ? x + RIGHT_PAD : 0);
   const xText = givenX !== undefined ? xBase : Math.min(xBase, chartW - approx - 4);
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
   const color = isDarkTheme ? "#ffffff" : "#0f172a";
@@ -149,7 +176,6 @@ export const AgeCountLabel = (p) => {
     </text>
   );
 };
-
 /** Tooltip unificado (oscuro/claro) */
 export const UnifiedTooltip = ({ active, payload, label, children, dark, style }) => {
   if (!active || !payload?.length) return null;

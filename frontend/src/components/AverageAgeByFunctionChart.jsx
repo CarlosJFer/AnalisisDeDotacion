@@ -81,7 +81,22 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
     const approxWidth = maxChars * 7 + 20;
     return Math.max(MIN_RIGHT, Math.min(MAX_RIGHT, approxWidth));
   }, [pageData]);
-
+  const renderAgeCountLabel = useCallback(
+    (labelProps) => {
+      const datum =
+        labelProps && labelProps.index != null
+          ? pageData[labelProps.index]
+          : undefined;
+      return (
+        <AgeCountLabel
+          {...labelProps}
+          datum={datum ?? labelProps.payload}
+          dark={isDarkMode}
+        />
+      );
+    },
+    [pageData, isDarkMode],
+  );
   const handlePrev = useCallback(() => setPage((p) => Math.max(0, p - 1)), []);
   const handleNext = useCallback(
     () => setPage((p) => Math.min(totalPages - 1, p + 1)),
@@ -173,7 +188,8 @@ const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
             <Bar dataKey="avg" maxBarSize={22} fill={COLOR}>
               <LabelList
                 position="right"
-                content={(p) => <AgeCountLabel {...p} dark={isDarkMode} />}
+                dataKey="avg"
+                content={renderAgeCountLabel}
               />
             </Bar>
           </BarChart>
