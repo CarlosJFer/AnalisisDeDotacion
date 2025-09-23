@@ -42,6 +42,7 @@ const {
   getAgentsByRegistrationType,
   getAgentsByEntryTime,
   getAgentsEntryTimeByUnit,
+  getAgentsExitTimeByUnit,
   getAgentsByExitTime,
   getTopRegistrationUnits,
   notifyDashboardModification,
@@ -107,6 +108,7 @@ router.get('/agents/top-secretarias-tertiary', authenticateToken, getTopSecretar
 router.get('/certifications/registration-type', authenticateToken, getAgentsByRegistrationType);
 router.get('/certifications/entry-time', authenticateToken, getAgentsByEntryTime);
 router.get('/certifications/entry-time-by-unit', authenticateToken, getAgentsEntryTimeByUnit);
+router.get('/certifications/exit-time-by-unit', authenticateToken, getAgentsExitTimeByUnit);
 router.get('/certifications/exit-time', authenticateToken, getAgentsByExitTime);
 router.get('/certifications/top-units', authenticateToken, getTopRegistrationUnits);
 
@@ -159,3 +161,7 @@ router.get('/agents/by-division-neike-beca', authenticateToken, getAgentsByDivis
 router.post('/notify-dashboard-modification', authenticateToken, notifyDashboardModification);
 
 module.exports = router;
+
+
+
+

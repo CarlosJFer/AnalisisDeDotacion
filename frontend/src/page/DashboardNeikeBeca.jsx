@@ -21,6 +21,7 @@ import AgeDistributionBarChart from "../components/AgeDistributionBarChart";
 import CustomDonutChart from "../components/CustomDonutChart";
 import CustomLineChart from "../components/CustomLineChart";
 import EntryTimeByUnitChart from "../components/EntryTimeByUnitChart.jsx";
+import ExitTimeByUnitChart from "../components/ExitTimeByUnitChart.jsx";
 import CustomAreaChart from "../components/CustomAreaChart";
 import AgeRangeByAreaChart from "../components/AgeRangeByAreaChart";
 import AverageAgeByFunctionChart from "../components/AverageAgeByFunctionChart";
@@ -73,7 +74,7 @@ const DashboardNeikeBeca = () => {
   const [registrationTypeData, setRegistrationTypeData] = useState([]);
   const [entryTimeData, setEntryTimeData] = useState([]);
   const [entryTimeByUnitData, setEntryTimeByUnitData] = useState([]);
-  const [exitTimeData, setExitTimeData] = useState([]);
+  const [exitTimeByUnitData, setExitTimeByUnitData] = useState([]);
   const [topUnitsData, setTopUnitsData] = useState([]);
 
   // Hooks para limpiar dashboard
@@ -220,7 +221,7 @@ const DashboardNeikeBeca = () => {
         regTypeRes,
         entryTimeRes,
         entryTimeByUnitRes,
-        exitTimeRes,
+        exitTimeByUnitRes,
         topUnitsRes,
       ] = await Promise.all([
         // Datos correspondientes a la plantilla "Rama completa - Neikes y Beca"
@@ -277,7 +278,11 @@ const DashboardNeikeBeca = () => {
           [],
           TEMPLATE_CONTROL_NEIKES,
         ),
-        safeGet(funcs.certificationsExitTime, [], TEMPLATE_CONTROL_NEIKES),
+        safeGet(
+          funcs.certificationsExitTimeByUnit ?? funcs.certificationsExitTimebyUnit,
+          [],
+          TEMPLATE_CONTROL_NEIKES,
+        ),
         safeGet(funcs.certificationsTopUnits, [], TEMPLATE_CONTROL_NEIKES),
       ]);
 
@@ -303,7 +308,7 @@ const DashboardNeikeBeca = () => {
       setRegistrationTypeData(regTypeRes);
       setEntryTimeData(entryTimeRes);
       setEntryTimeByUnitData(entryTimeByUnitRes);
-      setExitTimeData(exitTimeRes);
+      setExitTimeByUnitData(exitTimeByUnitRes);
       setTopUnitsData(topUnitsRes);
       const fieldSet = new Set();
       if (secretariaData?.length) fieldSet.add("Secretaria");
@@ -927,29 +932,15 @@ const DashboardNeikeBeca = () => {
             />
           </Grid>
           <Grid item xs={12}>
-            <CustomLineChart
-              data={entryTimeData}
-              title="Agentes seg�n horario de entrada"
-              isDarkMode={isDarkMode}
-              xKey="time"
-              yKey="count"
-              height={400}
-            />
-          </Grid>
-          <Grid item xs={12}>
             <EntryTimeByUnitChart
               data={entryTimeByUnitData}
               isDarkMode={isDarkMode}
             />
           </Grid>
           <Grid item xs={12}>
-            <CustomLineChart
-              data={exitTimeData}
-              title="Agentes seg�n horario de salida"
+            <ExitTimeByUnitChart
+              data={exitTimeByUnitData}
               isDarkMode={isDarkMode}
-              xKey="time"
-              yKey="count"
-              height={400}
             />
           </Grid>
           <Grid item xs={12}>
@@ -1005,3 +996,15 @@ const DashboardNeikeBeca = () => {
 };
 
 export default DashboardNeikeBeca;
+
+
+
+
+
+
+
+
+
+
+
+

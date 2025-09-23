@@ -38,6 +38,7 @@ const CustomDonutChart = lazy(() => import("../components/CustomDonutChart"));
 const CustomAreaChart = lazy(() => import("../components/CustomAreaChart"));
 const CustomLineChart = lazy(() => import("../components/CustomLineChart"));
 const EntryTimeByUnitChart = lazy(() => import("../components/EntryTimeByUnitChart.jsx"));
+const ExitTimeByUnitChart = lazy(() => import("../components/ExitTimeByUnitChart.jsx"));
 const CustomHorizontalBarChart = lazy(
   () => import("../components/CustomHorizontalBarChart"),
 );
@@ -155,7 +156,7 @@ const DashboardPage = () => {
   const [registrationTypeData, setRegistrationTypeData] = useState([]);
   const [entryTimeData, setEntryTimeData] = useState([]);
   const [entryTimeByUnitData, setEntryTimeByUnitData] = useState([]);
-  const [exitTimeData, setExitTimeData] = useState([]);
+  const [exitTimeByUnitData, setExitTimeByUnitData] = useState([]);
   const [topUnitsData, setTopUnitsData] = useState([]);
   const [expTopInitiators, setExpTopInitiators] = useState([]);
   const [expByTramite, setExpByTramite] = useState([]);
@@ -315,7 +316,7 @@ const DashboardPage = () => {
           regTypeRes,
           entryTimeRes,
           entryTimeByUnitRes,
-          exitTimeRes,
+          exitTimeByUnitRes,
           topUnitsRes,
           topInitiatorsData,
           byTramiteData,
@@ -409,7 +410,12 @@ const DashboardPage = () => {
             [],
             TEMPLATE_CONTROL_PLANTA,
           ),
-          safeGet(funcMap.certificationsExitTime, [], TEMPLATE_CONTROL_PLANTA),
+          safeGet(
+            funcMap.certificationsExitTimeByUnit ??
+              funcMap.certificationsExitTimebyUnit,
+            [],
+            TEMPLATE_CONTROL_PLANTA,
+          ),
           safeGet(funcMap.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
           // Expedientes
           safeGet(funcMap.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
@@ -460,7 +466,7 @@ const DashboardPage = () => {
           setRegistrationTypeData(regTypeRes);
           setEntryTimeData(entryTimeRes);
           setEntryTimeByUnitData(entryTimeByUnitRes);
-          setExitTimeData(exitTimeRes);
+          setExitTimeByUnitData(exitTimeByUnitRes);
           setTopUnitsData(topUnitsRes);
           setExpTopInitiators(topInitiatorsData);
           setExpByTramite(byTramiteData);
@@ -500,7 +506,7 @@ const DashboardPage = () => {
         setRegistrationTypeData([]);
         setEntryTimeData([]);
         setEntryTimeByUnitData([]);
-        setExitTimeData([]);
+        setExitTimeByUnitData([]);
         setTopUnitsData([]);
         setExpTopInitiators([]);
         setExpByTramite([]);
@@ -977,20 +983,8 @@ const DashboardPage = () => {
                 xKey="tipo"
                 valueKey="count"
                 pageSize={10}
-                title="Cantidad de agentes segÃºn tipo de registraciÃ³n"
+                title="Cantidad de agentes según tipo de registración"
                 isDarkMode={isDarkMode}
-                height={400}
-              />
-            </Suspense>
-          </Grid>
-          <Grid item xs={12}>
-            <Suspense fallback={<CircularProgress />}>
-              <CustomLineChart
-                data={entryTimeData}
-                title="Agentes segÃºn horario de entrada"
-                isDarkMode={isDarkMode}
-                xKey="time"
-                yKey="count"
                 height={400}
               />
             </Suspense>
@@ -1005,13 +999,9 @@ const DashboardPage = () => {
           </Grid>
           <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
-              <CustomLineChart
-                data={exitTimeData}
-                title="Agentes segÃºn horario de salida"
+              <ExitTimeByUnitChart
+                data={exitTimeByUnitData}
                 isDarkMode={isDarkMode}
-                xKey="time"
-                yKey="count"
-                height={400}
               />
             </Suspense>
           </Grid>
@@ -1022,16 +1012,14 @@ const DashboardPage = () => {
                 xKey="unidad"
                 valueKey="count"
                 pageSize={5}
-                title="Unidades de registraciÃ³n con mÃ¡s agentes"
+                title="Unidades de registración con más agentes"
                 isDarkMode={isDarkMode}
                 height={400}
               />
             </Suspense>
           </Grid>
         </Grid>
-      )}
-
-      {/* Tab 5: Expedientes */}
+      )}      {/* Tab 5: Expedientes */}
       {tabValue === 5 && (
         <Grid container spacing={3}>
           <Grid item xs={12}>
@@ -1296,3 +1284,15 @@ const DashboardPage = () => {
 };
 
 export default DashboardPage;
+
+
+
+
+
+
+
+
+
+
+
+

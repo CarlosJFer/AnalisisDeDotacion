@@ -1747,6 +1747,43 @@ const getAgentsByExitTime = async (req, res) => {
   }
 };
 
+// @desc    Cantidad de agentes por horario de salida segun unidad de registracion
+const getAgentsExitTimeByUnit = async (req, res) => {
+  try {
+    const match = buildMatchStage(req.query);
+    const result = await Agent.aggregate([
+      { $match: match },
+      {
+        $addFields: {
+          salida: { $ifNull: ['$Horario de salida', '$Horario de Salida'] },
+          unidadReg: { $ifNull: ['$Unidad de registración', '$Unidad de registracion'] },
+        },
+      },
+      {
+        $match: {
+          salida: { $ne: null, $ne: '' },
+          unidadReg: { $ne: null, $ne: '' },
+        },
+      },
+      {
+        $group: {
+          _id: { salida: '$salida', unidad: '$unidadReg' },
+          count: { $sum: 1 },
+        },
+      },
+      { $project: { _id: 0, time: '$_id.salida', unit: '$_id.unidad', count: 1 } },
+      { $sort: { time: 1, unit: 1 } },
+    ]);
+    res.json(result);
+  } catch (err) {
+    console.error('Error en horarios de salida por unidad de registración:', err.message);
+    res.status(500).json({
+      error: 'Error en horarios de salida por unidad de registración',
+      message: err.message,
+    });
+  }
+};
+
 // @desc    Top 10 unidades de registración con más agentes
 const getTopRegistrationUnits = async (req, res) => {
   try {
@@ -2222,6 +2259,7 @@ module.exports = {
   getAgentsByRegistrationType,
   getAgentsByEntryTime,
   getAgentsEntryTimeByUnit,
+  getAgentsExitTimeByUnit,
   getAgentsByExitTime,
   getTopRegistrationUnits,
   getCierreProblemasTopByReclamos,
@@ -2253,3 +2291,5 @@ module.exports = {
   notifyDashboardModification,
   getSacViaCaptacion
 };
+
+

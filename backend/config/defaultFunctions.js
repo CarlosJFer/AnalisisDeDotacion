@@ -21,6 +21,7 @@ module.exports = [
   { name: 'certificationsRegistrationType', description: 'Agentes por tipo de registración', endpoint: '/analytics/certifications/registration-type' },
   { name: 'certificationsEntryTime', description: 'Agentes por horario de entrada', endpoint: '/analytics/certifications/entry-time' },
   { name: 'certificationsEntryTimeByUnit', description: 'Agentes por horario de entrada y unidad', endpoint: '/analytics/certifications/entry-time-by-unit' },
+  { name: 'certificationsExitTimeByUnit', description: 'Agentes por horario de salida y unidad', endpoint: '/analytics/certifications/exit-time-by-unit' },
   { name: 'certificationsExitTime', description: 'Agentes por horario de salida', endpoint: '/analytics/certifications/exit-time' },
   { name: 'certificationsTopUnits', description: 'Top unidades de registración', endpoint: '/analytics/certifications/top-units' },
   { name: 'expedientesTopInitiators', description: 'Top iniciadores de expedientes', endpoint: '/analytics/expedientes/top-initiators' },
@@ -69,3 +70,6 @@ module.exports = [
     endpoint: '/analytics/sac/coordinacion-territorial/top-cerrados'
   }
 ];
+
+
+
