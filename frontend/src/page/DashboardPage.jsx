@@ -86,7 +86,7 @@ const setsAreEqual = (a, b) => {
 
 const fieldMap = {
   secretaria: "Secretaria",
-  subsecretaria: "Subsecretaría",
+  subsecretaria: "SubsecretarÃ­a",
   direccionGeneral: "direccion general",
   direccion: "direccion",
   departamento: "Departamento",
@@ -96,7 +96,7 @@ const fieldMap = {
 
 const filterFields = [
   "Secretaria",
-  "Subsecretaría",
+  "SubsecretarÃ­a",
   "direccion general",
   "direccion",
   "Departamento",
@@ -140,7 +140,7 @@ const DashboardPage = () => {
   const [agentsByEmploymentType, setAgentsByEmploymentType] = useState([]);
   const [agentsByDependency, setAgentsByDependency] = useState([]);
   const [agentsBySecretaria, setAgentsBySecretaria] = useState([]);
-  const [agentsBySubsecretaría, setAgentsBySubsecretaría] = useState([]);
+  const [agentsBySubsecretarÃ­a, setAgentsBySubsecretarÃ­a] = useState([]);
   const [agentsBydireccionGeneral, setAgentsBydireccionGeneral] = useState([]);
   const [agentsBydireccion, setAgentsBydireccion] = useState([]);
   const [agentsByDepartamento, setAgentsByDepartamento] = useState([]);
@@ -164,7 +164,7 @@ const DashboardPage = () => {
   const [sacViaData, setSacViaData] = useState([]);
   const { startDate, endDate } = getPreviousMonthRange();
 
-  // DiÃ¡logo de borrado de dashboard
+  // DiÃƒÂ¡logo de borrado de dashboard
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteMsg, setDeleteMsg] = useState("");
 
@@ -177,7 +177,7 @@ const DashboardPage = () => {
     [],
   );
 
-  // Función para filtrar datos que no sean "-" o vacíos
+  // FunciÃ³n para filtrar datos que no sean "-" o vacÃ­os
   const filterValidData = useCallback((data, nameKey) => {
     return data.filter((item) => {
       const value = item[nameKey];
@@ -232,7 +232,7 @@ const DashboardPage = () => {
         }, {});
         setFuncs(funcMap);
 
-        // Obtiene datos de forma segura: si falta el endpoint o la peticiÃ³n falla,
+        // Obtiene datos de forma segura: si falta el endpoint o la peticiÃƒÂ³n falla,
         // devuelve el valor por defecto. En caso contrario, retorna solo el campo
         // `data` de la respuesta.
         const safeGet = async (
@@ -274,7 +274,7 @@ const DashboardPage = () => {
         const TEMPLATE_SAC_VIAS = "SAC - Via de captacion";
         const TEMPLATE_DATOS_CONCURSO_ALT = "Datos concurso - Planta y Contratos";
 
-        // Helper: determina si una respuesta tiene datos útiles
+        // Helper: determina si una respuesta tiene datos Ãºtiles
         const hasUsefulData = (data) => {
           if (Array.isArray(data)) return data.length > 0;
           if (data && typeof data === "object") {
@@ -285,7 +285,7 @@ const DashboardPage = () => {
           return !!data;
         };
 
-        // Helper: intenta con varias plantillas y devuelve la primera no vacía
+        // Helper: intenta con varias plantillas y devuelve la primera no vacÃ­a
         const fetchWithTemplates = async (endpoint, def, templates, extraParams = {}) => {
           for (const tpl of templates) {
             const res = await safeGet(endpoint, def, tpl, extraParams);
@@ -302,7 +302,7 @@ const DashboardPage = () => {
           employmentData,
           dependencyData,
           secretariaData,
-          SubsecretaríaData,
+          SubsecretarÃ­aData,
           direccionGeneralData,
           direccionData,
           departamentoData,
@@ -336,12 +336,12 @@ const DashboardPage = () => {
           safeGet(funcMap.agentsByDependency, [], TEMPLATE_PLANTA_CONTRATOS),
           safeGet(funcMap.agentsBySecretaria, [], TEMPLATE_PLANTA_CONTRATOS),
 
-          // Arreglos de nombres: algunas claves de funcMap pueden variar entre mayúsculas,
-          // minúsculas o acentos según cómo estén registradas en el backend. Para evitar que
-          // queden undefined y los gráficos desaparezcan, intentamos ambas variantes. Si la
+          // Arreglos de nombres: algunas claves de funcMap pueden variar entre mayÃºsculas,
+          // minÃºsculas o acentos segÃºn cÃ³mo estÃ©n registradas en el backend. Para evitar que
+          // queden undefined y los grÃ¡ficos desaparezcan, intentamos ambas variantes. Si la
           // primera es undefined, usamos la segunda.
           safeGet(
-            funcMap.agentsBySubsecretaria ?? funcMap.agentsBySubsecretaría,
+            funcMap.agentsBySubsecretaria ?? funcMap.agentsBySubsecretarÃ­a,
             [],
             TEMPLATE_PLANTA_CONTRATOS,
           ),
@@ -366,7 +366,7 @@ const DashboardPage = () => {
             [],
             TEMPLATE_PLANTA_CONTRATOS,
           ),
-          // Datos para Antigüedad y estudios
+          // Datos para AntigÃ¼edad y estudios
           fetchWithTemplates(
             funcMap.agentsBySeniority,
             [],
@@ -441,14 +441,14 @@ const DashboardPage = () => {
           setAgentsByEmploymentType(employmentData);
           setAgentsByDependency(dependencyData);
           setAgentsBySecretaria(secretariaData);
-          setAgentsBySubsecretaría(SubsecretaríaData);
+          setAgentsBySubsecretarÃ­a(SubsecretarÃ­aData);
           setAgentsBydireccionGeneral(direccionGeneralData);
           setAgentsBydireccion(direccionData);
           setAgentsByDepartamento(departamentoData);
           setAgentsBydivision(divisionData);
           const fieldSet = new Set();
           if (secretariaData?.length) fieldSet.add("Secretaria");
-          if (SubsecretaríaData?.length) fieldSet.add("Subsecretaría");
+          if (SubsecretarÃ­aData?.length) fieldSet.add("SubsecretarÃ­a");
           if (direccionGeneralData?.length) fieldSet.add("direccion general");
           if (direccionData?.length) fieldSet.add("direccion");
           if (departamentoData?.length) fieldSet.add("Departamento");
@@ -479,11 +479,11 @@ const DashboardPage = () => {
           setNoData(totalData.total === 0);
         });
 
-        return true; // Indica éxito
+        return true; // Indica Ã©xito
       }, "Dashboard data fetch");
 
       if (result === null) {
-        // Error de extensión ignorado, usar datos por defecto
+        // Error de extensiÃ³n ignorado, usar datos por defecto
         setTotalAgents(0);
         setAgeDistribution(null);
         setAgeByFunction([]);
@@ -492,7 +492,7 @@ const DashboardPage = () => {
         setAgentsByEmploymentType([]);
         setAgentsByDependency([]);
         setAgentsBySecretaria([]);
-        setAgentsBySubsecretaría([]);
+        setAgentsBySubsecretarÃ­a([]);
         setAgentsBydireccionGeneral([]);
         setAgentsBydireccion([]);
         setAgentsByDepartamento([]);
@@ -695,7 +695,7 @@ const DashboardPage = () => {
           mb: 2,
         }}
       >
-        Análisis detallado de la dotación municipal con gráficos especializados
+        AnÃ¡lisis detallado de la dotaciÃ³n municipal con grÃ¡ficos especializados
       </Typography>
 
       <DependencyFilter filters={filters} onFilter={handleApplyFilters} />
@@ -706,7 +706,7 @@ const DashboardPage = () => {
         autoHideDuration={6000}
       >
         <Alert severity="info" onClose={() => setShowNoFiltersAlert(false)}>
-          Esta sección no tiene datos de Secretaría/Subsecretaría/direccion...
+          Esta secciÃ³n no tiene datos de SecretarÃ­a/SubsecretarÃ­a/direccion...
         </Alert>
       </Snackbar>
 
@@ -720,7 +720,7 @@ const DashboardPage = () => {
         </Alert>
       </Snackbar>
 
-      {/* Navegación por botones */}
+      {/* NavegaciÃ³n por botones */}
       <Box
         sx={{
           mb: 4,
@@ -743,21 +743,21 @@ const DashboardPage = () => {
           startIcon={<icons.analitica />}
           sx={getTabButtonStyles(1)}
         >
-          Análisis de Edad
+          AnÃ¡lisis de Edad
         </Button>
         <Button
           onClick={() => setTabValue(2)}
           startIcon={<icons.empresa />}
           sx={getTabButtonStyles(2)}
         >
-          Distribución Organizacional
+          DistribuciÃ³n Organizacional
         </Button>
         <Button
           onClick={() => setTabValue(3)}
           startIcon={<icons.antiguedad />}
           sx={getTabButtonStyles(3)}
         >
-          Antigüedad y Estudios
+          AntigÃ¼edad y Estudios
         </Button>
         <Button
           onClick={() => setTabValue(4)}
@@ -785,7 +785,7 @@ const DashboardPage = () => {
       {/* Tab 0: Resumen General */}
       {tabValue === 0 && (
         <Grid container spacing={3}>
-          {/* EstadÃ­sticas principales */}
+          {/* EstadÃƒÂ­sticas principales */}
           <Grid item xs={12} md={3}>
             <DashboardCard isDarkMode={isDarkMode}>
               <KPIStat
@@ -819,7 +819,7 @@ const DashboardPage = () => {
             <DashboardCard isDarkMode={isDarkMode}>
               <KPIStat
                 metric="contratos"
-                label="Tipos de situación de revista"
+                label="Tipos de situaciÃ³n de revista"
                 value={agentsByEmploymentType.length}
                 delta={null}
                 isDarkMode={isDarkMode}
@@ -830,7 +830,7 @@ const DashboardPage = () => {
             <DashboardCard isDarkMode={isDarkMode}>
               <KPIStat
                 metric="empresa"
-                label="Cantidad de Secretarías"
+                label="Cantidad de SecretarÃ­as"
                 value={agentsBySecretaria.length}
                 delta={null}
                 isDarkMode={isDarkMode}
@@ -838,7 +838,7 @@ const DashboardPage = () => {
             </DashboardCard>
           </Grid>
 
-          {/* gráficos principales */}
+          {/* grÃ¡ficos principales */}
           <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
               <AgentsByFunctionBarChart
@@ -856,7 +856,7 @@ const DashboardPage = () => {
             <Suspense fallback={<CircularProgress />}>
               <CustomHorizontalBarChart
                 data={agentsByEmploymentType}
-                title="Agentes por Situación de Revista - Planta y Contratos"
+                title="Agentes por SituaciÃ³n de Revista - Planta y Contratos"
                 isDarkMode={isDarkMode}
                 nameKey="type"
                 valueKey="count"
@@ -867,12 +867,12 @@ const DashboardPage = () => {
         </Grid>
       )}
 
-      {/* Tab 3: Antigüedad y Estudios */}
+      {/* Tab 3: AntigÃ¼edad y Estudios */}
       {tabValue === 3 && (
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-              Antigüedad y Estudios
+              AntigÃ¼edad y Estudios
             </Typography>
           </Grid>
           <Grid item xs={12}>
@@ -882,7 +882,7 @@ const DashboardPage = () => {
                 xKey="range"
                 barKey="count"
 
-                title="Cantidad de agentes según Antigüedad municipal"
+                title="Cantidad de agentes segÃºn AntigÃ¼edad municipal"
                 isDarkMode={isDarkMode}
                 height={400}
               />
@@ -893,12 +893,12 @@ const DashboardPage = () => {
               <CustomDonutChart
                 data={[
                 {
-                  category: "Con título secundario",
+                  category: "Con tÃ­tulo secundario",
                   count: secondaryData?.conTitulo || 0,
                 },
                 { category: "Otros", count: secondaryData?.otros || 0 },
               ]}
-                title="Agentes según estudios secundarios"
+                title="Agentes segÃºn estudios secundarios"
                 isDarkMode={isDarkMode}
                 dataKey="count"
                 nameKey="category"
@@ -910,12 +910,12 @@ const DashboardPage = () => {
               <CustomDonutChart
                 data={[
                 {
-                  category: "Con título terciario",
+                  category: "Con tÃ­tulo terciario",
                   count: tertiaryData?.conTitulo || 0,
                 },
                 { category: "Otros", count: tertiaryData?.otros || 0 },
               ]}
-                title="Agentes según estudios terciarios"
+                title="Agentes segÃºn estudios terciarios"
                 isDarkMode={isDarkMode}
                 dataKey="count"
                 nameKey="category"
@@ -927,12 +927,12 @@ const DashboardPage = () => {
               <CustomDonutChart
                 data={[
                 {
-                  category: "Con título universitario",
+                  category: "Con tÃ­tulo universitario",
                   count: universityData?.conTitulo || 0,
                 },
                 { category: "Otros", count: universityData?.otros || 0 },
               ]}
-                title="Agentes según estudios universitarios"
+                title="Agentes segÃºn estudios universitarios"
                 isDarkMode={isDarkMode}
                 dataKey="count"
                 nameKey="category"
@@ -983,7 +983,7 @@ const DashboardPage = () => {
                 xKey="tipo"
                 valueKey="count"
                 pageSize={10}
-                title="Cantidad de agentes seg�n tipo de registraci�n"
+                title="Cantidad de agentes segun tipo de registracion"
                 isDarkMode={isDarkMode}
                 height={400}
               />
@@ -1012,7 +1012,7 @@ const DashboardPage = () => {
                 xKey="unidad"
                 valueKey="count"
                 pageSize={5}
-                title="Unidades de registraci�n con m�s agentes"
+                title="Unidades de registracion con mas agentes"
                 isDarkMode={isDarkMode}
                 height={400}
               />
@@ -1040,7 +1040,7 @@ const DashboardPage = () => {
                   xKey="tramite"
                   valueKey="count"
                   pageSize={10}
-                  title="Cantidad de expedientes seg�n tipo de tr�mite"
+                  title="Cantidad de expedientes segï¿½n tipo de trï¿½mite"
                   isDarkMode={isDarkMode}
                   height={400}
                 />
@@ -1080,12 +1080,12 @@ const DashboardPage = () => {
         />
       )}
 
-      {/* Tab 1: Análisis de Edad */}
+      {/* Tab 1: AnÃ¡lisis de Edad */}
       {tabValue === 1 && (
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-              Análisis de Edad de los Agentes Municipales
+              AnÃ¡lisis de Edad de los Agentes Municipales
             </Typography>
             {ageDistribution?.note && (
               <Alert severity="info" sx={{ mb: 2 }}>
@@ -1094,14 +1094,14 @@ const DashboardPage = () => {
             )}
           </Grid>
 
-          {/* GrÃ¡fico de rangos de edad principal */}
+          {/* GrÃƒÂ¡fico de rangos de edad principal */}
           <Grid item xs={12}>
             {ageDistribution ? (
               <Suspense fallback={<CircularProgress />}>
                 <AgeDistributionBarChart
                   data={ageDistribution.rangeData}
                   isDarkMode={isDarkMode}
-                  title="Distribución por Rangos de Edad - Planta y Contratos"
+                  title="DistribuciÃ³n por Rangos de Edad - Planta y Contratos"
                 />
               </Suspense>
             ) : (
@@ -1113,13 +1113,13 @@ const DashboardPage = () => {
               >
                 <CircularProgress size={40} />
                 <Typography sx={{ ml: 2 }}>
-                  Cargando Análisis de edad...
+                  Cargando AnÃ¡lisis de edad...
                 </Typography>
               </Box>
             )}
           </Grid>
 
-          {/* Distribución por Rangos de Edad según el área */}
+          {/* DistribuciÃ³n por Rangos de Edad segÃºn el Ã¡rea */}
           <Grid item xs={12}>
             {ageByArea.length ? (
               <Suspense fallback={<CircularProgress />}>
@@ -1161,12 +1161,12 @@ const DashboardPage = () => {
         </Grid>
       )}
 
-      {/* Tab 2: Distribución Organizacional */}
+      {/* Tab 2: DistribuciÃ³n Organizacional */}
       {tabValue === 2 && (
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-              Distribución Organizacional
+              DistribuciÃ³n Organizacional
             </Typography>
           </Grid>
 
@@ -1190,7 +1190,7 @@ const DashboardPage = () => {
           <Grid item xs={12}>
             <Suspense fallback={<CircularProgress />}>
               <AgentsBySubsecretariaBarChart
-                data={filterValidData(agentsBySubsecretaría, "subsecretaria")}
+                data={filterValidData(agentsBySubsecretarÃ­a, "subsecretaria")}
                 isDarkMode={isDarkMode}
               />
             </Suspense>
@@ -1198,7 +1198,7 @@ const DashboardPage = () => {
 
           <Grid item xs={12} sx={{ display: "none" }}>
             <Typography variant="h6" sx={{ mt: 4, mb: 2, fontWeight: 600 }}>
-              Estructura Jerárquica Detallada
+              Estructura JerÃ¡rquica Detallada
             </Typography>
           </Grid>
 
