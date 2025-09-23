@@ -926,7 +926,7 @@ const DashboardNeikeBeca = () => {
               xKey="tipo"
               valueKey="count"
               pageSize={10}
-              title="Cantidad de agentes seg�n tipo de registraci�n"
+              title="Cantidad de agentes segun tipo de registracion"
               isDarkMode={isDarkMode}
               height={400}
             />
@@ -949,7 +949,7 @@ const DashboardNeikeBeca = () => {
               xKey="unidad"
               valueKey="count"
               pageSize={5}
-              title="Unidades de registraci�n con m�s agentes"
+              title="Unidades de registracion con mas agentes"
               isDarkMode={isDarkMode}
               height={400}
             />
