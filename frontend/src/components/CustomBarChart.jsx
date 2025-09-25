@@ -17,8 +17,8 @@ import {
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
-  ValueLabel,
   getSeriesColor,
+  TopCenterPctLabel,
 } from "../ui/chart-utils.jsx";
 
 const CustomBarChart = React.memo(
@@ -70,7 +70,7 @@ const CustomBarChart = React.memo(
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
-              margin={{ top: 5, right: MARGIN_RIGHT, left: -10, bottom: xKey === "range" ? 40 : 80 }}
+              margin={{ top: 24, right: MARGIN_RIGHT, left: -10, bottom: xKey === "range" ? 40 : 80 }}
             >
               <CartesianGrid {...gridProps} />
               <XAxis
@@ -112,10 +112,10 @@ const CustomBarChart = React.memo(
               />
               <Bar dataKey={barKey} fill={COLOR} radius={[4, 4, 0, 0]}>
                 <LabelList
-                  position="right"
+                  position="top"
                   dataKey={barKey}
                   content={(p) => (
-                    <ValueLabel {...p} total={total} dark={isDarkMode} />
+                    <TopCenterPctLabel {...p} total={total} dark={isDarkMode} />
                   )}
                 />
               </Bar>

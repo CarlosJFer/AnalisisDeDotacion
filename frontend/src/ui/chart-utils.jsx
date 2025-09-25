@@ -211,6 +211,38 @@ export const ValueLabel = (p) => {
   );
 };
 
+/** Label centrado dentro de la barra (columnas verticales) mostrando porcentaje */
+export const CenterPctLabel = (p) => {
+  const { x = 0, y = 0, width = 0, height = 0, value = 0, total = 1, dark } = p;
+  const cx = Number(x) + Number(width) / 2;
+  const cy = Number(y) + Number(height) / 2;
+  const pct = Number(value) / Number(total || 1);
+  const text = formatPct(pct);
+  const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
+  const color = isDarkTheme ? "#ffffff" : "#0f172a";
+  return (
+    <text x={cx} y={cy} fill={color} fontWeight="600" textAnchor="middle" dominantBaseline="central">
+      {text}
+    </text>
+  );
+};
+
+/** Label centrado arriba de la columna (columnas verticales) mostrando porcentaje */
+export const TopCenterPctLabel = (p) => {
+  const { x = 0, y = 0, width = 0, value = 0, total = 1, dark } = p;
+  const cx = Number(x) + Number(width) / 2;
+  const cy = Number(y) - 6; // un poco por encima del tope de la barra
+  const pct = Number(value) / Number(total || 1);
+  const text = formatPct(pct);
+  const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
+  const color = isDarkTheme ? "#ffffff" : "#0f172a";
+  return (
+    <text x={cx} y={cy} fill={color} fontWeight="600" textAnchor="middle" dominantBaseline="central">
+      {text}
+    </text>
+  );
+};
+
 /**
  * Etiqueta personalizada que muestra la edad promedio y la cantidad
  * correspondiente a cada barra. Se posiciona fuera de la barra,

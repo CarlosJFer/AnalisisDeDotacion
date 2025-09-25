@@ -17,8 +17,8 @@ import {
   formatPct,
   rechartsCommon,
   UnifiedTooltip,
-  ValueLabel,
   getSeriesColor,
+  TopCenterPctLabel,
 } from "../ui/chart-utils.jsx";
 
 const AGE_BUCKETS = [
@@ -92,7 +92,7 @@ const AgeDistributionBarChart = ({
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={pageData}
-            margin={{ top: 16, right: 160, bottom: 16, left: 40 }}
+            margin={{ top: 28, right: 24, bottom: 16, left: 40 }}
           >
             <CartesianGrid {...gridProps} />
             <XAxis dataKey="rango" {...axisProps} />
@@ -122,10 +122,10 @@ const AgeDistributionBarChart = ({
             />
             <Bar dataKey="cantidad" fill={COLOR} maxBarSize={28}>
               <LabelList
-                position="right"
+                position="top"
                 dataKey="cantidad"
                 content={(p) => (
-                  <ValueLabel {...p} total={total} dark={isDarkMode} />
+                  <TopCenterPctLabel {...p} total={total} dark={isDarkMode} />
                 )}
               />
             </Bar>

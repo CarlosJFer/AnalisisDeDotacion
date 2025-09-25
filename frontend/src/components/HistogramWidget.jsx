@@ -17,8 +17,8 @@ import {
   modeVars,
   PaginationControls,
   rechartsCommon,
-  ValueLabel,
   theme,
+  TopCenterPctLabel,
 } from "../ui";
 
 const HistogramWidget = ({ data, xKey, barKey, color, isDarkMode }) => {
@@ -72,7 +72,7 @@ const HistogramWidget = ({ data, xKey, barKey, color, isDarkMode }) => {
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={pageData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+            margin={{ top: 28, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid {...gridProps} />
             <XAxis
@@ -110,10 +110,10 @@ const HistogramWidget = ({ data, xKey, barKey, color, isDarkMode }) => {
             />
             <Bar dataKey={barKey} fill={barColor} radius={[2, 2, 0, 0]}>
               <LabelList
-                position="right"
+                position="top"
                 dataKey={barKey}
                 content={(p) => (
-                  <ValueLabel {...p} total={grandTotal} dark={isDarkMode} />
+                  <TopCenterPctLabel {...p} total={grandTotal} dark={isDarkMode} />
                 )}
               />
             </Bar>
