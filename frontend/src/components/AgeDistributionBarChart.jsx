@@ -10,7 +10,7 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import { DashboardCard, PaginationControls, theme } from "../ui";
+import { DashboardCard, PaginationControls } from "../ui";
 import icons from "../ui/icons.js";
 import {
   formatMiles,
@@ -18,6 +18,7 @@ import {
   rechartsCommon,
   UnifiedTooltip,
   ValueLabel,
+  getSeriesColor,
 } from "../ui/chart-utils.jsx";
 
 const AGE_BUCKETS = [
@@ -35,7 +36,7 @@ const AgeDistributionBarChart = ({
   isDarkMode,
   title = "Distribución por Rangos de Edad - Planta y Contratos",
 }) => {
-  const COLOR = theme.palette.primary;
+  const COLOR = useMemo(() => getSeriesColor("age-distribution", isDarkMode), [isDarkMode]);
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   const chartData = useMemo(() => {

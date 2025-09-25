@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { DashboardCard, PaginationControls, theme } from "../ui";
+import { DashboardCard, PaginationControls } from "../ui";
 import icons from "../ui/icons.js";
 import {
   formatMiles,
@@ -18,10 +18,11 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
+  getSeriesColor,
 } from "../ui/chart-utils.jsx";
 
 const AgentsByDependencyBarChart = ({ data, isDarkMode }) => {
-  const primary = theme.palette.primary;
+  const primary = useMemo(() => getSeriesColor("agents-by-dependency", isDarkMode), [isDarkMode]);
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
 
   const chartData = useMemo(() => {

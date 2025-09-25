@@ -17,8 +17,8 @@ import {
   rechartsCommon,
   ValueLabel,
   formatPct,
+  getSeriesColor,
 } from "../ui/chart-utils.jsx";
-import { useTheme } from "../context/ThemeContext.jsx";
 
 const CustomAreaChart = React.memo(
   ({
@@ -30,7 +30,6 @@ const CustomAreaChart = React.memo(
     metric = "resumen",
     chipLabel,
   }) => {
-    const { theme } = useTheme();
     const chartData = useMemo(() => data || [], [data]);
     const total = useMemo(
       () => chartData.reduce((s, d) => s + Number(d[yKey] || 0), 0),
@@ -38,7 +37,10 @@ const CustomAreaChart = React.memo(
     );
     const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
-    const COLOR = theme.palette.primary.main;
+    const COLOR = useMemo(
+      () => getSeriesColor(`${metric || "area"}-${title || yKey || "series"}`, isDarkMode),
+      [metric, title, yKey, isDarkMode],
+    );
 
     return (
       <DashboardCard

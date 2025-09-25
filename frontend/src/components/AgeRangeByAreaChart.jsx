@@ -25,6 +25,7 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
+  getSeriesColor,
 } from "../ui/chart-utils.jsx";
 import { DashboardCard, PaginationControls, modeVars } from "../ui";
 import icons from "../ui/icons.js";
@@ -44,7 +45,7 @@ const MAX_RIGHT = 240;
 const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
   const [range, setRange] = useState("36-45");
   const { theme } = useTheme();
-  const COLOR = theme.palette.primary.main;
+  const COLOR = useMemo(() => getSeriesColor("age-range-by-area", isDarkMode), [isDarkMode]);
   const vars = modeVars(isDarkMode);
 
   const rangeOptions = useMemo(() => {

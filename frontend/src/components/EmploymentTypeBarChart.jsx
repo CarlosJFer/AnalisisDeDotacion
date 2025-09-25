@@ -10,7 +10,7 @@ import {
   Tooltip,
   LabelList,
 } from "recharts";
-import { DashboardCard, PaginationControls, formatMiles, formatPct, UnifiedTooltip, rechartsCommon, ValueLabel, theme } from "../ui";
+import { DashboardCard, PaginationControls, formatMiles, formatPct, UnifiedTooltip, rechartsCommon, ValueLabel, getSeriesColor, getEmphasisColor } from "../ui";
 import icons from "../ui/icons.js";
 
 const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
@@ -48,8 +48,8 @@ const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
   }, [pageData, total]);
 
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
-  const primary = theme.palette.primary;
-  const hover = theme.palette.primaryHover;
+  const primary = useMemo(() => getSeriesColor("employment-type", isDarkMode), [isDarkMode]);
+  const hover = useMemo(() => getEmphasisColor(primary, isDarkMode, 0.18), [primary, isDarkMode]);
 
   return (
     <DashboardCard

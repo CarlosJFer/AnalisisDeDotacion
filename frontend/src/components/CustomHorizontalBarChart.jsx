@@ -18,6 +18,7 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
+  getSeriesColor,
 } from "../ui/chart-utils.jsx";
 import { useTheme } from "../context/ThemeContext.jsx";
 
@@ -41,9 +42,13 @@ const CustomHorizontalBarChart = ({
   chipLabel = "Resumen General",
 }) => {
   const { theme } = useTheme();
-  const COLOR = theme.palette.primary.main;
-  const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
   const categoryKey = nameKey ?? xKey ?? "category";
+  const COLOR = useMemo(
+    () => getSeriesColor(`${metric || "horizontal"}-${title || categoryKey || valueKey || "series"}`, isDarkMode),
+    [metric, title, categoryKey, valueKey, isDarkMode],
+  );
+  const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
+
   const chartData = useMemo(() => {
     const source = Array.isArray(data) ? data : [];
     return source

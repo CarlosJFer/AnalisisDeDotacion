@@ -17,18 +17,8 @@ import {
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
+  generateColorScale,
 } from "../ui/chart-utils.jsx";
-import { useTheme } from "../context/ThemeContext.jsx";
-
-const SERIES_COLORS = [
-  "#3b82f6",
-  "#f97316",
-  "#22c55e",
-  "#a855f7",
-  "#ef4444",
-  "#0ea5e9",
-  "#14b8a6",
-];
 
 const CustomLineChart = React.memo(
   ({
@@ -42,11 +32,12 @@ const CustomLineChart = React.memo(
     chipLabel,
     series,
   }) => {
-    const { theme } = useTheme();
     const chartData = useMemo(() => (Array.isArray(data) ? data : []), [data]);
     const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
-    const COLOR = theme.palette.primary.main;
+    const seriesKey = Array.isArray(series) && series.length
+      ? series.map((item) => item?.dataKey || item?.key || "").join("|")
+      : yKey || "series";
 
     const rawSeries = useMemo(() => {
       if (Array.isArray(series) && series.length) {
@@ -58,21 +49,27 @@ const CustomLineChart = React.memo(
       return [];
     }, [series, yKey]);
 
+    const paletteSeed = `${metric || "line"}-${title || ""}-${seriesKey}`;
+    const palette = useMemo(
+      () => generateColorScale(Math.max(rawSeries.length || 1, 1), paletteSeed, isDarkMode),
+      [rawSeries.length, paletteSeed, isDarkMode],
+    );
+    const accentColor = palette[0];
+
     const lineSeries = useMemo(
       () =>
         rawSeries
           .map((item, index) => {
             const dataKey = item?.dataKey || item?.key || yKey;
             if (!dataKey) return null;
-            const paletteColor = SERIES_COLORS[index % SERIES_COLORS.length];
             return {
               dataKey,
               name: item?.name || item?.label || dataKey,
-              color: item?.color || (index === 0 ? COLOR : paletteColor),
+              color: item?.color || palette[index % palette.length],
             };
           })
           .filter(Boolean),
-      [rawSeries, COLOR, yKey],
+      [rawSeries, palette, yKey],
     );
 
     const isMultiSeries = lineSeries.length > 1;
@@ -97,7 +94,7 @@ const CustomLineChart = React.memo(
               label={chipLabel}
               size="small"
               variant="outlined"
-              sx={{ borderColor: COLOR, color: COLOR }}
+              sx={{ borderColor: accentColor, color: accentColor }}
             />
           )
         }

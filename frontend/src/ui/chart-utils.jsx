@@ -1,9 +1,9 @@
 import React from "react";
 
 /**
- * Utilidades de formato y estilo para gráficos construidos con Recharts.
+ * Utilidades de formato y estilo para graficos construidos con Recharts.
  *
- * La función `rechartsCommon()` provee estilos y colores estandarizados
+ * La funcion `rechartsCommon()` provee estilos y colores estandarizados
  * para ejes, grillas y tooltips dependiendo del modo oscuro/claro. Estos
  * valores se pueden utilizar directamente en los componentes de Recharts
  * para mantener una apariencia coherente:
@@ -18,12 +18,101 @@ import React from "react";
 
 export const nf = new Intl.NumberFormat("es-AR");
 
-/** Formatea números con separador de miles. */
+/** Formatea numeros con separador de miles. */
 export const formatMiles = (n) => nf.format(n);
 
 /** Formatea porcentajes con `d` decimales. */
 export const formatPct = (p, d = 1) =>
   `${(p * 100).toFixed(d).replace(".", ",")}%`;
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const BASE_CHART_COLORS = [
+  "#F97316",
+  "#10B981",
+  "#F43F5E",
+  "#8B5CF6",
+  "#F59E0B",
+  "#14B8A6",
+  "#EC4899",
+  "#84CC16",
+  "#FCD34D",
+  "#A855F7",
+];
+
+const hexToRgb = (hex) => {
+  if (!hex) return { r: 0, g: 0, b: 0 };
+  const normalized = String(hex).replace("#", "").trim();
+  if (!normalized.length) return { r: 0, g: 0, b: 0 };
+  const parts =
+    normalized.length === 3
+      ? normalized.split("").map((ch) => parseInt(ch + ch, 16))
+      : [0, 2, 4].map((partIdx) => parseInt(normalized.slice(partIdx, partIdx + 2), 16));
+  return {
+    r: Number.isFinite(parts[0]) ? parts[0] : 0,
+    g: Number.isFinite(parts[1]) ? parts[1] : 0,
+    b: Number.isFinite(parts[2]) ? parts[2] : 0,
+  };
+};
+
+const rgbToHex = ({ r, g, b }) => {
+  const toHex = (value) => clamp(Math.round(value), 0, 255).toString(16).padStart(2, "0");
+  return "#" + toHex(r) + toHex(g) + toHex(b);
+};
+
+const mixHexColors = (source, target, ratio = 0.5) => {
+  const t = clamp(ratio, 0, 1);
+  const a = hexToRgb(source);
+  const b = hexToRgb(target);
+  return rgbToHex({
+    r: a.r + (b.r - a.r) * t,
+    g: a.g + (b.g - a.g) * t,
+    b: a.b + (b.b - a.b) * t,
+  });
+};
+
+const stringHash = (value) => {
+  const str = String(value ?? "");
+  let hash = 0;
+  for (let i = 0; i < str.length; i += 1) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
+
+const applyModeToColor = (hex, dark) => {
+  if (dark) {
+    return mixHexColors(hex, "#ffffff", 0.15);
+  }
+  return mixHexColors(hex, "#111827", 0.05);
+};
+
+export const getSeriesColor = (seed, dark) => {
+  const indexSource =
+    typeof seed === "number" && Number.isFinite(seed)
+      ? Math.abs(Math.floor(seed))
+      : stringHash(seed);
+  const base = BASE_CHART_COLORS[indexSource % BASE_CHART_COLORS.length];
+  return applyModeToColor(base, dark);
+};
+
+export const generateColorScale = (count, seed, dark) => {
+  const numericCount =
+    typeof count === "number" && Number.isFinite(count) ? Math.floor(count) : Number(count) || 0;
+  const size = Math.max(1, numericCount);
+  const startIndex =
+    typeof seed === "number" && Number.isFinite(seed)
+      ? Math.abs(Math.floor(seed))
+      : stringHash(seed);
+  return Array.from({ length: size }, (_, idx) => {
+    const base = BASE_CHART_COLORS[(startIndex + idx) % BASE_CHART_COLORS.length];
+    return applyModeToColor(base, dark);
+  });
+};
+
+export const getEmphasisColor = (hex, dark, amount = 0.2) =>
+  mixHexColors(hex, dark ? "#ffffff" : "#0f172a", amount);
 
 export const isDark = () => document.documentElement.classList.contains("dark");
 
@@ -156,7 +245,7 @@ export const AgeCountLabel = (p) => {
     toNumber(entry.cantidad) ?? toNumber(entry.count) ?? 0;
   const chartW = getChartWidth(viewBox);
   const edad = Math.round(avgValue ?? 0);
-  const text = `${edad} años · ${formatMiles(cantidadValue)}`;
+  const text = `${edad} anos - ${formatMiles(cantidadValue)}`;
   const approx = text.length * 7;
   const givenX = Number.isFinite(x) ? x : undefined;
   const barRight =
@@ -187,3 +276,4 @@ export const UnifiedTooltip = ({ active, payload, label, children, dark, style }
     </div>
   );
 };
+

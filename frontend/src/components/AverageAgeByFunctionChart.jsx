@@ -16,12 +16,13 @@ import {
   rechartsCommon,
   UnifiedTooltip,
   AgeCountLabel,
+  getSeriesColor,
 } from "../ui/chart-utils.jsx";
-import { DashboardCard, PaginationControls, theme } from "../ui";
+import { DashboardCard, PaginationControls } from "../ui";
 import icons from "../ui/icons.js";
 
 const AverageAgeByFunctionChart = ({ data, isDarkMode }) => {
-  const COLOR = theme.palette.primary;
+  const COLOR = useMemo(() => getSeriesColor("average-age-function", isDarkMode), [isDarkMode]);
   const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
   const chartData = useMemo(
     () =>

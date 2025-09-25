@@ -18,8 +18,8 @@ import {
   UnifiedTooltip,
   rechartsCommon,
   ValueLabel,
+  getSeriesColor,
 } from "../ui/chart-utils.jsx";
-import { useTheme } from "../context/ThemeContext.jsx";
 
 const CustomBarChart = React.memo(
   ({
@@ -32,7 +32,6 @@ const CustomBarChart = React.memo(
     metric = "resumen",
     chipLabel,
   }) => {
-    const { theme } = useTheme();
     const chartData = useMemo(() => data || [], [data]);
     const total = useMemo(
       () => chartData.reduce((s, d) => s + Number(d[barKey] || 0), 0),
@@ -40,7 +39,10 @@ const CustomBarChart = React.memo(
     );
     const { axisProps, gridProps, tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
-    const COLOR = theme.palette.primary.main;
+    const COLOR = useMemo(
+      () => getSeriesColor(`${metric || "bar"}-${title || barKey || "value"}`, isDarkMode),
+      [metric, title, barKey, isDarkMode],
+    );
 
     // Margen derecho dinámico para dejar espacio a la etiqueta (porcentaje) a la derecha de las barras
     const maxVal = Math.max(0, ...chartData.map((d) => Number(d[barKey] || 0)));

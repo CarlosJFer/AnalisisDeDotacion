@@ -11,11 +11,11 @@ import {
 import {
   DashboardCard,
   icons,
-  theme,
   formatMiles,
   formatPct,
   UnifiedTooltip,
   rechartsCommon,
+  generateColorScale,
 } from "../ui";
 
 // Etiqueta personalizada: muestra el porcentaje dentro de cada sector
@@ -63,17 +63,12 @@ const CustomDonutChart = React.memo(
     );
     const { tooltipProps } = rechartsCommon(isDarkMode);
     const Icon = icons[metric] || icons.resumen;
-    const COLOR = theme.palette.primary;
-    const colorKeys = useMemo(
-      () =>
-        Object.keys(theme.palette).filter(
-          (k) =>
-            !k.startsWith("background") &&
-            !k.startsWith("text") &&
-            !k.includes("hover"),
-        ),
-      [],
+    const paletteSeed = `${metric || "donut"}-${title || nameKey || dataKey || "series"}`;
+    const palette = useMemo(
+      () => generateColorScale(Math.max(chartData.length || 1, 1), paletteSeed, isDarkMode),
+      [chartData.length, paletteSeed, isDarkMode],
     );
+    const accent = palette[0];
 
     return (
       <DashboardCard
@@ -86,7 +81,7 @@ const CustomDonutChart = React.memo(
               label={chipLabel}
               size="small"
               variant="outlined"
-              sx={{ borderColor: COLOR, color: COLOR }}
+              sx={{ borderColor: accent, color: accent }}
             />
           )
         }
@@ -102,18 +97,14 @@ const CustomDonutChart = React.memo(
                 labelLine={false}
                 outerRadius={100}
                 innerRadius={60}
-                fill={COLOR}
+                fill={accent}
                 dataKey={dataKey}
                 nameKey={nameKey}
               >
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={
-                      theme.palette[
-                        colorKeys[index % colorKeys.length] || "primary"
-                      ]
-                    }
+                    fill={palette[index % palette.length]}
                   />
                 ))}
               </Pie>
