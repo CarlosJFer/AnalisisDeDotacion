@@ -12,16 +12,51 @@ import {
 } from "recharts";
 import { DashboardCard, PaginationControls, formatMiles, formatPct, UnifiedTooltip, rechartsCommon, ValueLabel, getSeriesColor, getEmphasisColor } from "../ui";
 import icons from "../ui/icons.js";
+const MERGED_REGISTRATION_LABEL = "Sin tipo de registración";
+const sanitizeRegistration = (value = "") =>
+  value
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .trim();
+
+const resolveRegistrationLabel = (rawType) => {
+  const trimmed = (rawType ?? "").toString().trim();
+  const normalized = sanitizeRegistration(trimmed);
+  if (!normalized) return MERGED_REGISTRATION_LABEL;
+
+  if (
+    normalized.includes("sreg") ||
+    normalized.includes("srg") ||
+    normalized.includes("otros") ||
+    normalized.includes("otro") ||
+    normalized.includes("sintipo") ||
+    normalized.includes("sinregistro")
+  ) {
+    return MERGED_REGISTRATION_LABEL;
+  }
+
+  return trimmed || MERGED_REGISTRATION_LABEL;
+};
 
 const EmploymentTypeBarChart = ({ data, isDarkMode }) => {
-  const chartData = useMemo(
-    () =>
-      (data || []).map((d) => ({
-        tipo: (d.type ?? "").toString().trim() || "Sin especificar",
-        cantidad: Number(d.count || 0),
-      })),
-    [data],
-  );
+  const chartData = useMemo(() => {
+    const rows = Array.isArray(data) ? data : [];
+    const accumulator = new Map();
+
+    rows.forEach((entry) => {
+      const label = resolveRegistrationLabel(entry?.type);
+      const amount = Number(entry?.count || 0) || 0;
+      accumulator.set(label, (accumulator.get(label) || 0) + amount);
+    });
+
+    return Array.from(accumulator.entries())
+      .map(([tipo, cantidad]) => ({ tipo, cantidad }))
+      .filter(({ cantidad }) => cantidad > 0)
+      .sort((a, b) => b.cantidad - a.cantidad);
+  }, [data]);
   const total = useMemo(
     () => chartData.reduce((s, d) => s + (d.cantidad || 0), 0),
     [chartData],

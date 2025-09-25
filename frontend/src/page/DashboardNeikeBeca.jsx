@@ -305,7 +305,29 @@ const DashboardNeikeBeca = () => {
       setUniversityData(universityRes);
       setTopUniSecretariasData(topUniRes);
       setTopTerSecretariasData(topTerRes);
-      setRegistrationTypeData(regTypeRes);
+            {
+        const mergedLabel = "Sin tipo de registracion";
+        const normalize = (v) => (v ?? "").toString().normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "").trim();
+        const aggregated = Array.isArray(regTypeRes)
+          ? (() => {
+              const acc = new Map();
+              for (const it of regTypeRes) {
+                const raw = (it?.tipo ?? it?.type ?? "").toString().trim();
+                const n = normalize(raw);
+                const label = !n || n.includes("sreg") || n.includes("srg") || n.includes("otros") || n.includes("otro") || n.includes("sintipo") || n.includes("sinregistro")
+                  ? mergedLabel
+                  : raw;
+                const count = Number(it?.count ?? it?.cantidad ?? it?.value ?? 0) || 0;
+                acc.set(label, (acc.get(label) || 0) + count);
+              }
+              return Array.from(acc.entries())
+                .map(([tipo, count]) => ({ tipo, count }))
+                .filter((d) => d.count > 0)
+                .sort((a, b) => b.count - a.count);
+            })()
+          : [];
+        setRegistrationTypeData(aggregated);
+      }
       setEntryTimeData(entryTimeRes);
       setEntryTimeByUnitData(entryTimeByUnitRes);
       setExitTimeByUnitData(exitTimeByUnitRes);
