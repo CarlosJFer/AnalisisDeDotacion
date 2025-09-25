@@ -419,7 +419,7 @@ const DashboardPage = () => {
           safeGet(funcMap.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
           // Expedientes
           safeGet(funcMap.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
-          safeGet(funcMap.expedientesByTramite, [], TEMPLATE_EXPEDIENTES),
+          safeGet(funcMap.expedientesByTramite, [], TEMPLATE_EXPEDIENTES, { limit: 100000, top: 0, pageSize: 100000 }),
           // SAC (sin filtros de fecha)
           safeGet(funcMap.sacViaCaptacion, [], TEMPLATE_SAC_VIAS),
         ]);
@@ -1061,7 +1061,7 @@ const DashboardPage = () => {
                   data={expByTramite}
                   xKey="tramite"
                   valueKey="count"
-                  pageSize={10}
+                  pageSize={5}
                   title="Cantidad de expedientes segun tipo de tramite"
                   isDarkMode={isDarkMode}
                   height={400}
@@ -1079,7 +1079,7 @@ const DashboardPage = () => {
                   xKey="initiator"
                   valueKey="count"
                   pageSize={5}
-                  title="Areas con mas tramites gestionados"
+                  title="Areas con tramites gestionados"
                   isDarkMode={isDarkMode}
                   height={400}
                 />

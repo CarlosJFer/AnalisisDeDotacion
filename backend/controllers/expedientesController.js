@@ -34,7 +34,6 @@ const getTopInitiators = async (req, res) => {
       { $match: match },
       { $group: { _id: '$Iniciador del Expediente', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
-      { $limit: 10 },
       { $project: { initiator: '$_id', count: 1, _id: 0 } }
     ]);
     res.json(topInitiators);
