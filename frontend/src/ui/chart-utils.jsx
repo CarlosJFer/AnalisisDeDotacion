@@ -189,23 +189,39 @@ const getChartWidth = (viewBox) => {
 // Props laxas para renderers de Recharts (labels/tooltips)
 
 export const ValueLabel = (p) => {
-  const { x = 0, y = 0, width = 0, value = 0, viewBox, total = 1, dark } = p;
-  const chartW = getChartWidth(viewBox);
+  const {
+    x = 0,
+    y = 0,
+    width = 0,
+    height = 0,
+    value = 0,
+    total = 1,
+    dark,
+  } = p;
   const pct = Number(value) / Number(total || 1);
   const pctText = formatPct(pct);
   const approx = pctText.length * 7;
-  // Prefer x computed by Recharts when available (LabelList position="right").
-  const givenX = Number.isFinite(x) ? x : undefined;
-  const barRight = Number.isFinite(x) && Number.isFinite(width) ? x + width + RIGHT_PAD : undefined;
-  const vbRight = Number.isFinite(viewBox?.x) && Number.isFinite(viewBox?.width)
-    ? viewBox.x + viewBox.width + RIGHT_PAD
-    : undefined;
-  const xBase = (givenX ?? barRight ?? vbRight ?? (Number.isFinite(x) ? x + RIGHT_PAD : 0));
-  const xText = givenX !== undefined ? xBase : Math.min(xBase, chartW - approx - 4);
+  const isPositive = Number(value) >= 0;
+  // Extremo de la barra y SIEMPRE por fuera del rectángulo
+  const endX = isPositive ? x + width : x;
+  const GAP = 6;
+  let labelX = isPositive ? endX + GAP : endX - GAP;
+  let anchor = isPositive ? "start" : "end";
+  // Nota: no usamos viewBox para clamp; el espacio se reserva con domain/margin
+
+  const labelY = y + height / 2;
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
-  const color = isDarkTheme ? "#ffffff" : "#0f172a";
+  const fill = isDarkTheme ? "#ffffff" : "#0f172a";
+
   return (
-    <text x={xText} y={y + 4} fill={color} fontWeight="600" textAnchor="start">
+    <text
+      x={labelX}
+      y={labelY}
+      fill={fill}
+      fontWeight="600"
+      textAnchor={anchor}
+      dominantBaseline="central"
+    >
       {pctText}
     </text>
   );
@@ -253,7 +269,7 @@ export const AgeCountLabel = (p) => {
     x = 0,
     y = 0,
     width = 0,
-    viewBox,
+    height = 0,
     payload: rawPayload,
     datum,
     value,
@@ -275,24 +291,30 @@ export const AgeCountLabel = (p) => {
     toNumber(entry.avgAge);
   const cantidadValue =
     toNumber(entry.cantidad) ?? toNumber(entry.count) ?? 0;
-  const chartW = getChartWidth(viewBox);
   const edad = Math.round(avgValue ?? 0);
   const text = `${edad} anos - ${formatMiles(cantidadValue)}`;
   const approx = text.length * 7;
-  const givenX = Number.isFinite(x) ? x : undefined;
-  const barRight =
-    Number.isFinite(x) && Number.isFinite(width) ? x + width + RIGHT_PAD : undefined;
-  const vbRight =
-    Number.isFinite(viewBox?.x) && Number.isFinite(viewBox?.width)
-      ? viewBox.x + viewBox.width + RIGHT_PAD
-      : undefined;
-  const xBase =
-    givenX ?? barRight ?? vbRight ?? (Number.isFinite(x) ? x + RIGHT_PAD : 0);
-  const xText = givenX !== undefined ? xBase : Math.min(xBase, chartW - approx - 4);
+
+  const isPositive = (avgValue ?? 0) >= 0;
+  const endX = isPositive ? x + width : x;
+  const GAP = 6;
+  let labelX = isPositive ? endX + GAP : endX - GAP;
+  let anchor = isPositive ? "start" : "end";
+  // Nota: no usamos viewBox para clamp; el espacio se reserva con domain/margin
+
+  const labelY = y + height / 2;
   const isDarkTheme = typeof dark === "boolean" ? dark : isDark();
-  const color = isDarkTheme ? "#ffffff" : "#0f172a";
+  const fill = isDarkTheme ? "#ffffff" : "#0f172a";
+
   return (
-    <text x={xText} y={y + 4} fill={color} fontWeight="600" textAnchor="start">
+    <text
+      x={labelX}
+      y={labelY}
+      fill={fill}
+      fontWeight="600"
+      textAnchor={anchor}
+      dominantBaseline="central"
+    >
       {text}
     </text>
   );
