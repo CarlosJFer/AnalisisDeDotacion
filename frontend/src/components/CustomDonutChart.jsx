@@ -20,30 +20,24 @@ import {
 
 // Etiqueta personalizada: muestra el porcentaje dentro de cada sector
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-}) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-  const x = cx + radius * Math.cos(-midAngle * RADIAN);
-  const y = cy + radius * Math.sin(-midAngle * RADIAN);
-  return (
-    <text
-      x={x}
-      y={y}
-      fill="#ffffff"
-      textAnchor={x > cx ? "start" : "end"}
-      dominantBaseline="central"
-      fontWeight="600"
-    >
-      {`${(percent * 100).toFixed(0)}%`}
-    </text>
-  );
-};
+const makeDonutLabel = (color) =>
+  ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+    return (
+      <text
+        x={x}
+        y={y}
+        fill={color}
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        fontWeight="600"
+      >
+        {`${(percent * 100).toFixed(0)}%`}
+      </text>
+    );
+  };
 
 const CustomDonutChart = React.memo(
   ({
@@ -93,7 +87,7 @@ const CustomDonutChart = React.memo(
                 data={chartData}
                 cx="50%"
                 cy="50%"
-                label={renderCustomizedLabel}
+                label={makeDonutLabel(isDarkMode ? "#ffffff" : "#0f172a")}
                 labelLine={false}
                 outerRadius={100}
                 innerRadius={60}
