@@ -403,7 +403,7 @@ const DashboardSAC = () => {
           </Grid>
           <Grid item xs={12}>
             {sacViaData.length > 0 ? (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={sacViaData}
                 xKey="via"
                 barKey="total"
@@ -507,7 +507,7 @@ const DashboardSAC = () => {
           </Grid>
           <Grid item xs={12}>
             {frecuenciaData.length > 0 ? (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={frecuenciaData}
                 xKey="tipo"
                 barKey="cantidad"
@@ -528,49 +528,49 @@ const DashboardSAC = () => {
           <Grid item xs={12}>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {temasRecibidos.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={temasRecibidos}
-                xKey="area"
-                barKey="valor"
-                title="temas recibidos por áreas"
+                nameKey="area"
+                valueKey="valor"
+                title="Temas Recibidos por Áreas"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {temasVisualizados.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={temasVisualizados}
-                xKey="area"
-                barKey="valor"
-                title="visualizados sobre áreas"
+                nameKey="area"
+                valueKey="valor"
+                title="Visualizados sobre Áreas"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {temasPendientes.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={temasPendientes}
-                xKey="area"
-                barKey="valor"
-                title="temas pendientes sobre áreas"
+                nameKey="area"
+                valueKey="valor"
+                title="Temas Pendientes sobre Áreas"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {temasProceso.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={temasProceso}
-                xKey="area"
-                barKey="valor"
-                title="temas en proceso sobre áreas"
+                nameKey="area"
+                valueKey="valor"
+                title="Temas en Proceso sobre Áreas"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
@@ -578,11 +578,11 @@ const DashboardSAC = () => {
           </Grid>
           <Grid item xs={12}>
             {temasCerrados.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={temasCerrados}
-                xKey="area"
-                barKey="valor"
-                title="temas cerrados sobre áreas"
+                nameKey="area"
+                valueKey="valor"
+                title="Temas Cerrados sobre Áreas"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
@@ -822,5 +822,6 @@ const DashboardSAC = () => {
 };
 
 export default DashboardSAC;
+
 
 
