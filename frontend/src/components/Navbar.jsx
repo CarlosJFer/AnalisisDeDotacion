@@ -234,6 +234,25 @@ const Navbar = () => {
                   </ListItemIcon>
                   <ListItemText primary="Dashboard - Neikes y Becas" />
                 </MenuItem>
+                <MenuItem
+                  component={Link}
+                  to="/dashboard-sac"
+                  onClick={handleDashboardMenuClose}
+                  sx={{
+                    fontWeight: 600,
+                    "&:hover": {
+                      background: isDarkMode
+                        ? "rgba(33, 150, 243, 0.2)"
+                        : "rgba(33, 150, 243, 0.15)",
+                      color: isDarkMode ? "#64b5f6" : "#1976d2",
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 32 }}>
+                    <icons.analitica fontSize="small" aria-hidden="true" />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard - SAC" />
+                </MenuItem>
               </Menu>
             </>
           )}

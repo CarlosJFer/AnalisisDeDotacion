@@ -26,7 +26,6 @@ import { DashboardCard } from "../ui";
 import KPIStat from "../components/ui/KPIStat.jsx";
 import DependencyFilter from "../components/DependencyFilter.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
-import SacSection from "../components/SACSection";
 import { useLocation } from "react-router-dom";
 import { getPreviousMonthRange } from "../utils/dateUtils.js";
 const DeleteDashboardDialog = lazy(
@@ -161,7 +160,7 @@ const DashboardPage = () => {
   const [expTopInitiators, setExpTopInitiators] = useState([]);
   const [expByTramite, setExpByTramite] = useState([]);
   const [funcs, setFuncs] = useState({});
-  const [sacViaData, setSacViaData] = useState([]);
+  
   const { startDate, endDate } = getPreviousMonthRange();
 
   // DiÃƒÂ¡logo de borrado de dashboard
@@ -271,7 +270,7 @@ const DashboardPage = () => {
         const TEMPLATE_CONTROL_PLANTA =
           "Control de certificaciones - Planta y Contratos";
         const TEMPLATE_EXPEDIENTES = "Expedientes";
-        const TEMPLATE_SAC_VIAS = "SAC - Via de captacion";
+        
         const TEMPLATE_DATOS_CONCURSO_ALT = "Datos concurso - Planta y Contratos";
 
         // Helper: determina si una respuesta tiene datos Ãºtiles
@@ -320,7 +319,6 @@ const DashboardPage = () => {
           topUnitsRes,
           topInitiatorsData,
           byTramiteData,
-          sacViaCaptacionData,
         ] = await Promise.all([
           // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
           safeGet(funcMap.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
@@ -420,8 +418,6 @@ const DashboardPage = () => {
           // Expedientes
           safeGet(funcMap.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
           safeGet(funcMap.expedientesByTramite, [], TEMPLATE_EXPEDIENTES, { limit: 100000, top: 0, pageSize: 100000 }),
-          // SAC (sin filtros de fecha)
-          safeGet(funcMap.sacViaCaptacion, [], TEMPLATE_SAC_VIAS),
         ]);
 
         const scheduleUpdate = (cb) => {
@@ -492,7 +488,6 @@ const DashboardPage = () => {
           setTopUnitsData(topUnitsRes);
           setExpTopInitiators(topInitiatorsData);
           setExpByTramite(byTramiteData);
-          setSacViaData(sacViaCaptacionData);
 
           const has = filterFields.some((f) => hasField(f, fieldSet));
           if (fromFilter) {
@@ -532,7 +527,6 @@ const DashboardPage = () => {
         setTopUnitsData([]);
         setExpTopInitiators([]);
         setExpByTramite([]);
-        setSacViaData([]);
       } else if (!result) {
         // Error real
         setError(
@@ -795,13 +789,7 @@ const DashboardPage = () => {
         >
           Expedientes
         </Button>
-        <Button
-          onClick={() => setTabValue(6)}
-          startIcon={<icons.campana />}
-          sx={getTabButtonStyles(6)}
-        >
-          SAC
-        </Button>
+        
       </Box>
 
       {/* Tab 0: Resumen General */}
@@ -1091,16 +1079,7 @@ const DashboardPage = () => {
         </Grid>
       )}
 
-      {/* Tab 6: SAC */}
-      {tabValue === 6 && (
-        <SacSection
-          sacViaData={sacViaData}
-          funcs={funcs}
-          isDarkMode={isDarkMode}
-          startDate={startDate}
-          endDate={endDate}
-        />
-      )}
+      
 
       {/* Tab 1: Análisis de Edad */}
       {tabValue === 1 && (
