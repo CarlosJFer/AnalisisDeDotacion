@@ -653,48 +653,48 @@ const DashboardSAC = () => {
           <Grid item xs={12}>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {ambienteReclamos.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={ambienteReclamos}
-                xKey="problem"
-                barKey="count"
+                nameKey="problem"
+                valueKey="count"
                 title="Cantidad de reclamos"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {ambientePromedios.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={ambientePromedios}
-                xKey="problem"
-                barKey="avgClosure"
+                nameKey="problem"
+                valueKey="avgClosure"
                 title="Promedios días de cierre"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {ambientePendientes.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={ambientePendientes}
-                xKey="problem"
-                barKey="pendientes"
+                nameKey="problem"
+                valueKey="pendientes"
                 title="Cantidad de reclamos pendientes"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {ambienteCerrados.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={ambienteCerrados}
-                xKey="problem"
-                barKey="cerrados"
+                nameKey="problem"
+                valueKey="cerrados"
                 title="Cantidad de reclamos cerrados"
                 isDarkMode={isDarkMode}
                 pageSize={5}
@@ -710,48 +710,48 @@ const DashboardSAC = () => {
           <Grid item xs={12}>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {infraReclamos.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={infraReclamos}
-                xKey="problem"
-                barKey="count"
+                nameKey="problem"
+                valueKey="count"
                 title="Cantidad de reclamos"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {infraPromedios.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={infraPromedios}
-                xKey="problem"
-                barKey="avgClosure"
+                nameKey="problem"
+                valueKey="avgClosure"
                 title="Promedios días de cierre"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {infraPendientes.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={infraPendientes}
-                xKey="problem"
-                barKey="pendientes"
+                nameKey="problem"
+                valueKey="pendientes"
                 title="Cantidad de reclamos pendientes"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {infraCerrados.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={infraCerrados}
-                xKey="problem"
-                barKey="cerrados"
+                nameKey="problem"
+                valueKey="cerrados"
                 title="Cantidad de reclamos cerrados"
                 isDarkMode={isDarkMode}
                 pageSize={5}
@@ -767,48 +767,48 @@ const DashboardSAC = () => {
           <Grid item xs={12}>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {coordReclamos.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={coordReclamos}
-                xKey="problem"
-                barKey="count"
+                nameKey="problem"
+                valueKey="count"
                 title="Cantidad de reclamos"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {coordPromedios.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={coordPromedios}
-                xKey="problem"
-                barKey="avgClosure"
+                nameKey="problem"
+                valueKey="avgClosure"
                 title="Promedios días de cierre"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {coordPendientes.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={coordPendientes}
-                xKey="problem"
-                barKey="pendientes"
+                nameKey="problem"
+                valueKey="pendientes"
                 title="Cantidad de reclamos pendientes"
                 isDarkMode={isDarkMode}
                 pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {coordCerrados.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={coordCerrados}
-                xKey="problem"
-                barKey="cerrados"
+                nameKey="problem"
+                valueKey="cerrados"
                 title="Cantidad de reclamos cerrados"
                 isDarkMode={isDarkMode}
                 pageSize={5}
