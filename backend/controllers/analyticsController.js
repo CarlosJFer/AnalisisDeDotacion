@@ -1834,13 +1834,19 @@ const aggregateSac = async (req, res, { groupField, groupAlias, metrics, sortFie
     });
     const projectStage = { _id: 0, [groupAlias]: '$_id' };
     metrics.forEach(m => { projectStage[m.alias] = 1; });
+    // Permitir sobreescribir el límite por query param: ?limit=0 (sin límite) o un número
+    const parsedLimit = Number(req.query?.limit);
+    const effectiveLimit = Number.isFinite(parsedLimit) ? parsedLimit : limit;
+
     const pipeline = [
       { $match: match },
       { $group: groupStage },
       { $sort: { [sortField]: -1 } },
-      { $limit: limit },
       { $project: projectStage }
     ];
+    if (effectiveLimit > 0) {
+      pipeline.splice(3, 0, { $limit: effectiveLimit });
+    }
     const data = await Agent.aggregate(pipeline);
     res.json(data);
   } catch (err) {

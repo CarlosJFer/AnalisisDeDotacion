@@ -11,6 +11,7 @@ import { useTheme } from "../context/ThemeContext.jsx";
 import icons from "../ui/icons.js";
 import apiClient from "../services/api";
 import CustomBarChart from "../components/CustomBarChart";
+import CustomHorizontalBarChart from "../components/CustomHorizontalBarChart.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
 import { getPreviousMonthRange } from "../utils/dateUtils.js";
 
@@ -84,10 +85,10 @@ const DashboardSAC = () => {
     if (cierreReclamos.length) return;
     const plantilla = "SAC - Cierre de problemas";
     const [r, p, pe, c] = await Promise.all([
-      safeGet(funcs.sacCierreProblemasTopReclamos, plantilla),
-      safeGet(funcs.sacCierreProblemasTopPromedios, plantilla),
-      safeGet(funcs.sacCierreProblemasTopPendientes, plantilla),
-      safeGet(funcs.sacCierreProblemasTopCerrados, plantilla),
+      safeGet(funcs.sacCierreProblemasTopReclamos, plantilla, { limit: 0 }),
+      safeGet(funcs.sacCierreProblemasTopPromedios, plantilla, { limit: 0 }),
+      safeGet(funcs.sacCierreProblemasTopPendientes, plantilla, { limit: 0 }),
+      safeGet(funcs.sacCierreProblemasTopCerrados, plantilla, { limit: 0 }),
     ]);
     setCierreReclamos(r);
     setCierrePromedios(p);
@@ -417,47 +418,51 @@ const DashboardSAC = () => {
           <Grid item xs={12}>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {cierreReclamos.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={cierreReclamos}
-                xKey="problem"
-                barKey="count"
+                nameKey="problem"
+                valueKey="count"
                 title="Cantidad de reclamos"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {cierrePromedios.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={cierrePromedios}
-                xKey="problem"
-                barKey="avgClosure"
+                nameKey="problem"
+                valueKey="avgClosure"
                 title="Promedios días de cierre"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {cierrePendientes.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={cierrePendientes}
-                xKey="problem"
-                barKey="pendientes"
+                nameKey="problem"
+                valueKey="pendientes"
                 title="Cantidad de reclamos pendientes"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             {cierreCerrados.length > 0 && (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={cierreCerrados}
-                xKey="problem"
-                barKey="cerrados"
+                nameKey="problem"
+                valueKey="cerrados"
                 title="Cantidad de reclamos cerrados"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
