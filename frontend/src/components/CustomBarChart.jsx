@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Box, Chip } from "@mui/material";
 import {
   BarChart,
@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from "recharts";
-import { DashboardCard } from "../ui";
+import { DashboardCard, PaginationControls } from "../ui";
 import icons from "../ui/icons.js";
 import {
   formatMiles,
@@ -31,8 +31,20 @@ const CustomBarChart = React.memo(
     height = 300,
     metric = "resumen",
     chipLabel,
+    pageSize,
   }) => {
-    const chartData = useMemo(() => data || [], [data]);
+    const sourceData = useMemo(() => data || [], [data]);
+    const [page, setPage] = useState(0);
+    const effectivePageSize = pageSize ?? sourceData.length;
+    const totalPages = Math.ceil(sourceData.length / effectivePageSize) || 1;
+    const chartData = useMemo(
+      () =>
+        sourceData.slice(
+          page * effectivePageSize,
+          (page + 1) * effectivePageSize,
+        ),
+      [sourceData, page, effectivePageSize],
+    );
     const total = useMemo(
       () => chartData.reduce((s, d) => s + Number(d[barKey] || 0), 0),
       [chartData, barKey],
@@ -122,6 +134,14 @@ const CustomBarChart = React.memo(
             </BarChart>
           </ResponsiveContainer>
         </Box>
+        {pageSize && sourceData.length > effectivePageSize && (
+          <PaginationControls
+            page={page}
+            totalPages={totalPages}
+            onPrev={() => setPage((p) => Math.max(0, p - 1))}
+            onNext={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+          />
+        )}
       </DashboardCard>
     );
   },

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+﻿import React, { useCallback, useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -98,7 +98,11 @@ const DashboardSAC = () => {
 
   const fetchBoca = useCallback(async () => {
     if (bocaData.length) return;
-    const data = await safeGet(funcs.sacBocaReceptoraTop, "SAC - Boca receptora");
+    const data = await safeGet(
+      funcs.sacBocaReceptoraTop,
+      "SAC - Boca receptora",
+      { limit: 0 },
+    );
     setBocaData(data);
   }, [safeGet, funcs, bocaData.length]);
 
@@ -107,6 +111,7 @@ const DashboardSAC = () => {
     const data = await safeGet(
       funcs.sacFrecuenciaTiposCierre,
       "SAC - Frecuencia de tipos de cierre",
+      { limit: 0 },
     );
     setFrecuenciaData(data);
   }, [safeGet, funcs, frecuenciaData.length]);
@@ -115,11 +120,11 @@ const DashboardSAC = () => {
     if (temasRecibidos.length) return;
     const plantilla = "SAC - Temas";
     const [r, v, pe, pr, c] = await Promise.all([
-      safeGet(funcs.sacTemasTopRecibidos, plantilla),
-      safeGet(funcs.sacTemasTopVisualizados, plantilla),
-      safeGet(funcs.sacTemasTopPendientes, plantilla),
-      safeGet(funcs.sacTemasTopProceso, plantilla),
-      safeGet(funcs.sacTemasTopCerrados, plantilla),
+      safeGet(funcs.sacTemasTopRecibidos, plantilla, { limit: 0 }),
+      safeGet(funcs.sacTemasTopVisualizados, plantilla, { limit: 0 }),
+      safeGet(funcs.sacTemasTopPendientes, plantilla, { limit: 0 }),
+      safeGet(funcs.sacTemasTopProceso, plantilla, { limit: 0 }),
+      safeGet(funcs.sacTemasTopCerrados, plantilla, { limit: 0 }),
     ]);
     setTemasRecibidos(r);
     setTemasVisualizados(v);
@@ -132,8 +137,8 @@ const DashboardSAC = () => {
     if (contactoRecibidos.length) return;
     const plantilla = "SAC - Discriminacion por tipo de contacto";
     const [r, c] = await Promise.all([
-      safeGet(funcs.sacTipoContactoTopRecibidos, plantilla),
-      safeGet(funcs.sacTipoContactoTopCerrados, plantilla),
+      safeGet(funcs.sacTipoContactoTopRecibidos, plantilla, { limit: 0 }),
+      safeGet(funcs.sacTipoContactoTopCerrados, plantilla, { limit: 0 }),
     ]);
     setContactoRecibidos(r);
     setContactoCerrados(c);
@@ -144,6 +149,7 @@ const DashboardSAC = () => {
     const data = await safeGet(
       funcs.sacLlamadasBarrioTop,
       "SAC - Evaluacion de llamadas por barrio",
+      { limit: 0 },
     );
     setLlamadasBarrio(data);
   }, [safeGet, funcs, llamadasBarrio.length]);
@@ -152,10 +158,10 @@ const DashboardSAC = () => {
     if (ambienteReclamos.length) return;
     const plantilla = "SAC - Secretaria de ambiente y desarrollo sustentable";
     const [r, p, pe, c] = await Promise.all([
-      safeGet(funcs.sacAmbienteTopReclamos, plantilla),
-      safeGet(funcs.sacAmbienteTopPromedios, plantilla),
-      safeGet(funcs.sacAmbienteTopPendientes, plantilla),
-      safeGet(funcs.sacAmbienteTopCerrados, plantilla),
+      safeGet(funcs.sacAmbienteTopReclamos, plantilla, { limit: 0 }),
+      safeGet(funcs.sacAmbienteTopPromedios, plantilla, { limit: 0 }),
+      safeGet(funcs.sacAmbienteTopPendientes, plantilla, { limit: 0 }),
+      safeGet(funcs.sacAmbienteTopCerrados, plantilla, { limit: 0 }),
     ]);
     setAmbienteReclamos(r);
     setAmbientePromedios(p);
@@ -167,10 +173,10 @@ const DashboardSAC = () => {
     if (infraReclamos.length) return;
     const plantilla = "SAC - Secretaria de infraestructura";
     const [r, p, pe, c] = await Promise.all([
-      safeGet(funcs.sacInfraestructuraTopReclamos, plantilla),
-      safeGet(funcs.sacInfraestructuraTopPromedios, plantilla),
-      safeGet(funcs.sacInfraestructuraTopPendientes, plantilla),
-      safeGet(funcs.sacInfraestructuraTopCerrados, plantilla),
+      safeGet(funcs.sacInfraestructuraTopReclamos, plantilla, { limit: 0 }),
+      safeGet(funcs.sacInfraestructuraTopPromedios, plantilla, { limit: 0 }),
+      safeGet(funcs.sacInfraestructuraTopPendientes, plantilla, { limit: 0 }),
+      safeGet(funcs.sacInfraestructuraTopCerrados, plantilla, { limit: 0 }),
     ]);
     setInfraReclamos(r);
     setInfraPromedios(p);
@@ -183,10 +189,10 @@ const DashboardSAC = () => {
     const plantilla =
       "SAC - Secretaria de coordinacion de relaciones territoriales";
     const [r, p, pe, c] = await Promise.all([
-      safeGet(funcs.sacCoordTerritorialTopReclamos, plantilla),
-      safeGet(funcs.sacCoordTerritorialTopPromedio, plantilla),
-      safeGet(funcs.sacCoordTerritorialTopPendientes, plantilla),
-      safeGet(funcs.sacCoordTerritorialTopCerrados, plantilla),
+      safeGet(funcs.sacCoordTerritorialTopReclamos, plantilla, { limit: 0 }),
+      safeGet(funcs.sacCoordTerritorialTopPromedio, plantilla, { limit: 0 }),
+      safeGet(funcs.sacCoordTerritorialTopPendientes, plantilla, { limit: 0 }),
+      safeGet(funcs.sacCoordTerritorialTopCerrados, plantilla, { limit: 0 }),
     ]);
     setCoordReclamos(r);
     setCoordPromedios(p);
@@ -404,6 +410,7 @@ const DashboardSAC = () => {
                 title="Vía de captación"
                 isDarkMode={isDarkMode}
                 height={400}
+                pageSize={5}
               />
             ) : (
               <Typography align="center">Sin datos</Typography>
@@ -481,8 +488,9 @@ const DashboardSAC = () => {
                 data={bocaData}
                 xKey="boca"
                 barKey="cantidad"
-                title="Top 5 bocas con mayor cantidad"
+                title="Bocas con mayor cantidad"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             ) : (
               <Typography align="center">Sin datos</Typography>
@@ -505,6 +513,7 @@ const DashboardSAC = () => {
                 barKey="cantidad"
                 title="Frecuencia de tipos de cierre"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             ) : (
               <Typography align="center">Sin datos</Typography>
@@ -525,8 +534,10 @@ const DashboardSAC = () => {
                 data={temasRecibidos}
                 xKey="area"
                 barKey="valor"
-                title="Top 5 temas recibidos por áreas"
+                title="temas recibidos por áreas"
                 isDarkMode={isDarkMode}
+                pageSize={5}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -536,8 +547,9 @@ const DashboardSAC = () => {
                 data={temasVisualizados}
                 xKey="area"
                 barKey="valor"
-                title="Top 5 visualizados sobre áreas"
+                title="visualizados sobre áreas"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -547,8 +559,9 @@ const DashboardSAC = () => {
                 data={temasPendientes}
                 xKey="area"
                 barKey="valor"
-                title="Top 5 temas pendientes sobre áreas"
+                title="temas pendientes sobre áreas"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -558,8 +571,9 @@ const DashboardSAC = () => {
                 data={temasProceso}
                 xKey="area"
                 barKey="valor"
-                title="Top 5 temas en proceso sobre áreas"
+                title="temas en proceso sobre áreas"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -569,8 +583,9 @@ const DashboardSAC = () => {
                 data={temasCerrados}
                 xKey="area"
                 barKey="valor"
-                title="Top 5 temas cerrados sobre áreas"
+                title="temas cerrados sobre áreas"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -591,6 +606,7 @@ const DashboardSAC = () => {
                 barKey="recibidos"
                 title="Contactos recibidos"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -602,6 +618,7 @@ const DashboardSAC = () => {
                 barKey="cerrados"
                 title="Contactos cerrados"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -620,8 +637,9 @@ const DashboardSAC = () => {
                 data={llamadasBarrio}
                 xKey="barrio"
                 barKey="realizadas"
-                title="Top 5 barrios por llamadas realizadas"
+                title="Barrios por llamadas realizadas"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             ) : (
               <Typography align="center">Sin datos</Typography>
@@ -644,6 +662,7 @@ const DashboardSAC = () => {
                 barKey="count"
                 title="Cantidad de reclamos"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -655,6 +674,7 @@ const DashboardSAC = () => {
                 barKey="avgClosure"
                 title="Promedios días de cierre"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -666,6 +686,7 @@ const DashboardSAC = () => {
                 barKey="pendientes"
                 title="Cantidad de reclamos pendientes"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -677,6 +698,7 @@ const DashboardSAC = () => {
                 barKey="cerrados"
                 title="Cantidad de reclamos cerrados"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -697,6 +719,7 @@ const DashboardSAC = () => {
                 barKey="count"
                 title="Cantidad de reclamos"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -708,6 +731,7 @@ const DashboardSAC = () => {
                 barKey="avgClosure"
                 title="Promedios días de cierre"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -719,6 +743,7 @@ const DashboardSAC = () => {
                 barKey="pendientes"
                 title="Cantidad de reclamos pendientes"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -730,6 +755,7 @@ const DashboardSAC = () => {
                 barKey="cerrados"
                 title="Cantidad de reclamos cerrados"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -750,6 +776,7 @@ const DashboardSAC = () => {
                 barKey="count"
                 title="Cantidad de reclamos"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -761,6 +788,7 @@ const DashboardSAC = () => {
                 barKey="avgClosure"
                 title="Promedios días de cierre"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -772,6 +800,7 @@ const DashboardSAC = () => {
                 barKey="pendientes"
                 title="Cantidad de reclamos pendientes"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -783,6 +812,7 @@ const DashboardSAC = () => {
                 barKey="cerrados"
                 title="Cantidad de reclamos cerrados"
                 isDarkMode={isDarkMode}
+                pageSize={5}
               />
             )}
           </Grid>
@@ -793,3 +823,5 @@ const DashboardSAC = () => {
 };
 
 export default DashboardSAC;
+
+
