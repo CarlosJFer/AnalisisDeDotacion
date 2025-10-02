@@ -632,10 +632,10 @@ const DashboardSAC = () => {
           </Grid>
           <Grid item xs={12}>
             {llamadasBarrio.length > 0 ? (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={llamadasBarrio}
-                xKey="barrio"
-                barKey="realizadas"
+                nameKey="barrio"
+                valueKey="realizadas"
                 title="Barrios por llamadas realizadas"
                 isDarkMode={isDarkMode}
                 pageSize={5}
