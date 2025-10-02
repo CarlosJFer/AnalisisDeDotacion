@@ -484,10 +484,10 @@ const DashboardSAC = () => {
           </Grid>
           <Grid item xs={12}>
             {bocaData.length > 0 ? (
-              <CustomBarChart
+              <CustomHorizontalBarChart
                 data={bocaData}
-                xKey="boca"
-                barKey="cantidad"
+                nameKey="boca"
+                valueKey="cantidad"
                 title="Bocas con mayor cantidad"
                 isDarkMode={isDarkMode}
                 pageSize={5}
@@ -536,7 +536,6 @@ const DashboardSAC = () => {
                 barKey="valor"
                 title="temas recibidos por áreas"
                 isDarkMode={isDarkMode}
-                pageSize={5}
                 pageSize={5}
               />
             )}
