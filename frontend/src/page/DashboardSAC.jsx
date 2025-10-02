@@ -360,22 +360,22 @@ const DashboardSAC = () => {
           Vía de captación
         </Button>
         <Button onClick={() => setTabValue(1)} startIcon={<icons.archivo />} sx={getTabButtonStyles(1)}>
-          Cierre de problemas
+          Análisis de cierre por problemas
         </Button>
         <Button onClick={() => setTabValue(2)} startIcon={<icons.empresa />} sx={getTabButtonStyles(2)}>
-          Boca receptora
+          Análisis por boca receptora
         </Button>
         <Button onClick={() => setTabValue(3)} startIcon={<icons.resumen />} sx={getTabButtonStyles(3)}>
-          Frecuencia tipos de cierre
+          Análisis de frecuencia de tipo de cierre
         </Button>
         <Button onClick={() => setTabValue(4)} startIcon={<icons.analitica />} sx={getTabButtonStyles(4)}>
-          Temas
+          Análisis por temas
         </Button>
         <Button onClick={() => setTabValue(5)} startIcon={<icons.campana />} sx={getTabButtonStyles(5)}>
-          Tipo de contacto
+          Discriminación por tipo de contacto
         </Button>
         <Button onClick={() => setTabValue(6)} startIcon={<icons.archivo />} sx={getTabButtonStyles(6)}>
-          Llamadas por barrio
+          Evaluación de llamadas por barrio
         </Button>
         <Button onClick={() => setTabValue(7)} startIcon={<icons.analitica />} sx={getTabButtonStyles(7)}>
           Sec. Ambiente
