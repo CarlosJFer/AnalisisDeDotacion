@@ -6,20 +6,35 @@ import {
   Alert,
   Grid,
   Button,
+  Fab,
+  Tooltip,
 } from "@mui/material";
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useAuth } from "../context/AuthContext";
 import icons from "../ui/icons.js";
 import apiClient from "../services/api";
 import CustomBarChart from "../components/CustomBarChart";
 import CustomHorizontalBarChart from "../components/CustomHorizontalBarChart.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
+const DeleteSectionsDialog = React.lazy(() =>
+  import("../components/DeleteSectionsDialog"),
+);
 import { getPreviousMonthRange } from "../utils/dateUtils.js";
 
 const DashboardSAC = () => {
   const { isDarkMode } = useTheme();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [tabValue, setTabValue] = useState(0);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState("");
+  const handleOpenDeleteDialog = () => setOpenDeleteDialog(true);
+  const handleCloseDeleteDialog = () => setOpenDeleteDialog(false);
+  const handleDeleted = (msg) => {
+    setDeleteMsg(msg || "");
+    setTimeout(() => setDeleteMsg(""), 4000);
+  };
 
   const { startDate, endDate } = getPreviousMonthRange();
 
@@ -817,6 +832,57 @@ const DashboardSAC = () => {
           </Grid>
         </Grid>
       )}
+      {/* Admin: delete sections */}
+      {user?.role === "admin" && (
+      <Tooltip title="Borrar datos">
+        <Fab
+          onClick={handleOpenDeleteDialog}
+          sx={{
+            position: "fixed",
+            bottom: 24,
+            right: 24,
+            color: "white",
+            background: "linear-gradient(135deg, #f44336, #d32f2f)",
+            "&:hover": {
+              background: "linear-gradient(135deg, #d32f2f, #b71c1c)",
+            },
+          }}
+        >
+          <icons.eliminar />
+        </Fab>
+      </Tooltip>
+      )}
+      {user?.role === "admin" && deleteMsg && (
+        <Alert
+          severity={deleteMsg.includes("Error") ? "error" : "success"}
+          sx={{ position: "fixed", bottom: 90, right: 24, zIndex: 1300 }}
+        >
+          {deleteMsg}
+        </Alert>
+      )}
+      <React.Suspense fallback={null}>
+        {user?.role === "admin" && openDeleteDialog && (
+          <DeleteSectionsDialog
+            isOpen={openDeleteDialog}
+            onClose={handleCloseDeleteDialog}
+            onDeleted={handleDeleted}
+            title="Borrar datos - SAC"
+            description="Selecciona las secciones a eliminar."
+            sections={[
+              { id: "sac-via", label: "Vía de captación", plantillas: ["SAC - Via de captacion"] },
+              { id: "sac-cierre", label: "Cierre de problemas", plantillas: ["SAC - Cierre de problemas"] },
+              { id: "sac-boca", label: "Boca receptora", plantillas: ["SAC - Boca receptora"] },
+              { id: "sac-frecuencia", label: "Frecuencia de tipos de cierre", plantillas: ["SAC - Frecuencia de tipos de cierre"] },
+              { id: "sac-temas", label: "Temas", plantillas: ["SAC - Temas"] },
+              { id: "sac-contacto", label: "Discriminación por tipo de contacto", plantillas: ["SAC - Discriminacion por tipo de contacto"] },
+              { id: "sac-llamadas", label: "Evaluación de llamadas por barrio", plantillas: ["SAC - Evaluacion de llamadas por barrio"] },
+              { id: "sac-ambiente", label: "Secretaría de Ambiente y Desarrollo Sustentable", plantillas: ["SAC - Secretaria de ambiente y desarrollo sustentable"] },
+              { id: "sac-infra", label: "Secretaría de Infraestructura", plantillas: ["SAC - Secretaria de infraestructura"] },
+              { id: "sac-coord", label: "Secretaría de Coordinación de Relaciones Territoriales", plantillas: ["SAC - Secretaria de coordinacion de relaciones territoriales"] },
+            ]}
+          />
+        )}
+      </React.Suspense>
     </Box>
   );
 };

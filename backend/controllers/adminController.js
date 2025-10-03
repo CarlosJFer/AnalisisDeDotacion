@@ -38,6 +38,21 @@ const modulesToPlantillas = {
   ],
 };
 
+// Nuevo: eliminar por lista de plantillas (secciones específicas)
+async function deleteByPlantillas(req, res) {
+  try {
+    const { plantillas = [] } = req.body || {};
+    if (!Array.isArray(plantillas) || plantillas.length === 0) {
+      return res.status(400).json({ message: 'No se especificaron plantillas v\u00e1lidas.' });
+    }
+    await Agent.deleteMany({ plantilla: { $in: plantillas } });
+    await AnalysisData.deleteMany({ plantilla: { $in: plantillas } });
+    return res.json({ message: 'Datos eliminados correctamente para las secciones seleccionadas.' });
+  } catch (err) {
+    return res.status(500).json({ message: 'Error al eliminar datos de las secciones.', error: err.message });
+  }
+}
+
 async function deleteModules(req, res) {
   const { modules = [] } = req.body || {};
   const plantillas = modules.flatMap((m) => modulesToPlantillas[m] || []);
@@ -55,4 +70,4 @@ async function deleteModules(req, res) {
   }
 }
 
-module.exports = { limpiarDashboard, deleteModules };
+module.exports = { limpiarDashboard, deleteModules, deleteByPlantillas };

@@ -28,8 +28,8 @@ import DependencyFilter from "../components/DependencyFilter.jsx";
 import MonthCutoffAlert from "../components/MonthCutoffAlert";
 import { useLocation } from "react-router-dom";
 import { getPreviousMonthRange } from "../utils/dateUtils.js";
-const DeleteDashboardDialog = lazy(
-  () => import("../components/DeleteDashboardDialog"),
+const DeleteSectionsDialog = lazy(
+  () => import("../components/DeleteSectionsDialog"),
 );
 
 const CustomBarChart = lazy(() => import("../components/CustomBarChart"));
@@ -125,6 +125,14 @@ const DashboardPage = () => {
   const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
   const [filterApplied, setFilterApplied] = useState(false);
   const [noData, setNoData] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState("");
+  const handleOpenDeleteDialog = useCallback(() => setOpenDeleteDialog(true), []);
+  const handleCloseDeleteDialog = useCallback(() => setOpenDeleteDialog(false), []);
+  const handleDeleted = useCallback((msg) => {
+    setDeleteMsg(msg || "");
+    setTimeout(() => setDeleteMsg(""), 4000);
+  }, []);
 
   useEffect(() => {
     availableFieldsRef.current = availableFields;
@@ -1271,10 +1279,36 @@ const DashboardPage = () => {
           )}
           <Suspense fallback={null}>
             {openDeleteDialog && (
-              <DeleteDashboardDialog
+              <DeleteSectionsDialog
                 isOpen={openDeleteDialog}
                 onClose={handleCloseDeleteDialog}
-                onDelete={handleDeleted}
+                onDeleted={handleDeleted}
+                title="Borrar datos - Planta y Contratos"
+                description="Selecciona las secciones a eliminar."
+                sections={[
+                  {
+                    id: "planta-total",
+                    label: "Rama completa",
+                    plantillas: ["Rama completa - Planta y Contratos"],
+                  },
+                  {
+                    id: "planta-concurso",
+                    label: "Datos de concurso",
+                    plantillas: ["Datos concurso - Planta y Contratos"],
+                  },
+                  {
+                    id: "planta-control",
+                    label: "Control de certificaciones",
+                    plantillas: [
+                      "Control de certificaciones - Planta y Contratos",
+                    ],
+                  },
+                  {
+                    id: "expedientes",
+                    label: "Expedientes",
+                    plantillas: ["Expedientes"],
+                  },
+                ]}
               />
             )}
           </Suspense>

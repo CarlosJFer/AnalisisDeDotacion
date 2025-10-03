@@ -24,6 +24,10 @@ import CustomLineChart from "../components/CustomLineChart";
 import EntryTimeByUnitChart from "../components/EntryTimeByUnitChart.jsx";
 import ExitTimeByUnitChart from "../components/ExitTimeByUnitChart.jsx";
 import CustomAreaChart from "../components/CustomAreaChart";
+import { lazy } from "react";
+const DeleteSectionsDialog = lazy(() =>
+  import("../components/DeleteSectionsDialog"),
+);
 import AgeRangeByAreaChart from "../components/AgeRangeByAreaChart";
 import AverageAgeByFunctionChart from "../components/AverageAgeByFunctionChart";
 import AgentsByFunctionBarChart from "../components/AgentsByFunctionBarChart.jsx";
@@ -90,6 +94,14 @@ const DashboardNeikeBeca = () => {
   // Hooks para limpiar dashboard
   const [cleaning, setCleaning] = useState(false);
   const [cleanMsg, setCleanMsg] = useState("");
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deleteMsg, setDeleteMsg] = useState("");
+  const handleOpenDeleteDialog = () => setOpenDeleteDialog(true);
+  const handleCloseDeleteDialog = () => setOpenDeleteDialog(false);
+  const handleDeleted = (msg) => {
+    setDeleteMsg(msg || "");
+    setTimeout(() => setDeleteMsg(""), 4000);
+  };
 
   const handleLimpiarDashboard = async () => {
     setCleaning(true);
@@ -1088,10 +1100,9 @@ const DashboardNeikeBeca = () => {
 
       {user?.role === "admin" && (
         <>
-          <Tooltip title={cleaning ? "Limpiando..." : "Limpiar Dashboard"}>
+          <Tooltip title="Borrar datos">
             <Fab
-              onClick={handleLimpiarDashboard}
-              disabled={cleaning}
+              onClick={handleOpenDeleteDialog}
               sx={{
                 position: "fixed",
                 bottom: 24,
@@ -1103,21 +1114,53 @@ const DashboardNeikeBeca = () => {
                 },
               }}
             >
-              {cleaning ? (
-                <CircularProgress size={24} sx={{ color: "white" }} />
-              ) : (
-                <icons.eliminar />
-              )}
+              <icons.eliminar />
             </Fab>
           </Tooltip>
-          {cleanMsg && (
+          {deleteMsg && (
             <Alert
-              severity={cleanMsg.includes("Error") ? "error" : "success"}
+              severity={deleteMsg.includes("Error") ? "error" : "success"}
               sx={{ position: "fixed", bottom: 90, right: 24, zIndex: 1300 }}
             >
-              {cleanMsg}
+              {deleteMsg}
             </Alert>
           )}
+          <React.Suspense fallback={null}>
+            {openDeleteDialog && (
+              <DeleteSectionsDialog
+                isOpen={openDeleteDialog}
+                onClose={handleCloseDeleteDialog}
+                onDeleted={handleDeleted}
+                title="Borrar datos - Neikes y Becas"
+                description="Selecciona las secciones a eliminar."
+                sections={[
+                  {
+                    id: "neikes-rama",
+                    label: "Rama completa",
+                    plantillas: [
+                      "Rama completa - Neikes y Beca",
+                      "Rama completa - Neikes y Becas",
+                    ],
+                  },
+                  {
+                    id: "neikes-concurso",
+                    label: "Datos de concurso",
+                    plantillas: [
+                      "Datos concurso - Neikes y Beca",
+                      "Datos concurso - Neikes y Becas",
+                    ],
+                  },
+                  {
+                    id: "neikes-control",
+                    label: "Control de certificaciones",
+                    plantillas: [
+                      "Control de certificaciones - Neikes y Becas",
+                    ],
+                  },
+                ]}
+              />
+            )}
+          </React.Suspense>
         </>
       )}
     </Box>
