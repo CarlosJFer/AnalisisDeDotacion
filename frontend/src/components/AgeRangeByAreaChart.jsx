@@ -255,7 +255,7 @@ const AgeRangeByAreaChart = ({ rows, isDarkMode }) => {
       >
         {ordenados.length} categorías • {formatMiles(total)} agentes
       </Typography>
-      <Box sx={{ height: 520 }}>
+      <Box sx={{ height: 520, width: '100%', minWidth: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={pageData}

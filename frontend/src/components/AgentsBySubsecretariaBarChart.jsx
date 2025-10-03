@@ -82,7 +82,7 @@ const AgentsBySubsecretariaBarChart = ({ data, isDarkMode }) => {
       >
         {chartData.length} categorías • {formatMiles(grandTotal)} agentes
       </Typography>
-      <Box sx={{ height: Math.max(320, pageData.length * 40) }}>
+      <Box sx={{ height: Math.max(320, pageData.length * 40), width: '100%', minWidth: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={pageData}

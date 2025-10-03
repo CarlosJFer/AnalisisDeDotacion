@@ -88,7 +88,7 @@ const AgeDistributionBarChart = ({
       >
         {chartData.length} rangos • {formatMiles(total)} agentes
       </Typography>
-      <Box sx={{ height: 360 }}>
+      <Box sx={{ height: 360, width: '100%', minWidth: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={pageData}

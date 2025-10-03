@@ -14,6 +14,7 @@ const DashboardCard = ({
     <Card
       sx={{
         height: "100%",
+        minWidth: 0,
         borderRadius: theme.radii.lg,
         boxShadow: theme.shadows.dashboard,
         background: isDarkMode ? "rgba(45,55,72,0.8)" : "rgba(255,255,255,0.9)",
@@ -84,7 +85,7 @@ const DashboardCard = ({
           )}
         </Box>
       )}
-      <CardContent sx={{ p: 3 }}>{children}</CardContent>
+      <CardContent sx={{ p: 3, minWidth: 0 }}>{children}</CardContent>
     </Card>
   );
 };

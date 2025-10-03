@@ -696,31 +696,7 @@ const DashboardNeikeBeca = () => {
           </Grid>
 
           {/* grï¿½ficos principales - AMBOS USANDO EL MISMO COMPONENTE */}
-          <Grid item xs={12} lg={8} sx={{ display: "none" }}>
-            <CustomDonutChart
-              data={agentsByFunction
-                .filter(
-                  (f) =>
-                    f.function &&
-                    f.function.trim() !== "" &&
-                    f.function.trim() !== "-",
-                )
-                .slice(0, 10)}
-              title="Distribuciï¿½n de Agentes por Funciï¿½n (Top 10) - Neikes y Beca"
-              isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="function"
-            />
-          </Grid>
-          <Grid item xs={12} lg={4} sx={{ display: "none" }}>
-            <CustomDonutChart
-              data={agentsByEmploymentType}
-              title="Agentes por Situaciï¿½n de Revista - Neikes y Beca"
-              isDarkMode={isDarkMode}
-              dataKey="count"
-              nameKey="type"
-            />
-          </Grid>
+          {/* legacy donut charts removed to avoid width/height 0 warnings */}
           <Grid item xs={12}>
             <AgentsByFunctionBarChart
               data={agentsByFunction.filter(

@@ -139,7 +139,7 @@ const CustomHorizontalBarChart = ({
       >
         {chartData.length} categorías • {formatMiles(total)} agentes
       </Typography>
-      <Box sx={{ height: chartHeight }}>
+      <Box sx={{ height: chartHeight, width: '100%', minWidth: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={plotData}

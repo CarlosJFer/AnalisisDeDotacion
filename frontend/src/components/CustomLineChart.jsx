@@ -99,7 +99,7 @@ const CustomLineChart = React.memo(
           )
         }
       >
-        <Box sx={{ height }}>
+        <Box sx={{ height, width: '100%', minWidth: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={chartData}

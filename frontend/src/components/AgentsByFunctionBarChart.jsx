@@ -72,7 +72,7 @@ const AgentsByFunctionBarChart = ({ data, isDarkMode }) => {
       >
         {chartData.length} funciones • {formatMiles(total)} agentes
       </Typography>
-      <Box sx={{ height: Math.max(420, pageData.length * 30) }}>
+      <Box sx={{ height: Math.max(420, pageData.length * 30), width: '100%', minWidth: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={pageData}

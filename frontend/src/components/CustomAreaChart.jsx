@@ -58,7 +58,7 @@ const CustomAreaChart = React.memo(
           )
         }
       >
-        <Box sx={{ height: 300 }}>
+        <Box sx={{ height: 300, width: '100%', minWidth: 0 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={chartData}
