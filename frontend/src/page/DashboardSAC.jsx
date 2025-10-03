@@ -406,7 +406,7 @@ const DashboardSAC = () => {
               <CustomHorizontalBarChart
                 data={sacViaData}
                 xKey="via"
-                barKey="total"
+                valueKey="total"
                 title="Vía de captación"
                 isDarkMode={isDarkMode}
                 height={400}
@@ -510,7 +510,7 @@ const DashboardSAC = () => {
               <CustomHorizontalBarChart
                 data={frecuenciaData}
                 xKey="tipo"
-                barKey="cantidad"
+                valueKey="cantidad"
                 title="Frecuencia de tipos de cierre"
                 isDarkMode={isDarkMode}
                 pageSize={5}
