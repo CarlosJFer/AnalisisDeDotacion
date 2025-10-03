@@ -125,14 +125,10 @@ const DashboardPage = () => {
   const [showNoFiltersAlert, setShowNoFiltersAlert] = useState(false);
   const [filterApplied, setFilterApplied] = useState(false);
   const [noData, setNoData] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [deleteMsg, setDeleteMsg] = useState("");
+  
   const handleOpenDeleteDialog = useCallback(() => setOpenDeleteDialog(true), []);
   const handleCloseDeleteDialog = useCallback(() => setOpenDeleteDialog(false), []);
-  const handleDeleted = useCallback((msg) => {
-    setDeleteMsg(msg || "");
-    setTimeout(() => setDeleteMsg(""), 4000);
-  }, []);
+  
 
   useEffect(() => {
     availableFieldsRef.current = availableFields;
@@ -175,14 +171,16 @@ const DashboardPage = () => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteMsg, setDeleteMsg] = useState("");
 
-  const handleOpenDeleteDialog = useCallback(
-    () => setOpenDeleteDialog(true),
-    [],
-  );
-  const handleCloseDeleteDialog = useCallback(
-    () => setOpenDeleteDialog(false),
-    [],
-  );
+  // removed duplicate handler (defined earlier)
+  // const handleOpenDeleteDialog = useCallback(
+  //   () => setOpenDeleteDialog(true),
+  //   [],
+  // );
+  // removed duplicate handler (defined earlier)
+  // const handleCloseDeleteDialog = useCallback(
+  //   () => setOpenDeleteDialog(false),
+  //   [],
+  // );
 
   // FunciÃ³n para filtrar datos que no sean "-" o vacíos
   const filterValidData = useCallback((data, nameKey) => {
@@ -549,8 +547,9 @@ const DashboardPage = () => {
 
   const handleDeleted = useCallback(
     (msg) => {
-      setDeleteMsg(msg);
+      setDeleteMsg(msg || "");
       fetchAllData(filters, false);
+      setTimeout(() => setDeleteMsg(""), 4000);
     },
     [fetchAllData, filters],
   );
