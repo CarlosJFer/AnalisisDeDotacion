@@ -363,9 +363,9 @@ const DashboardSAC = () => {
         Analisis del Sistema de Atencion al Ciudadano con graficos especializados
       </Typography>
 
-      <Alert severity="info" sx={{ my: 2 }}>
+      {/* <Alert severity="info" sx={{ my: 2 }}>
         Este módulo permite analizar los reclamos y gestiones del SAC. Selecciona una sección.
-      </Alert>
+      </Alert> */}
 
       {/* Navegación por botones */}
       <Box
