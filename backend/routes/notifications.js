@@ -9,42 +9,18 @@ const {
   markAllAsRead,
   deleteNotification,
   deleteReadNotifications,
-  getNotificationStats
+  getNotificationStats,
 } = require('../controllers/notificationController');
 
-// Middleware para soportar token por query param en SSE
+// Middleware: soporta token por query param en SSE (?token=...)
 function sseTokenMiddleware(req, res, next) {
-  if (!req.headers['authorization'] && req.query.token) {
+  if (!req.headers['authorization'] && req.query && req.query.token) {
     req.headers['authorization'] = 'Bearer ' + req.query.token;
   }
   next();
 }
 
-// Aplicar middleware de autenticación a todas las rutas
-router.use(authenticateToken);
-
-// GET /api/notifications - Obtener notificaciones del usuario
-router.get('/', getNotifications);
-
-// GET /api/notifications/stats - Obtener estadísticas de notificaciones
-router.get('/stats', getNotificationStats);
-
-// POST /api/notifications - Crear nueva notificación (admin only)
-router.post('/', createNotification);
-
-// PUT /api/notifications/:id/read - Marcar notificación como leída
-router.put('/:id/read', markAsRead);
-
-// PUT /api/notifications/read-all - Marcar todas las notificaciones como leídas
-router.put('/read-all', markAllAsRead);
-
-// DELETE /api/notifications/:id - Eliminar una notificación específica
-router.delete('/:id', deleteNotification);
-
-// DELETE /api/notifications/read - Eliminar todas las notificaciones leídas
-router.delete('/read', deleteReadNotifications);
-
-// Endpoint SSE para notificaciones en tiempo real por usuario autenticado
+// SSE: Notificaciones en tiempo real
 router.get('/stream', sseTokenMiddleware, authenticateToken, async (req, res) => {
   res.set({
     'Content-Type': 'text/event-stream',
@@ -55,27 +31,24 @@ router.get('/stream', sseTokenMiddleware, authenticateToken, async (req, res) =>
 
   const userId = req.user.userId || req.user._id;
 
-  // Función para enviar todas las notificaciones
   const sendNotifications = async () => {
     try {
       const notifications = await Notification.find({ userId })
         .sort({ createdAt: -1 })
         .limit(20)
         .lean();
-      
       const unreadCount = await Notification.countDocuments({ userId, read: false });
-      
       res.write(`data: ${JSON.stringify({ notifications, unreadCount })}\n\n`);
     } catch (err) {
-      // Loguear error pero NO cerrar la conexión
       console.error('Error en sendNotifications SSE:', err);
+      // Mantener viva la conexión
       res.write(`data: ${JSON.stringify({ ping: true })}\n\n`);
     }
   };
 
-  // Enviar notificaciones al conectar
+  // primer push inmediato
   await sendNotifications();
-  // Revisar cada 10 segundos
+  // refresco periódico
   const interval = setInterval(sendNotifications, 10000);
 
   req.on('close', () => {
@@ -84,4 +57,14 @@ router.get('/stream', sseTokenMiddleware, authenticateToken, async (req, res) =>
   });
 });
 
+// Endpoints REST (autenticación por ruta)
+router.get('/', authenticateToken, getNotifications);
+router.get('/stats', authenticateToken, getNotificationStats);
+router.post('/', authenticateToken, createNotification);
+router.put('/:id/read', authenticateToken, markAsRead);
+router.put('/read-all', authenticateToken, markAllAsRead);
+router.delete('/:id', authenticateToken, deleteNotification);
+router.delete('/read', authenticateToken, deleteReadNotifications);
+
 module.exports = router;
+

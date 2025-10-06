@@ -36,7 +36,7 @@ export const NotificationProvider = ({ children }) => {
     monthlyReports: true,
   });
 
-  // Cargar configuraciones de notificaciones
+  // Cargar configuraciones guardadas y notificaciones iniciales
   useEffect(() => {
     if (user && user.token) {
       const savedSettings = localStorage.getItem(
@@ -45,12 +45,11 @@ export const NotificationProvider = ({ children }) => {
       if (savedSettings) {
         setSettings(JSON.parse(savedSettings));
       }
-      // Solo cargar notificaciones si el usuario está completamente autenticado
       loadNotifications();
     }
   }, [user]);
 
-  // Guardar configuraciones automáticamente
+  // Persistir configuraciones
   useEffect(() => {
     if (user && user._id) {
       localStorage.setItem(
@@ -60,22 +59,20 @@ export const NotificationProvider = ({ children }) => {
     }
   }, [settings, user]);
 
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     try {
       const response = await apiClient.get("/notifications");
-      // El backend devuelve la estructura: { success: true, data: { notifications, unreadCount } }
-      if (response.data.success && response.data.data) {
+      if (response.data?.success && response.data?.data) {
         setNotifications(response.data.data.notifications || []);
         setUnreadCount(response.data.data.unreadCount || 0);
       } else {
-        // Fallback para estructura anterior
-        setNotifications(response.data.notifications || []);
-        setUnreadCount(response.data.unreadCount || 0);
+        setNotifications(response.data?.notifications || []);
+        setUnreadCount(response.data?.unreadCount || 0);
       }
     } catch (error) {
       console.error("Error cargando notificaciones:", error);
     }
-  };
+  }, []);
 
   const showToast = useCallback((message, type = "success", options = {}) => {
     const toastOptions = {
@@ -83,7 +80,6 @@ export const NotificationProvider = ({ children }) => {
       position: "top-right",
       ...options,
     };
-
     switch (type) {
       case "success":
         return toast.success(message, toastOptions);
@@ -116,7 +112,7 @@ export const NotificationProvider = ({ children }) => {
     });
   }, []);
 
-  // Esta función queda solo para notificaciones manuales (no SSE)
+  // Notificación manual (no SSE)
   const addNotification = useCallback(
     (notification) => {
       const newNotification = {
@@ -126,22 +122,13 @@ export const NotificationProvider = ({ children }) => {
         ...notification,
       };
       setNotifications((prev) => {
-        // Evitar duplicados por _id
-        if (
-          newNotification._id &&
-          prev.some((n) => n._id === newNotification._id)
-        ) {
+        if (newNotification._id && prev.some((n) => n._id === newNotification._id)) {
           return prev;
         }
         return [newNotification, ...prev];
       });
       setUnreadCount((prev) => prev + 1);
-      // Mostrar notificación de escritorio si está habilitada
-      if (
-        settings.desktop &&
-        "Notification" in window &&
-        Notification.permission === "granted"
-      ) {
+      if (settings.desktop && "Notification" in window && Notification.permission === "granted") {
         new Notification(notification.title || "Nueva notificación", {
           body: notification.message,
           icon: "/favicon.ico",
@@ -157,12 +144,7 @@ export const NotificationProvider = ({ children }) => {
     try {
       await apiClient.put(`/notifications/${notificationId}/read`);
       setNotifications((prev) =>
-        prev.map((notification) =>
-          notification._id === notificationId ||
-          notification.id === notificationId
-            ? { ...notification, read: true }
-            : notification,
-        ),
+        prev.map((n) => (n._id === notificationId || n.id === notificationId ? { ...n, read: true } : n)),
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
@@ -173,15 +155,10 @@ export const NotificationProvider = ({ children }) => {
   const markAllAsRead = useCallback(async () => {
     try {
       await apiClient.put("/notifications/read-all");
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, read: true })),
-      );
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error(
-        "Error marcando todas las notificaciones como leídas:",
-        error,
-      );
+      console.error("Error marcando todas las notificaciones como leídas:", error);
     }
   }, []);
 
@@ -189,14 +166,8 @@ export const NotificationProvider = ({ children }) => {
     async (notificationId) => {
       try {
         await apiClient.delete(`/notifications/${notificationId}`);
-        const notification = notifications.find(
-          (n) => n._id === notificationId || n.id === notificationId,
-        );
-        setNotifications((prev) =>
-          prev.filter(
-            (n) => n._id !== notificationId && n.id !== notificationId,
-          ),
-        );
+        const notification = notifications.find((n) => n._id === notificationId || n.id === notificationId);
+        setNotifications((prev) => prev.filter((n) => n._id !== notificationId && n.id !== notificationId));
         if (notification && !notification.read) {
           setUnreadCount((prev) => Math.max(0, prev - 1));
         }
@@ -209,7 +180,8 @@ export const NotificationProvider = ({ children }) => {
 
   const clearAllNotifications = useCallback(async () => {
     try {
-      await apiClient.delete("/notifications/all");
+      // El backend expone /notifications/read para eliminar las leídas
+      await apiClient.delete("/notifications/read");
       setNotifications([]);
       setUnreadCount(0);
     } catch (error) {
@@ -221,7 +193,6 @@ export const NotificationProvider = ({ children }) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
   }, []);
 
-  // Solicitar permisos para notificaciones de escritorio
   const requestDesktopPermission = useCallback(async () => {
     if ("Notification" in window && Notification.permission === "default") {
       const permission = await Notification.requestPermission();
@@ -230,43 +201,62 @@ export const NotificationProvider = ({ children }) => {
     return Notification.permission === "granted";
   }, []);
 
-  // Configurar WebSocket para notificaciones en tiempo real
+  // SSE en tiempo real con fallback a polling
   useEffect(() => {
-    // Solo conectar si el usuario está autenticado y tiene token
     if (!user || !user.token || !settings.push) return;
 
-    // Usar la URL completa del backend
-    const eventSource = new EventSource(
-      `http://localhost:5001/api/notifications/stream?token=${user.token}`,
-    );
-
-    eventSource.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.ping) {
-          // Es un ping para mantener la conexión viva, no hacer nada
-          return;
-        }
-        if (data.notifications) {
-          setNotifications(data.notifications);
-          setUnreadCount(
-            data.unreadCount ||
-              data.notifications.filter((n) => !n.read).length,
-          );
-        }
-      } catch (error) {
-        console.error("Error procesando notificación:", error);
+    let pollTimer = null;
+    const startPolling = () => {
+      if (pollTimer) return;
+      pollTimer = setInterval(() => {
+        loadNotifications();
+      }, 15000);
+    };
+    const stopPolling = () => {
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
       }
     };
 
-    eventSource.onerror = (error) => {
-      console.error("Error en el stream de notificaciones:", error);
+    const url = `http://localhost:5001/api/notifications/stream?token=${encodeURIComponent(
+      user.token,
+    )}`;
+    const es = new EventSource(url);
+    let failures = 0;
+
+    es.onopen = () => {
+      failures = 0;
+      stopPolling();
+    };
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.ping) return;
+        if (data.notifications) {
+          setNotifications(data.notifications);
+          setUnreadCount(
+            data.unreadCount || data.notifications.filter((n) => !n.read).length,
+          );
+        }
+      } catch (err) {
+        console.error("Error procesando notificación:", err);
+      }
+    };
+
+    es.onerror = () => {
+      failures += 1;
+      if (failures > 2) {
+        startPolling();
+      }
     };
 
     return () => {
-      eventSource.close();
+      es.close();
+      stopPolling();
     };
-  }, [user, settings.push, addNotification]);
+  }, [user, settings.push, loadNotifications]);
 
   const value = {
     notifications,
@@ -297,14 +287,10 @@ export const NotificationProvider = ({ children }) => {
             borderRadius: "8px",
           },
           success: {
-            style: {
-              background: "#4caf50",
-            },
+            style: { background: "#4caf50" },
           },
           error: {
-            style: {
-              background: "#f44336",
-            },
+            style: { background: "#f44336" },
           },
         }}
       />
@@ -313,3 +299,4 @@ export const NotificationProvider = ({ children }) => {
 };
 
 export default NotificationProvider;
+
