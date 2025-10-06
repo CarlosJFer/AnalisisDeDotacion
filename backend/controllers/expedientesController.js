@@ -23,13 +23,18 @@ function computePreviousMonthRange() {
 
 const getTopInitiators = async (req, res) => {
   try {
-    const { plantilla, filters } = req.query;
-    const { startDate, endDate } = computePreviousMonthRange();
+    const { plantilla, filters, startDate: qsStart, endDate: qsEnd } = req.query;
     const match = {
-      plantilla: plantilla || 'Expedientes',
-      'Fecha de Inicio': { $gte: startDate, $lte: endDate },
+      plantilla: (plantilla && String(plantilla).trim()) || 'Expedientes',
       ...(filters && JSON.parse(filters))
     };
+    if (qsStart && qsEnd) {
+      const s = new Date(qsStart);
+      const e = new Date(qsEnd);
+      if (s instanceof Date && !isNaN(s) && e instanceof Date && !isNaN(e)) {
+        match['Fecha de Inicio'] = { $gte: s, $lte: e };
+      }
+    }
     const topInitiators = await Agent.aggregate([
       { $match: match },
       { $group: { _id: '$Iniciador del Expediente', count: { $sum: 1 } } },
@@ -45,13 +50,18 @@ const getTopInitiators = async (req, res) => {
 
 const getExpedientesByTramite = async (req, res) => {
   try {
-    const { plantilla, filters } = req.query;
-    const { startDate, endDate } = computePreviousMonthRange();
+    const { plantilla, filters, startDate: qsStart, endDate: qsEnd } = req.query;
     const match = {
-      plantilla: plantilla || 'Expedientes',
-      'Fecha de Inicio': { $gte: startDate, $lte: endDate },
+      plantilla: (plantilla && String(plantilla).trim()) || 'Expedientes',
       ...(filters && JSON.parse(filters))
     };
+    if (qsStart && qsEnd) {
+      const s = new Date(qsStart);
+      const e = new Date(qsEnd);
+      if (s instanceof Date && !isNaN(s) && e instanceof Date && !isNaN(e)) {
+        match['Fecha de Inicio'] = { $gte: s, $lte: e };
+      }
+    }
     const byTramite = await Agent.aggregate([
       { $match: match },
       { $group: { _id: '$Tramite', count: { $sum: 1 } } },

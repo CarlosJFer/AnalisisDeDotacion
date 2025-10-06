@@ -422,8 +422,17 @@ const DashboardPage = () => {
           ),
           safeGet(funcMap.certificationsTopUnits, [], TEMPLATE_CONTROL_PLANTA),
           // Expedientes
-          safeGet(funcMap.expedientesTopInitiators, [], TEMPLATE_EXPEDIENTES),
-          safeGet(funcMap.expedientesByTramite, [], TEMPLATE_EXPEDIENTES, { limit: 100000, top: 0, pageSize: 100000 }),
+          safeGet(
+            funcMap.expedientesTopInitiators,
+            [],
+            TEMPLATE_EXPEDIENTES,
+          ),
+          safeGet(
+            funcMap.expedientesByTramite,
+            [],
+            TEMPLATE_EXPEDIENTES,
+            { limit: 100000, top: 0, pageSize: 100000 }
+          ),
         ]);
 
         const scheduleUpdate = (cb) => {
