@@ -109,6 +109,13 @@ const EntryTimeByUnitChart = ({
   zeroTextDark = "rgba(148, 163, 184, 0.9)",
   legendMinLabel = "Menor cantidad",
   legendMaxLabel = "Mayor cantidad",
+  // Nuevas props para reutilizar el heatmap en otros contextos
+  rowLabel, // etiqueta singular para las filas (ej: "Problema")
+  colLabel, // etiqueta singular para las columnas (ej: "Estado")
+  measureLabel = "agentes", // etiqueta de la medida (ej: "casos")
+  unitsLabel = "unidades", // etiqueta plural para cantidad de filas
+  timesLabel = "horarios", // etiqueta plural para cantidad de columnas
+  topLeftLabel = "Unidad / Horario", // texto del encabezado topleft
 }) => {
   const { theme } = useTheme();
   const [page, setPage] = useState(0);
@@ -247,8 +254,8 @@ const EntryTimeByUnitChart = ({
                 : "rgba(71, 85, 105, 0.85)",
             }}
           >
-            {heatmap.units.length} unidades - {heatmap.times.length} horarios -{" "}
-            {formatMiles(heatmap.totalAgents)} agentes{pageInfo}
+            {heatmap.units.length} {unitsLabel} - {heatmap.times.length} {timesLabel} -{" "}
+            {formatMiles(heatmap.totalAgents)} {measureLabel}{pageInfo}
           </Typography>
           <Box sx={{ overflowX: "auto", pb: 2 }}>
             <Box
@@ -281,7 +288,7 @@ const EntryTimeByUnitChart = ({
                     color: headerColor,
                   }}
                 >
-                  Unidad / Horario
+                  {topLeftLabel}
                 </Box>
                 {heatmap.times.map((time) => (
                   <Box
@@ -322,21 +329,21 @@ const EntryTimeByUnitChart = ({
                             : "rgba(248, 250, 252, 0.9)",
                           color: headerColor,
                         }}
-                      >
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {unit}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: isDarkMode
-                              ? "rgba(148, 163, 184, 0.9)"
-                              : "rgba(71, 85, 105, 0.85)",
-                          }}
                         >
-                          {formatMiles(total)} agentes
-                        </Typography>
-                      </Box>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {unit}
+                          </Typography>
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: isDarkMode
+                                ? "rgba(148, 163, 184, 0.9)"
+                                : "rgba(71, 85, 105, 0.85)",
+                            }}
+                          >
+                          {formatMiles(total)} {measureLabel}
+                          </Typography>
+                        </Box>
                       {heatmap.times.map((time) => {
                         const key = `${unit}${KEY_SEPARATOR}${time}`;
                         const value = heatmap.counts.get(key) || 0;
@@ -348,7 +355,11 @@ const EntryTimeByUnitChart = ({
                         return (
                           <MuiTooltip
                             key={key}
-                            title={`${unit} - ${time}: ${formatMiles(value)} agentes`}
+                            title={
+                              rowLabel && colLabel
+                                ? `${rowLabel} ${unit} - ${colLabel} ${time}: ${formatMiles(value)} ${measureLabel}`
+                                : `${unit} - ${time}: ${formatMiles(value)} ${measureLabel}`
+                            }
                             placement="top"
                           >
                                 <Box

@@ -19,6 +19,9 @@ import MonthCutoffAlert from "../components/MonthCutoffAlert";
 const DeleteSectionsDialog = React.lazy(() =>
   import("../components/DeleteSectionsDialog"),
 );
+const EntryHeatmap = React.lazy(() =>
+  import("../components/EntryTimeByUnitChart.jsx"),
+);
 import { getPreviousMonthRange } from "../utils/dateUtils.js";
 
 const DashboardSAC = () => {
@@ -69,6 +72,54 @@ const DashboardSAC = () => {
   const [coordPromedios, setCoordPromedios] = useState([]);
   const [coordPendientes, setCoordPendientes] = useState([]);
   const [coordCerrados, setCoordCerrados] = useState([]);
+
+  // Helper para construir un dataset tipo heatmap: filas=problema, columnas=estado
+  const buildStatusHeatmap = React.useCallback(
+    (reclamos = [], pendientes = [], cerrados = []) => {
+      const byProblem = new Map();
+      const norm = (v, fb = "Sin problema") => {
+        if (v === null || v === undefined) return fb;
+        const s = String(v).trim();
+        return s.length ? s : fb;
+      };
+      const add = (p, key, value) => {
+        const k = norm(p);
+        const entry = byProblem.get(k) || { Reclamos: 0, Pendientes: 0, Cerrados: 0 };
+        entry[key] = (Number(entry[key]) || 0) + (Number(value) || 0);
+        byProblem.set(k, entry);
+      };
+      for (const r of Array.isArray(reclamos) ? reclamos : []) {
+        add(r?.problem, "Reclamos", r?.count);
+      }
+      for (const r of Array.isArray(pendientes) ? pendientes : []) {
+        add(r?.problem, "Pendientes", r?.pendientes);
+      }
+      for (const r of Array.isArray(cerrados) ? cerrados : []) {
+        add(r?.problem, "Cerrados", r?.cerrados);
+      }
+      const out = [];
+      for (const [problem, vals] of byProblem.entries()) {
+        out.push({ unit: problem, time: "Reclamos", count: Number(vals.Reclamos) || 0 });
+        out.push({ unit: problem, time: "Pendientes", count: Number(vals.Pendientes) || 0 });
+        out.push({ unit: problem, time: "Cerrados", count: Number(vals.Cerrados) || 0 });
+      }
+      return out;
+    },
+    [],
+  );
+
+  const ambienteHeatmap = React.useMemo(
+    () => buildStatusHeatmap(ambienteReclamos, ambientePendientes, ambienteCerrados),
+    [ambienteReclamos, ambientePendientes, ambienteCerrados, buildStatusHeatmap],
+  );
+  const infraestructuraHeatmap = React.useMemo(
+    () => buildStatusHeatmap(infraReclamos, infraPendientes, infraCerrados),
+    [infraReclamos, infraPendientes, infraCerrados, buildStatusHeatmap],
+  );
+  const coordinacionHeatmap = React.useMemo(
+    () => buildStatusHeatmap(coordReclamos, coordPendientes, coordCerrados),
+    [coordReclamos, coordPendientes, coordCerrados, buildStatusHeatmap],
+  );
 
   const safeGet = useCallback(
     async (endpoint, plantilla, extraParams = {}) => {
@@ -669,6 +720,25 @@ const DashboardSAC = () => {
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
           </Grid>
           <Grid item xs={12}>
+            {ambienteHeatmap.length > 0 ? (
+              <React.Suspense fallback={<CircularProgress />}>
+                <EntryHeatmap
+                  data={ambienteHeatmap}
+                  isDarkMode={isDarkMode}
+                  title="Mapa de calor por problema y estado - Sec. Ambiente"
+                  rowLabel="Problema"
+                  colLabel="Estado"
+                  measureLabel="casos"
+                  unitsLabel="problemas"
+                  timesLabel="estados"
+                  topLeftLabel="Problema / Estado"
+                />
+              </React.Suspense>
+            ) : (
+              <Typography align="center">Sin datos</Typography>
+            )}
+          </Grid>
+          <Grid item xs={12}>
             {ambienteReclamos.length > 0 && (
               <CustomHorizontalBarChart
                 data={ambienteReclamos}
@@ -726,6 +796,25 @@ const DashboardSAC = () => {
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
           </Grid>
           <Grid item xs={12}>
+            {infraestructuraHeatmap.length > 0 ? (
+              <React.Suspense fallback={<CircularProgress />}>
+                <EntryHeatmap
+                  data={infraestructuraHeatmap}
+                  isDarkMode={isDarkMode}
+                  title="Mapa de calor por problema y estado - Sec. Infraestructura"
+                  rowLabel="Problema"
+                  colLabel="Estado"
+                  measureLabel="casos"
+                  unitsLabel="problemas"
+                  timesLabel="estados"
+                  topLeftLabel="Problema / Estado"
+                />
+              </React.Suspense>
+            ) : (
+              <Typography align="center">Sin datos</Typography>
+            )}
+          </Grid>
+          <Grid item xs={12}>
             {infraReclamos.length > 0 && (
               <CustomHorizontalBarChart
                 data={infraReclamos}
@@ -781,6 +870,25 @@ const DashboardSAC = () => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <MonthCutoffAlert systemName="SAC" startDate={startDate} endDate={endDate} />
+          </Grid>
+          <Grid item xs={12}>
+            {coordinacionHeatmap.length > 0 ? (
+              <React.Suspense fallback={<CircularProgress />}>
+                <EntryHeatmap
+                  data={coordinacionHeatmap}
+                  isDarkMode={isDarkMode}
+                  title="Mapa de calor por problema y estado - Sec. Coordinacion Territorial"
+                  rowLabel="Problema"
+                  colLabel="Estado"
+                  measureLabel="casos"
+                  unitsLabel="problemas"
+                  timesLabel="estados"
+                  topLeftLabel="Problema / Estado"
+                />
+              </React.Suspense>
+            ) : (
+              <Typography align="center">Sin datos</Typography>
+            )}
           </Grid>
           <Grid item xs={12}>
             {coordReclamos.length > 0 && (
