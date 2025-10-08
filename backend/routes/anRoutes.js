@@ -4,6 +4,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const { authenticateToken } = require('../middleware/authMiddleware');
+const { getFunciones, putFunciones } = require('../controllers/anFunctionsController');
 const { uploadANFiles, getLatestRecords } = require('../controllers/anController');
 
 // Store AN uploads in a separate folder to keep them isolated
@@ -35,6 +36,7 @@ const upload = multer({
 
 router.post('/upload', authenticateToken, upload.array('archivos'), uploadANFiles);
 router.get('/records', authenticateToken, getLatestRecords);
+router.get('/funciones', authenticateToken, getFunciones);
+router.put('/funciones', authenticateToken, express.json(), putFunciones);
 
 module.exports = router;
-
