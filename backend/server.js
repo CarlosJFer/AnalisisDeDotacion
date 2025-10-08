@@ -21,6 +21,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const functionRoutes = require('./routes/functions');
 const chartConfigRoutes = require('./routes/chartConfigRoutes');
 const metricsRoutes = require('./routes/metrics');
+const anRoutes = require('./routes/anRoutes');
 const initFunctions = require('./config/initFunctions');
 
 const app = express();
@@ -51,6 +52,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/functions', functionRoutes);
 app.use('/api/chart-configs', chartConfigRoutes);
 app.use('/api/metrics', metricsRoutes);
+app.use('/api/tools/agrupamiento-niveles', anRoutes);
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
