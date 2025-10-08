@@ -163,6 +163,9 @@ const DashboardPage = () => {
   const [topUnitsData, setTopUnitsData] = useState([]);
   const [expTopInitiators, setExpTopInitiators] = useState([]);
   const [expByTramite, setExpByTramite] = useState([]);
+  const [expHeatmapTramite, setExpHeatmapTramite] = useState([]);
+  const [expHeatmapIniciador, setExpHeatmapIniciador] = useState([]);
+  const [expHeatmapMode, setExpHeatmapMode] = useState('tramite');
   const [funcs, setFuncs] = useState({});
   
   const { startDate, endDate } = getPreviousMonthRange();
@@ -325,6 +328,8 @@ const DashboardPage = () => {
           topUnitsRes,
           topInitiatorsData,
           byTramiteData,
+          expedientesHeatmapRes,
+          expedientesHeatmapInitiatorRes,
         ] = await Promise.all([
           // Datos generales correspondientes a la plantilla "Rama completa - Planta y Contratos"
           safeGet(funcMap.totalAgents, { total: 0 }, TEMPLATE_PLANTA_CONTRATOS),
@@ -433,6 +438,16 @@ const DashboardPage = () => {
             TEMPLATE_EXPEDIENTES,
             { limit: 100000, top: 0, pageSize: 100000 }
           ),
+          safeGet(
+            funcMap.expedientesHeatmapTramiteEstado,
+            [],
+            TEMPLATE_EXPEDIENTES,
+          ),
+          safeGet(
+            funcMap.expedientesHeatmapIniciadorEstado,
+            [],
+            TEMPLATE_EXPEDIENTES,
+          ),
         ]);
 
         const scheduleUpdate = (cb) => {
@@ -503,6 +518,8 @@ const DashboardPage = () => {
           setTopUnitsData(topUnitsRes);
           setExpTopInitiators(topInitiatorsData);
           setExpByTramite(byTramiteData);
+          setExpHeatmapTramite(expedientesHeatmapRes);
+          setExpHeatmapIniciador(expedientesHeatmapInitiatorRes);
 
           const has = filterFields.some((f) => hasField(f, fieldSet));
           if (fromFilter) {
@@ -1057,6 +1074,42 @@ const DashboardPage = () => {
             <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
               Expedientes
             </Typography>
+            <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+              <Button
+                size="small"
+                variant={expHeatmapMode === 'tramite' ? 'contained' : 'outlined'}
+                onClick={() => setExpHeatmapMode('tramite')}
+              >
+                Trámite × Estado
+              </Button>
+              <Button
+                size="small"
+                variant={expHeatmapMode === 'iniciador' ? 'contained' : 'outlined'}
+                onClick={() => setExpHeatmapMode('iniciador')}
+              >
+                Iniciador × Estado
+              </Button>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
+            {(expHeatmapMode === 'tramite' ? expHeatmapTramite : expHeatmapIniciador).length > 0 ? (
+              <Suspense fallback={<CircularProgress />}>
+                <EntryTimeByUnitChart
+                  data={expHeatmapMode === 'tramite' ? expHeatmapTramite : expHeatmapIniciador}
+                  isDarkMode={isDarkMode}
+                  title={expHeatmapMode === 'tramite' ? 'Trámite × Estado - Expedientes' : 'Iniciador × Estado - Expedientes'}
+                  rowLabel={expHeatmapMode === 'tramite' ? 'Trámite' : 'Iniciador'}
+                  colLabel="Estado"
+                  measureLabel="expedientes"
+                  unitsLabel={expHeatmapMode === 'tramite' ? 'trámites' : 'iniciadores'}
+                  timesLabel="estados"
+                  topLeftLabel={expHeatmapMode === 'tramite' ? 'Trámite / Estado' : 'Iniciador / Estado'}
+                  rowsPerPage={10}
+                />
+              </Suspense>
+            ) : (
+              <Typography align="center">Sin datos</Typography>
+            )}
           </Grid>
           <Grid item xs={12}>
             {expByTramite.length > 0 ? (

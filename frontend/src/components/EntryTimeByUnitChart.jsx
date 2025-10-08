@@ -116,6 +116,7 @@ const EntryTimeByUnitChart = ({
   unitsLabel = "unidades", // etiqueta plural para cantidad de filas
   timesLabel = "horarios", // etiqueta plural para cantidad de columnas
   topLeftLabel = "Unidad / Horario", // texto del encabezado topleft
+  rowsPerPage, // cantidad de filas visibles por página (por defecto 5)
 }) => {
   const { theme } = useTheme();
   const [page, setPage] = useState(0);
@@ -177,7 +178,8 @@ const EntryTimeByUnitChart = ({
     return { times, units, counts, maxCount, totalsByUnit, totalAgents };
   }, [data]);
 
-  const totalPages = Math.max(1, Math.ceil(heatmap.units.length / ROWS_PER_PAGE));
+  const rpp = Math.max(1, Number(rowsPerPage) || ROWS_PER_PAGE);
+  const totalPages = Math.max(1, Math.ceil(heatmap.units.length / rpp));
   const clampedPage = Math.min(page, totalPages - 1);
 
   useEffect(() => {
@@ -186,8 +188,8 @@ const EntryTimeByUnitChart = ({
     }
   }, [clampedPage, page]);
 
-  const startIndex = clampedPage * ROWS_PER_PAGE;
-  const pagedUnits = heatmap.units.slice(startIndex, startIndex + ROWS_PER_PAGE);
+  const startIndex = clampedPage * rpp;
+  const pagedUnits = heatmap.units.slice(startIndex, startIndex + rpp);
 
   const paletteStopsCandidate = isDarkMode ? colorStopsDark : colorStopsLight;
   const colorStops =

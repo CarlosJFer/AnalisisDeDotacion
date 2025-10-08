@@ -1,32 +1,34 @@
 module.exports = [
   { name: 'totalAgents', description: 'Total de agentes', endpoint: '/analytics/agents/total' },
-  { name: 'ageDistribution', description: 'Distribución de edades de agentes', endpoint: '/analytics/agents/age-distribution' },
-  { name: 'ageByFunction', description: 'Edad promedio por función', endpoint: '/analytics/agents/age-by-function' },
-  { name: 'ageBySecretaria', description: 'Distribución de edades por área', endpoint: '/analytics/agents/age-by-secretaria' },
-  { name: 'agentsByFunction', description: 'Cantidad de agentes por función', endpoint: '/analytics/agents/by-function' },
-  { name: 'agentsByEmploymentType', description: 'Agentes por tipo de contratación', endpoint: '/analytics/agents/by-employment-type' },
+  { name: 'ageDistribution', description: 'Distribucion de edades de agentes', endpoint: '/analytics/agents/age-distribution' },
+  { name: 'ageByFunction', description: 'Edad promedio por funcion', endpoint: '/analytics/agents/age-by-function' },
+  { name: 'ageBySecretaria', description: 'Distribucion de edades por area', endpoint: '/analytics/agents/age-by-secretaria' },
+  { name: 'agentsByFunction', description: 'Cantidad de agentes por funcion', endpoint: '/analytics/agents/by-function' },
+  { name: 'agentsByEmploymentType', description: 'Agentes por tipo de contratacion', endpoint: '/analytics/agents/by-employment-type' },
   { name: 'agentsByDependency', description: 'Agentes por dependencia', endpoint: '/analytics/agents/by-dependency' },
-  { name: 'agentsBySecretaria', description: 'Agentes por secretaría', endpoint: '/analytics/agents/by-secretaria' },
-  { name: 'agentsBySubsecretaria', description: 'Agentes por subsecretaría', endpoint: '/analytics/agents/by-subsecretaria' },
-  { name: 'agentsByDireccionGeneral', description: 'Agentes por dirección general', endpoint: '/analytics/agents/by-direccion-general' },
-  { name: 'agentsByDireccion', description: 'Agentes por dirección', endpoint: '/analytics/agents/by-direccion' },
+  { name: 'agentsBySecretaria', description: 'Agentes por secretaria', endpoint: '/analytics/agents/by-secretaria' },
+  { name: 'agentsBySubsecretaria', description: 'Agentes por subsecretaria', endpoint: '/analytics/agents/by-subsecretaria' },
+  { name: 'agentsByDireccionGeneral', description: 'Agentes por direccion general', endpoint: '/analytics/agents/by-direccion-general' },
+  { name: 'agentsByDireccion', description: 'Agentes por direccion', endpoint: '/analytics/agents/by-direccion' },
   { name: 'agentsByDepartamento', description: 'Agentes por departamento', endpoint: '/analytics/agents/by-departamento' },
-  { name: 'agentsByDivision', description: 'Agentes por división', endpoint: '/analytics/agents/by-division' },
-  { name: 'agentsBySeniority', description: 'Agentes por rangos de antigüedad', endpoint: '/analytics/agents/seniority' },
+  { name: 'agentsByDivision', description: 'Agentes por division', endpoint: '/analytics/agents/by-division' },
+  { name: 'agentsBySeniority', description: 'Agentes por rangos de antiguedad', endpoint: '/analytics/agents/seniority' },
   { name: 'agentsBySecondaryStudies', description: 'Agentes por estudios secundarios', endpoint: '/analytics/agents/secondary-studies' },
   { name: 'agentsByTertiaryStudies', description: 'Agentes por estudios terciarios', endpoint: '/analytics/agents/tertiary-studies' },
   { name: 'agentsByUniversityStudies', description: 'Agentes por estudios universitarios', endpoint: '/analytics/agents/university-studies' },
-  { name: 'agentsByTopSecretariasUniversity', description: 'Top secretarías con títulos universitarios', endpoint: '/analytics/agents/top-secretarias-university' },
-  { name: 'agentsByTopSecretariasTertiary', description: 'Top secretarías con títulos terciarios', endpoint: '/analytics/agents/top-secretarias-tertiary' },
-  { name: 'certificationsRegistrationType', description: 'Agentes por tipo de registración', endpoint: '/analytics/certifications/registration-type' },
+  { name: 'agentsByTopSecretariasUniversity', description: 'Top secretarias con titulos universitarios', endpoint: '/analytics/agents/top-secretarias-university' },
+  { name: 'agentsByTopSecretariasTertiary', description: 'Top secretarias con titulos terciarios', endpoint: '/analytics/agents/top-secretarias-tertiary' },
+  { name: 'certificationsRegistrationType', description: 'Agentes por tipo de registracion', endpoint: '/analytics/certifications/registration-type' },
   { name: 'certificationsEntryTime', description: 'Agentes por horario de entrada', endpoint: '/analytics/certifications/entry-time' },
   { name: 'certificationsEntryTimeByUnit', description: 'Agentes por horario de entrada y unidad', endpoint: '/analytics/certifications/entry-time-by-unit' },
   { name: 'certificationsExitTimeByUnit', description: 'Agentes por horario de salida y unidad', endpoint: '/analytics/certifications/exit-time-by-unit' },
   { name: 'certificationsExitTime', description: 'Agentes por horario de salida', endpoint: '/analytics/certifications/exit-time' },
-  { name: 'certificationsTopUnits', description: 'Top unidades de registración', endpoint: '/analytics/certifications/top-units' },
+  { name: 'certificationsTopUnits', description: 'Top unidades de registracion', endpoint: '/analytics/certifications/top-units' },
   { name: 'expedientesTopInitiators', description: 'Top iniciadores de expedientes', endpoint: '/analytics/expedientes/top-initiators' },
-  { name: 'expedientesByTramite', description: 'Expedientes por tipo de trámite', endpoint: '/analytics/expedientes/by-tramite' },
-  { name: 'sacViaCaptacion', description: 'SAC vía de captación', endpoint: '/analytics/sac/via-captacion' },
+  { name: 'expedientesByTramite', description: 'Expedientes por tipo de tramite', endpoint: '/analytics/expedientes/by-tramite' },
+  { name: 'expedientesHeatmapTramiteEstado', description: 'Heatmap Tramite x Estado (Expedientes)', endpoint: '/analytics/expedientes/heatmap-tramite-estado' },
+  { name: 'expedientesHeatmapIniciadorEstado', description: 'Heatmap Iniciador x Estado (Expedientes)', endpoint: '/analytics/expedientes/heatmap-iniciador-estado' },
+  { name: 'sacViaCaptacion', description: 'SAC via de captacion', endpoint: '/analytics/sac/via-captacion' },
   { name: 'sacCierreProblemasTopReclamos', description: 'SAC cierre de problemas - top reclamos', endpoint: '/analytics/sac/cierre-problemas/top-reclamos' },
   { name: 'sacCierreProblemasTopPromedios', description: 'SAC cierre de problemas - top promedios', endpoint: '/analytics/sac/cierre-problemas/top-promedios' },
   { name: 'sacCierreProblemasTopPendientes', description: 'SAC cierre de problemas - top pendientes', endpoint: '/analytics/sac/cierre-problemas/top-pendientes' },
@@ -49,27 +51,8 @@ module.exports = [
   { name: 'sacInfraestructuraTopPromedios', description: 'SAC infraestructura - top promedios', endpoint: '/analytics/sac/secretaria-infraestructura/top-promedios' },
   { name: 'sacInfraestructuraTopPendientes', description: 'SAC infraestructura - top pendientes', endpoint: '/analytics/sac/secretaria-infraestructura/top-pendientes' },
   { name: 'sacInfraestructuraTopCerrados', description: 'SAC infraestructura - top cerrados', endpoint: '/analytics/sac/secretaria-infraestructura/top-cerrados' },
-  {
-    name: 'sacCoordTerritorialTopReclamos',
-    description: 'SAC coordinación territorial - top reclamos',
-    endpoint: '/analytics/sac/coordinacion-territorial/top-reclamos'
-  },
-  {
-    name: 'sacCoordTerritorialTopPromedio',
-    description: 'SAC coordinación territorial - top promedios',
-    endpoint: '/analytics/sac/coordinacion-territorial/top-promedios'
-  },
-  {
-    name: 'sacCoordTerritorialTopPendientes',
-    description: 'SAC coordinación territorial - top pendientes',
-    endpoint: '/analytics/sac/coordinacion-territorial/top-pendientes'
-  },
-  {
-    name: 'sacCoordTerritorialTopCerrados',
-    description: 'SAC coordinación territorial - top cerrados',
-    endpoint: '/analytics/sac/coordinacion-territorial/top-cerrados'
-  }
+  { name: 'sacCoordTerritorialTopReclamos', description: 'SAC coordinacion territorial - top reclamos', endpoint: '/analytics/sac/coordinacion-territorial/top-reclamos' },
+  { name: 'sacCoordTerritorialTopPromedio', description: 'SAC coordinacion territorial - top promedios', endpoint: '/analytics/sac/coordinacion-territorial/top-promedios' },
+  { name: 'sacCoordTerritorialTopPendientes', description: 'SAC coordinacion territorial - top pendientes', endpoint: '/analytics/sac/coordinacion-territorial/top-pendientes' },
+  { name: 'sacCoordTerritorialTopCerrados', description: 'SAC coordinacion territorial - top cerrados', endpoint: '/analytics/sac/coordinacion-territorial/top-cerrados' },
 ];
-
-
-
