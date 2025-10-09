@@ -41,13 +41,9 @@ const FunctionCenterPage = lazy(() => import("./page/FunctionCenterPage.jsx"));
 const DebugComponent = lazy(() => import("./components/DebugComponent.jsx"));
 const ToolsPage = lazy(() => import("./page/ToolsPage.jsx"));
 const ExpedientesTool = lazy(() => import("./page/tools/ExpedientesTool.jsx"));
-const AgrupamientoNivelesTool = lazy(
-  () => import("./page/tools/AgrupamientoNivelesTool.jsx"),
-);
 const AgrupamientoNivelesView = lazy(
   () => import("./page/tools/AgrupamientoNivelesView.jsx"),
 );
-const ANUploadPage = lazy(() => import("./page/tools/ANUploadPage.jsx"));
 const ABNATool = lazy(() => import("./page/tools/ABNATool.jsx"));
 const AIDTool = lazy(() => import("./page/tools/AIDTool.jsx"));
 const ResolucionesTool = lazy(
@@ -109,11 +105,7 @@ const AppLayout = () => {
               <Route path="/tools/expedientes" element={<ExpedientesTool />} />
               <Route
                 path="/tools/agrupamiento-niveles"
-                element={<AgrupamientoNivelesTool />}
-              />
-              <Route
-                path="/tools/agrupamiento-niveles/upload"
-                element={<ANUploadPage />}
+                element={<AgrupamientoNivelesView />}
               />
               <Route
                 path="/tools/agrupamiento-niveles/ver"

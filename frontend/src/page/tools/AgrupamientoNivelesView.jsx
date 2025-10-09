@@ -21,7 +21,6 @@ import {
   sheetToMatrix,
   detectCompareSheetMetadata,
   buildOriginalMap,
-  parseFuncionesSheet,
 } from "../../tools/an/utils";
 import { SITUACIONES_REVISTA, SECRETARIAS } from "../../tools/an/constants";
 
@@ -44,7 +43,6 @@ const AgrupamientoNivelesView = () => {
   // Archivos
   const [fileOriginal, setFileOriginal] = useState(null);
   const [fileComparar, setFileComparar] = useState(null);
-  const [fileFunciones, setFileFunciones] = useState(null);
   const [fileEliminados, setFileEliminados] = useState(null);
   const [fileProyectos, setFileProyectos] = useState(null);
 
@@ -54,6 +52,8 @@ const AgrupamientoNivelesView = () => {
   const [discrepancias, setDiscrepancias] = useState([]);
   const [control, setControl] = useState([]);
   const [funcionesRows, setFuncionesRows] = useState([]); // {id, funcion, agrupamiento}
+  const [eliminadosRows, setEliminadosRows] = useState([]);
+  const [proyectosRows, setProyectosRows] = useState([]);
 
   const [loading, setLoading] = useState(false);
   const [snack, setSnack] = useState({ open: false, message: "", severity: "info" });
@@ -78,6 +78,45 @@ const AgrupamientoNivelesView = () => {
       }
     })();
   }, []);
+
+  // Parsear Eliminados / Proyectos para mostrar en pestañas
+  useEffect(() => {
+    if (!fileEliminados) {
+      setEliminadosRows([]);
+      return;
+    }
+    (async () => {
+      try {
+        const wb = await readWorkbook(fileEliminados);
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const matrix = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+        const dataRows = (matrix || []).slice(1).filter((r) => Array.isArray(r) && r.some((c) => String(c ?? "").trim() !== ""));
+        setEliminadosRows(dataRows);
+      } catch (e) {
+        console.warn("No se pudo procesar Eliminados:", e?.message);
+        setEliminadosRows([]);
+      }
+    })();
+  }, [fileEliminados]);
+
+  useEffect(() => {
+    if (!fileProyectos) {
+      setProyectosRows([]);
+      return;
+    }
+    (async () => {
+      try {
+        const wb = await readWorkbook(fileProyectos);
+        const ws = wb.Sheets[wb.SheetNames[0]];
+        const matrix = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+        const dataRows = (matrix || []).slice(1).filter((r) => Array.isArray(r) && r.some((c) => String(c ?? "").trim() !== ""));
+        setProyectosRows(dataRows);
+      } catch (e) {
+        console.warn("No se pudo procesar Proyectos:", e?.message);
+        setProyectosRows([]);
+      }
+    })();
+  }, [fileProyectos]);
 
   const showError = (message) => setSnack({ open: true, message, severity: "error" });
   const showSuccess = (message) => setSnack({ open: true, message, severity: "success" });
@@ -135,14 +174,8 @@ const AgrupamientoNivelesView = () => {
         `Procesado: Agentes con ID: ${resProcess.agentesConId.length}, Faltantes: ${resProcess.faltantes.length}`,
       );
 
-      // Preparar funciones: archivo cargado o tabla editada o funciones guardadas
+      // Preparar funciones: tabla editada o funciones guardadas
       let funcionesParaUsar = funcionesRows;
-      if (fileFunciones) {
-        const wbFunc = await readWorkbook(fileFunciones);
-        const wsFunc = wbFunc.Sheets[wbFunc.SheetNames[0]];
-        funcionesParaUsar = parseFuncionesSheet(wsFunc);
-        setFuncionesRows(funcionesParaUsar);
-      }
 
       if (Array.isArray(funcionesParaUsar) && funcionesParaUsar.length) {
         const resAssign = await new Promise((resolve, reject) => {
@@ -289,6 +322,40 @@ const AgrupamientoNivelesView = () => {
     [],
   );
 
+  // Columnas Eliminados / Proyectos
+  const colsEliminados = useMemo(
+    () => [
+      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p.row.values[0] },
+      { field: "ape", headerName: "Apellido y nombre", width: 220, valueGetter: (p) => p.row.values[1] },
+      { field: "sit", headerName: "Situacion de revista", width: 200, valueGetter: (p) => p.row.values[2] },
+      { field: "agrup", headerName: "Agrup", width: 120, valueGetter: (p) => p.row.values[3] },
+      { field: "nivel", headerName: "Nivel", width: 100, valueGetter: (p) => p.row.values[4] },
+      { field: "func", headerName: "Funciones", width: 200, valueGetter: (p) => p.row.values[5] },
+      { field: "dep", headerName: "Dependencias", width: 220, valueGetter: (p) => p.row.values[6] },
+      { field: "sec", headerName: "Secretarias", width: 220, valueGetter: (p) => p.row.values[7] },
+      { field: "sub", headerName: "SubSecretarias", width: 220, valueGetter: (p) => p.row.values[8] },
+      { field: "dir", headerName: "DireccionesGenerales", width: 240, valueGetter: (p) => p.row.values[9] },
+      { field: "obs", headerName: "Observación", width: 240, valueGetter: (p) => p.row.values[10] },
+    ],
+    [],
+  );
+  const colsProyectos = useMemo(
+    () => [
+      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p.row.values[0] },
+      { field: "ape", headerName: "Apellido y nombre", width: 220, valueGetter: (p) => p.row.values[1] },
+      { field: "sit", headerName: "Situacion de revista", width: 200, valueGetter: (p) => p.row.values[2] },
+      { field: "agrup", headerName: "Agrup", width: 120, valueGetter: (p) => p.row.values[3] },
+      { field: "nivel", headerName: "Nivel", width: 100, valueGetter: (p) => p.row.values[4] },
+      { field: "func", headerName: "Funciones", width: 200, valueGetter: (p) => p.row.values[5] },
+      { field: "sec", headerName: "Secretaria", width: 220, valueGetter: (p) => p.row.values[6] },
+      { field: "dep", headerName: "Dependencia", width: 220, valueGetter: (p) => p.row.values[7] },
+      { field: "obs", headerName: "Observacion", width: 220, valueGetter: (p) => p.row.values[8] },
+      { field: "agrupC", headerName: "Agrup correcto", width: 180, valueGetter: (p) => p.row.values[9] },
+      { field: "env", headerName: "Enviado al grupo", width: 180, valueGetter: (p) => p.row.values[10] },
+    ],
+    [],
+  );
+
   const rowsFromArray = (arr) => arr.map((values, idx) => ({ id: idx + 1, values }));
 
   // Funciones editor helpers
@@ -371,7 +438,7 @@ const AgrupamientoNivelesView = () => {
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} md={6} lg={4}>
                   <Button component="label" variant="outlined" fullWidth>
-                    Seleccionar Original.xlsx
+                    Cargar Excel Rama Completa
                     <input
                       hidden
                       type="file"
@@ -383,7 +450,7 @@ const AgrupamientoNivelesView = () => {
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
                   <Button component="label" variant="outlined" fullWidth>
-                    Seleccionar Comparar.xlsx
+                    Cargar Excel Datos Concursos
                     <input
                       hidden
                       type="file"
@@ -395,19 +462,7 @@ const AgrupamientoNivelesView = () => {
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
                   <Button component="label" variant="outlined" fullWidth>
-                    Tabla de Funciones (opcional)
-                    <input
-                      hidden
-                      type="file"
-                      accept=".xls,.xlsx"
-                      onChange={(e) => setFileFunciones(e.target.files?.[0] || null)}
-                    />
-                  </Button>
-                  <Typography variant="caption">{fileFunciones?.name || ""}</Typography>
-                </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth>
-                    Eliminados.xlsx (opcional)
+                    Agentes para eliminar (opcional)
                     <input
                       hidden
                       type="file"
@@ -419,7 +474,7 @@ const AgrupamientoNivelesView = () => {
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
                   <Button component="label" variant="outlined" fullWidth>
-                    Proyectos.xlsx (opcional)
+                    Agentes para proyectos (opcional)
                     <input
                       hidden
                       type="file"
@@ -455,6 +510,8 @@ const AgrupamientoNivelesView = () => {
               <Tab label={`Faltantes (${faltantes.length})`} />
               <Tab label={`Discrepancias (${discrepancias.length})`} />
               <Tab label={`Control (${control.length})`} />
+              <Tab label={`Eliminados (${eliminadosRows.length})`} />
+              <Tab label={`Proyectos (${proyectosRows.length})`} />
               <Tab label={`Funciones (${funcionesRows.length})`} />
             </Tabs>
             <CardContent>
@@ -478,6 +535,12 @@ const AgrupamientoNivelesView = () => {
                 <DataGrid rows={control.map((r, i) => ({ id: i + 1, ...r }))} columns={colsControl} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
               )}
               {tab === 4 && (
+                <DataGrid rows={rowsFromArray(eliminadosRows)} columns={colsEliminados} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+              )}
+              {tab === 5 && (
+                <DataGrid rows={rowsFromArray(proyectosRows)} columns={colsProyectos} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+              )}
+              {tab === 6 && (
                 <>
                   <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
                     <Button variant="outlined" onClick={addFuncionRow}>Agregar fila</Button>
