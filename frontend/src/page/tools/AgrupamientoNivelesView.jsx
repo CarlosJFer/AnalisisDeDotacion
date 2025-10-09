@@ -11,11 +11,14 @@ import {
   Tabs,
   Tab,
   CircularProgress,
+  Avatar,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
 import ANFilterDialog from "../../components/ANFilterDialog.jsx";
 import anService from "../../services/anService.js";
+import icons from "../../ui/icons.js";
+import { useTheme } from "../../context/ThemeContext.jsx";
 import {
   readWorkbook,
   sheetToMatrix,
@@ -37,6 +40,7 @@ const buildSetFromSheet = (worksheet, dniColIndex = 0) => {
 };
 
 const AgrupamientoNivelesView = () => {
+  const { isDarkMode } = useTheme();
   const workerRef = useRef(null);
   const [tab, setTab] = useState(0);
 
@@ -427,17 +431,43 @@ const AgrupamientoNivelesView = () => {
 
   return (
     <Box sx={{ p: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Ver Agrupamientos y Niveles
-      </Typography>
+      <Box
+        sx={{
+          mb: 3,
+          p: 3,
+          borderRadius: 3,
+          color: "white",
+          background: isDarkMode
+            ? "linear-gradient(90deg, #3a2f4a 0%, #241c35 100%)"
+            : "linear-gradient(90deg, #cc2b5e 0%, #753a88 100%)",
+          boxShadow: isDarkMode ? "0 8px 24px rgba(0,0,0,0.35)" : "0 8px 24px rgba(0,0,0,0.15)",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Avatar sx={{ bgcolor: "rgba(255,255,255,0.2)", width: 40, height: 40 }}>
+            <icons.capas />
+          </Avatar>
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 700, lineHeight: 1 }}>
+              Agrupamientos y Niveles
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <Card sx={commonCardStyle}>
+          <Card sx={{
+            ...commonCardStyle,
+            background: isDarkMode
+              ? "linear-gradient(180deg, rgba(32,33,46,0.9) 0%, rgba(26,27,38,0.92) 100%)"
+              : "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(250,250,255,0.9) 100%)",
+            boxShadow: isDarkMode ? "0 6px 20px rgba(0,0,0,0.35)" : "0 6px 20px rgba(0,0,0,0.08)"
+          }}>
             <CardContent>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth>
+                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
                     Cargar Excel Rama Completa
                     <input
                       hidden
@@ -449,7 +479,7 @@ const AgrupamientoNivelesView = () => {
                   <Typography variant="caption">{fileOriginal?.name || ""}</Typography>
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth>
+                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
                     Cargar Excel Datos Concursos
                     <input
                       hidden
@@ -461,8 +491,8 @@ const AgrupamientoNivelesView = () => {
                   <Typography variant="caption">{fileComparar?.name || ""}</Typography>
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth>
-                    Agentes para eliminar (opcional)
+                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
+                   Agentes para eliminar (opcional)
                     <input
                       hidden
                       type="file"
@@ -473,7 +503,7 @@ const AgrupamientoNivelesView = () => {
                   <Typography variant="caption">{fileEliminados?.name || ""}</Typography>
                 </Grid>
                 <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth>
+                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
                     Agentes para proyectos (opcional)
                     <input
                       hidden
@@ -487,13 +517,17 @@ const AgrupamientoNivelesView = () => {
 
                 <Grid item xs={12} md={6} lg={4}>
                   <Box sx={{ display: "flex", gap: 1, justifyContent: { xs: "stretch", md: "flex-end" } }}>
-                    <Button variant="outlined" onClick={onOpenFilters} disabled={!fileOriginal || !fileComparar}>
+                    <Button variant="outlined" onClick={onOpenFilters} disabled={!fileOriginal || !fileComparar} startIcon={<icons.filtro />}>
                       Configurar filtros
                     </Button>
-                    <Button variant="contained" onClick={() => handleProcess()} disabled={!fileOriginal || !fileComparar}>
+                    <Button variant="contained" onClick={() => handleProcess()} disabled={!fileOriginal || !fileComparar} startIcon={<icons.analitica />} sx={{
+                      background: "linear-gradient(90deg, #ff9800 0%, #f57c00 100%)",
+                      color: "white",
+                      '&:hover': { background: "linear-gradient(90deg, #f57c00 0%, #ef6c00 100%)" }
+                    }}>
                       Procesar
                     </Button>
-                    <Button variant="outlined" onClick={handleLimpiar} color="inherit">
+                    <Button variant="outlined" onClick={handleLimpiar} color="inherit" startIcon={<icons.limpiar />}>
                       Limpiar
                     </Button>
                   </Box>
@@ -504,53 +538,90 @@ const AgrupamientoNivelesView = () => {
         </Grid>
 
         <Grid item xs={12}>
-          <Card sx={commonCardStyle}>
-            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ '& .MuiTab-root': { textTransform: 'none' } }}>
-              <Tab label="Agentes con ID" />
-              <Tab label="Faltantes" />
-              <Tab label="Discrepancias" />
-              <Tab label="Control" />
-              <Tab label="Eliminados" />
-              <Tab label="Proyectos" />
-              <Tab label="Funciones" />
+          <Card sx={{ ...commonCardStyle, border: 'none', background: 'transparent', boxShadow: 'none' }}>
+            <Tabs
+              value={tab}
+              onChange={(_, v) => setTab(v)}
+              textColor="inherit"
+              sx={{
+                '& .MuiTabs-flexContainer': { gap: 2 },
+                '& .MuiTab-root': {
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  minHeight: 48,
+                  px: 2,
+                  borderRadius: 2,
+                  color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.8)',
+                  outline: 'none',
+                  boxShadow: 'none',
+                },
+                '& .MuiTab-root.Mui-selected': {
+                  backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+                  color: isDarkMode ? '#fff' : '#000',
+                },
+                '& .MuiTab-root.Mui-focusVisible': { outline: 'none' },
+                '& .MuiTab-root:focus': { outline: 'none' },
+                '& .MuiTabs-indicator': {
+                  height: 3,
+                  borderRadius: 2,
+                  background: isDarkMode
+                    ? 'linear-gradient(90deg, #9b4d9b, #6a4c93)'
+                    : 'linear-gradient(90deg, #cc2b5e, #753a88)',
+                },
+              }}
+            >
+              <Tab disableRipple icon={<icons.personas fontSize="small" />} iconPosition="start" label="Agentes con ID" />
+              <Tab disableRipple icon={<icons.advertencia fontSize="small" />} iconPosition="start" label="Faltantes" />
+              <Tab disableRipple icon={<icons.error fontSize="small" />} iconPosition="start" label="Discrepancias" />
+              <Tab disableRipple icon={<icons.analitica fontSize="small" />} iconPosition="start" label="Control" />
+              <Tab disableRipple icon={<icons.eliminar fontSize="small" />} iconPosition="start" label="Eliminados" />
+              <Tab disableRipple icon={<icons.carpeta fontSize="small" />} iconPosition="start" label="Proyectos" />
+              <Tab disableRipple icon={<icons.funciones fontSize="small" />} iconPosition="start" label="Funciones" />
             </Tabs>
             <CardContent>
               {tab === 0 && (
-                <DataGrid rows={rowsFromArray(agentesConId)} columns={colsAgentes} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+                <DataGrid rows={rowsFromArray(agentesConId)} columns={colsAgentes} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 1 && (
-                <DataGrid rows={rowsFromArray(faltantes)} columns={colsFaltantes} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+                <DataGrid rows={rowsFromArray(faltantes)} columns={colsFaltantes} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 2 && (
                 <>
                   <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-                    <Button variant="contained" onClick={handleDepurar} disabled={!discrepancias.length}>
+                    <Button variant="contained" onClick={handleDepurar} disabled={!discrepancias.length} startIcon={<icons.limpiar />} sx={{
+                      background: "linear-gradient(90deg, #cc2b5e 0%, #753a88 100%)",
+                      '&:hover': { background: "linear-gradient(90deg, #b02852 0%, #6a337c 100%)" }
+                    }}>
                       Depurar
                     </Button>
                   </Box>
-                  <DataGrid rows={rowsFromArray(discrepancias)} columns={colsDiscrep} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+                  <DataGrid rows={rowsFromArray(discrepancias)} columns={colsDiscrep} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
                 </>
               )}
               {tab === 3 && (
-                <DataGrid rows={control.map((r, i) => ({ id: i + 1, ...r }))} columns={colsControl} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+                <DataGrid rows={control.map((r, i) => ({ id: i + 1, ...r }))} columns={colsControl} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 4 && (
-                <DataGrid rows={rowsFromArray(eliminadosRows)} columns={colsEliminados} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+                <DataGrid rows={rowsFromArray(eliminadosRows)} columns={colsEliminados} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 5 && (
-                <DataGrid rows={rowsFromArray(proyectosRows)} columns={colsProyectos} autoHeight pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} />
+                <DataGrid rows={rowsFromArray(proyectosRows)} columns={colsProyectos} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 6 && (
                 <>
                   <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-                    <Button variant="outlined" onClick={addFuncionRow}>Agregar fila</Button>
-                    <Button variant="contained" onClick={saveFunciones}>Guardar</Button>
-                    <Button variant="outlined" onClick={recalcAsignacion} disabled={!agentesConId.length}>Recalcular asignación</Button>
+                    <Button variant="outlined" onClick={addFuncionRow} startIcon={<icons.agregar />}>Agregar fila</Button>
+                    <Button variant="contained" onClick={saveFunciones} startIcon={<icons.exito />} sx={{
+                      background: "linear-gradient(90deg, #2b5876 0%, #4e4376 100%)",
+                      '&:hover': { background: "linear-gradient(90deg, #254d66 0%, #463d6a 100%)" }
+                    }}>Guardar</Button>
+                    <Button variant="outlined" onClick={recalcAsignacion} disabled={!agentesConId.length} startIcon={<icons.refrescar />}>Recalcular asignación</Button>
                   </Box>
                   <DataGrid
                     rows={funcionesRowsGrid}
                     columns={funcionesCols}
                     autoHeight
+                    density="compact"
                     editMode="cell"
                     onCellEditCommit={(params) => {
                       const { id, field, value } = params;
