@@ -257,6 +257,14 @@ const AgrupamientoNivelesView = () => {
       });
 
       setDiscrepancias(result);
+      // Recalcular CONTROL en base a las discrepancias depuradas
+      const conteo = new Map();
+      for (const d of result) {
+        const fn = d?.[5] || "Vacío";
+        conteo.set(fn, (conteo.get(fn) || 0) + 1);
+      }
+      const nuevoControl = Array.from(conteo.entries()).map(([funcion, cantidad]) => ({ funcion, cantidad }));
+      setControl(nuevoControl);
       showSuccess(`Depuración aplicada. Discrepancias restantes: ${result.length}`);
     } catch (err) {
       console.error(err);
