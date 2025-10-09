@@ -125,7 +125,21 @@ const AgrupamientoNivelesView = () => {
   const showError = (message) => setSnack({ open: true, message, severity: "error" });
   const showSuccess = (message) => setSnack({ open: true, message, severity: "success" });
 
-  const onOpenFilters = () => setFilterOpen(true);
+  // Evita warning de aria-hidden manteniendo foco en la UI visible
+  useEffect(() => {
+    if (snack.open) {
+      setTimeout(() => {
+        try { (document.activeElement)?.blur?.(); } catch (_) {}
+      }, 0);
+    }
+  }, [snack.open]);
+
+  const onOpenFilters = () => {
+    try {
+      (document.activeElement)?.blur?.();
+    } catch (_) {}
+    setFilterOpen(true);
+  };
   const onConfirmFilters = (f) => {
     setFilterOpen(false);
     setFiltros(f);
@@ -268,53 +282,66 @@ const AgrupamientoNivelesView = () => {
     borderRadius: 2,
   };
 
+  // Asegurar valueGetter seguros en DataGrid
+  const safeVG = (getter) => (params) => {
+    try {
+      const v = getter?.(params);
+      return v ?? "";
+    } catch {
+      return "";
+    }
+  };
+  const mapSafeVG = (cols) => cols.map((c) =>
+    c && typeof c.valueGetter === "function" ? { ...c, valueGetter: safeVG(c.valueGetter) } : c,
+  );
+
   // Columnas para DataGrid
   const colsAgentes = useMemo(
-    () => [
-      { field: "idAsignado", headerName: "ID", width: 90, valueGetter: (p) => p.row.values[0] },
-      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p.row.values[1] },
-      { field: "apellido", headerName: "Apellido y Nombre", width: 220, valueGetter: (p) => p.row.values[2] },
+    () => mapSafeVG([
+      { field: "idAsignado", headerName: "ID", width: 90, valueGetter: (p) => p?.row?.values?.[0] ?? "" },
+      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p?.row?.values?.[1] ?? "" },
+      { field: "apellido", headerName: "Apellido y Nombre", width: 220, valueGetter: (p) => p?.row?.values?.[2] ?? "" },
       { field: "sitRev", headerName: "Situación", width: 180, valueGetter: (p) => p.row.values[3] },
-      { field: "agrup", headerName: "Agrupamiento", width: 130, valueGetter: (p) => p.row.values[4] },
-      { field: "nivel", headerName: "Nivel", width: 90, valueGetter: (p) => p.row.values[5] },
-      { field: "funcion", headerName: "Función", width: 200, valueGetter: (p) => p.row.values[6] },
-      { field: "dep", headerName: "Dependencia", width: 220, valueGetter: (p) => p.row.values[7] },
+      { field: "agrup", headerName: "Agrupamiento", width: 130, valueGetter: (p) => p?.row?.values?.[4] ?? "" },
+      { field: "nivel", headerName: "Nivel", width: 90, valueGetter: (p) => p?.row?.values?.[5] ?? "" },
+      { field: "funcion", headerName: "Función", width: 200, valueGetter: (p) => p?.row?.values?.[6] ?? "" },
+      { field: "dep", headerName: "Dependencia", width: 220, valueGetter: (p) => p?.row?.values?.[7] ?? "" },
       { field: "sec", headerName: "Secretaría", width: 220, valueGetter: (p) => p.row.values[8] },
       { field: "subsec", headerName: "Subsecretaría", width: 220, valueGetter: (p) => p.row.values[9] },
       { field: "dirGral", headerName: "Dirección General", width: 220, valueGetter: (p) => p.row.values[10] },
-    ],
+    ]),
     [],
   );
 
   const colsFaltantes = useMemo(
-    () => [
-      { field: "id", headerName: "ID", width: 90, valueGetter: (p) => p.row.values[0] },
-      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p.row.values[1] },
-      { field: "ape", headerName: "Apellido y Nombre", width: 220, valueGetter: (p) => p.row.values[2] },
+    () => mapSafeVG([
+      { field: "id", headerName: "ID", width: 90, valueGetter: (p) => p?.row?.values?.[0] ?? "" },
+      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p?.row?.values?.[1] ?? "" },
+      { field: "ape", headerName: "Apellido y Nombre", width: 220, valueGetter: (p) => p?.row?.values?.[2] ?? "" },
       { field: "sit", headerName: "Situación", width: 180, valueGetter: (p) => p.row.values[3] },
       { field: "agrup", headerName: "Agrupamiento", width: 130, valueGetter: (p) => p.row.values[4] },
       { field: "nivel", headerName: "Nivel", width: 90, valueGetter: (p) => p.row.values[5] },
       { field: "sec", headerName: "Secretaría", width: 220, valueGetter: (p) => p.row.values[6] },
       { field: "func", headerName: "Función", width: 220, valueGetter: (p) => p.row.values[7] },
       { field: "dep", headerName: "Dependencia", width: 220, valueGetter: (p) => p.row.values[8] },
-    ],
+    ]),
     [],
   );
 
   const colsDiscrep = useMemo(
-    () => [
-      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p.row.values[0] },
-      { field: "ape", headerName: "Apellido y Nombre", width: 220, valueGetter: (p) => p.row.values[1] },
+    () => mapSafeVG([
+      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p?.row?.values?.[0] ?? "" },
+      { field: "ape", headerName: "Apellido y Nombre", width: 220, valueGetter: (p) => p?.row?.values?.[1] ?? "" },
       { field: "sit", headerName: "Situación", width: 180, valueGetter: (p) => p.row.values[2] },
       { field: "agrup", headerName: "Agrupamiento", width: 130, valueGetter: (p) => p.row.values[3] },
-      { field: "nivel", headerName: "Nivel", width: 90, valueGetter: (p) => p.row.values[4] },
+      { field: "nivel", headerName: "Nivel", width: 90, valueGetter: (p) => p?.row?.values?.[4] ?? "" },
       { field: "func", headerName: "Función", width: 200, valueGetter: (p) => p.row.values[5] },
-      { field: "dep", headerName: "Dependencia", width: 220, valueGetter: (p) => p.row.values[6] },
+      { field: "dep", headerName: "Dependencia", width: 220, valueGetter: (p) => p?.row?.values?.[6] ?? "" },
       { field: "sec", headerName: "Secretaría", width: 220, valueGetter: (p) => p.row.values[7] },
       { field: "sub", headerName: "Subsecretaría", width: 220, valueGetter: (p) => p.row.values[8] },
       { field: "dir", headerName: "Dirección General", width: 220, valueGetter: (p) => p.row.values[9] },
       { field: "obs", headerName: "Observación", width: 380, valueGetter: (p) => p.row.values[10] },
-    ],
+    ]),
     [],
   );
 
@@ -328,39 +355,204 @@ const AgrupamientoNivelesView = () => {
 
   // Columnas Eliminados / Proyectos
   const colsEliminados = useMemo(
-    () => [
-      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p.row.values[0] },
-      { field: "ape", headerName: "Apellido y nombre", width: 220, valueGetter: (p) => p.row.values[1] },
+    () => mapSafeVG([
+      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p?.row?.values?.[0] ?? "" },
+      { field: "ape", headerName: "Apellido y nombre", width: 220, valueGetter: (p) => p?.row?.values?.[1] ?? "" },
       { field: "sit", headerName: "Situacion de revista", width: 200, valueGetter: (p) => p.row.values[2] },
-      { field: "agrup", headerName: "Agrup", width: 120, valueGetter: (p) => p.row.values[3] },
-      { field: "nivel", headerName: "Nivel", width: 100, valueGetter: (p) => p.row.values[4] },
-      { field: "func", headerName: "Funciones", width: 200, valueGetter: (p) => p.row.values[5] },
+      { field: "agrup", headerName: "Agrup", width: 120, valueGetter: (p) => p?.row?.values?.[3] ?? "" },
+      { field: "nivel", headerName: "Nivel", width: 100, valueGetter: (p) => p?.row?.values?.[4] ?? "" },
+      { field: "func", headerName: "Funciones", width: 200, valueGetter: (p) => p?.row?.values?.[5] ?? "" },
       { field: "dep", headerName: "Dependencias", width: 220, valueGetter: (p) => p.row.values[6] },
       { field: "sec", headerName: "Secretarias", width: 220, valueGetter: (p) => p.row.values[7] },
       { field: "sub", headerName: "SubSecretarias", width: 220, valueGetter: (p) => p.row.values[8] },
       { field: "dir", headerName: "DireccionesGenerales", width: 240, valueGetter: (p) => p.row.values[9] },
       { field: "obs", headerName: "Observación", width: 240, valueGetter: (p) => p.row.values[10] },
-    ],
+    ]),
     [],
   );
   const colsProyectos = useMemo(
-    () => [
-      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p.row.values[0] },
-      { field: "ape", headerName: "Apellido y nombre", width: 220, valueGetter: (p) => p.row.values[1] },
+    () => mapSafeVG([
+      { field: "dni", headerName: "DNI", width: 140, valueGetter: (p) => p?.row?.values?.[0] ?? "" },
+      { field: "ape", headerName: "Apellido y nombre", width: 220, valueGetter: (p) => p?.row?.values?.[1] ?? "" },
       { field: "sit", headerName: "Situacion de revista", width: 200, valueGetter: (p) => p.row.values[2] },
-      { field: "agrup", headerName: "Agrup", width: 120, valueGetter: (p) => p.row.values[3] },
-      { field: "nivel", headerName: "Nivel", width: 100, valueGetter: (p) => p.row.values[4] },
-      { field: "func", headerName: "Funciones", width: 200, valueGetter: (p) => p.row.values[5] },
+      { field: "agrup", headerName: "Agrup", width: 120, valueGetter: (p) => p?.row?.values?.[3] ?? "" },
+      { field: "nivel", headerName: "Nivel", width: 100, valueGetter: (p) => p?.row?.values?.[4] ?? "" },
+      { field: "func", headerName: "Funciones", width: 200, valueGetter: (p) => p?.row?.values?.[5] ?? "" },
       { field: "sec", headerName: "Secretaria", width: 220, valueGetter: (p) => p.row.values[6] },
       { field: "dep", headerName: "Dependencia", width: 220, valueGetter: (p) => p.row.values[7] },
       { field: "obs", headerName: "Observacion", width: 220, valueGetter: (p) => p.row.values[8] },
       { field: "agrupC", headerName: "Agrup correcto", width: 180, valueGetter: (p) => p.row.values[9] },
       { field: "env", headerName: "Enviado al grupo", width: 180, valueGetter: (p) => p.row.values[10] },
-    ],
+    ]),
     [],
   );
 
-  const rowsFromArray = (arr) => arr.map((values, idx) => ({ id: idx + 1, values }));
+  // Columnas y filas sin valueGetter (evita params inconsistentes)
+  const colsAgentes2 = useMemo(
+    () => [
+      { field: "idAsignado", headerName: "ID", width: 90 },
+      { field: "dni", headerName: "DNI", width: 140 },
+      { field: "apellido", headerName: "Apellido y Nombre", width: 220 },
+      { field: "sitRev", headerName: "Situación", width: 180 },
+      { field: "agrup", headerName: "Agrupamiento", width: 130 },
+      { field: "nivel", headerName: "Nivel", width: 90 },
+      { field: "funcion", headerName: "Función", width: 200 },
+      { field: "dep", headerName: "Dependencia", width: 220 },
+      { field: "sec", headerName: "Secretaría", width: 220 },
+      { field: "subsec", headerName: "Subsecretaría", width: 220 },
+      { field: "dirGral", headerName: "Dirección General", width: 220 },
+    ],
+    [],
+  );
+  const rowsAgentes = useMemo(
+    () => (agentesConId || []).map((v, i) => ({
+      id: i + 1,
+      idAsignado: v?.[0] ?? "",
+      dni: v?.[1] ?? "",
+      apellido: v?.[2] ?? "",
+      sitRev: v?.[3] ?? "",
+      agrup: v?.[4] ?? "",
+      nivel: v?.[5] ?? "",
+      funcion: v?.[6] ?? "",
+      dep: v?.[7] ?? "",
+      sec: v?.[8] ?? "",
+      subsec: v?.[9] ?? "",
+      dirGral: v?.[10] ?? "",
+    })),
+    [agentesConId],
+  );
+
+  const colsFaltantes2 = useMemo(
+    () => [
+      { field: "idOriginal", headerName: "ID", width: 90 },
+      { field: "dni", headerName: "DNI", width: 140 },
+      { field: "ape", headerName: "Apellido y Nombre", width: 220 },
+      { field: "sit", headerName: "Situación", width: 180 },
+      { field: "agrup", headerName: "Agrupamiento", width: 130 },
+      { field: "nivel", headerName: "Nivel", width: 90 },
+      { field: "sec", headerName: "Secretaría", width: 220 },
+      { field: "func", headerName: "Función", width: 220 },
+      { field: "dep", headerName: "Dependencia", width: 220 },
+    ],
+    [],
+  );
+  const rowsFaltantes = useMemo(
+    () => (faltantes || []).map((v, i) => ({
+      id: i + 1,
+      idOriginal: v?.[0] ?? "",
+      dni: v?.[1] ?? "",
+      ape: v?.[2] ?? "",
+      sit: v?.[3] ?? "",
+      agrup: v?.[4] ?? "",
+      nivel: v?.[5] ?? "",
+      sec: v?.[6] ?? "",
+      func: v?.[7] ?? "",
+      dep: v?.[8] ?? "",
+    })),
+    [faltantes],
+  );
+
+  const colsDiscrep2 = useMemo(
+    () => [
+      { field: "dni", headerName: "DNI", width: 140 },
+      { field: "ape", headerName: "Apellido y Nombre", width: 220 },
+      { field: "sit", headerName: "Situación", width: 180 },
+      { field: "agrup", headerName: "Agrupamiento", width: 130 },
+      { field: "nivel", headerName: "Nivel", width: 90 },
+      { field: "func", headerName: "Función", width: 200 },
+      { field: "dep", headerName: "Dependencia", width: 220 },
+      { field: "sec", headerName: "Secretaría", width: 220 },
+      { field: "sub", headerName: "Subsecretaría", width: 220 },
+      { field: "dir", headerName: "Dirección General", width: 220 },
+      { field: "obs", headerName: "Observación", width: 380 },
+    ],
+    [],
+  );
+  const rowsDiscrep = useMemo(
+    () => (discrepancias || []).map((v, i) => ({
+      id: i + 1,
+      dni: v?.[0] ?? "",
+      ape: v?.[1] ?? "",
+      sit: v?.[2] ?? "",
+      agrup: v?.[3] ?? "",
+      nivel: v?.[4] ?? "",
+      func: v?.[5] ?? "",
+      dep: v?.[6] ?? "",
+      sec: v?.[7] ?? "",
+      sub: v?.[8] ?? "",
+      dir: v?.[9] ?? "",
+      obs: v?.[10] ?? "",
+    })),
+    [discrepancias],
+  );
+
+  const colsEliminados2 = useMemo(
+    () => [
+      { field: "dni", headerName: "DNI", width: 140 },
+      { field: "ape", headerName: "Apellido y nombre", width: 220 },
+      { field: "sit", headerName: "Situación de revista", width: 200 },
+      { field: "agrup", headerName: "Agrup", width: 120 },
+      { field: "nivel", headerName: "Nivel", width: 100 },
+      { field: "func", headerName: "Funciones", width: 200 },
+      { field: "dep", headerName: "Dependencias", width: 220 },
+      { field: "sec", headerName: "Secretarias", width: 220 },
+      { field: "sub", headerName: "SubSecretarias", width: 220 },
+      { field: "dir", headerName: "DireccionesGenerales", width: 240 },
+      { field: "obs", headerName: "Observación", width: 240 },
+    ],
+    [],
+  );
+  const rowsEliminados = useMemo(
+    () => (eliminadosRows || []).map((v, i) => ({
+      id: i + 1,
+      dni: v?.[0] ?? "",
+      ape: v?.[1] ?? "",
+      sit: v?.[2] ?? "",
+      agrup: v?.[3] ?? "",
+      nivel: v?.[4] ?? "",
+      func: v?.[5] ?? "",
+      dep: v?.[6] ?? "",
+      sec: v?.[7] ?? "",
+      sub: v?.[8] ?? "",
+      dir: v?.[9] ?? "",
+      obs: v?.[10] ?? "",
+    })),
+    [eliminadosRows],
+  );
+
+  const colsProyectos2 = useMemo(
+    () => [
+      { field: "dni", headerName: "DNI", width: 140 },
+      { field: "ape", headerName: "Apellido y nombre", width: 220 },
+      { field: "sit", headerName: "Situación de revista", width: 200 },
+      { field: "agrup", headerName: "Agrup", width: 120 },
+      { field: "nivel", headerName: "Nivel", width: 100 },
+      { field: "func", headerName: "Funciones", width: 200 },
+      { field: "sec", headerName: "Secretaria", width: 220 },
+      { field: "dep", headerName: "Dependencia", width: 220 },
+      { field: "obs", headerName: "Observación", width: 220 },
+      { field: "agrupC", headerName: "Agrup correcto", width: 180 },
+      { field: "env", headerName: "Enviado al grupo", width: 180 },
+    ],
+    [],
+  );
+  const rowsProyectos = useMemo(
+    () => (proyectosRows || []).map((v, i) => ({
+      id: i + 1,
+      dni: v?.[0] ?? "",
+      ape: v?.[1] ?? "",
+      sit: v?.[2] ?? "",
+      agrup: v?.[3] ?? "",
+      nivel: v?.[4] ?? "",
+      func: v?.[5] ?? "",
+      sec: v?.[6] ?? "",
+      dep: v?.[7] ?? "",
+      obs: v?.[8] ?? "",
+      agrupC: v?.[9] ?? "",
+      env: v?.[10] ?? "",
+    })),
+    [proyectosRows],
+  );
 
   // Funciones editor helpers
   const funcionesCols = useMemo(
@@ -580,10 +772,10 @@ const AgrupamientoNivelesView = () => {
             </Tabs>
             <CardContent>
               {tab === 0 && (
-                <DataGrid rows={rowsFromArray(agentesConId)} columns={colsAgentes} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <DataGrid rows={rowsAgentes} columns={colsAgentes2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 1 && (
-                <DataGrid rows={rowsFromArray(faltantes)} columns={colsFaltantes} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <DataGrid rows={rowsFaltantes} columns={colsFaltantes2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 2 && (
                 <>
@@ -595,17 +787,17 @@ const AgrupamientoNivelesView = () => {
                       Depurar
                     </Button>
                   </Box>
-                  <DataGrid rows={rowsFromArray(discrepancias)} columns={colsDiscrep} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                  <DataGrid rows={rowsDiscrep} columns={colsDiscrep2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
                 </>
               )}
               {tab === 3 && (
-                <DataGrid rows={control.map((r, i) => ({ id: i + 1, ...r }))} columns={colsControl} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <DataGrid rows={control.map((r, i) => ({ id: i + 1, ...r }))} columns={colsControl} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 4 && (
-                <DataGrid rows={rowsFromArray(eliminadosRows)} columns={colsEliminados} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <DataGrid rows={rowsEliminados} columns={colsEliminados2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 5 && (
-                <DataGrid rows={rowsFromArray(proyectosRows)} columns={colsProyectos} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <DataGrid rows={rowsProyectos} columns={colsProyectos2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
               )}
               {tab === 6 && (
                 <>
