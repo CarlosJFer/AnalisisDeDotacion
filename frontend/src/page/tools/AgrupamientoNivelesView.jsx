@@ -505,14 +505,14 @@ const AgrupamientoNivelesView = () => {
 
         <Grid item xs={12}>
           <Card sx={commonCardStyle}>
-            <Tabs value={tab} onChange={(_, v) => setTab(v)}>
-              <Tab label={`Agentes con ID (${agentesConId.length})`} />
-              <Tab label={`Faltantes (${faltantes.length})`} />
-              <Tab label={`Discrepancias (${discrepancias.length})`} />
-              <Tab label={`Control (${control.length})`} />
-              <Tab label={`Eliminados (${eliminadosRows.length})`} />
-              <Tab label={`Proyectos (${proyectosRows.length})`} />
-              <Tab label={`Funciones (${funcionesRows.length})`} />
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ '& .MuiTab-root': { textTransform: 'none' } }}>
+              <Tab label="Agentes con ID" />
+              <Tab label="Faltantes" />
+              <Tab label="Discrepancias" />
+              <Tab label="Control" />
+              <Tab label="Eliminados" />
+              <Tab label="Proyectos" />
+              <Tab label="Funciones" />
             </Tabs>
             <CardContent>
               {tab === 0 && (
