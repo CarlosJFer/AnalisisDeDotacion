@@ -12,6 +12,10 @@ import {
   Tab,
   CircularProgress,
   Avatar,
+  Stack,
+  Chip,
+  Tooltip,
+  Collapse,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import * as XLSX from "xlsx";
@@ -63,6 +67,28 @@ const AgrupamientoNivelesView = () => {
   const [snack, setSnack] = useState({ open: false, message: "", severity: "info" });
   const [filterOpen, setFilterOpen] = useState(false);
   const [filtros, setFiltros] = useState({ situaciones: [], secretarias: [] });
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+
+  // Cargar filtros guardados como default
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('an_filters');
+      if (saved) {
+        const f = JSON.parse(saved);
+        if (f && typeof f === 'object') {
+          setFiltros({ situaciones: f.situaciones || [], secretarias: f.secretarias || [] });
+        }
+      }
+    } catch (_) {}
+  }, []);
+
+  // Auto-procesar cuando ambos archivos requeridos están cargados
+  useEffect(() => {
+    if (fileOriginal && fileComparar) {
+      handleProcess(filtros);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fileOriginal, fileComparar]);
 
   // Worker init
   useEffect(() => {
@@ -140,9 +166,70 @@ const AgrupamientoNivelesView = () => {
     } catch (_) {}
     setFilterOpen(true);
   };
+
+  // UI helper para cargas de archivo
+  const UploadField = ({ label, file, onFile, required = false }) => {
+    const [dragOver, setDragOver] = useState(false);
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      setDragOver(true);
+    };
+    const handleDragLeave = (e) => {
+      e.preventDefault();
+      setDragOver(false);
+    };
+    const handleDrop = (e) => {
+      e.preventDefault();
+      setDragOver(false);
+      const f = e.dataTransfer?.files?.[0] || null;
+      if (f) onFile(f);
+    };
+    const handleChange = (e) => onFile(e.target.files?.[0] || null);
+
+    return (
+      <Box
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        sx={{
+          p: 1.2,
+          borderRadius: 2,
+          border: '2px dashed',
+          borderColor: dragOver ? (isDarkMode ? '#9b4d9b' : '#cc2b5e') : (required && !file ? (isDarkMode ? 'rgba(255,0,0,0.4)' : 'rgba(255,0,0,0.3)') : 'divider'),
+          background: dragOver
+            ? (isDarkMode ? 'rgba(155,77,155,0.1)' : 'rgba(204,43,94,0.05)')
+            : (isDarkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)'),
+          transition: 'all .15s ease',
+        }}
+      >
+        <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
+          <Button component="label" variant="outlined" startIcon={<icons.excel />} sx={{ minWidth: 280 }}>
+            {label}
+            <input hidden type="file" accept=".xls,.xlsx" onChange={handleChange} />
+          </Button>
+          <Stack direction="row" spacing={1} alignItems="center">
+            {required && !file && (
+              <Chip label="Requerido" color="warning" variant="outlined" size="small" />
+            )}
+            {file && (
+              <Chip
+                label={file.name}
+                onDelete={() => onFile(null)}
+                variant="outlined"
+                sx={{ maxWidth: 240, '& .MuiChip-label': { overflow: 'hidden', textOverflow: 'ellipsis' } }}
+              />
+            )}
+          </Stack>
+        </Stack>
+      </Box>
+    );
+  };
   const onConfirmFilters = (f) => {
     setFilterOpen(false);
     setFiltros(f);
+    try {
+      localStorage.setItem('an_filters', JSON.stringify(f));
+    } catch (_) {}
     handleProcess(f);
   };
 
@@ -666,60 +753,65 @@ const AgrupamientoNivelesView = () => {
           }}>
             <CardContent>
               <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
-                    Cargar Excel Rama Completa
-                    <input
-                      hidden
-                      type="file"
-                      accept=".xls,.xlsx"
-                      onChange={(e) => setFileOriginal(e.target.files?.[0] || null)}
-                    />
-                  </Button>
-                  <Typography variant="caption">{fileOriginal?.name || ""}</Typography>
+                <Grid item xs={12} md={6}>
+                  <UploadField
+                    label="Cargar Excel Rama Completa"
+                    file={fileOriginal}
+                    onFile={(f) => setFileOriginal(f)}
+                    required
+                  />
                 </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
-                    Cargar Excel Datos Concursos
-                    <input
-                      hidden
-                      type="file"
-                      accept=".xls,.xlsx"
-                      onChange={(e) => setFileComparar(e.target.files?.[0] || null)}
-                    />
-                  </Button>
-                  <Typography variant="caption">{fileComparar?.name || ""}</Typography>
+                <Grid item xs={12} md={6}>
+                  <UploadField
+                    label="Cargar Excel Datos Concursos"
+                    file={fileComparar}
+                    onFile={(f) => setFileComparar(f)}
+                    required
+                  />
                 </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
-                   Agentes para eliminar (opcional)
-                    <input
-                      hidden
-                      type="file"
-                      accept=".xls,.xlsx"
-                      onChange={(e) => setFileEliminados(e.target.files?.[0] || null)}
-                    />
+                <Grid item xs={12}>
+                  <Button
+                    variant="text"
+                    startIcon={<icons.expandir sx={{ transform: advancedOpen ? 'rotate(180deg)' : 'none', transition: 'transform .15s' }} />}
+                    onClick={() => setAdvancedOpen((v) => !v)}
+                    sx={{ fontWeight: 600 }}
+                  >
+                    Opciones avanzadas
                   </Button>
-                  <Typography variant="caption">{fileEliminados?.name || ""}</Typography>
-                </Grid>
-                <Grid item xs={12} md={6} lg={4}>
-                  <Button component="label" variant="outlined" fullWidth startIcon={<icons.excel />}>
-                    Agentes para proyectos (opcional)
-                    <input
-                      hidden
-                      type="file"
-                      accept=".xls,.xlsx"
-                      onChange={(e) => setFileProyectos(e.target.files?.[0] || null)}
-                    />
-                  </Button>
-                  <Typography variant="caption">{fileProyectos?.name || ""}</Typography>
+                  <Collapse in={advancedOpen} timeout="auto" unmountOnExit>
+                    <Grid container spacing={2} sx={{ mt: 0.5 }}>
+                      <Grid item xs={12} md={6}>
+                        <UploadField
+                          label="Agentes para eliminar (opcional)"
+                          file={fileEliminados}
+                          onFile={(f) => setFileEliminados(f)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <UploadField
+                          label="Agentes para proyectos (opcional)"
+                          file={fileProyectos}
+                          onFile={(f) => setFileProyectos(f)}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Collapse>
                 </Grid>
 
-                <Grid item xs={12} md={6} lg={4}>
-                  <Box sx={{ display: "flex", gap: 1, justifyContent: { xs: "stretch", md: "flex-end" } }}>
-                    <Button variant="outlined" onClick={onOpenFilters} disabled={!fileOriginal || !fileComparar} startIcon={<icons.filtro />}>
-                      Configurar filtros
-                    </Button>
+                <Grid item xs={12}>
+                  <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
+                    <Tooltip title={!fileOriginal || !fileComparar ? 'Primero cargá Rama Completa y Datos Concursos' : ''} disableHoverListener={!!(fileOriginal && fileComparar)}>
+                      <span>
+                        <Button
+                          variant="outlined"
+                          onClick={onOpenFilters}
+                          disabled={!fileOriginal || !fileComparar}
+                          startIcon={<icons.filtro />}
+                        >
+                          Configurar filtros
+                        </Button>
+                      </span>
+                    </Tooltip>
                     <Button variant="contained" onClick={() => handleProcess()} disabled={!fileOriginal || !fileComparar} startIcon={<icons.analitica />} sx={{
                       background: "linear-gradient(90deg, #ff9800 0%, #f57c00 100%)",
                       color: "white",
