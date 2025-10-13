@@ -40,7 +40,9 @@ import GestionVariablesPage from "./page/GestionVariablesPage.jsx";
 const FunctionCenterPage = lazy(() => import("./page/FunctionCenterPage.jsx"));
 const DebugComponent = lazy(() => import("./components/DebugComponent.jsx"));
 const ToolsPage = lazy(() => import("./page/ToolsPage.jsx"));
-const ExpedientesTool = lazy(() => import("./page/tools/ExpedientesTool.jsx"));
+const ExpedientesProcesoPage = lazy(() => import("./page/tools/expedientes/ExpedientesProcesoPage.jsx"));
+const ExpedientesFormPage = lazy(() => import("./page/tools/expedientes/ExpedientesFormPage.jsx"));
+const ExpedientesCargadosPage = lazy(() => import("./page/tools/expedientes/ExpedientesCargadosPage.jsx"));
 const AgrupamientoNivelesView = lazy(
   () => import("./page/tools/AgrupamientoNivelesView.jsx"),
 );
@@ -102,7 +104,9 @@ const AppLayout = () => {
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/organigrama" element={<OrganigramaPage />} />
               <Route path="/tools" element={<ToolsPage />} />
-              <Route path="/tools/expedientes" element={<ExpedientesTool />} />
+              <Route path="/tools/expedientes" element={<ExpedientesProcesoPage />} />
+              <Route path="/tools/expedientes/cargar" element={<ExpedientesFormPage />} />
+              <Route path="/tools/expedientes/cargados" element={<ExpedientesCargadosPage />} />
               <Route
                 path="/tools/agrupamiento-niveles"
                 element={<AgrupamientoNivelesView />}

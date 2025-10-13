@@ -370,6 +370,93 @@ const ExpedientesTool = () => {
         <Typography variant="h5" sx={{ fontWeight: 600 }}>Seguimiento de Expedientes</Typography>
         <Typography variant="body2" sx={{ opacity: 0.9 }}>Carga los archivos y procesa para ver expedientes sin movimiento, faltantes y cerrados.</Typography>
       </Box>
+
+      {/* Sección 1: Cargar expedientes (solo formulario) */}
+      <Card sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, mb: 2 }}>
+        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>Cargar expedientes</Typography>
+        <Box component="form" onSubmit={onSubmitForm} sx={{ px: 0.5 }}>
+          <Grid container spacing={1.5}>
+            <Grid item xs={12} sm={6} md={4}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Tipo</InputLabel>
+                <Select label="Tipo" value={form.tipo} onChange={(e) => { setForm((p) => ({ ...p, tipo: e.target.value })); setFormErrors((er) => ({ ...er, tipo: false })); }} error={!!formErrors.tipo}>
+                  {TIPO_OPTIONS.map((opt) => (<MenuItem key={opt} value={opt}>{opt}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Exp.Nro." value={form.expNro} onChange={(e) => { setForm((p) => ({ ...p, expNro: e.target.value })); setFormErrors((er) => ({ ...er, expNro: false })); }} error={!!formErrors.expNro} helperText={formErrors.expNro ? 'Campo obligatorio' : ''} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Estado Agente" value={form.estadoAgente} onChange={(e) => setForm((p) => ({ ...p, estadoAgente: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" type="date" label="Fecha de inicio" InputLabelProps={{ shrink: true }} value={form.fechaInicio} onChange={(e) => setForm((p) => ({ ...p, fechaInicio: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Iniciado por" value={form.iniciadoPor} onChange={(e) => setForm((p) => ({ ...p, iniciadoPor: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Tramite" value={form.tramite} onChange={(e) => setForm((p) => ({ ...p, tramite: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Dónde está" value={form.dondeEsta} onChange={(e) => setForm((p) => ({ ...p, dondeEsta: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Agente" value={form.agente} onChange={(e) => setForm((p) => ({ ...p, agente: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="DNI" value={form.dni} onChange={(e) => setForm((p) => ({ ...p, dni: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Inasist." value={form.inasist} onChange={(e) => setForm((p) => ({ ...p, inasist: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Estado del Exp.</InputLabel>
+                <Select label="Estado del Exp." value={form.estadoExp} onChange={(e) => { setForm((p) => ({ ...p, estadoExp: e.target.value })); setFormErrors((er) => ({ ...er, estadoExp: false })); }} error={!!formErrors.estadoExp}>
+                  {ESTADO_EXP_OPTIONS.map((opt) => (<MenuItem key={opt} value={opt}>{opt}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <TextField fullWidth size="small" label="Resolución" value={form.resolucion} onChange={(e) => setForm((p) => ({ ...p, resolucion: e.target.value }))} />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth size="small" label="Observaciones" value={form.observaciones} multiline minRows={2} onChange={(e) => setForm((p) => ({ ...p, observaciones: e.target.value }))} />
+            </Grid>
+          </Grid>
+          <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+            <Button variant="contained" startIcon={<icons.agregar />} onClick={onSubmitForm}>Agregar</Button>
+          </Stack>
+        </Box>
+      </Card>
+
+      {/* Sección 2: Expedientes cargados (solo tabla) */}
+      <Card sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, mb: 2 }}>
+        <DataGrid
+          rows={cargRows}
+          columns={[...cargCols, { field: 'acciones', headerName: 'Acciones', width: 120, renderCell: (params) => (
+            <Button size="small" color="error" onClick={() => removeCargado(params.row.id)} startIcon={<icons.eliminar />}>Borrar</Button>
+          )}]}
+          autoHeight
+          density="compact"
+          pageSizeOptions={[10,25,50]}
+          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
+          processRowUpdate={(newRow) => {
+            const tipoOk = !newRow.tipo || TIPO_OPTIONS.includes(newRow.tipo);
+            const estadoOk = !newRow.estadoExp || ESTADO_EXP_OPTIONS.includes(newRow.estadoExp);
+            const expOk = !!(newRow.expNro && String(newRow.expNro).trim());
+            if (!tipoOk || !estadoOk || !expOk) {
+              const msg = !expOk ? 'Exp.Nro. es obligatorio' : 'Valor inválido en Tipo o Estado del Exp.';
+              throw new Error(msg);
+            }
+            updateCargadoRow(newRow);
+            return newRow;
+          }}
+          onProcessRowUpdateError={(err) => setSnack({ open: true, message: err?.message || 'Error al actualizar fila', severity: 'error' })}
+        />
+      </Card>
       {/* Módulo arriba: carga de archivos */}
       <Card sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, mb: 2 }}>
         <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>Carga de archivos</Typography>
@@ -494,100 +581,7 @@ const ExpedientesTool = () => {
         </CardContent>
       </Card>
 
-      {/* Formulario de carga manual */}
-      <Card sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, mb: 2 }}>
-        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>Cargar expedientes</Typography>
-        <Box component="form" onSubmit={onSubmitForm} sx={{ px: 0.5 }}>
-          <Grid container spacing={1.5}>
-            <Grid item xs={12} sm={6} md={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Tipo</InputLabel>
-                <Select label="Tipo" value={form.tipo} onChange={(e) => { setForm((p) => ({ ...p, tipo: e.target.value })); setFormErrors((er) => ({ ...er, tipo: false })); }} error={!!formErrors.tipo}>
-                  {TIPO_OPTIONS.map((opt) => (<MenuItem key={opt} value={opt}>{opt}</MenuItem>))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Exp.Nro." value={form.expNro} onChange={(e) => { setForm((p) => ({ ...p, expNro: e.target.value })); setFormErrors((er) => ({ ...er, expNro: false })); }} error={!!formErrors.expNro} helperText={formErrors.expNro ? 'Campo obligatorio' : ''} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Estado Agente" value={form.estadoAgente} onChange={(e) => setForm((p) => ({ ...p, estadoAgente: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" type="date" label="Fecha de inicio" InputLabelProps={{ shrink: true }} value={form.fechaInicio} onChange={(e) => setForm((p) => ({ ...p, fechaInicio: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Iniciado por" value={form.iniciadoPor} onChange={(e) => setForm((p) => ({ ...p, iniciadoPor: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Tramite" value={form.tramite} onChange={(e) => setForm((p) => ({ ...p, tramite: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Dónde está" value={form.dondeEsta} onChange={(e) => setForm((p) => ({ ...p, dondeEsta: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Agente" value={form.agente} onChange={(e) => setForm((p) => ({ ...p, agente: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="DNI" value={form.dni} onChange={(e) => setForm((p) => ({ ...p, dni: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Inasist." value={form.inasist} onChange={(e) => setForm((p) => ({ ...p, inasist: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <FormControl fullWidth size="small">
-                <InputLabel>Estado del Exp.</InputLabel>
-                <Select label="Estado del Exp." value={form.estadoExp} onChange={(e) => { setForm((p) => ({ ...p, estadoExp: e.target.value })); setFormErrors((er) => ({ ...er, estadoExp: false })); }} error={!!formErrors.estadoExp}>
-                  {ESTADO_EXP_OPTIONS.map((opt) => (<MenuItem key={opt} value={opt}>{opt}</MenuItem>))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth size="small" label="Resolución" value={form.resolucion} onChange={(e) => setForm((p) => ({ ...p, resolucion: e.target.value }))} />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField fullWidth size="small" label="Observaciones" value={form.observaciones} multiline minRows={2} onChange={(e) => setForm((p) => ({ ...p, observaciones: e.target.value }))} />
-            </Grid>
-          </Grid>
-          <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
-            <Button variant="contained" startIcon={<icons.agregar />} onClick={onSubmitForm}>Agregar</Button>
-          </Stack>
-        </Box>
-      </Card>
-
-      {/* Hoja: Expedientes cargados */}
-      <Card sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Expedientes cargados</Typography>
-          <Stack direction="row" spacing={1}>
-            <Button variant="outlined" startIcon={<icons.limpiar />} disabled={!cargRows.length} onClick={handleClearCargados}>Limpiar hoja</Button>
-            <Button variant="outlined" startIcon={<icons.excel />} disabled={!cargRows.length} onClick={() => exportGridToExcel(cargCols, cargRows, 'Expedientes cargados', 'expedientes-cargados')}>Exportar Excel</Button>
-          </Stack>
-        </Stack>
-        <DataGrid
-          rows={cargRows}
-          columns={[...cargCols, { field: 'acciones', headerName: 'Acciones', width: 120, renderCell: (params) => (
-            <Button size="small" color="error" onClick={() => removeCargado(params.row.id)} startIcon={<icons.eliminar />}>Borrar</Button>
-          )}]}
-          autoHeight
-          density="compact"
-          pageSizeOptions={[10,25,50]}
-          initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
-          processRowUpdate={(newRow) => {
-            // Validaciones mínimas en edición de grilla
-            const tipoOk = !newRow.tipo || TIPO_OPTIONS.includes(newRow.tipo);
-            const estadoOk = !newRow.estadoExp || ESTADO_EXP_OPTIONS.includes(newRow.estadoExp);
-            const expOk = !!(newRow.expNro && String(newRow.expNro).trim());
-            if (!tipoOk || !estadoOk || !expOk) {
-              const msg = !expOk ? 'Exp.Nro. es obligatorio' : 'Valor inválido en Tipo o Estado del Exp.';
-              throw new Error(msg);
-            }
-            updateCargadoRow(newRow);
-            return newRow;
-          }}
-          onProcessRowUpdateError={(err) => setSnack({ open: true, message: err?.message || 'Error al actualizar fila', severity: 'error' })}
-        />
-      </Card>
+      
 
       <Snackbar open={snack.open} autoHideDuration={4000} onClose={() => setSnack((s) => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}>
         <Alert onClose={() => setSnack((s) => ({ ...s, open: false }))} severity={snack.severity} sx={{ width: '100%' }}>{snack.message}</Alert>
