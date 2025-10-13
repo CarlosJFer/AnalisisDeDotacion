@@ -69,6 +69,46 @@ const AgrupamientoNivelesView = () => {
   const [filtros, setFiltros] = useState({ situaciones: [], secretarias: [] });
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
+  // Helpers de notificación
+  
+
+  // Exportar a Excel (helper genérico)
+  const exportGridToExcel = useCallback((columns, rows, sheetName = "Datos", fileLabel = "export") => {
+    try {
+      const cols = Array.isArray(columns) ? columns : [];
+      const rws = Array.isArray(rows) ? rows : [];
+      if (!cols.length) {
+        setSnack({ open: true, message: "No hay columnas para exportar", severity: "error" });
+        return;
+      }
+      if (!rws.length) {
+        setSnack({ open: true, message: "No hay datos para exportar", severity: "error" });
+        return;
+      }
+
+      const headers = cols.map((c) => c.headerName || c.field || "");
+      const data = rws.map((row) => cols.map((c) => row?.[c.field] ?? ""));
+
+      const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+      const wb = XLSX.utils.book_new();
+      const safeSheet = String(sheetName || "Datos").slice(0, 31);
+      XLSX.utils.book_append_sheet(wb, ws, safeSheet);
+
+      const date = new Date();
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      const hh = String(date.getHours()).padStart(2, "0");
+      const mi = String(date.getMinutes()).padStart(2, "0");
+      const prefix = `agrupamiento-niveles-${(fileLabel || sheetName).toString().toLowerCase().replace(/[^a-z0-9]+/gi, "-")}`;
+      const fileName = `${prefix}-${yyyy}${mm}${dd}_${hh}${mi}.xlsx`;
+      XLSX.writeFile(wb, fileName);
+      setSnack({ open: true, message: "Excel exportado", severity: "success" });
+    } catch (e) {
+      console.error("Error al exportar Excel:", e);
+      setSnack({ open: true, message: e?.message || "Error al exportar", severity: "error" });
+    }
+  }, [setSnack]);
   // Cargar filtros guardados como default
   useEffect(() => {
     try {
@@ -649,6 +689,12 @@ const AgrupamientoNivelesView = () => {
     [proyectosRows],
   );
 
+  // Filas derivadas para CONTROL (para reutilizar en exportación)
+  const rowsControl = useMemo(
+    () => (control || []).map((r, i) => ({ id: i + 1, funcion: r?.funcion ?? "", cantidad: r?.cantidad ?? 0 })),
+    [control],
+  );
+
   // Funciones editor helpers
   const funcionesCols = useMemo(
     () => [
@@ -872,32 +918,103 @@ const AgrupamientoNivelesView = () => {
             </Tabs>
             <CardContent>
               {tab === 0 && (
-                <DataGrid rows={rowsAgentes} columns={colsAgentes2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<icons.excel />}
+                      disabled={!rowsAgentes.length}
+                      onClick={() => exportGridToExcel(colsAgentes2, rowsAgentes, 'Agentes con ID', 'agentes-con-id')}
+                    >
+                      Exportar Excel
+                    </Button>
+                  </Box>
+                  <DataGrid rows={rowsAgentes} columns={colsAgentes2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                </>
               )}
               {tab === 1 && (
-                <DataGrid rows={rowsFaltantes} columns={colsFaltantes2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<icons.excel />}
+                      disabled={!rowsFaltantes.length}
+                      onClick={() => exportGridToExcel(colsFaltantes2, rowsFaltantes, 'Faltantes', 'faltantes')}
+                    >
+                      Exportar Excel
+                    </Button>
+                  </Box>
+                  <DataGrid rows={rowsFaltantes} columns={colsFaltantes2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                </>
               )}
               {tab === 2 && (
                 <>
-                  <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-                    <Button variant="contained" onClick={handleDepurar} disabled={!discrepancias.length} startIcon={<icons.limpiar />} sx={{
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: 'center', mb: 1 }}>
+                    <Box />
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        variant="outlined"
+                        startIcon={<icons.excel />}
+                        disabled={!rowsDiscrep.length}
+                        onClick={() => exportGridToExcel(colsDiscrep2, rowsDiscrep, 'Discrepancias', 'discrepancias')}
+                      >
+                        Exportar Excel
+                      </Button>
+                      <Button variant="contained" onClick={handleDepurar} disabled={!discrepancias.length} startIcon={<icons.limpiar />} sx={{
                       background: "linear-gradient(90deg, #cc2b5e 0%, #753a88 100%)",
                       '&:hover': { background: "linear-gradient(90deg, #b02852 0%, #6a337c 100%)" }
                     }}>
-                      Depurar
-                    </Button>
+                        Depurar
+                      </Button>
+                    </Box>
                   </Box>
                   <DataGrid rows={rowsDiscrep} columns={colsDiscrep2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
                 </>
               )}
               {tab === 3 && (
-                <DataGrid rows={control.map((r, i) => ({ id: i + 1, ...r }))} columns={colsControl} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<icons.excel />}
+                      disabled={!rowsControl.length}
+                      onClick={() => exportGridToExcel(colsControl, rowsControl, 'Control', 'control')}
+                    >
+                      Exportar Excel
+                    </Button>
+                  </Box>
+                  <DataGrid rows={rowsControl} columns={colsControl} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                </>
               )}
               {tab === 4 && (
-                <DataGrid rows={rowsEliminados} columns={colsEliminados2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<icons.excel />}
+                      disabled={!rowsEliminados.length}
+                      onClick={() => exportGridToExcel(colsEliminados2, rowsEliminados, 'Eliminados', 'eliminados')}
+                    >
+                      Exportar Excel
+                    </Button>
+                  </Box>
+                  <DataGrid rows={rowsEliminados} columns={colsEliminados2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                </>
               )}
               {tab === 5 && (
-                <DataGrid rows={rowsProyectos} columns={colsProyectos2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                <>
+                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<icons.excel />}
+                      disabled={!rowsProyectos.length}
+                      onClick={() => exportGridToExcel(colsProyectos2, rowsProyectos, 'Proyectos', 'proyectos')}
+                    >
+                      Exportar Excel
+                    </Button>
+                  </Box>
+                  <DataGrid rows={rowsProyectos} columns={colsProyectos2} autoHeight density="compact" pageSizeOptions={[10, 25, 50]} initialState={{ pagination: { paginationModel: { pageSize: 10 } } }} sx={{ backgroundColor: 'transparent', border: 0, '& .MuiDataGrid-withBorderColor': { borderColor: 'transparent' }, '& .MuiDataGrid-columnHeaders': { backgroundColor: 'transparent' }, '& .MuiDataGrid-cell': { color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.87)' }, '& .MuiDataGrid-row:hover': { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.02)' } }} />
+                </>
               )}
               {tab === 6 && (
                 <>
