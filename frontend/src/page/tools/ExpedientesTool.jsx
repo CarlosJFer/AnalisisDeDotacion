@@ -387,7 +387,42 @@ const ExpedientesTool = () => {
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
           <Chip icon={<icons.tiempo />} label={`Última revisión: ${control.ultimaRevision || '-'}`} size="small" variant="outlined" />
         </Box>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons allowScrollButtonsMobile sx={{ borderBottom: '1px solid', borderColor: 'divider', '& .MuiTabs-indicator': { height: 3, borderRadius: 2, background: isDarkMode ? 'linear-gradient(90deg, #9b4d9b, #6a4c93)' : 'linear-gradient(90deg, #cc2b5e, #753a88)' } }}>
+        <Tabs
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          variant="scrollable"
+          scrollButtons
+          allowScrollButtonsMobile
+          textColor="inherit"
+          sx={{
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            '& .MuiTabs-flexContainer': { gap: 2 },
+            '& .MuiTab-root': {
+              textTransform: 'none',
+              fontWeight: 600,
+              minHeight: 48,
+              px: 2,
+              borderRadius: 2,
+              color: isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.8)',
+              outline: 'none',
+              boxShadow: 'none',
+            },
+            '& .MuiTab-root.Mui-selected': {
+              backgroundColor: isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)',
+              color: isDarkMode ? '#fff' : '#000',
+            },
+            '& .MuiTab-root.Mui-focusVisible': { outline: 'none' },
+            '& .MuiTab-root:focus': { outline: 'none' },
+            '& .MuiTabs-indicator': {
+              height: 3,
+              borderRadius: 2,
+              background: isDarkMode
+                ? 'linear-gradient(90deg, #9b4d9b, #6a4c93)'
+                : 'linear-gradient(90deg, #cc2b5e, #753a88)',
+            },
+          }}
+        >
           <Tab disableRipple icon={<icons.advertencia fontSize="small" />} iconPosition="start" label="Expedientes sin movimiento" />
           <Tab disableRipple icon={<icons.error fontSize="small" />} iconPosition="start" label="Expedientes faltantes" />
           <Tab disableRipple icon={<icons.exito fontSize="small" />} iconPosition="start" label="Expedientes cerrados" />
